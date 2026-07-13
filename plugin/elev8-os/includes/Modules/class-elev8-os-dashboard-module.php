@@ -7,53 +7,101 @@ if (!defined('ABSPATH')) {
 /**
  * Logged-in Artist Dashboard.
  *
- * This module intentionally owns the artist-facing dashboard so the legacy
- * compatibility class does not need to grow further.
+ * The artist experience lives on the public-facing website rather than inside
+ * wp-admin because Amelia Employee accounts may be redirected away from the
+ * WordPress administration area.
  */
 final class Elev8_OS_Dashboard_Module {
 
-    private const PAGE_SLUG = 'elev8-artist-dashboard';
+    private const ADMIN_PAGE_SLUG = 'elev8-artist-dashboard';
+    private const FRONTEND_PAGE_SLUG = 'artist-dashboard';
+    private const FRONTEND_SHORTCODE = 'elev8_artist_dashboard';
+    private const PAGE_OPTION = 'elev8_os_artist_dashboard_page_id';
 
     public static function init(): void {
-        add_action('admin_menu', [__CLASS__, 'register_menu'], 20);
-        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
-        add_filter('login_redirect', [__CLASS__, 'login_redirect'], 20, 3);
+        add_action('init', [__CLASS__, 'register_shortcode']);
+        add_action('init', [__CLASS__, 'ensure_frontend_page'], 30);
+        add_action('admin_menu', [__CLASS__, 'register_admin_menu'], 20);
+        add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_frontend_assets']);
+        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
+        add_filter('login_redirect', [__CLASS__, 'login_redirect'], 999, 3);
     }
 
     public static function status(): string {
         return 'active';
     }
 
-    public static function register_menu(): void {
-        add_submenu_page(
-            'elev8-os',
-            __('Artist Dashboard', 'elev8-os'),
-            __('My Dashboard', 'elev8-os'),
-            'read',
-            self::PAGE_SLUG,
-            [__CLASS__, 'render']
+    public static function register_shortcode(): void {
+        add_shortcode(self::FRONTEND_SHORTCODE, [__CLASS__, 'shortcode']);
+    }
+
+    /**
+     * Create the protected dashboard page once, then remember its ID.
+     */
+    public static function ensure_frontend_page(): void {
+        $page_id = (int) get_option(self::PAGE_OPTION);
+
+        if ($page_id > 0 && get_post_status($page_id)) {
+            return;
+        }
+
+        $existing = get_page_by_path(self::FRONTEND_PAGE_SLUG);
+        if ($existing instanceof WP_Post) {
+            update_option(self::PAGE_OPTION, (int) $existing->ID, false);
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $page_id = wp_insert_post(
+            [
+                'post_title'   => __('Artist Dashboard', 'elev8-os'),
+                'post_name'    => self::FRONTEND_PAGE_SLUG,
+                'post_content' => '[' . self::FRONTEND_SHORTCODE . ']',
+                'post_status'  => 'publish',
+                'post_type'    => 'page',
+                'post_author'  => get_current_user_id(),
+            ],
+            true
         );
 
-        // Artists may not have access to the administrator-only parent menu.
-        // This creates a separate top-level entry for any logged-in artist.
-        if (!current_user_can('manage_options')) {
-            add_menu_page(
-                __('Artist Dashboard', 'elev8-os'),
-                __('Elev8 OS', 'elev8-os'),
-                'read',
-                self::PAGE_SLUG,
-                [__CLASS__, 'render'],
-                'dashicons-art',
-                3
-            );
+        if (!is_wp_error($page_id) && $page_id > 0) {
+            update_option(self::PAGE_OPTION, (int) $page_id, false);
         }
     }
 
-    public static function enqueue_assets(string $hook): void {
-        if (!in_array($hook, [
-            'elev8-os_page_' . self::PAGE_SLUG,
-            'toplevel_page_' . self::PAGE_SLUG,
-        ], true)) {
+    /**
+     * Keep an administrator preview inside WordPress.
+     */
+    public static function register_admin_menu(): void {
+        add_submenu_page(
+            'elev8-os',
+            __('Artist Dashboard', 'elev8-os'),
+            __('Artist Dashboard', 'elev8-os'),
+            'manage_options',
+            self::ADMIN_PAGE_SLUG,
+            [__CLASS__, 'render_admin_preview']
+        );
+    }
+
+    public static function enqueue_frontend_assets(): void {
+        if (!self::is_dashboard_page()) {
+            return;
+        }
+
+        wp_enqueue_style('dashicons');
+        wp_enqueue_style(
+            'elev8-os-artist-dashboard',
+            ELEV8_OS_URL . 'assets/css/artist-dashboard.css',
+            [],
+            ELEV8_OS_VERSION
+        );
+    }
+
+    public static function enqueue_admin_assets(string $hook): void {
+        if ($hook !== 'elev8-os_page_' . self::ADMIN_PAGE_SLUG) {
             return;
         }
 
@@ -65,6 +113,10 @@ final class Elev8_OS_Dashboard_Module {
         );
     }
 
+    /**
+     * Amelia Employee accounts are sent to the Elev8 OS front-end dashboard.
+     * Priority 999 allows this to run after most plugin login redirect filters.
+     */
     public static function login_redirect(string $redirect_to, string $requested_redirect_to, $user): string {
         if (!($user instanceof WP_User) || is_wp_error($user)) {
             return $redirect_to;
@@ -74,19 +126,41 @@ final class Elev8_OS_Dashboard_Module {
             return $redirect_to;
         }
 
-        $artist = self::find_artist_for_user($user);
-        if (!$artist) {
+        if (!self::is_artist_user($user)) {
             return $redirect_to;
         }
 
-        return admin_url('admin.php?page=' . self::PAGE_SLUG);
+        return self::dashboard_url();
     }
 
-    public static function render(): void {
-        if (!current_user_can('read')) {
+    public static function shortcode(): string {
+        if (!is_user_logged_in()) {
+            $login_url = wp_login_url(self::dashboard_url());
+
+            return sprintf(
+                '<div class="elev8-dashboard-login"><p>%1$s</p><p><a class="button" href="%2$s">%3$s</a></p></div>',
+                esc_html__('Please log in to view your Elev8 OS dashboard.', 'elev8-os'),
+                esc_url($login_url),
+                esc_html__('Log In', 'elev8-os')
+            );
+        }
+
+        ob_start();
+        self::render_dashboard();
+        return (string) ob_get_clean();
+    }
+
+    public static function render_admin_preview(): void {
+        if (!current_user_can('manage_options')) {
             wp_die(esc_html__('You do not have permission to view this page.', 'elev8-os'));
         }
 
+        echo '<div class="wrap">';
+        self::render_dashboard();
+        echo '</div>';
+    }
+
+    private static function render_dashboard(): void {
         $user = wp_get_current_user();
         $artist = self::find_artist_for_user($user);
         $first_name = $artist
@@ -101,7 +175,7 @@ final class Elev8_OS_Dashboard_Module {
             ? self::get_upcoming_class_count((int) $artist['id'])
             : 0;
         ?>
-        <div class="wrap elev8-artist-dashboard">
+        <div class="elev8-artist-dashboard">
             <header class="elev8-dashboard-header">
                 <div>
                     <p class="elev8-eyebrow"><?php esc_html_e('Elev8 OS', 'elev8-os'); ?></p>
@@ -122,13 +196,13 @@ final class Elev8_OS_Dashboard_Module {
             </header>
 
             <?php if (!$artist) : ?>
-                <div class="notice notice-warning inline elev8-link-warning">
+                <div class="elev8-dashboard-warning">
                     <p>
                         <strong><?php esc_html_e('Your Elev8 OS account is not connected to an Amelia artist record yet.', 'elev8-os'); ?></strong><br>
                         <?php
                         echo esc_html(
                             sprintf(
-                                /* translators: %s: account email address */
+                                /* translators: %s: account email */
                                 __('Ask an administrator to match your WordPress email (%s) to your Amelia artist email.', 'elev8-os'),
                                 $user->user_email
                             )
@@ -184,8 +258,27 @@ final class Elev8_OS_Dashboard_Module {
         <?php
     }
 
+    private static function is_artist_user(WP_User $user): bool {
+        if (self::find_artist_for_user($user)) {
+            return true;
+        }
+
+        foreach ((array) $user->roles as $role) {
+            $normalized = strtolower(str_replace(['_', '-'], ' ', (string) $role));
+
+            if (strpos($normalized, 'amelia') !== false && (
+                strpos($normalized, 'employee') !== false ||
+                strpos($normalized, 'provider') !== false
+            )) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
-     * Match the current WordPress user to Amelia by email.
+     * Match a WordPress user to an Amelia provider by email.
      *
      * @return array<string,mixed>|null
      */
@@ -260,6 +353,22 @@ final class Elev8_OS_Dashboard_Module {
         );
 
         return max(0, (int) $count);
+    }
+
+    private static function dashboard_url(): string {
+        $page_id = (int) get_option(self::PAGE_OPTION);
+
+        if ($page_id > 0 && get_post_status($page_id)) {
+            return get_permalink($page_id);
+        }
+
+        return home_url('/' . self::FRONTEND_PAGE_SLUG . '/');
+    }
+
+    private static function is_dashboard_page(): bool {
+        $page_id = (int) get_option(self::PAGE_OPTION);
+
+        return ($page_id > 0 && is_page($page_id)) || is_page(self::FRONTEND_PAGE_SLUG);
     }
 
     private static function table_exists(string $table): bool {
