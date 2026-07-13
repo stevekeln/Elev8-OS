@@ -204,9 +204,9 @@ final class Elev8_OS_Dashboard_Module {
                 <?php
                 self::render_metric_card(
                     'art',
-                    __('Active Classes Offered', 'elev8-os'),
+                    __('Scheduled Class Dates', 'elev8-os'),
                     $active_services,
-                    _n('service assigned to you', 'services assigned to you', $active_services, 'elev8-os')
+                    _n('class date currently scheduled', 'class dates currently scheduled', $active_services, 'elev8-os')
                 );
                 self::render_metric_card(
                     'calendar-alt',
