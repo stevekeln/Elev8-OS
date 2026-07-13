@@ -7,9 +7,9 @@ if (!defined('ABSPATH')) {
 /**
  * Logged-in Artist Dashboard.
  *
- * The artist experience lives on the public-facing website rather than inside
- * wp-admin because Amelia Employee accounts may be redirected away from the
- * WordPress administration area.
+ * Services and bookings are intentionally shown separately:
+ * - Active Services = classes the artist is assigned to offer.
+ * - Upcoming Bookings = dated Amelia appointments already booked.
  */
 final class Elev8_OS_Dashboard_Module {
 
@@ -161,9 +161,9 @@ final class Elev8_OS_Dashboard_Module {
             $first_name = $user->display_name ?: __('Artist', 'elev8-os');
         }
 
-        $upcoming_count = $artist
-            ? self::get_upcoming_class_count((int) $artist['id'])
-            : 0;
+        $artist_id = $artist ? (int) $artist['id'] : 0;
+        $active_services = $artist_id > 0 ? self::get_active_service_count($artist_id) : 0;
+        $upcoming_bookings = $artist_id > 0 ? self::get_upcoming_booking_count($artist_id) : 0;
         ?>
         <div class="elev8-artist-dashboard">
             <header class="elev8-dashboard-header">
@@ -200,36 +200,46 @@ final class Elev8_OS_Dashboard_Module {
                 </div>
             <?php endif; ?>
 
-            <section class="elev8-welcome-card">
-                <div>
-                    <span class="dashicons dashicons-calendar-alt" aria-hidden="true"></span>
-                    <div>
-                        <p class="elev8-card-label"><?php esc_html_e('Upcoming Classes', 'elev8-os'); ?></p>
-                        <strong><?php echo esc_html(number_format_i18n($upcoming_count)); ?></strong>
-                        <p>
-                            <?php
-                            echo esc_html(
-                                _n(
-                                    'class currently scheduled',
-                                    'classes currently scheduled',
-                                    $upcoming_count,
-                                    'elev8-os'
-                                )
-                            );
-                            ?>
-                        </p>
-                    </div>
-                </div>
+            <section class="elev8-dashboard-grid elev8-dashboard-summary" aria-label="<?php esc_attr_e('Artist summary', 'elev8-os'); ?>">
+                <?php
+                self::render_metric_card(
+                    'art',
+                    __('Active Classes Offered', 'elev8-os'),
+                    $active_services,
+                    _n('service assigned to you', 'services assigned to you', $active_services, 'elev8-os')
+                );
+                self::render_metric_card(
+                    'calendar-alt',
+                    __('Upcoming Bookings', 'elev8-os'),
+                    $upcoming_bookings,
+                    _n('booking currently scheduled', 'bookings currently scheduled', $upcoming_bookings, 'elev8-os')
+                );
+                ?>
             </section>
 
             <section class="elev8-dashboard-grid" aria-label="<?php esc_attr_e('Dashboard modules', 'elev8-os'); ?>">
-                <?php self::render_placeholder_card('calendar-alt', __('Upcoming Classes', 'elev8-os'), __('Your next classes and enrollment will appear here.', 'elev8-os')); ?>
+                <?php self::render_placeholder_card('calendar-alt', __('Upcoming Bookings', 'elev8-os'), __('Booked dates, times, students, and enrollment will appear here.', 'elev8-os')); ?>
                 <?php self::render_placeholder_card('chart-bar', __('My Statistics', 'elev8-os'), __('Classes, students, revenue, and average class size.', 'elev8-os')); ?>
                 <?php self::render_placeholder_card('money-alt', __('Earnings', 'elev8-os'), __('Estimated and pending payouts will appear here.', 'elev8-os')); ?>
                 <?php self::render_placeholder_card('admin-links', __('Quick Actions', 'elev8-os'), __('Profile, schedule, referrals, and tax documents.', 'elev8-os')); ?>
                 <?php self::render_placeholder_card('bell', __('Notifications', 'elev8-os'), __('Important updates and items needing attention.', 'elev8-os')); ?>
             </section>
         </div>
+        <?php
+    }
+
+    private static function render_metric_card(string $icon, string $title, int $value, string $description): void {
+        ?>
+        <article class="elev8-welcome-card">
+            <div>
+                <span class="dashicons dashicons-<?php echo esc_attr($icon); ?>" aria-hidden="true"></span>
+                <div>
+                    <p class="elev8-card-label"><?php echo esc_html($title); ?></p>
+                    <strong><?php echo esc_html(number_format_i18n($value)); ?></strong>
+                    <p><?php echo esc_html($description); ?></p>
+                </div>
+            </div>
+        </article>
         <?php
     }
 
@@ -305,84 +315,93 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     /**
-     * Count both:
-     * 1. Amelia Events assigned to the artist, even with zero bookings.
-     * 2. Appointment-based classes that already exist in appointments.
+     * Count services assigned to an Amelia provider.
+     *
+     * Amelia installations commonly use amelia_providers_to_services with
+     * userId and serviceId. Candidate names are checked to keep this safe
+     * across Amelia schema variations.
      */
-    private static function get_upcoming_class_count(int $artist_id): int {
-        if ($artist_id < 1) {
-            return 0;
-        }
-
-        return self::get_upcoming_event_count($artist_id)
-            + self::get_upcoming_appointment_count($artist_id);
-    }
-
-    /**
-     * Amelia classes/events exist before anyone books them. Their dates are
-     * normally stored in amelia_events_periods and provider assignments in
-     * amelia_events_providers.
-     */
-    private static function get_upcoming_event_count(int $artist_id): int {
+    private static function get_active_service_count(int $artist_id): int {
         global $wpdb;
 
-        $events = $wpdb->prefix . 'amelia_events';
-        $periods = $wpdb->prefix . 'amelia_events_periods';
-        $providers = $wpdb->prefix . 'amelia_events_providers';
+        $relation_tables = [
+            $wpdb->prefix . 'amelia_providers_to_services',
+            $wpdb->prefix . 'amelia_services_providers',
+            $wpdb->prefix . 'amelia_providers_services',
+        ];
 
-        if (
-            !self::table_exists($events) ||
-            !self::table_exists($periods) ||
-            !self::table_exists($providers)
-        ) {
+        $relation_table = '';
+        foreach ($relation_tables as $candidate) {
+            if (self::table_exists($candidate)) {
+                $relation_table = $candidate;
+                break;
+            }
+        }
+
+        if ($relation_table === '') {
             return 0;
         }
 
-        $event_columns = self::table_columns($events);
-        $period_columns = self::table_columns($periods);
-        $provider_columns = self::table_columns($providers);
+        $relation_columns = self::table_columns($relation_table);
+        $provider_column = self::first_existing_column(
+            $relation_columns,
+            ['userId', 'providerId', 'employeeId', 'provider_id', 'user_id']
+        );
+        $service_column = self::first_existing_column(
+            $relation_columns,
+            ['serviceId', 'service_id']
+        );
 
-        $event_id = self::first_existing_column($event_columns, ['id']);
-        $period_event_id = self::first_existing_column($period_columns, ['eventId', 'event_id']);
-        $period_start = self::first_existing_column($period_columns, ['periodStart', 'period_start', 'start']);
-        $provider_event_id = self::first_existing_column($provider_columns, ['eventId', 'event_id']);
-        $provider_id = self::first_existing_column($provider_columns, ['userId', 'providerId', 'provider_id', 'employeeId']);
-
-        if (!$event_id || !$period_event_id || !$period_start || !$provider_event_id || !$provider_id) {
+        if (!$provider_column || !$service_column) {
             return 0;
         }
 
+        $services_table = $wpdb->prefix . 'amelia_services';
+        if (!self::table_exists($services_table)) {
+            $count = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(DISTINCT `{$service_column}`)
+                     FROM `{$relation_table}`
+                     WHERE `{$provider_column}` = %d",
+                    $artist_id
+                )
+            );
+
+            return max(0, (int) $count);
+        }
+
+        $service_columns = self::table_columns($services_table);
         $status_sql = '';
-        if (in_array('status', $event_columns, true)) {
-            $status_sql = " AND LOWER(COALESCE(e.`status`, '')) NOT IN ('canceled', 'cancelled', 'rejected')";
+        if (in_array('status', $service_columns, true)) {
+            $status_sql = " AND LOWER(COALESCE(s.`status`, '')) NOT IN ('hidden', 'disabled', 'inactive', 'deleted')";
         }
 
         $show_sql = '';
-        if (in_array('show', $event_columns, true)) {
-            $show_sql = " AND COALESCE(e.`show`, 1) = 1";
+        if (in_array('show', $service_columns, true)) {
+            $show_sql = " AND COALESCE(s.`show`, 1) = 1";
         }
 
         $count = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(DISTINCT e.`{$event_id}`)
-                 FROM `{$events}` e
-                 INNER JOIN `{$periods}` p
-                    ON p.`{$period_event_id}` = e.`{$event_id}`
-                 INNER JOIN `{$providers}` ep
-                    ON ep.`{$provider_event_id}` = e.`{$event_id}`
-                 WHERE ep.`{$provider_id}` = %d
-                   AND p.`{$period_start}` >= %s
+                "SELECT COUNT(DISTINCT r.`{$service_column}`)
+                 FROM `{$relation_table}` r
+                 INNER JOIN `{$services_table}` s
+                    ON s.`id` = r.`{$service_column}`
+                 WHERE r.`{$provider_column}` = %d
                    {$status_sql}
                    {$show_sql}",
-                $artist_id,
-                current_time('mysql')
+                $artist_id
             )
         );
 
         return max(0, (int) $count);
     }
 
-    private static function get_upcoming_appointment_count(int $artist_id): int {
+    /**
+     * Count dated future appointments. A service without a booking is not an
+     * upcoming booking and is therefore not included here.
+     */
+    private static function get_upcoming_booking_count(int $artist_id): int {
         global $wpdb;
 
         $appointments = $wpdb->prefix . 'amelia_appointments';
