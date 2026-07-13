@@ -35,9 +35,6 @@ final class Elev8_OS_Dashboard_Module {
         add_shortcode(self::FRONTEND_SHORTCODE, [__CLASS__, 'shortcode']);
     }
 
-    /**
-     * Create the protected dashboard page once, then remember its ID.
-     */
     public static function ensure_frontend_page(): void {
         $page_id = (int) get_option(self::PAGE_OPTION);
 
@@ -72,9 +69,6 @@ final class Elev8_OS_Dashboard_Module {
         }
     }
 
-    /**
-     * Keep an administrator preview inside WordPress.
-     */
     public static function register_admin_menu(): void {
         add_submenu_page(
             'elev8-os',
@@ -113,10 +107,6 @@ final class Elev8_OS_Dashboard_Module {
         );
     }
 
-    /**
-     * Amelia Employee accounts are sent to the Elev8 OS front-end dashboard.
-     * Priority 999 allows this to run after most plugin login redirect filters.
-     */
     public static function login_redirect(string $redirect_to, string $requested_redirect_to, $user): string {
         if (!($user instanceof WP_User) || is_wp_error($user)) {
             return $redirect_to;
@@ -183,7 +173,6 @@ final class Elev8_OS_Dashboard_Module {
                         <?php
                         echo esc_html(
                             sprintf(
-                                /* translators: %s: artist first name */
                                 __('Welcome back, %s!', 'elev8-os'),
                                 $first_name
                             )
@@ -202,7 +191,6 @@ final class Elev8_OS_Dashboard_Module {
                         <?php
                         echo esc_html(
                             sprintf(
-                                /* translators: %s: account email */
                                 __('Ask an administrator to match your WordPress email (%s) to your Amelia artist email.', 'elev8-os'),
                                 $user->user_email
                             )
@@ -278,8 +266,6 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     /**
-     * Match a WordPress user to an Amelia provider by email.
-     *
      * @return array<string,mixed>|null
      */
     private static function find_artist_for_user(WP_User $user): ?array {
@@ -295,7 +281,7 @@ final class Elev8_OS_Dashboard_Module {
             return null;
         }
 
-        $columns = $wpdb->get_col("DESCRIBE `{$table}`", 0);
+        $columns = self::table_columns($table);
         if (!in_array('email', $columns, true)) {
             return null;
         }
@@ -318,20 +304,97 @@ final class Elev8_OS_Dashboard_Module {
         return is_array($artist) ? $artist : null;
     }
 
+    /**
+     * Count both:
+     * 1. Amelia Events assigned to the artist, even with zero bookings.
+     * 2. Appointment-based classes that already exist in appointments.
+     */
     private static function get_upcoming_class_count(int $artist_id): int {
-        global $wpdb;
-
         if ($artist_id < 1) {
             return 0;
         }
+
+        return self::get_upcoming_event_count($artist_id)
+            + self::get_upcoming_appointment_count($artist_id);
+    }
+
+    /**
+     * Amelia classes/events exist before anyone books them. Their dates are
+     * normally stored in amelia_events_periods and provider assignments in
+     * amelia_events_providers.
+     */
+    private static function get_upcoming_event_count(int $artist_id): int {
+        global $wpdb;
+
+        $events = $wpdb->prefix . 'amelia_events';
+        $periods = $wpdb->prefix . 'amelia_events_periods';
+        $providers = $wpdb->prefix . 'amelia_events_providers';
+
+        if (
+            !self::table_exists($events) ||
+            !self::table_exists($periods) ||
+            !self::table_exists($providers)
+        ) {
+            return 0;
+        }
+
+        $event_columns = self::table_columns($events);
+        $period_columns = self::table_columns($periods);
+        $provider_columns = self::table_columns($providers);
+
+        $event_id = self::first_existing_column($event_columns, ['id']);
+        $period_event_id = self::first_existing_column($period_columns, ['eventId', 'event_id']);
+        $period_start = self::first_existing_column($period_columns, ['periodStart', 'period_start', 'start']);
+        $provider_event_id = self::first_existing_column($provider_columns, ['eventId', 'event_id']);
+        $provider_id = self::first_existing_column($provider_columns, ['userId', 'providerId', 'provider_id', 'employeeId']);
+
+        if (!$event_id || !$period_event_id || !$period_start || !$provider_event_id || !$provider_id) {
+            return 0;
+        }
+
+        $status_sql = '';
+        if (in_array('status', $event_columns, true)) {
+            $status_sql = " AND LOWER(COALESCE(e.`status`, '')) NOT IN ('canceled', 'cancelled', 'rejected')";
+        }
+
+        $show_sql = '';
+        if (in_array('show', $event_columns, true)) {
+            $show_sql = " AND COALESCE(e.`show`, 1) = 1";
+        }
+
+        $count = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(DISTINCT e.`{$event_id}`)
+                 FROM `{$events}` e
+                 INNER JOIN `{$periods}` p
+                    ON p.`{$period_event_id}` = e.`{$event_id}`
+                 INNER JOIN `{$providers}` ep
+                    ON ep.`{$provider_event_id}` = e.`{$event_id}`
+                 WHERE ep.`{$provider_id}` = %d
+                   AND p.`{$period_start}` >= %s
+                   {$status_sql}
+                   {$show_sql}",
+                $artist_id,
+                current_time('mysql')
+            )
+        );
+
+        return max(0, (int) $count);
+    }
+
+    private static function get_upcoming_appointment_count(int $artist_id): int {
+        global $wpdb;
 
         $appointments = $wpdb->prefix . 'amelia_appointments';
         if (!self::table_exists($appointments)) {
             return 0;
         }
 
-        $columns = $wpdb->get_col("DESCRIBE `{$appointments}`", 0);
-        if (!in_array('providerId', $columns, true) || !in_array('bookingStart', $columns, true)) {
+        $columns = self::table_columns($appointments);
+        $provider_id = self::first_existing_column($columns, ['providerId', 'provider_id', 'employeeId']);
+        $booking_start = self::first_existing_column($columns, ['bookingStart', 'booking_start', 'start']);
+
+        if (!$provider_id || !$booking_start) {
             return 0;
         }
 
@@ -344,8 +407,8 @@ final class Elev8_OS_Dashboard_Module {
             $wpdb->prepare(
                 "SELECT COUNT(DISTINCT `id`)
                  FROM `{$appointments}`
-                 WHERE `providerId` = %d
-                   AND `bookingStart` >= %s
+                 WHERE `{$provider_id}` = %d
+                   AND `{$booking_start}` >= %s
                    {$status_sql}",
                 $artist_id,
                 current_time('mysql')
@@ -369,6 +432,31 @@ final class Elev8_OS_Dashboard_Module {
         $page_id = (int) get_option(self::PAGE_OPTION);
 
         return ($page_id > 0 && is_page($page_id)) || is_page(self::FRONTEND_PAGE_SLUG);
+    }
+
+    /**
+     * @return array<int,string>
+     */
+    private static function table_columns(string $table): array {
+        global $wpdb;
+
+        $columns = $wpdb->get_col("DESCRIBE `{$table}`", 0);
+
+        return is_array($columns) ? array_map('strval', $columns) : [];
+    }
+
+    /**
+     * @param array<int,string> $available
+     * @param array<int,string> $candidates
+     */
+    private static function first_existing_column(array $available, array $candidates): ?string {
+        foreach ($candidates as $candidate) {
+            if (in_array($candidate, $available, true)) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 
     private static function table_exists(string $table): bool {
