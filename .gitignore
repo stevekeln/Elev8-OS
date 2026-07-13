@@ -1,0 +1,34 @@
+# WordPress and PHP
+wp-config.php
+.env
+.env.*
+vendor/
+node_modules/
+
+# Build and release output
+build/
+dist/
+releases/*.zip
+*.log
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backups and temporary files
+*.bak
+*.tmp
+*.swp
+*.sql
+*.sql.gz
+backup/
+backups/
+
+# Sensitive or generated content
+uploads/
+private/
+tax-documents/
+customer-exports/

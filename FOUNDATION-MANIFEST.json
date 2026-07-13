@@ -1,0 +1,28 @@
+{
+  "name": "Elev8 OS GitHub Foundation",
+  "purpose": "Repository documentation, issue templates, and founder workflow",
+  "files": [
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/ISSUE_TEMPLATE/opportunity.yml",
+    ".github/ISSUE_TEMPLATE/problem.yml",
+    ".github/pull_request_template.md",
+    ".gitignore",
+    "ARCHITECTURE.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "FOUNDERS.md",
+    "PRODUCT-VISION.md",
+    "README.md",
+    "ROADMAP.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "TESTING.md",
+    "docs/BRANCHING.md",
+    "docs/FOUNDER-NEXT-STEPS.md",
+    "docs/RELEASE-PROCESS.md",
+    "docs/UI-STANDARDS.md",
+    "docs/USER-ROLES.md",
+    "docs/WAITLIST-SPEC.md"
+  ]
+}

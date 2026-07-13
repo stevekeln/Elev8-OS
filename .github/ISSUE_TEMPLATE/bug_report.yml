@@ -1,0 +1,62 @@
+name: Bug report
+description: Report something that is broken or behaving incorrectly
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the behavior and the page or action involved.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open...
+        2. Select...
+        3. Click...
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Elev8 OS version
+  - type: dropdown
+    id: role
+    attributes:
+      label: User role
+      options:
+        - Administrator
+        - Manager
+        - Artist
+        - Customer
+        - Logged-out visitor
+        - Other
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Error message, screenshot, or other evidence
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround

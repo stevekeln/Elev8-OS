@@ -1,0 +1,75 @@
+name: Opportunity
+description: Propose a solution or improvement tied to a real outcome
+title: "[Opportunity]: "
+labels: ["opportunity"]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Opportunity
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem being solved
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Why it matters
+    validations:
+      required: true
+  - type: dropdown
+    id: benefit
+    attributes:
+      label: Primary benefit
+      multiple: true
+      options:
+        - Saves time
+        - Increases revenue
+        - Reduces mistakes
+        - Improves artist experience
+        - Improves customer experience
+        - Improves decision-making
+    validations:
+      required: true
+  - type: textarea
+    id: success
+    attributes:
+      label: What success looks like
+    validations:
+      required: true
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Estimated difficulty
+      options:
+        - Small
+        - Medium
+        - Large
+        - Unknown
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Target milestone
+      options:
+        - Foundation
+        - Business Intelligence
+        - CRM
+        - Waitlist and Demand
+        - Growth
+        - Operations
+        - Automation
+        - Someday
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+        - Someday
