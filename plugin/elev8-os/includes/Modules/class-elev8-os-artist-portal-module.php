@@ -70,6 +70,9 @@ final class Elev8_OS_Artist_Portal_Module {
         $dashboard_url = home_url('/artist-dashboard/');
         $public_url = esc_url_raw((string) get_user_meta($user->ID, self::META_PUBLIC_PAGE, true));
         $edit_url = esc_url_raw((string) get_user_meta($user->ID, self::META_EDIT_PAGE, true));
+        if ($edit_url === '') {
+            $edit_url = home_url('/artist-website/');
+        }
         $classes_url = esc_url_raw((string) get_user_meta($user->ID, self::META_CLASSES, true));
         $booking_url = esc_url_raw((string) get_user_meta($user->ID, self::META_BOOKING, true));
 
@@ -97,7 +100,7 @@ final class Elev8_OS_Artist_Portal_Module {
                 'label' => __('Edit Website', 'elev8-os'),
                 'icon' => 'edit-page',
                 'url' => $edit_url,
-                'enabled' => $edit_url !== '',
+                'enabled' => true,
             ],
             'booking' => [
                 'label' => __('Booking Link', 'elev8-os'),
