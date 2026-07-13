@@ -1,8 +1,7 @@
 name: Problem library entry
 description: Record a real operational problem before designing a solution
 title: "[Problem]: "
-labels:
-  - problem
+labels: ["problem"]
 body:
   - type: textarea
     id: problem
@@ -11,31 +10,38 @@ body:
       description: What real-world problem is Elev8 Arts experiencing?
     validations:
       required: true
-
   - type: textarea
     id: why
     attributes:
       label: Why it matters
     validations:
       required: true
-
   - type: textarea
     id: workaround
     attributes:
       label: Current workaround
-
   - type: textarea
     id: effects
     attributes:
       label: Problems caused by the workaround
-
   - type: textarea
     id: ideal
     attributes:
       label: Ideal outcome
     validations:
       required: true
-
+  - type: dropdown
+    id: who
+    attributes:
+      label: Who is affected?
+      multiple: true
+      options:
+        - Owner
+        - Manager
+        - Artist
+        - Customer
+        - Bookkeeper
+        - Staff
   - type: dropdown
     id: priority
     attributes:

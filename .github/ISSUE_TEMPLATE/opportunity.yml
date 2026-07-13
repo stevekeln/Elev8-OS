@@ -1,46 +1,117 @@
 name: Opportunity
-description: Propose a solution or improvement tied to a real outcome
+description: Propose an improvement tied to a real problem and measurable outcome
 title: "[Opportunity]: "
-labels: ["opportunity"]
+labels:
+  - opportunity
 body:
-  - type: input
-    id: title
+  - type: markdown
     attributes:
-      label: Opportunity
-    validations:
-      required: true
+      value: |
+        # Elev8 OS Opportunity
+
+        Every opportunity must support at least one part of the Elev8 Promise:
+
+        - Save time
+        - Increase revenue
+        - Reduce mistakes
+        - Improve the artist experience
+        - Improve the customer experience
+        - Improve decision-making
+
   - type: textarea
-    id: problem
+    id: vision
     attributes:
-      label: Problem being solved
+      label: Vision
+      description: What are we trying to accomplish?
+      placeholder: Artists can run their entire Elev8 business from Elev8 OS without logging into Amelia.
     validations:
       required: true
+
   - type: textarea
-    id: reason
+    id: current_pain
     attributes:
-      label: Why it matters
+      label: Current pain
+      description: What is frustrating, inefficient, confusing, or broken today?
     validations:
       required: true
+
+  - type: textarea
+    id: desired_experience
+    attributes:
+      label: Desired experience
+      description: Describe what the ideal experience should feel like.
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_story
+    attributes:
+      label: User story
+      description: Complete the statement from the user's point of view.
+      placeholder: |
+        As an Elev8 Member Artist,
+        I want to manage my classes, profile, referrals, and payouts in one place,
+        so that I never need to log into Amelia for routine work.
+    validations:
+      required: true
+
   - type: dropdown
-    id: benefit
+    id: primary_user
     attributes:
-      label: Primary benefit
-      multiple: true
+      label: Primary user
       options:
-        - Saves time
-        - Increases revenue
-        - Reduces mistakes
-        - Improves artist experience
-        - Improves customer experience
-        - Improves decision-making
+        - Owner
+        - Manager
+        - Elev8 Member Artist
+        - Customer
+        - Bookkeeper
+        - Marketing
+        - Studio staff
+        - Everyone
     validations:
       required: true
+
+  - type: checkboxes
+    id: business_value
+    attributes:
+      label: Business value
+      description: Select every part of the Elev8 Promise this opportunity supports.
+      options:
+        - label: Saves time
+        - label: Increases revenue
+        - label: Reduces mistakes
+        - label: Improves the artist experience
+        - label: Improves the customer experience
+        - label: Improves decision-making
+    validations:
+      required: true
+
   - type: textarea
     id: success
     attributes:
       label: What success looks like
+      description: What observable result will tell us this worked?
     validations:
       required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: Definition of done
+      description: List the exact capabilities, tests, and documentation required before release.
+      placeholder: |
+        - [ ] User experience is designed
+        - [ ] Permissions are defined
+        - [ ] Feature is built
+        - [ ] Mobile layout works
+        - [ ] Security and privacy checks pass
+        - [ ] Staging tests pass
+        - [ ] Documentation is updated
+        - [ ] Changelog is updated
+        - [ ] Release is verified on Elev8 Arts
+    validations:
+      required: true
+
   - type: dropdown
     id: difficulty
     attributes:
@@ -50,19 +121,28 @@ body:
         - Medium
         - Large
         - Unknown
+    validations:
+      required: true
+
   - type: dropdown
     id: milestone
     attributes:
       label: Target milestone
       options:
         - Foundation
+        - Artist Portal
         - Business Intelligence
         - CRM
         - Waitlist and Demand
-        - Growth
+        - Growth and Marketing
         - Operations
-        - Automation
-        - Someday
+        - Automation and Elev8 Brain
+        - Replace Amelia
+        - Future vision
+        - Not decided
+    validations:
+      required: true
+
   - type: dropdown
     id: priority
     attributes:
@@ -73,3 +153,22 @@ body:
         - Medium
         - Low
         - Someday
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What must exist or be decided before this can be built?
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and concerns
+      description: Note privacy, financial, compatibility, maintenance, or user-experience risks.
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes, examples, or screenshots
