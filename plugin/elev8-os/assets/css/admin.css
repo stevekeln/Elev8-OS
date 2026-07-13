@@ -1,0 +1,81 @@
+.elev8-os{max-width:1400px}
+.elev8-header{display:flex;align-items:flex-start;justify-content:space-between;margin:20px 0}
+.elev8-header h1{font-size:30px;margin:0 0 5px}
+.elev8-header p{margin:0;color:#646970}
+.elev8-version{background:#fff;border:1px solid #dcdcde;border-radius:999px;padding:7px 12px}
+.elev8-private-note{background:#fff8e5;border-left:4px solid #dba617;padding:12px 15px;margin-bottom:16px}
+.elev8-filter{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #dcdcde;padding:14px;border-radius:10px;margin-bottom:16px}
+.elev8-filter input{min-height:36px}
+.elev8-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.elev8-card,.elev8-panel{background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.elev8-card span{display:block;color:#646970;font-size:13px;margin-bottom:8px}
+.elev8-card strong{font-size:28px}
+.elev8-panel{margin-bottom:16px}
+.elev8-panel h2{margin-top:0}
+.elev8-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.elev8-panel label{display:block;font-weight:600;margin:12px 0 5px}
+.elev8-panel input[type=text],.elev8-panel input[type=number],.elev8-panel select{width:100%;max-width:none}
+.elev8-fields{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}
+.elev8-table-wrap{overflow:auto}
+.elev8-empty{padding:18px;background:#f6f7f7;border-radius:8px;color:#646970}
+.elev8-rule{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee}
+.elev8-rule:last-child{border-bottom:0}
+.elev8-rule p{margin:4px 0 0;color:#646970}
+.elev8-diagnostics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.elev8-diagnostics div{padding:10px;border-radius:7px;background:#f6f7f7}
+.elev8-diagnostics .ok span{color:#1d7f36;font-weight:bold}
+.elev8-diagnostics .missing span{color:#b32d2e;font-weight:bold}
+@media(max-width:900px){
+  .elev8-cards{grid-template-columns:repeat(2,1fr)}
+  .elev8-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .elev8-cards,.elev8-fields,.elev8-diagnostics{grid-template-columns:1fr}
+  .elev8-filter{align-items:stretch;flex-direction:column}
+}
+
+.elev8-rule-box{margin:18px 0;padding:16px;border:2px solid #ef6c35;border-radius:10px;background:#fffaf7}.elev8-rule-box h3{margin-top:0}.elev8-fields-three{grid-template-columns:repeat(3,1fr)}.elev8-example{margin-top:14px;background:#fff;border-left:4px solid #ef6c35;padding:12px}.elev8-legacy-rules{margin:14px 0;border:1px solid #dcdcde;border-radius:8px;padding:12px;background:#f6f7f7}.elev8-legacy-rules summary{cursor:pointer;font-weight:600}@media(max-width:1000px){.elev8-fields-three{grid-template-columns:1fr}}
+.elev8-portal{max-width:1280px}.elev8-portal h1{margin-bottom:4px}.elev8-big-status{font-size:28px;font-weight:700;margin:12px 0}.elev8-os textarea,.elev8-os input[type=url],.elev8-os input[type=text],.elev8-os select{max-width:100%}.elev8-os .elev8-panel form label{display:block;font-weight:600;margin:14px 0 6px}.elev8-os .elev8-panel form input,.elev8-os .elev8-panel form select,.elev8-os .elev8-panel form textarea{width:100%}
+
+/* Public artist pages */
+.elev8-public-page{max-width:1180px;margin:40px auto;padding:0 20px}
+.elev8-public-profile .elev8-cover{height:280px;background-size:cover;background-position:center;border-radius:16px;margin-bottom:-70px}
+.elev8-public-head{display:flex;align-items:flex-end;gap:24px;margin:0 24px 28px;position:relative}
+.elev8-public-head img{width:150px;height:150px;border-radius:50%;object-fit:cover;border:6px solid #fff;background:#fff}
+.elev8-public-head h1{margin:0 0 6px;font-size:40px}
+.elev8-public-head p{font-size:18px;margin:0}
+.elev8-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.elev8-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
+.elev8-class-list>div{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid #ddd}
+.elev8-public-profile input[readonly],.elev8-portal input[readonly]{width:100%;max-width:620px}
+@media(max-width:700px){.elev8-public-profile .elev8-cover{height:180px;margin-bottom:-45px}.elev8-public-head{align-items:center;margin-left:12px}.elev8-public-head img{width:100px;height:100px}.elev8-public-head h1{font-size:28px}.elev8-class-list>div{grid-template-columns:1fr}}
+
+/* Artist public payment, contact, share, and QR tools */
+.elev8-public-links .button { margin: 0 8px 8px 0; }
+.elev8-share-tools { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin:30px 0; }
+.elev8-share-tools button { border:0; background:transparent; padding:8px 4px; font:inherit; text-decoration:underline; cursor:pointer; }
+.elev8-share-tools button:hover { text-decoration:none; }
+.elev8-qr-modal[hidden] { display:none !important; }
+.elev8-qr-modal { position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,.72); display:flex; align-items:center; justify-content:center; padding:20px; }
+.elev8-qr-dialog { width:min(430px, 95vw); background:#fff; color:#222; padding:28px; border-radius:14px; text-align:center; position:relative; box-shadow:0 18px 60px rgba(0,0,0,.35); }
+.elev8-qr-dialog img { width:min(320px, 80vw); height:auto; display:block; margin:18px auto; }
+.elev8-close-qr { position:absolute; top:8px; right:12px; border:0; background:transparent; font-size:32px; line-height:1; cursor:pointer; }
+body.elev8-qr-open { overflow:hidden; }
+
+/* Version 5 Development Center */
+.elev8-development .elev8-roadmap-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.elev8-roadmap-phase{border:1px solid #dcdcde;border-radius:10px;padding:14px;background:#fafafa}
+.elev8-roadmap-title{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}
+.elev8-progress{height:10px;background:#e2e4e7;border-radius:99px;overflow:hidden;margin-bottom:8px}
+.elev8-progress i{display:block;height:100%;background:#2271b1;border-radius:99px}
+.elev8-dev-list{display:grid;gap:10px}
+.elev8-dev-item{border:1px solid #dcdcde;border-radius:10px;background:#fff;overflow:hidden}
+.elev8-dev-item summary{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:14px;cursor:pointer}
+.elev8-dev-item form{padding:0 14px 16px;border-top:1px solid #eee}
+.elev8-badge,.elev8-status,.elev8-priority{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;line-height:1.2}
+.elev8-feature{background:#e7f3ff;color:#135e96}.elev8-bug{background:#fce8e8;color:#8a2424}.elev8-idea{background:#f3e8ff;color:#6b2ca0}
+.elev8-status{background:#f0f0f1}.elev8-priority-low{background:#f0f0f1}.elev8-priority-medium{background:#fff3cd}.elev8-priority-high{background:#ffe2c2}.elev8-priority-critical{background:#ffd6d6;color:#8a2424;font-weight:700}
+.elev8-release{border-bottom:1px solid #eee;padding:0 0 14px;margin:0 0 14px}.elev8-release:last-child{border-bottom:0}.elev8-release h3{margin-bottom:6px}.elev8-release h3 small{font-weight:400;color:#646970}
+@media(max-width:1100px){.elev8-development .elev8-roadmap-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.elev8-development .elev8-roadmap-grid{grid-template-columns:1fr}.elev8-dev-item summary{grid-template-columns:1fr}.elev8-dev-item summary strong{order:-1}}
+.elev8-vision blockquote{margin:18px 0;padding:18px 22px;border-left:5px solid #ff7a00;background:#fff7ee;font-size:16px}.elev8-mission{font-size:17px}.elev8-principles{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}.elev8-principles span{background:#f1f5f9;border:1px solid #dbe3ea;border-radius:999px;padding:8px 12px;font-weight:600}.elev8-module-list p{padding:12px 0;margin:0;border-bottom:1px solid #e8edf1}.elev8-module-list p:last-child{border-bottom:0}
