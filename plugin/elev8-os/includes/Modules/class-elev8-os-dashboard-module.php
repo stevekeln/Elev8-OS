@@ -7,9 +7,9 @@ if (!defined('ABSPATH')) {
 /**
  * Logged-in Artist Dashboard.
  *
- * Services and bookings are intentionally shown separately:
- * - Active Services = classes the artist is assigned to offer.
- * - Upcoming Bookings = dated Amelia appointments already booked.
+ * The artist experience lives on the public-facing website rather than inside
+ * wp-admin because Amelia Employee accounts may be redirected away from the
+ * WordPress administration area.
  */
 final class Elev8_OS_Dashboard_Module {
 
@@ -316,10 +316,6 @@ final class Elev8_OS_Dashboard_Module {
 
     /**
      * Count services assigned to an Amelia provider.
-     *
-     * Amelia installations commonly use amelia_providers_to_services with
-     * userId and serviceId. Candidate names are checked to keep this safe
-     * across Amelia schema variations.
      */
     private static function get_active_service_count(int $artist_id): int {
         global $wpdb;
@@ -398,8 +394,7 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     /**
-     * Count dated future appointments. A service without a booking is not an
-     * upcoming booking and is therefore not included here.
+     * Count dated future Amelia appointments.
      */
     private static function get_upcoming_booking_count(int $artist_id): int {
         global $wpdb;
