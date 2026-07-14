@@ -1,0 +1,45 @@
+{
+  "allowed_branch_patterns": [
+    "develop",
+    "feature/*",
+    "release/*",
+    "hotfix/*"
+  ],
+  "output_directory": "Elev8-OS-Releases",
+  "required_files": [
+    "elev8-os.php",
+    "includes/class-elev8-os-loader.php",
+    "includes/class-elev8-os.php",
+    "includes/Integrations/class-elev8-os-amelia.php",
+    "includes/Integrations/class-elev8-os-woocommerce.php",
+    "includes/Modules/class-elev8-os-artist-portal-module.php",
+    "includes/Modules/class-elev8-os-dashboard-module.php",
+    "includes/Modules/class-elev8-os-system-inspector-module.php",
+    "assets/css/admin.css",
+    "assets/css/artist-dashboard.css",
+    "assets/css/artist-portal.css",
+    "assets/css/system-inspector.css"
+  ],
+  "forbidden_plugin_patterns": [
+    "*.zip",
+    "*.bak",
+    "*.tmp",
+    "*.log"
+  ],
+  "exclude_directories": [
+    ".git",
+    ".github",
+    "node_modules",
+    "vendor",
+    ".idea",
+    ".vscode"
+  ],
+  "exclude_files": [
+    "*.zip",
+    "*.bak",
+    "*.tmp",
+    "*.log",
+    "Thumbs.db",
+    ".DS_Store"
+  ]
+}
