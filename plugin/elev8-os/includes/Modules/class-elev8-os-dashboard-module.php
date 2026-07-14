@@ -292,38 +292,23 @@ final class Elev8_OS_Dashboard_Module {
      */
     private static function find_artist_for_user(WP_User $user): ?array {
         global $wpdb;
-
-        $email = sanitize_email((string) $user->user_email);
-        if ($email === '') {
-            return null;
-        }
-
         $table = $wpdb->prefix . 'amelia_users';
-        if (!self::table_exists($table)) {
-            return null;
-        }
-
+        if (!self::table_exists($table)) { return null; }
         $columns = self::table_columns($table);
-        if (!in_array('email', $columns, true)) {
-            return null;
+        if (!in_array('id', $columns, true)) { return null; }
+        $select = ['id'];
+        foreach (['firstName','lastName','email'] as $column) { if (in_array($column,$columns,true)) { $select[]=$column; } }
+        $select_sql = implode(', ', array_map(static fn(string $column): string => "`{$column}`", $select));
+        $type_sql = in_array('type',$columns,true) ? " AND LOWER(COALESCE(`type`,'')) IN ('provider','employee')" : '';
+        $mapped_id = max(0,(int)get_user_meta($user->ID,'elev8_os_amelia_employee_id',true));
+        if ($mapped_id > 0) {
+            $mapped = $wpdb->get_row($wpdb->prepare("SELECT {$select_sql} FROM `{$table}` WHERE `id`=%d{$type_sql} LIMIT 1",$mapped_id),ARRAY_A);
+            if (is_array($mapped)) { return $mapped; }
         }
-
-        $type_sql = in_array('type', $columns, true)
-            ? " AND (`type` = 'provider' OR `type` = 'employee')"
-            : '';
-
-        $artist = $wpdb->get_row(
-            $wpdb->prepare(
-                "SELECT `id`, `firstName`, `lastName`, `email`
-                 FROM `{$table}`
-                 WHERE LOWER(`email`) = LOWER(%s) {$type_sql}
-                 LIMIT 1",
-                $email
-            ),
-            ARRAY_A
-        );
-
-        return is_array($artist) ? $artist : null;
+        $email=sanitize_email((string)$user->user_email);
+        if ($email==='' || !in_array('email',$columns,true)) { return null; }
+        $artist=$wpdb->get_row($wpdb->prepare("SELECT {$select_sql} FROM `{$table}` WHERE LOWER(`email`)=LOWER(%s){$type_sql} LIMIT 1",$email),ARRAY_A);
+        return is_array($artist)?$artist:null;
     }
 
     /**
