@@ -63,9 +63,87 @@ final class Elev8_OS_Artist_Website_Editor_Module {
         $map=['profile_image'=>[self::META_PROFILE,5*MB_IN_BYTES],'banner_image'=>[self::META_BANNER,8*MB_IN_BYTES],'logo_image'=>[self::META_LOGO,3*MB_IN_BYTES]];
         foreach($map as $field=>[$meta,$max]){if(!empty($_POST['remove_'.$field]))delete_user_meta($uid,$meta);if(empty($_FILES[$field]['name'])||($_FILES[$field]['error']??UPLOAD_ERR_NO_FILE)===UPLOAD_ERR_NO_FILE)continue;if((int)$_FILES[$field]['size']>$max)return ['success'=>false,'text'=>'One image is larger than allowed.'];$ft=wp_check_filetype_and_ext($_FILES[$field]['tmp_name'],$_FILES[$field]['name']);if(empty($ft['type'])||!in_array($ft['type'],['image/jpeg','image/png','image/webp'],true))return ['success'=>false,'text'=>'Only JPG, PNG, and WebP images are allowed.'];$id=media_handle_upload($field,0);if(is_wp_error($id))return ['success'=>false,'text'=>$id->get_error_message()];update_user_meta($uid,$meta,(int)$id);}return ['success'=>true,'text'=>''];
     }
-    private static function field(string $name,string $label,string $value,bool $required=false,string $type='text'):void{?><label><span><?php echo esc_html($label);?></span><input type="<?php echo esc_attr($type);?>" name="<?php echo esc_attr($name);?>" value="<?php echo esc_attr($value);?>" <?php echo $required?'required':'';?>></label><?php}
-    private static function image(string $name,string $label,int $id):void{$img=$id?wp_get_attachment_image($id,'medium'):'';?><div class="elev8-image-field"><h3><?php echo esc_html($label);?></h3><div class="elev8-image-preview"><?php if($img!=='')echo wp_kses_post($img);else echo '<span class="dashicons dashicons-format-image"></span><p>No image uploaded</p>';?></div><input type="file" name="<?php echo esc_attr($name);?>" accept="image/jpeg,image/png,image/webp"><?php if($id):?><label class="elev8-remove-image"><input type="checkbox" name="remove_<?php echo esc_attr($name);?>" value="1"> Remove current image</label><?php endif;?></div><?php}
-    private static function link_rows(string $prefix,array $links):void{for($i=0;$i<4;$i++){$l=$links[$i]??['label'=>'','url'=>''];?><div class="elev8-link-row"><label><span>Label</span><input type="text" name="<?php echo esc_attr($prefix);?>_label[]" value="<?php echo esc_attr($l['label']);?>"></label><label><span>Link, email, or phone</span><input type="text" name="<?php echo esc_attr($prefix);?>_url[]" value="<?php echo esc_attr($l['url']);?>"></label></div><?php}}
+    private static function field(
+        string $name,
+        string $label,
+        string $value,
+        bool $required = false,
+        string $type = 'text'
+    ): void {
+        ?>
+        <label>
+            <span><?php echo esc_html($label); ?></span>
+            <input
+                type="<?php echo esc_attr($type); ?>"
+                name="<?php echo esc_attr($name); ?>"
+                value="<?php echo esc_attr($value); ?>"
+                <?php echo $required ? 'required' : ''; ?>
+            >
+        </label>
+        <?php
+    }
+
+    private static function image(string $name, string $label, int $id): void {
+        $img = $id ? wp_get_attachment_image($id, 'medium') : '';
+        ?>
+        <div class="elev8-image-field">
+            <h3><?php echo esc_html($label); ?></h3>
+            <div class="elev8-image-preview">
+                <?php if ($img !== '') : ?>
+                    <?php echo wp_kses_post($img); ?>
+                <?php else : ?>
+                    <span class="dashicons dashicons-format-image"></span>
+                    <p><?php esc_html_e('No image uploaded', 'elev8-os'); ?></p>
+                <?php endif; ?>
+            </div>
+
+            <input
+                type="file"
+                name="<?php echo esc_attr($name); ?>"
+                accept="image/jpeg,image/png,image/webp"
+            >
+
+            <?php if ($id) : ?>
+                <label class="elev8-remove-image">
+                    <input
+                        type="checkbox"
+                        name="remove_<?php echo esc_attr($name); ?>"
+                        value="1"
+                    >
+                    <?php esc_html_e('Remove current image', 'elev8-os'); ?>
+                </label>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    private static function link_rows(string $prefix, array $links): void {
+        for ($i = 0; $i < 4; $i++) {
+            $link = $links[$i] ?? ['label' => '', 'url' => ''];
+            ?>
+            <div class="elev8-link-row">
+                <label>
+                    <span><?php esc_html_e('Label', 'elev8-os'); ?></span>
+                    <input
+                        type="text"
+                        name="<?php echo esc_attr($prefix); ?>_label[]"
+                        value="<?php echo esc_attr($link['label']); ?>"
+                    >
+                </label>
+
+                <label>
+                    <span><?php esc_html_e('Link, email, or phone', 'elev8-os'); ?></span>
+                    <input
+                        type="text"
+                        name="<?php echo esc_attr($prefix); ?>_url[]"
+                        value="<?php echo esc_attr($link['url']); ?>"
+                    >
+                </label>
+            </div>
+            <?php
+        }
+    }
+
     private static function save_links(int $uid,string $prefix,string $meta):void{$labels=(array)wp_unslash($_POST[$prefix.'_label']??[]);$urls=(array)wp_unslash($_POST[$prefix.'_url']??[]);$out=[];for($i=0;$i<4;$i++){$label=sanitize_text_field($labels[$i]??'');$url=self::normalize(sanitize_text_field($urls[$i]??''));if($label!==''||$url!=='')$out[]=['label'=>$label,'url'=>$url];}update_user_meta($uid,$meta,$out);}
     private static function normalize(string $v):string{$v=trim($v);if($v==='')return '';if(is_email($v))return 'mailto:'.sanitize_email($v);$digits=preg_replace('/\D/','',$v);if(strlen($digits)>=7)return 'tel:'.preg_replace('/[^0-9+]/','',$v);if(preg_match('#^(https?://|mailto:|tel:)#i',$v))return esc_url_raw($v,['http','https','mailto','tel']);return esc_url_raw('https://'.ltrim($v,'/'));}
     private static function links($v):array{return is_array($v)?array_values(array_slice($v,0,4)):[];}
