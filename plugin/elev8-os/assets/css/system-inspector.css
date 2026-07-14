@@ -1,0 +1,245 @@
+.elev8-system-inspector {
+    max-width: 1380px;
+    margin-top: 24px;
+}
+
+.elev8-inspector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.elev8-inspector-header h1 {
+    margin: 2px 0 7px;
+    font-size: 38px;
+    line-height: 1.1;
+}
+
+.elev8-inspector-header p {
+    margin: 0;
+    color: #646970;
+    font-size: 15px;
+}
+
+.elev8-inspector-eyebrow {
+    color: #d95700 !important;
+    font-size: 12px !important;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.elev8-inspector-badge {
+    border: 1px solid #f0b487;
+    border-radius: 999px;
+    background: #fff7ee;
+    color: #8a3b00;
+    padding: 8px 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.elev8-inspector-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 20px 0;
+}
+
+.elev8-inspector-card,
+.elev8-inspector-section {
+    border: 1px solid #dcdcde;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .04);
+}
+
+.elev8-inspector-card {
+    padding: 22px;
+}
+
+.elev8-inspector-card h2,
+.elev8-inspector-section h2 {
+    margin: 0;
+}
+
+.elev8-inspector-card dl {
+    margin: 16px 0 0;
+}
+
+.elev8-inspector-card dl div {
+    display: grid;
+    grid-template-columns: minmax(150px, .8fr) 1.2fr;
+    gap: 18px;
+    border-top: 1px solid #f0f0f1;
+    padding: 11px 0;
+}
+
+.elev8-inspector-card dt {
+    color: #646970;
+    font-weight: 700;
+}
+
+.elev8-inspector-card dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-weight: 700;
+}
+
+.elev8-inspector-section {
+    margin-top: 18px;
+    padding: 22px;
+}
+
+.elev8-inspector-section-heading {
+    margin-bottom: 16px;
+}
+
+.elev8-inspector-section-heading p {
+    margin: 6px 0 0;
+    color: #646970;
+}
+
+.elev8-relationship-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.elev8-relationship-card {
+    display: flex;
+    gap: 12px;
+    border: 1px solid #e2e4e7;
+    border-radius: 13px;
+    padding: 15px;
+    background: #fafafa;
+}
+
+.elev8-relationship-card .dashicons {
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+}
+
+.elev8-relationship-card .dashicons-yes-alt {
+    color: #2f7d32;
+}
+
+.elev8-relationship-card .dashicons-warning {
+    color: #b26200;
+}
+
+.elev8-relationship-card h3 {
+    margin: 0 0 7px;
+    font-size: 14px;
+}
+
+.elev8-relationship-card code {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.elev8-relationship-card p {
+    margin: 8px 0 0;
+    color: #646970;
+    font-size: 12px;
+}
+
+.elev8-table-list {
+    display: grid;
+    gap: 10px;
+}
+
+.elev8-table-card {
+    border: 1px solid #dcdcde;
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.elev8-table-card summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    cursor: pointer;
+    padding: 15px 17px;
+}
+
+.elev8-table-card summary:hover {
+    background: #f6f7f7;
+}
+
+.elev8-table-card summary strong,
+.elev8-table-card summary small {
+    display: block;
+}
+
+.elev8-table-card summary small {
+    margin-top: 3px;
+    color: #646970;
+}
+
+.elev8-table-purpose {
+    color: #8a3b00;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.elev8-table-columns {
+    border-top: 1px solid #e2e4e7;
+    padding: 16px 17px 18px;
+    background: #fafafa;
+}
+
+.elev8-table-columns h3 {
+    margin: 0 0 11px;
+}
+
+.elev8-column-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.elev8-column-tags code {
+    border: 1px solid #dcdcde;
+    border-radius: 7px;
+    padding: 5px 7px;
+    background: #fff;
+}
+
+@media (max-width: 960px) {
+    .elev8-relationship-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 782px) {
+    .elev8-inspector-header {
+        flex-direction: column;
+    }
+
+    .elev8-inspector-grid,
+    .elev8-relationship-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .elev8-inspector-card dl div {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .elev8-table-card summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .elev8-table-purpose {
+        text-align: left;
+    }
+}
