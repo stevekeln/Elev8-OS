@@ -1,0 +1,102 @@
+.elev8-artist-dashboard{box-sizing:border-box;max-width:1180px;margin:24px auto;padding:0 20px 40px;color:#1d2327}.elev8-artist-dashboard *,.elev8-artist-dashboard *:before,.elev8-artist-dashboard *:after{box-sizing:inherit}.elev8-dashboard-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:22px;padding:28px;border:1px solid #dcdcde;border-radius:14px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}.elev8-dashboard-header h1{margin:4px 0 8px;color:#1d2327;font-size:clamp(28px,4vw,42px);line-height:1.12}.elev8-dashboard-header p{margin:0;color:#646970;font-size:15px}.elev8-eyebrow{color:#2271b1!important;font-size:12px!important;font-weight:700;letter-spacing:.1em;text-transform:uppercase}.elev8-dashboard-badge{display:inline-flex;align-items:center;min-height:30px;padding:6px 10px;border-radius:999px;background:#f0f6fc;color:#135e96;font-size:12px;font-weight:700;white-space:nowrap}.elev8-dashboard-warning,.elev8-dashboard-login{margin:0 0 22px;padding:16px 18px;border-left:4px solid #dba617;background:#fff8e5}.elev8-dashboard-warning p,.elev8-dashboard-login p{margin:0 0 8px}.elev8-dashboard-warning p:last-child,.elev8-dashboard-login p:last-child{margin-bottom:0}.elev8-dashboard-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:22px}.elev8-dashboard-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.elev8-dashboard-card,.elev8-welcome-card{min-height:150px;padding:22px;border:1px solid #dcdcde;border-radius:12px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04)}.elev8-dashboard-card>div,.elev8-welcome-card>div{display:flex;align-items:flex-start;gap:14px}.elev8-dashboard-card .dashicons,.elev8-welcome-card .dashicons{width:34px;height:34px;color:#2271b1;font-size:34px}.elev8-dashboard-card h2,.elev8-welcome-card h2{margin:0 0 8px;color:#1d2327;font-size:18px;line-height:1.3}.elev8-dashboard-card p,.elev8-welcome-card p{margin:0;color:#646970;line-height:1.55}.elev8-dashboard-card strong,.elev8-welcome-card strong{display:block;margin:2px 0 6px;color:#1d2327;font-size:32px;line-height:1}.elev8-card-label{margin-bottom:6px!important;color:#50575e!important;font-size:13px;font-weight:600}.elev8-coming-soon{display:inline-flex;margin-top:14px;padding:4px 8px;border-radius:999px;background:#f0f0f1;color:#50575e;font-size:11px;font-weight:600}@media(max-width:900px){.elev8-dashboard-grid,.elev8-dashboard-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.elev8-artist-dashboard{padding-right:14px;padding-left:14px}.elev8-dashboard-header{flex-direction:column;padding:22px}.elev8-dashboard-grid,.elev8-dashboard-summary{grid-template-columns:1fr}}
+
+/* Live Amelia statistics */
+.elev8-dashboard-summary-live {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.elev8-dashboard-panel {
+    margin-bottom: 22px;
+    padding: 22px;
+    border: 1px solid #dcdcde;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.elev8-dashboard-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.elev8-dashboard-panel-header h2 {
+    margin: 2px 0 0;
+    font-size: 22px;
+}
+
+.elev8-average-class-size {
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f0f6fc;
+    color: #135e96;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.elev8-upcoming-table-wrap {
+    overflow-x: auto;
+}
+
+.elev8-upcoming-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.elev8-upcoming-table th,
+.elev8-upcoming-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e2e4e7;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.elev8-upcoming-table th {
+    color: #50575e;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.elev8-status-pill {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #edfaef;
+    color: #116329;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.elev8-dashboard-empty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    border: 1px dashed #c3c4c7;
+    border-radius: 8px;
+    color: #646970;
+}
+
+.elev8-dashboard-empty p {
+    margin: 0;
+}
+
+@media (max-width: 1000px) {
+    .elev8-dashboard-summary-live {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .elev8-dashboard-summary-live {
+        grid-template-columns: 1fr;
+    }
+
+    .elev8-dashboard-panel-header {
+        flex-direction: column;
+    }
+}
