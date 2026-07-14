@@ -1,0 +1,3 @@
+# Elev8 OS local release artifacts
+Elev8-OS-Releases/
+*.release.zip
