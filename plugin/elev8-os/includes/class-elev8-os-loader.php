@@ -1,6 +1,5 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
-
 final class Elev8_OS_Loader {
     public static function boot(): void {
         require_once ELEV8_OS_DIR . 'includes/Support/class-elev8-os-logger.php';
@@ -10,8 +9,16 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-dashboard-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-intelligence.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
-
         Elev8_OS::init();
+        Elev8_OS_Artist_Portal_Module::init();
+        Elev8_OS_Dashboard_Module::init();
+        Elev8_OS_System_Inspector_Module::init();
+        Elev8_OS_Employee_Mapping_Module::init();
+        Elev8_OS_Business_Intelligence_Dashboard_Module::init();
     }
 }
