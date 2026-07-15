@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.4.0 — Manage My Website
+
+- Activated **Edit Website** as a working Artist Portal feature.
+- Added a private, artist-scoped form for public bio, specialties, experience, images, gallery, social links, contact links, payment links, and booking button.
+- Artists can save their own public website without entering WordPress administration.
+- Preserves administrator-owned settings such as Amelia mapping, payouts, referral percentage, W-9 status, agreements, and internal announcements.
+- Added nonce, identity mapping, sanitization, cache purging, and success feedback.
+- Automatically creates the `/artist-edit-website/` portal page.
+
 ## 5.3.0 — Artist Website Phase 1
 
 - Added a private **My Website** page to the Artist Portal.

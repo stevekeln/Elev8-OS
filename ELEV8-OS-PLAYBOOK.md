@@ -1822,3 +1822,10 @@ This is safer than immediately extending a historical copy because the available
 - Added the private Artist Portal “My Website” experience.
 - Artists can preview the existing public profile rendering, copy their public URL, open the live page, and access the configured profile editor.
 - The portal uses the verified WordPress-to-Amelia employee mapping and reuses the public profile engine instead of duplicating profile presentation logic.
+
+### 5.4.0 — Manage My Website
+- Activated the Artist Portal **Edit Website** navigation item.
+- Added an artist-scoped, front-end website editor for public profile content.
+- Artists can manage their bio, medium, specialties, experience, images, gallery, social links, contact links, payment links, and booking call-to-action without entering WordPress administration.
+- Administrator-owned fields remain protected and are preserved during artist saves.
+- Save requests require a valid WordPress login, verified Amelia mapping, matching employee ID, nonce validation, sanitization, and cache purging.
