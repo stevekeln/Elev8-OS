@@ -80,6 +80,10 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
             ? $report['diagnostics']
             : [];
 
+        $booked_value_month = $metrics['booked_value_month']
+            ?? $metrics['booked_value']
+            ?? [];
+
         ?>
         <div class="wrap elev8-bi-dashboard">
             <header class="elev8-bi-header">
@@ -89,7 +93,7 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
                     <p>
                         <?php
                         esc_html_e(
-                            'Read-only operational visibility from verified Amelia data. Unavailable metrics are never presented as zero.',
+                            'Read-only operational and financial visibility from verified Amelia data. Unavailable metrics are never presented as zero.',
                             'elev8-os'
                         );
                         ?>
@@ -97,7 +101,7 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
                 </div>
 
                 <div class="elev8-bi-header__meta">
-                    <span class="elev8-bi-badge"><?php esc_html_e('Version 1', 'elev8-os'); ?></span>
+                    <span class="elev8-bi-badge"><?php esc_html_e('Version 2', 'elev8-os'); ?></span>
                     <span>
                         <?php
                         echo esc_html(
@@ -189,14 +193,14 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
                 </div>
             </section>
 
-            <section class="elev8-bi-section" aria-labelledby="elev8-bi-value-heading">
+            <section class="elev8-bi-section" aria-labelledby="elev8-bi-financial-heading">
                 <div class="elev8-bi-section__heading">
                     <div>
-                        <h2 id="elev8-bi-value-heading"><?php esc_html_e('Value and Revenue', 'elev8-os'); ?></h2>
+                        <h2 id="elev8-bi-financial-heading"><?php esc_html_e('Financial Intelligence', 'elev8-os'); ?></h2>
                         <p>
                             <?php
                             esc_html_e(
-                                'Booked value is not the same as recognized revenue. Payout calculations are intentionally excluded.',
+                                'Booked value measures scheduled booking value. It is not recognized revenue, settled cash, artist payout, Elev8 share, or profit.',
                                 'elev8-os'
                             );
                             ?>
@@ -204,17 +208,44 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
                     </div>
                 </div>
 
-                <div class="elev8-bi-grid elev8-bi-grid--two">
+                <div class="elev8-bi-grid">
                     <?php
                     self::render_metric_card(
                         __('Booked Value This Month', 'elev8-os'),
-                        $metrics['booked_value'] ?? [],
+                        $booked_value_month,
                         'money-alt'
                     );
+                    self::render_metric_card(
+                        __('Upcoming Booked Value', 'elev8-os'),
+                        $metrics['upcoming_booked_value'] ?? [],
+                        'calendar-alt'
+                    );
+                    self::render_metric_card(
+                        __('Average Ticket Value', 'elev8-os'),
+                        $metrics['average_ticket_value'] ?? [],
+                        'tickets-alt'
+                    );
+                    self::render_metric_card(
+                        __('Booked Value per Student', 'elev8-os'),
+                        $metrics['booked_value_per_student'] ?? [],
+                        'groups'
+                    );
+                    ?>
+                </div>
+
+                <div class="elev8-bi-grid elev8-bi-grid--two elev8-bi-financial-secondary">
+                    <?php
                     self::render_metric_card(
                         __('Recognized Revenue', 'elev8-os'),
                         $metrics['recognized_revenue'] ?? [],
                         'bank'
+                    );
+                    self::render_metric_card(
+                        __('Artist Payouts and Elev8 Share', 'elev8-os'),
+                        self::unavailable_display_metric(
+                            __('A dedicated payout engine must supply artist payout and Elev8 share calculations. Business Intelligence does not guess these values.', 'elev8-os')
+                        ),
+                        'money'
                     );
                     ?>
                 </div>
@@ -305,7 +336,10 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
 
             case 'number':
             default:
-                return number_format_i18n((float) $value, (float) $value === floor((float) $value) ? 0 : 1);
+                return number_format_i18n(
+                    (float) $value,
+                    (float) $value === floor((float) $value) ? 0 : 1
+                );
         }
     }
 
@@ -315,6 +349,7 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
         }
 
         $symbol = apply_filters('elev8_os_currency_symbol', '$');
+
         return (string) $symbol . number_format_i18n($value, 2);
     }
 
@@ -420,6 +455,21 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
         <?php
     }
 
+    /**
+     * Create a display-only unavailable metric.
+     *
+     * @return array<string,mixed>
+     */
+    private static function unavailable_display_metric(string $diagnostic): array {
+        return [
+            'available' => false,
+            'value' => null,
+            'format' => 'unavailable',
+            'confidence' => 'unavailable',
+            'diagnostic' => $diagnostic,
+        ];
+    }
+
     private static function confidence_label(string $confidence): string {
         switch ($confidence) {
             case 'high':
@@ -445,6 +495,7 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
         }
 
         $timestamp = strtotime($raw_date);
+
         if ($timestamp === false) {
             return $raw_date;
         }
@@ -461,6 +512,7 @@ final class Elev8_OS_Business_Intelligence_Dashboard_Module {
         }
 
         $timestamp = strtotime($generated_at);
+
         if ($timestamp === false) {
             return $generated_at;
         }
