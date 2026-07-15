@@ -1817,3 +1817,8 @@ The milestone should:
 - establish the exact starting point for the next roadmap milestone.
 
 This is safer than immediately extending a historical copy because the available project artifacts show multiple versions and restored files. Establishing repository truth now prevents future milestones from building on the wrong loader, dashboard, or integration implementation.
+
+### 5.3.0 — Artist Website Phase 1
+- Added the private Artist Portal “My Website” experience.
+- Artists can preview the existing public profile rendering, copy their public URL, open the live page, and access the configured profile editor.
+- The portal uses the verified WordPress-to-Amelia employee mapping and reuses the public profile engine instead of duplicating profile presentation logic.
