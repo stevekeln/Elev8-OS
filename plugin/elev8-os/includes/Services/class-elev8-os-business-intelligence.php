@@ -26,6 +26,7 @@ final class Elev8_OS_Business_Intelligence {
         $tomorrow_start = wp_date('Y-m-d 00:00:00', strtotime('+1 day', $now));
         $month_start = wp_date('Y-m-01 00:00:00', $now);
         $next_month_start = wp_date('Y-m-01 00:00:00', strtotime('first day of next month', $now));
+        $previous_month_start = wp_date('Y-m-01 00:00:00', strtotime('first day of previous month', $now));
 
         $classes_today = self::scheduled_class_count($schema, $today_start, $tomorrow_start);
         $classes_month = self::scheduled_class_count($schema, $month_start, $next_month_start);
@@ -35,6 +36,7 @@ final class Elev8_OS_Business_Intelligence {
         $cancelled = self::booking_status_count($schema, ['canceled', 'cancelled', 'rejected']);
         $all_status_bookings = self::booking_status_count($schema, null);
         $booked_value_month = self::booked_value($schema, $month_start, $next_month_start);
+        $booked_value_previous_month = self::booked_value($schema, $previous_month_start, $month_start);
         $upcoming_booked_value = self::booked_value($schema, current_time('mysql'), null);
         $bookings_month = self::booking_count_in_range($schema, $month_start, $next_month_start);
         $upcoming = self::upcoming_class_dates($schema, 10);
@@ -65,6 +67,11 @@ final class Elev8_OS_Business_Intelligence {
 
                 // Business Intelligence V2 financial metrics.
                 'booked_value_month' => $booked_value_month,
+                'booked_value_previous_month' => $booked_value_previous_month,
+                'booked_value_change' => self::financial_change_metric(
+                    $booked_value_month,
+                    $booked_value_previous_month
+                ),
                 'upcoming_booked_value' => $upcoming_booked_value,
                 'average_ticket_value' => self::financial_ratio_metric(
                     $booked_value_month,
@@ -580,6 +587,60 @@ final class Elev8_OS_Business_Intelligence {
             'confidence' => 'medium',
             'diagnostic' => $diagnostic,
         ];
+    }
+
+    /**
+     * Compare the current booked value with the previous month.
+     *
+     * @param array<string,mixed> $current
+     * @param array<string,mixed> $previous
+     * @return array<string,mixed>
+     */
+    private static function financial_change_metric(array $current, array $previous): array {
+        if (empty($current['available']) || empty($previous['available'])) {
+            return self::unavailable_metric(
+                __('Booked value change cannot be calculated because one or both monthly booked-value metrics are unavailable.', 'elev8-os')
+            );
+        }
+
+        $current_value = (float) ($current['value'] ?? 0);
+        $previous_value = (float) ($previous['value'] ?? 0);
+
+        if ($previous_value <= 0.0) {
+            return [
+                'available' => false,
+                'value' => null,
+                'format' => 'unavailable',
+                'confidence' => 'unavailable',
+                'diagnostic' => $current_value > 0.0
+                    ? __('This month has booked value, but the previous month has no comparable booked value. A percentage change would be misleading.', 'elev8-os')
+                    : __('Neither this month nor the previous month has comparable booked value.', 'elev8-os'),
+            ];
+        }
+
+        $change = (($current_value - $previous_value) / $previous_value) * 100;
+
+        return [
+            'available' => true,
+            'value' => $change,
+            'format' => 'signed_percent',
+            'confidence' => 'medium',
+            'diagnostic' => sprintf(
+                __('This month: %1$s. Previous month: %2$s. Change is based on booked value, not recognized revenue.', 'elev8-os'),
+                self::plain_currency($current_value),
+                self::plain_currency($previous_value)
+            ),
+            'comparison' => [
+                'current' => $current_value,
+                'previous' => $previous_value,
+            ],
+        ];
+    }
+
+    private static function plain_currency(float $value): string {
+        $symbol = apply_filters('elev8_os_currency_symbol', '$');
+
+        return (string) $symbol . number_format_i18n($value, 2);
     }
 
     /**
