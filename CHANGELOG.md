@@ -1,4 +1,19 @@
+## 5.5.0 — Artist Portal Foundation Hardening
+
+- Added a central Portal Page Manager.
+- Stores exact WordPress page IDs for Artist Dashboard, My Website, and Edit Website.
+- Discovers existing portal pages by page ID, slug, or shortcode before creating anything.
+- Automatically repairs missing shortcodes and missing portal pages.
+- Added Elev8 OS → Portal Setup with page status and one-click repair.
+- Portal navigation now uses saved page permalinks instead of hard-coded slugs.
+
 # Changelog
+
+## 5.4.1 — Version Display Hotfix
+
+- Fixed Elev8 OS admin screens showing the old 5.0.0 version label.
+- Internal version displays and asset cache versions now use the installed plugin version constant.
+- Added backward compatibility for the earlier `[elev8_artist_website_editor]` shortcode.
 
 ## 5.4.0 — Manage My Website
 

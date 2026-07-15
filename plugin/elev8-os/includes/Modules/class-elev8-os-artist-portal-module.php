@@ -28,8 +28,6 @@ final class Elev8_OS_Artist_Portal_Module {
     public static function init(): void {
         add_action('init', [__CLASS__, 'register_website_shortcode']);
         add_action('init', [__CLASS__, 'register_edit_website_shortcode']);
-        add_action('init', [__CLASS__, 'ensure_website_page'], 31);
-        add_action('init', [__CLASS__, 'ensure_edit_website_page'], 32);
         add_action('admin_post_elev8_os_artist_save_website', [__CLASS__, 'save_artist_website']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
@@ -81,6 +79,9 @@ final class Elev8_OS_Artist_Portal_Module {
 
     public static function register_edit_website_shortcode(): void {
         add_shortcode(self::EDIT_WEBSITE_SHORTCODE, [__CLASS__, 'edit_website_shortcode']);
+
+        // Backward-compatible alias used by an earlier draft page.
+        add_shortcode('elev8_artist_website_editor', [__CLASS__, 'edit_website_shortcode']);
     }
 
     public static function ensure_edit_website_page(): void {
@@ -427,16 +428,11 @@ final class Elev8_OS_Artist_Portal_Module {
     }
 
     private static function edit_website_url(): string {
-        $page_id = (int) get_option(self::EDIT_WEBSITE_PAGE_OPTION);
-        if ($page_id > 0 && get_post_status($page_id)) {
-            return (string) get_permalink($page_id);
-        }
-        return home_url('/' . self::EDIT_WEBSITE_PAGE_SLUG . '/');
+        return Elev8_OS_Portal_Page_Manager::get_url('edit_website');
     }
 
     private static function is_edit_website_page(): bool {
-        $page_id = (int) get_option(self::EDIT_WEBSITE_PAGE_OPTION);
-        return ($page_id > 0 && is_page($page_id)) || is_page(self::EDIT_WEBSITE_PAGE_SLUG);
+        return Elev8_OS_Portal_Page_Manager::is_current_page('edit_website');
     }
 
     /** @return array<int,array<string,mixed>> */
@@ -485,16 +481,11 @@ final class Elev8_OS_Artist_Portal_Module {
     }
 
     private static function website_url(): string {
-        $page_id = (int) get_option(self::WEBSITE_PAGE_OPTION);
-        if ($page_id > 0 && get_post_status($page_id)) {
-            return (string) get_permalink($page_id);
-        }
-        return home_url('/' . self::WEBSITE_PAGE_SLUG . '/');
+        return Elev8_OS_Portal_Page_Manager::get_url('website');
     }
 
     private static function is_website_page(): bool {
-        $page_id = (int) get_option(self::WEBSITE_PAGE_OPTION);
-        return ($page_id > 0 && is_page($page_id)) || is_page(self::WEBSITE_PAGE_SLUG);
+        return Elev8_OS_Portal_Page_Manager::is_current_page('website');
     }
 
     private static function edit_profile_url(WP_User $user): string {
@@ -563,7 +554,7 @@ final class Elev8_OS_Artist_Portal_Module {
     public static function navigation_items(?WP_User $user = null): array {
         $user = $user ?: wp_get_current_user();
 
-        $dashboard_url = home_url('/artist-dashboard/');
+        $dashboard_url = Elev8_OS_Portal_Page_Manager::get_url('dashboard');
         $website_url = self::website_url();
         $public_url = esc_url_raw((string) get_user_meta($user->ID, self::META_PUBLIC_PAGE, true));
         $edit_url = self::edit_website_url();

@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS {
-    const VERSION = '5.0.0';
+    const VERSION = '5.5.0'; // Legacy compatibility; UI and assets use ELEV8_OS_VERSION.
     const OPTION_PROFILES = 'elev8_os_artist_profiles';
     const OPTION_PAYOUTS = 'elev8_os_artist_payouts';
     const OPTION_RULES = 'elev8_os_teacher_rules';
@@ -33,6 +33,9 @@ final class Elev8_OS {
 
     public static function activate(): void {
         self::seed_development_data();
+        if (class_exists('Elev8_OS_Portal_Page_Manager')) {
+            Elev8_OS_Portal_Page_Manager::activate();
+        }
         self::add_rewrite_rules();
         flush_rewrite_rules();
     }
@@ -87,7 +90,7 @@ final class Elev8_OS {
             'elev8-os-admin',
             ELEV8_OS_URL . 'assets/css/admin.css',
             [],
-            self::VERSION
+            ELEV8_OS_VERSION
         );
     }
 
@@ -645,7 +648,7 @@ final class Elev8_OS {
 
     public static function front_assets(): void {
         if (get_query_var('elev8_artist') || has_shortcode((string) get_post_field('post_content', get_queried_object_id()), 'elev8_artist_profile')) {
-            wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], self::VERSION);
+            wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], ELEV8_OS_VERSION);
         }
     }
 
@@ -811,7 +814,7 @@ final class Elev8_OS {
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         do_action('litespeed_control_set_nocache', 'Elev8 artist profile');
-        wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], self::VERSION);
+        wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], ELEV8_OS_VERSION);
         get_header();
         echo '<main class="elev8-public-page">' . self::public_profile_content($employee_id) . '</main>';
         get_footer();
@@ -823,7 +826,7 @@ final class Elev8_OS {
         $slug = $atts['artist'] ?: get_query_var('elev8_artist');
         $employee_id = self::employee_id_from_slug((string)$slug);
         if (!$employee_id) return '<div class="elev8-empty">Artist not found.</div>';
-        wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], self::VERSION);
+        wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], ELEV8_OS_VERSION);
         return self::public_profile_content($employee_id);
     }
 
@@ -1142,7 +1145,7 @@ final class Elev8_OS {
         $employee_id=self::employee_id_for_current_user();
         if(!$employee_id && current_user_can('manage_options') && isset($_GET['artist_id'])) $employee_id=absint($_GET['artist_id']);
         if(!$employee_id) return '<div class="elev8-empty">Your WordPress account has not yet been connected to an Elev8 Member Artist profile.</div>';
-        wp_enqueue_style('elev8-os-admin',ELEV8_OS_URL . 'assets/css/admin.css',[],self::VERSION);
+        wp_enqueue_style('elev8-os-admin',ELEV8_OS_URL . 'assets/css/admin.css',[],ELEV8_OS_VERSION);
         return self::render_portal_content($employee_id,false);
     }
 
@@ -1152,7 +1155,7 @@ final class Elev8_OS {
         $artist_id=isset($_GET['artist_id'])?absint($_GET['artist_id']):((int)($employees[0]['id']??0));
         $profile=$profiles[$artist_id]??[]; $users=get_users(['orderby'=>'display_name','order'=>'ASC']);
         $message=isset($_GET['message'])?sanitize_key($_GET['message']):'';
-        echo '<div class="wrap elev8-os"><div class="elev8-header"><div><h1>Artist Portal Setup</h1><p>Connect Amelia artists to WordPress accounts and manage profiles, documents, messages, and payouts.</p></div><span class="elev8-version">Version '.esc_html(self::VERSION).'</span></div>';
+        echo '<div class="wrap elev8-os"><div class="elev8-header"><div><h1>Artist Portal Setup</h1><p>Connect Amelia artists to WordPress accounts and manage profiles, documents, messages, and payouts.</p></div><span class="elev8-version">Version '.esc_html(ELEV8_OS_VERSION).'</span></div>';
         if($message) echo '<div class="notice notice-success is-dismissible"><p>Artist portal updated.</p></div>';
         echo '<form method="get" class="elev8-filter"><input type="hidden" name="page" value="elev8-artist-portal"><label>Elev8 Member Artist</label><select name="artist_id">';
         foreach($employees as $e){$n=trim($e['firstName'].' '.$e['lastName']);echo '<option value="'.esc_attr($e['id']).'" '.selected($artist_id,(int)$e['id'],false).'>'.esc_html($n).'</option>';}
@@ -1185,7 +1188,7 @@ final class Elev8_OS {
         ];
 
         echo '<div class="wrap elev8-os-wrap"><h1>Elev8 OS System Status</h1>';
-        echo '<p><strong>Version:</strong> ' . esc_html(self::VERSION) . ' &nbsp; <strong>Architecture:</strong> Founders Foundation</p>';
+        echo '<p><strong>Version:</strong> ' . esc_html(ELEV8_OS_VERSION) . ' &nbsp; <strong>Architecture:</strong> Founders Foundation</p>';
         echo '<div class="elev8-card"><h2>Modules</h2><table class="widefat striped"><thead><tr><th>Module</th><th>Status</th></tr></thead><tbody>';
         foreach ($modules as $name => $ready) {
             echo '<tr><td>' . esc_html($name) . '</td><td>' . ($ready ? '<span style="color:#16833b;font-weight:700">Ready</span>' : '<span style="color:#8a5a00;font-weight:700">Planned</span>') . '</td></tr>';
@@ -1220,7 +1223,7 @@ final class Elev8_OS {
                     <h1>Elev8 OS</h1>
                     <p>Private Amelia class totals and artist partnership dashboard.</p>
                 </div>
-                <span class="elev8-version">Version <?php echo esc_html(self::VERSION); ?></span>
+                <span class="elev8-version">Version <?php echo esc_html(ELEV8_OS_VERSION); ?></span>
             </div>
 
             <?php if ($message === 'saved') : ?>
@@ -1492,6 +1495,9 @@ final class Elev8_OS {
 
     private static function dev_items(): array {
         self::seed_development_data();
+        if (class_exists('Elev8_OS_Portal_Page_Manager')) {
+            Elev8_OS_Portal_Page_Manager::activate();
+        }
         $items=get_option(self::OPTION_DEV_ITEMS,[]);
         return is_array($items)?$items:[];
     }
@@ -1549,7 +1555,7 @@ final class Elev8_OS {
         $message=sanitize_key(wp_unslash($_GET['message']??''));
         ?>
         <div class="wrap elev8-os elev8-development">
-          <div class="elev8-header"><div><h1>Elev8 OS Development Center</h1><p>The Vision Edition roadmap, Opportunity Board, Problem Library, bugs, milestones, and release history.</p></div><span class="elev8-version">Version <?php echo esc_html(self::VERSION);?></span></div>
+          <div class="elev8-header"><div><h1>Elev8 OS Development Center</h1><p>The Vision Edition roadmap, Opportunity Board, Problem Library, bugs, milestones, and release history.</p></div><span class="elev8-version">Version <?php echo esc_html(ELEV8_OS_VERSION);?></span></div>
           <?php if($message):?><div class="notice notice-success is-dismissible"><p>Development Center updated.</p></div><?php endif;?>
           <div class="elev8-cards">
             <div class="elev8-card"><span>Roadmap complete</span><strong><?php echo esc_html($progress);?>%</strong></div>
@@ -1568,7 +1574,7 @@ final class Elev8_OS {
           <?php endforeach;?></div></div>
           <div class="elev8-grid">
             <div class="elev8-panel"><h2>Add opportunity, problem, bug, or idea</h2><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><input type="hidden" name="action" value="elev8_os_save_dev_item"><?php wp_nonce_field('elev8_os_save_dev_item');?><label>Type</label><select name="type"><option value="opportunity">Opportunity</option><option value="problem">Problem</option><option value="feature">Feature</option><option value="bug">Bug</option><option value="idea">Future idea</option></select><label>Title</label><input type="text" name="title" required><label>Reason</label><textarea name="reason" rows="4" placeholder="Why does this need to exist?"></textarea><div class="elev8-fields"><div><label>Phase</label><select name="phase"><?php foreach($phase_order as $p):?><option><?php echo esc_html($p);?></option><?php endforeach;?></select></div><div><label>Priority</label><select name="priority"><option>low</option><option selected>medium</option><option>high</option><option>critical</option></select></div><div><label>Status</label><select name="status"><option value="idea">Idea</option><option value="planned">Planned</option><option value="in_progress">In progress</option><option value="testing">Testing</option><option value="released">Released</option><option value="resolved">Resolved</option></select></div><div><label>Target version</label><input type="text" name="target_version" placeholder="5.1"></div></div><label>Requested by</label><input type="text" name="requested_by" value="Steve"><label>Notes</label><textarea name="notes" rows="3"></textarea><p><button class="button button-primary">Add to roadmap</button></p></form></div>
-            <div class="elev8-panel"><h2>Project health</h2><p><strong>Plugin version:</strong> <?php echo esc_html(self::VERSION);?></p><p><strong>Database storage:</strong> WordPress options (no new custom tables yet)</p><p><strong>Amelia integration:</strong> Read-only booking, service, provider, and payment data</p><p><strong>Next planned release:</strong> Founders Edition architecture and GitHub foundation</p><p><strong>Known limitation:</strong> Amelia data structures can vary by booking type and plugin version; diagnostics remain important.</p></div>
+            <div class="elev8-panel"><h2>Project health</h2><p><strong>Plugin version:</strong> <?php echo esc_html(ELEV8_OS_VERSION);?></p><p><strong>Database storage:</strong> WordPress options (no new custom tables yet)</p><p><strong>Amelia integration:</strong> Read-only booking, service, provider, and payment data</p><p><strong>Next planned release:</strong> Founders Edition architecture and GitHub foundation</p><p><strong>Known limitation:</strong> Amelia data structures can vary by booking type and plugin version; diagnostics remain important.</p></div>
           </div>
           <div class="elev8-panel"><h2>Tracked work</h2><div class="elev8-dev-list">
           <?php foreach($items as $id=>$item):?><details class="elev8-dev-item" <?php echo $item['status']==='in_progress'?'open':'';?>><summary><span class="elev8-badge elev8-<?php echo esc_attr($item['type']);?>"><?php echo esc_html(self::status_label($item['type']));?></span><strong><?php echo esc_html($item['title']);?></strong><span class="elev8-status"><?php echo esc_html(self::status_label($item['status']));?></span><span class="elev8-priority elev8-priority-<?php echo esc_attr($item['priority']);?>"><?php echo esc_html($item['priority']);?></span></summary><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><input type="hidden" name="action" value="elev8_os_save_dev_item"><input type="hidden" name="item_id" value="<?php echo esc_attr($id);?>"><?php wp_nonce_field('elev8_os_save_dev_item');?><div class="elev8-fields"><div><label>Type</label><select name="type"><?php foreach(['opportunity','problem','feature','bug','idea'] as $v):?><option value="<?php echo esc_attr($v);?>" <?php selected($item['type'],$v);?>><?php echo esc_html(self::status_label($v));?></option><?php endforeach;?></select></div><div><label>Status</label><select name="status"><?php foreach(['idea','planned','in_progress','testing','released','resolved'] as $v):?><option value="<?php echo esc_attr($v);?>" <?php selected($item['status'],$v);?>><?php echo esc_html(self::status_label($v));?></option><?php endforeach;?></select></div><div><label>Phase</label><input type="text" name="phase" value="<?php echo esc_attr($item['phase']);?>"></div><div><label>Priority</label><select name="priority"><?php foreach(['low','medium','high','critical'] as $v):?><option <?php selected($item['priority'],$v);?>><?php echo esc_html($v);?></option><?php endforeach;?></select></div></div><label>Title</label><input type="text" name="title" value="<?php echo esc_attr($item['title']);?>"><label>Reason</label><textarea name="reason" rows="3"><?php echo esc_textarea($item['reason']);?></textarea><div class="elev8-fields"><div><label>Target version</label><input type="text" name="target_version" value="<?php echo esc_attr($item['target_version']);?>"></div><div><label>Requested by</label><input type="text" name="requested_by" value="<?php echo esc_attr($item['requested_by']);?>"></div></div><label>Notes</label><textarea name="notes" rows="3"><?php echo esc_textarea($item['notes']);?></textarea><p><button class="button button-primary">Save item</button> <a class="button button-link-delete" href="<?php echo esc_url(wp_nonce_url(add_query_arg(['action'=>'elev8_os_delete_dev_item','item_id'=>$id],admin_url('admin-post.php')),'elev8_os_delete_dev_item'));?>">Delete</a></p></form></details><?php endforeach;?></div></div>

@@ -20,7 +20,6 @@ final class Elev8_OS_Dashboard_Module {
 
     public static function init(): void {
         add_action('init', [__CLASS__, 'register_shortcode']);
-        add_action('init', [__CLASS__, 'ensure_frontend_page'], 30);
         add_action('admin_menu', [__CLASS__, 'register_admin_menu'], 20);
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
@@ -409,19 +408,11 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     private static function dashboard_url(): string {
-        $page_id = (int) get_option(self::PAGE_OPTION);
-
-        if ($page_id > 0 && get_post_status($page_id)) {
-            return get_permalink($page_id);
-        }
-
-        return home_url('/' . self::FRONTEND_PAGE_SLUG . '/');
+        return Elev8_OS_Portal_Page_Manager::get_url('dashboard');
     }
 
     private static function is_dashboard_page(): bool {
-        $page_id = (int) get_option(self::PAGE_OPTION);
-
-        return ($page_id > 0 && is_page($page_id)) || is_page(self::FRONTEND_PAGE_SLUG);
+        return Elev8_OS_Portal_Page_Manager::is_current_page('dashboard');
     }
 
     /**

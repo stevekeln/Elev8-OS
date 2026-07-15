@@ -1829,3 +1829,8 @@ This is safer than immediately extending a historical copy because the available
 - Artists can manage their bio, medium, specialties, experience, images, gallery, social links, contact links, payment links, and booking call-to-action without entering WordPress administration.
 - Administrator-owned fields remain protected and are preserved during artist saves.
 - Save requests require a valid WordPress login, verified Amelia mapping, matching employee ID, nonce validation, sanitization, and cache purging.
+
+
+## Milestone 5.5.0 — Artist Portal Foundation Hardening
+
+The Artist Portal now uses a central Portal Page Manager as the source of truth for WordPress portal pages. The manager stores exact page IDs for Artist Dashboard, My Website, and Edit Website; discovers existing pages by saved ID, canonical slug, or registered shortcode; repairs missing shortcode content; and creates missing pages when an administrator is available. Portal navigation must resolve links from stored page IDs through `get_permalink()` rather than assume fixed slugs. An administrator-facing Portal Setup screen reports page health and provides one-click repair.

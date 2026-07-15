@@ -16,11 +16,13 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-intelligence.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-portal-page-manager.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ceo-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
 
         Elev8_OS::init();
+        Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Artist_Portal_Module::init();
         Elev8_OS_Dashboard_Module::init();
         Elev8_OS_System_Inspector_Module::init();
