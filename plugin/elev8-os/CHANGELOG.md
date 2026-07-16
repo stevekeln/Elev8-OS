@@ -1,3 +1,11 @@
+# 6.7.1 — Artist Portal Polish
+
+- Fixed Artist Portal navigation styles not loading on Students and Waitlist pages.
+- Restyled the Students page as a teacher-facing roster workspace.
+- Added polished header, class selector, summary cards, search, roster table, and mobile student cards.
+- Hid the duplicate WordPress page title on the generated Students portal page.
+- Preserved verified Amelia roster data and all Artist Dashboard 2.0 functionality.
+
 # 6.7.0 — Artist Dashboard 2.0
 
 - Rebuilt the artist home dashboard around verified teacher priorities.

@@ -1,1 +1,9 @@
-Elev8 OS 6.7.0 source-only update. Copy plugin/elev8-os into the GitHub repository, commit to develop, push, run Build Elev8 OS Release.bat, and test the generated ZIP on Local before Live.
+Elev8 OS 6.7.1 — Artist Portal Polish
+
+1. Copy the plugin/elev8-os folder into your local GitHub repository.
+2. Replace matching files.
+3. Commit and push to develop.
+4. Run Build Elev8 OS Release.bat.
+5. Install the generated ZIP on Local.
+6. Test Students, Artist Dashboard, My Classes, My Website, Edit Website, and Waitlist.
+7. Install the exact tested build ZIP on Live.

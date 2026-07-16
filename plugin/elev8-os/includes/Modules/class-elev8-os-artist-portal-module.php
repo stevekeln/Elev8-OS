@@ -47,7 +47,16 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        if (!Elev8_OS_Portal_Page_Manager::is_current_page('dashboard') && !Elev8_OS_Portal_Page_Manager::is_current_page('classes') && !self::is_website_page() && !self::is_edit_website_page()) {
+        $portal_pages = ['dashboard', 'classes', 'students', 'waitlist'];
+        $is_portal_page = false;
+        foreach ($portal_pages as $portal_page) {
+            if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
+                $is_portal_page = true;
+                break;
+            }
+        }
+
+        if (!$is_portal_page && !self::is_website_page() && !self::is_edit_website_page()) {
             return;
         }
 
