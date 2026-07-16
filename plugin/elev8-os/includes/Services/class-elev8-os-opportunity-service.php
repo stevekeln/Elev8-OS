@@ -1,19 +1,33 @@
 <?php
+/**
+ * Elev8 OS Opportunity Engine service.
+ *
+ * Owns persistence and trusted calculations for business opportunities.
+ */
 if (!defined('ABSPATH')) { exit; }
 
-/**
- * WordPress-owned source of truth for business opportunities and customer demand.
- */
 final class Elev8_OS_Opportunity_Service {
     private const DB_VERSION = '1.0.0';
     private const DB_OPTION = 'elev8_os_opportunity_db_version';
 
     public static function activate(): void {
+        self::create_tables();
+        update_option(self::DB_OPTION, self::DB_VERSION, false);
+    }
+
+    public static function maybe_upgrade(): void {
+        if (get_option(self::DB_OPTION) !== self::DB_VERSION) { self::activate(); }
+    }
+
+    private static function opportunities_table(): string { global $wpdb; return $wpdb->prefix . 'elev8_opportunities'; }
+    private static function interests_table(): string { global $wpdb; return $wpdb->prefix . 'elev8_opportunity_interest'; }
+
+    private static function create_tables(): void {
         global $wpdb;
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         $charset = $wpdb->get_charset_collate();
         $opportunities = self::opportunities_table();
-        $interest = self::interest_table();
+        $interest = self::interests_table();
 
         dbDelta("CREATE TABLE {$opportunities} (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -23,21 +37,22 @@ final class Elev8_OS_Opportunity_Service {
             description text NULL,
             status varchar(40) NOT NULL DEFAULT 'idea',
             teacher_needed tinyint(1) unsigned NOT NULL DEFAULT 0,
-            teacher_assigned varchar(190) NOT NULL DEFAULT '',
+            teacher_id bigint(20) unsigned NOT NULL DEFAULT 0,
             teacher_contact varchar(190) NOT NULL DEFAULT '',
-            preferred_day varchar(120) NOT NULL DEFAULT '',
-            preferred_time varchar(120) NOT NULL DEFAULT '',
-            difficulty varchar(80) NOT NULL DEFAULT '',
+            interview_status varchar(40) NOT NULL DEFAULT '',
+            preferred_day varchar(80) NOT NULL DEFAULT '',
+            preferred_time varchar(80) NOT NULL DEFAULT '',
+            difficulty varchar(40) NOT NULL DEFAULT '',
             supplies_needed text NULL,
             estimated_price decimal(12,2) DEFAULT NULL,
             estimated_duration decimal(8,2) DEFAULT NULL,
-            notes longtext NULL,
+            internal_notes text NULL,
             created_at datetime NOT NULL,
             updated_at datetime NOT NULL,
-            PRIMARY KEY  (id),
+            PRIMARY KEY (id),
             KEY type_status (type,status),
-            KEY category (category),
-            KEY teacher_needed (teacher_needed)
+            KEY teacher_needed (teacher_needed),
+            KEY category (category)
         ) {$charset};");
 
         dbDelta("CREATE TABLE {$interest} (
@@ -50,121 +65,130 @@ final class Elev8_OS_Opportunity_Service {
             preferred_days varchar(190) NOT NULL DEFAULT '',
             preferred_times varchar(190) NOT NULL DEFAULT '',
             notes text NULL,
-            source varchar(120) NOT NULL DEFAULT 'admin',
+            source varchar(80) NOT NULL DEFAULT 'admin',
             created_at datetime NOT NULL,
-            updated_at datetime NOT NULL,
-            PRIMARY KEY  (id),
+            PRIMARY KEY (id),
             KEY opportunity_id (opportunity_id),
-            KEY customer_email (customer_email),
             KEY created_at (created_at)
         ) {$charset};");
-
-        update_option(self::DB_OPTION, self::DB_VERSION, false);
     }
 
-    public static function maybe_upgrade(): void {
-        if ((string) get_option(self::DB_OPTION, '') !== self::DB_VERSION) { self::activate(); }
-    }
-
-    public static function opportunities_table(): string { global $wpdb; return $wpdb->prefix . 'elev8_opportunities'; }
-    public static function interest_table(): string { global $wpdb; return $wpdb->prefix . 'elev8_opportunity_interest'; }
-
-    public static function statuses(): array {
-        return ['idea'=>'Idea','research'=>'Research','teacher-needed'=>'Teacher Needed','recruiting'=>'Recruiting','planning'=>'Planning','scheduled'=>'Scheduled','active'=>'Active','completed'=>'Completed','cancelled'=>'Cancelled','archived'=>'Archived'];
-    }
-
-    public static function all(): array {
-        global $wpdb;
-        $o = self::opportunities_table();
-        $i = self::interest_table();
-        $sql = "SELECT o.*, COUNT(i.id) AS interested_people, COALESCE(SUM(i.seats_requested),0) AS interested_seats
-                FROM {$o} o LEFT JOIN {$i} i ON i.opportunity_id=o.id
-                GROUP BY o.id ORDER BY o.updated_at DESC, o.id DESC";
-        return $wpdb->get_results($sql, ARRAY_A) ?: [];
-    }
-
-    public static function find(int $id): ?array {
-        global $wpdb;
-        $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::opportunities_table() . ' WHERE id=%d', $id), ARRAY_A);
-        return is_array($row) ? $row : null;
-    }
-
-    public static function interests(int $opportunity_id): array {
-        global $wpdb;
-        return $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . self::interest_table() . ' WHERE opportunity_id=%d ORDER BY created_at DESC', $opportunity_id), ARRAY_A) ?: [];
-    }
-
-    public static function save(array $data): int {
+    public static function save_opportunity(array $data): int {
         global $wpdb;
         $id = absint($data['id'] ?? 0);
-        $price = ($data['estimated_price'] ?? '') === '' ? null : round((float) $data['estimated_price'], 2);
-        $duration = ($data['estimated_duration'] ?? '') === '' ? null : round((float) $data['estimated_duration'], 2);
-        $now = current_time('mysql');
-        $row = [
-            'type'=>'class',
-            'title'=>sanitize_text_field($data['title'] ?? ''),
-            'category'=>sanitize_text_field($data['category'] ?? ''),
-            'description'=>sanitize_textarea_field($data['description'] ?? ''),
-            'status'=>array_key_exists(sanitize_key($data['status'] ?? ''), self::statuses()) ? sanitize_key($data['status']) : 'idea',
-            'teacher_needed'=>empty($data['teacher_needed']) ? 0 : 1,
-            'teacher_assigned'=>sanitize_text_field($data['teacher_assigned'] ?? ''),
-            'teacher_contact'=>sanitize_text_field($data['teacher_contact'] ?? ''),
-            'preferred_day'=>sanitize_text_field($data['preferred_day'] ?? ''),
-            'preferred_time'=>sanitize_text_field($data['preferred_time'] ?? ''),
-            'difficulty'=>sanitize_text_field($data['difficulty'] ?? ''),
-            'supplies_needed'=>sanitize_textarea_field($data['supplies_needed'] ?? ''),
-            'estimated_price'=>$price,
-            'estimated_duration'=>$duration,
-            'notes'=>sanitize_textarea_field($data['notes'] ?? ''),
-            'updated_at'=>$now,
+        $price = ($data['estimated_price'] ?? '') === '' ? null : (float) $data['estimated_price'];
+        $duration = ($data['estimated_duration'] ?? '') === '' ? null : (float) $data['estimated_duration'];
+        $record = [
+            'type' => self::allowed((string) ($data['type'] ?? 'class'), ['class','event','teacher','product','artist','corporate','community'], 'class'),
+            'title' => sanitize_text_field((string) ($data['title'] ?? '')),
+            'category' => sanitize_text_field((string) ($data['category'] ?? '')),
+            'description' => sanitize_textarea_field((string) ($data['description'] ?? '')),
+            'status' => self::allowed((string) ($data['status'] ?? 'idea'), self::statuses(), 'idea'),
+            'teacher_needed' => empty($data['teacher_needed']) ? 0 : 1,
+            'teacher_id' => absint($data['teacher_id'] ?? 0),
+            'teacher_contact' => sanitize_text_field((string) ($data['teacher_contact'] ?? '')),
+            'interview_status' => sanitize_text_field((string) ($data['interview_status'] ?? '')),
+            'preferred_day' => sanitize_text_field((string) ($data['preferred_day'] ?? '')),
+            'preferred_time' => sanitize_text_field((string) ($data['preferred_time'] ?? '')),
+            'difficulty' => sanitize_text_field((string) ($data['difficulty'] ?? '')),
+            'supplies_needed' => sanitize_textarea_field((string) ($data['supplies_needed'] ?? '')),
+            'estimated_price' => $price,
+            'estimated_duration' => $duration,
+            'internal_notes' => sanitize_textarea_field((string) ($data['internal_notes'] ?? '')),
+            'updated_at' => current_time('mysql'),
         ];
-        if ($row['title'] === '') { return 0; }
+        if ($record['title'] === '') { return 0; }
         if ($id > 0) {
-            $wpdb->update(self::opportunities_table(), $row, ['id'=>$id]);
+            $wpdb->update(self::opportunities_table(), $record, ['id' => $id]);
             return $id;
         }
-        $row['created_at'] = $now;
-        $wpdb->insert(self::opportunities_table(), $row);
+        $record['created_at'] = current_time('mysql');
+        $wpdb->insert(self::opportunities_table(), $record);
         return (int) $wpdb->insert_id;
+    }
+
+    public static function delete_opportunity(int $id): bool {
+        global $wpdb;
+        if ($id <= 0 || !self::get($id)) { return false; }
+        $wpdb->delete(self::interests_table(), ['opportunity_id' => $id], ['%d']);
+        return false !== $wpdb->delete(self::opportunities_table(), ['id' => $id], ['%d']);
+    }
+
+    public static function delete_interest(int $id): bool {
+        global $wpdb;
+        if ($id <= 0) { return false; }
+        return false !== $wpdb->delete(self::interests_table(), ['id' => $id], ['%d']);
     }
 
     public static function add_interest(array $data): int {
         global $wpdb;
         $opportunity_id = absint($data['opportunity_id'] ?? 0);
-        if ($opportunity_id <= 0 || !self::find($opportunity_id)) { return 0; }
-        $name = sanitize_text_field($data['customer_name'] ?? '');
-        if ($name === '') { return 0; }
-        $now = current_time('mysql');
-        $wpdb->insert(self::interest_table(), [
-            'opportunity_id'=>$opportunity_id,
-            'customer_name'=>$name,
-            'customer_email'=>sanitize_email($data['customer_email'] ?? ''),
-            'customer_phone'=>sanitize_text_field($data['customer_phone'] ?? ''),
-            'seats_requested'=>max(1, min(50, absint($data['seats_requested'] ?? 1))),
-            'preferred_days'=>sanitize_text_field($data['preferred_days'] ?? ''),
-            'preferred_times'=>sanitize_text_field($data['preferred_times'] ?? ''),
-            'notes'=>sanitize_textarea_field($data['notes'] ?? ''),
-            'source'=>sanitize_text_field($data['source'] ?? 'admin'),
-            'created_at'=>$now,
-            'updated_at'=>$now,
+        $name = sanitize_text_field((string) ($data['customer_name'] ?? ''));
+        if ($opportunity_id <= 0 || $name === '' || !self::get($opportunity_id)) { return 0; }
+        $wpdb->insert(self::interests_table(), [
+            'opportunity_id' => $opportunity_id,
+            'customer_name' => $name,
+            'customer_email' => sanitize_email((string) ($data['customer_email'] ?? '')),
+            'customer_phone' => sanitize_text_field((string) ($data['customer_phone'] ?? '')),
+            'seats_requested' => max(1, absint($data['seats_requested'] ?? 1)),
+            'preferred_days' => sanitize_text_field((string) ($data['preferred_days'] ?? '')),
+            'preferred_times' => sanitize_text_field((string) ($data['preferred_times'] ?? '')),
+            'notes' => sanitize_textarea_field((string) ($data['notes'] ?? '')),
+            'source' => sanitize_text_field((string) ($data['source'] ?? 'admin')),
+            'created_at' => current_time('mysql'),
         ]);
         return (int) $wpdb->insert_id;
     }
 
-    public static function delete_interest(int $id): bool {
+    public static function get(int $id): ?array {
         global $wpdb;
-        return false !== $wpdb->delete(self::interest_table(), ['id'=>$id], ['%d']);
+        $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::opportunities_table() . ' WHERE id = %d', $id), ARRAY_A);
+        return is_array($row) ? $row : null;
     }
 
-    public static function metrics(): array {
+    public static function all(): array {
         global $wpdb;
-        $o = self::opportunities_table(); $i = self::interest_table();
-        $ideas = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$o} WHERE status NOT IN ('cancelled','archived','completed')");
-        $people = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$i}");
-        $seats = (int) $wpdb->get_var("SELECT COALESCE(SUM(seats_requested),0) FROM {$i}");
-        $teacher = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$o} WHERE teacher_needed=1 AND status NOT IN ('cancelled','archived','completed')");
-        $missing_price = (int) $wpdb->get_var("SELECT COUNT(DISTINCT o.id) FROM {$o} o INNER JOIN {$i} i ON i.opportunity_id=o.id WHERE o.estimated_price IS NULL");
-        $revenue = $missing_price > 0 ? null : (float) $wpdb->get_var("SELECT COALESCE(SUM(i.seats_requested * o.estimated_price),0) FROM {$i} i INNER JOIN {$o} o ON o.id=i.opportunity_id");
-        return ['active_ideas'=>$ideas,'people_waiting'=>$people,'seats_requested'=>$seats,'teacher_needed'=>$teacher,'potential_revenue'=>$revenue,'revenue_available'=>$missing_price===0];
+        $sql = 'SELECT o.*, COALESCE(i.people_waiting,0) people_waiting, COALESCE(i.seats_waiting,0) seats_waiting
+                FROM ' . self::opportunities_table() . ' o
+                LEFT JOIN (SELECT opportunity_id, COUNT(*) people_waiting, SUM(seats_requested) seats_waiting FROM ' . self::interests_table() . ' GROUP BY opportunity_id) i ON i.opportunity_id=o.id
+                ORDER BY seats_waiting DESC, o.updated_at DESC';
+        $rows = $wpdb->get_results($sql, ARRAY_A);
+        return is_array($rows) ? $rows : [];
     }
+
+    public static function interests(int $opportunity_id): array {
+        global $wpdb;
+        $rows = $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . self::interests_table() . ' WHERE opportunity_id=%d ORDER BY created_at DESC', $opportunity_id), ARRAY_A);
+        return is_array($rows) ? $rows : [];
+    }
+
+    public static function intelligence(): array {
+        $items = self::all();
+        $people = 0; $seats = 0; $potential = 0.0; $priced = true; $teacher_needed = 0;
+        foreach ($items as &$item) {
+            $item['people_waiting'] = (int) $item['people_waiting'];
+            $item['seats_waiting'] = (int) $item['seats_waiting'];
+            $people += $item['people_waiting']; $seats += $item['seats_waiting'];
+            if (!empty($item['teacher_needed']) && empty($item['teacher_id'])) { $teacher_needed++; }
+            if (($item['estimated_price'] === null || $item['estimated_price'] === '') && $item['seats_waiting'] > 0) { $priced = false; $item['potential_revenue'] = null; }
+            elseif ($item['estimated_price'] === null || $item['estimated_price'] === '') { $item['potential_revenue'] = 0.0; }
+            else { $item['potential_revenue'] = (float) $item['estimated_price'] * $item['seats_waiting']; $potential += $item['potential_revenue']; }
+            $item['priority_score'] = $item['seats_waiting'];
+        }
+        unset($item);
+        return [
+            'opportunities' => $items,
+            'metrics' => [
+                'opportunity_count' => self::metric(count($items), true, 'number', __('Elev8 OS opportunity records.', 'elev8-os')),
+                'people_waiting' => self::metric($people, true, 'number', __('Unique interest records across all opportunities.', 'elev8-os')),
+                'seats_waiting' => self::metric($seats, true, 'number', __('Total requested seats across all opportunities.', 'elev8-os')),
+                'classes_without_teacher' => self::metric($teacher_needed, true, 'number', __('Opportunities marked teacher needed without an assigned teacher ID.', 'elev8-os')),
+                'potential_revenue' => self::metric($priced ? $potential : null, $priced, 'currency', $priced ? __('Estimated price multiplied by requested seats.', 'elev8-os') : __('Unavailable because one or more opportunities with interest do not have a verified estimated price.', 'elev8-os')),
+            ],
+        ];
+    }
+
+    public static function statuses(): array { return ['idea','research','teacher_needed','recruiting','planning','scheduled','active','completed','archived','cancelled']; }
+    private static function allowed(string $value, array $allowed, string $default): string { return in_array($value, $allowed, true) ? $value : $default; }
+    private static function metric($value, bool $available, string $format, string $diagnostic): array { return ['available'=>$available,'value'=>$value,'format'=>$format,'confidence'=>$available?'high':'unavailable','diagnostic'=>$diagnostic]; }
 }

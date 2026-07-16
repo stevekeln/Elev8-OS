@@ -15,6 +15,27 @@ if (!defined('ABSPATH')) {
 final class Elev8_OS_Business_Intelligence {
 
     /**
+     * Return verified opportunity intelligence from the Opportunity Engine.
+     *
+     * @return array<string,mixed>
+     */
+    public static function get_opportunity_report(): array {
+        if (!class_exists('Elev8_OS_Opportunity_Service')) {
+            return [
+                'opportunities' => [],
+                'metrics' => [
+                    'opportunity_count' => self::unavailable_metric(__('Opportunity Engine is unavailable.', 'elev8-os')),
+                    'people_waiting' => self::unavailable_metric(__('Opportunity Engine is unavailable.', 'elev8-os')),
+                    'seats_waiting' => self::unavailable_metric(__('Opportunity Engine is unavailable.', 'elev8-os')),
+                    'classes_without_teacher' => self::unavailable_metric(__('Opportunity Engine is unavailable.', 'elev8-os')),
+                    'potential_revenue' => self::unavailable_metric(__('Opportunity Engine is unavailable.', 'elev8-os')),
+                ],
+            ];
+        }
+        return Elev8_OS_Opportunity_Service::intelligence();
+    }
+
+    /**
      * Return the owner-facing Business Intelligence report.
      *
      * @return array<string,mixed>
