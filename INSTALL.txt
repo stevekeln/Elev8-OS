@@ -1,1 +1,1 @@
-Elev8 OS 6.8.0 source-only update. Copy plugin/elev8-os into the GitHub repository, commit to develop, run Build Elev8 OS Release.bat, and install the generated ZIP on Local first.
+Elev8 OS 6.8.1 source update. Copy plugin/elev8-os into the repository, commit to develop, run Build Elev8 OS Release.bat, and test on Local before Live.

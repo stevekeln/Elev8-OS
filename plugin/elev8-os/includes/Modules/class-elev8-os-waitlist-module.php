@@ -44,7 +44,7 @@ final class Elev8_OS_Waitlist_Module {
             return '<div class="elev8-dashboard-warning"><p><strong>' . esc_html__('Class Requests are temporarily unavailable.', 'elev8-os') . '</strong></p></div>';
         }
         $user = wp_get_current_user();
-        $teacher_id = absint(get_user_meta($user->ID, self::EMPLOYEE_META, true));
+        $teacher_id = self::resolve_teacher_id($user);
         $admin_preview = current_user_can('manage_options');
         if ($admin_preview && isset($_GET['employee_id'])) { $teacher_id = absint($_GET['employee_id']); }
         if ($teacher_id <= 0 && !$admin_preview) {
@@ -227,8 +227,22 @@ final class Elev8_OS_Waitlist_Module {
     private static function metric(string $label, int $value, string $description): void { echo '<article class="elev8-waitlist-metric"><span>'.esc_html($label).'</span><strong>'.esc_html(number_format_i18n($value)).'</strong><p>'.esc_html($description).'</p></article>'; }
     private static function notice(string $message, bool $error=false): void { echo '<div class="elev8-waitlist-notice'.($error?' is-error':'').'" role="status">'.esc_html($message).'</div>'; }
     private static function authorize(string $action): void { if (!is_user_logged_in()) { auth_redirect(); } check_admin_referer($action); }
-    private static function verify_teacher_scope(int $teacher_id): void { if (current_user_can('manage_options')) { return; } $mapped=absint(get_user_meta(get_current_user_id(), self::EMPLOYEE_META, true)); if ($teacher_id<=0 || $mapped!==$teacher_id) { wp_die(esc_html__('You do not have permission to manage this teacher record.', 'elev8-os')); } }
-    private static function verify_opportunity_access(int $opportunity_id): void { if (current_user_can('manage_options')) { return; } $o=Elev8_OS_Opportunity_Service::get($opportunity_id); $mapped=absint(get_user_meta(get_current_user_id(), self::EMPLOYEE_META, true)); if (!$o || (int)$o['teacher_id']!==$mapped) { wp_die(esc_html__('You do not have permission to manage this class request.', 'elev8-os')); } }
+
+    /** Resolve the current teacher through the shared Artist Portal identity path. */
+    private static function resolve_teacher_id(WP_User $user): int {
+        if (class_exists('Elev8_OS_Artist_Portal_Module') && method_exists('Elev8_OS_Artist_Portal_Module', 'find_artist_for_user')) {
+            $artist = Elev8_OS_Artist_Portal_Module::find_artist_for_user($user);
+            $artist_id = is_array($artist) ? absint($artist['id'] ?? 0) : 0;
+            if ($artist_id > 0) {
+                return $artist_id;
+            }
+        }
+
+        return absint(get_user_meta($user->ID, self::EMPLOYEE_META, true));
+    }
+
+    private static function verify_teacher_scope(int $teacher_id): void { if (current_user_can('manage_options')) { return; } $mapped=self::resolve_teacher_id(wp_get_current_user()); if ($teacher_id<=0 || $mapped!==$teacher_id) { wp_die(esc_html__('You do not have permission to manage this teacher record.', 'elev8-os')); } }
+    private static function verify_opportunity_access(int $opportunity_id): void { if (current_user_can('manage_options')) { return; } $o=Elev8_OS_Opportunity_Service::get($opportunity_id); $mapped=self::resolve_teacher_id(wp_get_current_user()); if (!$o || (int)$o['teacher_id']!==$mapped) { wp_die(esc_html__('You do not have permission to manage this class request.', 'elev8-os')); } }
     private static function redirect(string $flag): void { $url=esc_url_raw(wp_unslash((string)($_POST['redirect_to'] ?? ''))); if(!$url){$url=class_exists('Elev8_OS_Portal_Page_Manager')?Elev8_OS_Portal_Page_Manager::get_url('waitlist'):home_url('/');} wp_safe_redirect(add_query_arg($flag,1,$url)); exit; }
     private static function record(int $opportunity_id,string $type,string $label,string $details='',int $interest_id=0): void { if($opportunity_id>0 && class_exists('Elev8_OS_Opportunity_Activity_Service')){Elev8_OS_Opportunity_Activity_Service::record($opportunity_id,$type,$label,$details,$interest_id);} }
 }

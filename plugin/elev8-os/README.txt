@@ -3,7 +3,7 @@ Contributors: elev8arts
 Tags: artists, classes, amelia, payouts, creative studios
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 6.8.0
+Stable tag: 6.8.1
 
 Elev8 OS is the business operating system for creative studios, artists, and makers.
 

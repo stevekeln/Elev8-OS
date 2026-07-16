@@ -1,3 +1,11 @@
+## 6.8.1 — Class Requests Artist Mapping Hotfix
+
+- Updated Class Requests to use the shared Artist Portal artist resolver.
+- Explicit WordPress-to-Amelia Artist Mapping now takes priority.
+- Preserved email fallback for mapped artists whose direct user meta is unavailable.
+- Applied the same identity resolution to Class Request permissions and opportunity access checks.
+- Fixed connected artists incorrectly seeing the “not connected” message.
+
 # Changelog
 
 ## 6.8.0 — Class Requests & Teacher Experience

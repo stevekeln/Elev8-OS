@@ -649,7 +649,7 @@ final class Elev8_OS_Artist_Portal_Module {
     }
 
     /** @return array<string,mixed>|null */
-    private static function find_artist_for_user(WP_User $user): ?array {
+    public static function find_artist_for_user(WP_User $user): ?array {
         global $wpdb;
         $table = $wpdb->prefix . 'amelia_users';
         if (!self::table_exists($table)) {
