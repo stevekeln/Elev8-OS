@@ -1,3 +1,18 @@
+# Elev8 OS Changelog
+
+## 7.3.1 - Asset Polish
+
+- Added multiple artwork images with drag-and-drop ordering and a primary hero image.
+- Added artwork story, “What makes this piece special?”, materials, year created, collection/series, and tags.
+- Added optional YouTube/Vimeo process video support.
+- Added Certificate of Authenticity, care instructions, and specification-sheet PDF uploads.
+- Added featured-artwork controls for future Gallery Mode and featured collections.
+- Added listing-completeness scoring to help artists build stronger product listings.
+- Added authenticated preview links for draft and private artwork.
+- Added public image thumbnails, embedded video, downloadable documents, social sharing, and richer artwork facts.
+- Added artwork SEO title, description, and Open Graph metadata.
+- Preserved existing assets, WooCommerce products, checkout, QR tracking, inventory, and sale notifications.
+
 # Changelog
 
 ## 7.3.0 — QR Asset Experience

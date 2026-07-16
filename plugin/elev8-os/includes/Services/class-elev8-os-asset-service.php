@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
  */
 final class Elev8_OS_Asset_Service {
 
-    private const DB_VERSION = '3.0.0';
+    private const DB_VERSION = '3.1.0';
     private const DB_VERSION_OPTION = 'elev8_os_asset_db_version';
 
     public static function init(): void {
@@ -40,6 +40,18 @@ final class Elev8_OS_Asset_Service {
             asset_number varchar(80) NOT NULL DEFAULT '',
             title varchar(200) NOT NULL,
             description longtext NOT NULL,
+            artwork_story longtext NOT NULL,
+            special_story longtext NOT NULL,
+            materials longtext NOT NULL,
+            year_created varchar(12) NOT NULL DEFAULT '',
+            collection_name varchar(160) NOT NULL DEFAULT '',
+            asset_tags longtext NOT NULL,
+            video_url varchar(500) NOT NULL DEFAULT '',
+            gallery_attachment_ids longtext NOT NULL,
+            certificate_attachment_id bigint(20) unsigned NULL,
+            care_attachment_id bigint(20) unsigned NULL,
+            spec_attachment_id bigint(20) unsigned NULL,
+            is_featured tinyint(1) unsigned NOT NULL DEFAULT 0,
             medium varchar(160) NOT NULL DEFAULT '',
             dimensions varchar(160) NOT NULL DEFAULT '',
             price decimal(12,2) NULL,
@@ -127,7 +139,7 @@ final class Elev8_OS_Asset_Service {
 
         $rows = $wpdb->get_results(
             $wpdb->prepare(
-                'SELECT * FROM ' . self::table_name() . " WHERE owner_user_id = %d AND public_visibility = 1 AND status IN ('available','reserved','sold') ORDER BY CASE status WHEN 'available' THEN 0 WHEN 'reserved' THEN 1 ELSE 2 END, updated_at DESC, id DESC",
+                'SELECT * FROM ' . self::table_name() . " WHERE owner_user_id = %d AND public_visibility = 1 AND status IN ('available','reserved','sold') ORDER BY is_featured DESC, CASE status WHEN 'available' THEN 0 WHEN 'reserved' THEN 1 ELSE 2 END, updated_at DESC, id DESC",
                 $owner_user_id
             ),
             ARRAY_A
@@ -146,6 +158,14 @@ final class Elev8_OS_Asset_Service {
         $slug = sanitize_title((string) ($asset['title'] ?? 'artwork'));
         $url = home_url('/artwork/' . $asset_id . '/' . ($slug !== '' ? $slug : 'item') . '/');
         return $qr_scan ? add_query_arg('elev8_qr', '1', $url) : $url;
+    }
+
+    /** Return a temporary authenticated preview URL for a private or draft asset. */
+    public static function get_preview_url(array $asset): string {
+        $url = self::get_public_url($asset);
+        $asset_id = absint($asset['id'] ?? 0);
+        if ($url === '' || $asset_id <= 0) return '';
+        return add_query_arg('elev8_preview', wp_create_nonce('elev8_asset_preview_' . $asset_id), $url);
     }
 
     /** Record a public view or physical QR scan without changing asset content. */
@@ -247,6 +267,18 @@ final class Elev8_OS_Asset_Service {
             'asset_number' => $existing ? (string) $existing['asset_number'] : '',
             'title' => $title,
             'description' => sanitize_textarea_field((string) ($data['description'] ?? '')),
+            'artwork_story' => sanitize_textarea_field((string) ($data['artwork_story'] ?? '')),
+            'special_story' => sanitize_textarea_field((string) ($data['special_story'] ?? '')),
+            'materials' => sanitize_textarea_field((string) ($data['materials'] ?? '')),
+            'year_created' => self::sanitize_year((string) ($data['year_created'] ?? '')),
+            'collection_name' => sanitize_text_field((string) ($data['collection_name'] ?? '')),
+            'asset_tags' => self::sanitize_tags((string) ($data['asset_tags'] ?? '')),
+            'video_url' => self::sanitize_video_url((string) ($data['video_url'] ?? '')),
+            'gallery_attachment_ids' => self::sanitize_attachment_list($data['gallery_attachment_ids'] ?? ''),
+            'certificate_attachment_id' => absint($data['certificate_attachment_id'] ?? 0) ?: null,
+            'care_attachment_id' => absint($data['care_attachment_id'] ?? 0) ?: null,
+            'spec_attachment_id' => absint($data['spec_attachment_id'] ?? 0) ?: null,
+            'is_featured' => empty($data['is_featured']) ? 0 : 1,
             'medium' => sanitize_text_field((string) ($data['medium'] ?? '')),
             'dimensions' => sanitize_text_field((string) ($data['dimensions'] ?? '')),
             'price' => $price,
@@ -333,6 +365,51 @@ final class Elev8_OS_Asset_Service {
         }
         $url = get_permalink($product_id);
         return is_string($url) ? $url : '';
+    }
+
+
+    /** @return int[] */
+    public static function get_gallery_attachment_ids(array $asset): array {
+        $ids = array_filter(array_map('absint', explode(',', (string) ($asset['gallery_attachment_ids'] ?? ''))));
+        $primary = absint($asset['image_attachment_id'] ?? 0);
+        if ($primary > 0) {
+            $ids = array_values(array_filter($ids, static fn(int $id): bool => $id !== $primary));
+        }
+        return array_values(array_unique($ids));
+    }
+
+    public static function calculate_completeness(array $asset): int {
+        $checks = [
+            !empty($asset['title']), absint($asset['image_attachment_id'] ?? 0) > 0,
+            $asset['price'] !== null, !empty($asset['medium']), !empty($asset['dimensions']),
+            !empty($asset['description']) || !empty($asset['artwork_story']),
+            !empty($asset['special_story']), !empty($asset['materials']), !empty($asset['year_created']),
+            !empty($asset['public_visibility']), !empty($asset['sell_online']),
+        ];
+        return (int) round((array_sum(array_map(static fn($v): int => $v ? 1 : 0, $checks)) / count($checks)) * 100);
+    }
+
+    private static function sanitize_attachment_list($value): string {
+        $parts = is_array($value) ? $value : explode(',', (string) $value);
+        $ids = array_slice(array_values(array_unique(array_filter(array_map('absint', $parts)))), 0, 12);
+        return implode(',', $ids);
+    }
+
+    private static function sanitize_tags(string $value): string {
+        $tags = array_slice(array_values(array_unique(array_filter(array_map('sanitize_text_field', preg_split('/[,\n]+/', $value) ?: [])))), 0, 20);
+        return implode(', ', $tags);
+    }
+
+    private static function sanitize_year(string $value): string {
+        $value = trim($value);
+        return preg_match('/^(18|19|20|21)\d{2}$/', $value) ? $value : '';
+    }
+
+    private static function sanitize_video_url(string $value): string {
+        $url = esc_url_raw(trim($value));
+        if ($url === '') return '';
+        $host = strtolower((string) wp_parse_url($url, PHP_URL_HOST));
+        return (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false || strpos($host, 'vimeo.com') !== false) ? $url : '';
     }
 
     public static function generate_asset_number(int $asset_id): string {

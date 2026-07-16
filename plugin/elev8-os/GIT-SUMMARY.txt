@@ -1,7 +1,16 @@
-Elev8 OS 7.3.0 — QR Asset Experience
+Elev8 OS 7.3.1 - Asset Polish
 
-- Added canonical public asset routes at /artwork/{asset-id}/{slug}/.
-- QR codes open the asset page and record a QR scan.
-- Public pages include artwork details, artist bio, checkout, and related items.
-- Storefront cards now link to the asset experience.
-- Asset database upgraded to 3.0.0 with public view and QR scan counters.
+Suggested commit:
+feat(asset-engine): add rich media and listing polish
+
+Changed:
+- Asset schema and reusable Asset Service
+- My Artwork editor and media ordering
+- Public QR asset experience
+- Asset SEO and social sharing
+- Artist artwork and public-page styling
+- Version, changelog, README, and installation notes
+
+Database:
+- Asset DB version 3.1.0
+- Existing artwork and WooCommerce connections are preserved

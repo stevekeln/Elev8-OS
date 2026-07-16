@@ -1,5 +1,5 @@
-Elev8 OS 7.3.0
+Elev8 OS 7.3.1
 
-Business operating system for artists and experience-based businesses.
+Business operating system for creative studios, artists, and makers.
 
-This release adds the QR Asset Experience: every public artwork has one canonical page that powers physical QR labels, storytelling, availability, cart, checkout, artist discovery, and future scan analytics.
+This release adds Asset Polish: multiple images, rich artwork stories and metadata, video, downloadable artwork documents, featured artwork, listing completeness, previews, social sharing, and SEO while preserving WooCommerce checkout and inventory.

@@ -1,9 +1,10 @@
-Elev8 OS 7.3.0 Installation
+Elev8 OS 7.3.1 Installation
 
-1. Back up the current site and keep the known-good 7.2.2 ZIP.
-2. Install this complete ZIP on Local and replace the existing Elev8 OS plugin.
-3. Confirm artist pages, My Artwork, cart, checkout, and one QR code.
-4. Open Settings > Permalinks and click Save only if /artwork/ links return 404. Activation normally flushes rewrite rules automatically.
-5. Install the exact tested ZIP on Live.
+1. Back up the WordPress site and database.
+2. Install this ZIP on Local first by replacing the existing Elev8 OS plugin.
+3. Confirm the plugin reports version 7.3.1.
+4. Edit an existing artwork and test multiple images, story fields, video, documents, preview, and checkout.
+5. Confirm existing artwork, WooCommerce products, QR pages, cart navigation, and sale notifications still work.
+6. Install the exact same tested ZIP on Live.
 
-No existing asset, artist, WooCommerce, order, or inventory data is removed.
+The Asset Engine database upgrade runs automatically and preserves existing records.
