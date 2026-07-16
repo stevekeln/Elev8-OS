@@ -760,7 +760,7 @@ final class Elev8_OS_Artist_Portal_Module {
                 'enabled' => true,
             ],
             'waitlist' => [
-                'label' => __('Waitlist', 'elev8-os'),
+                'label' => __('Class Requests', 'elev8-os'),
                 'icon' => 'list-view',
                 'url' => $waitlist_url,
                 'enabled' => true,

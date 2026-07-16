@@ -1,3 +1,14 @@
+# Changelog
+
+## 6.8.0 — Class Requests & Teacher Experience
+- Renamed the teacher-facing Waitlist to Class Requests.
+- Removed Amelia class discovery from the Class Requests page.
+- Added existing Opportunity Engine class-idea selection.
+- Added inline creation of a brand-new class suggestion while recording customer interest.
+- Added a teacher-only class idea proposal form that does not require a customer.
+- Reused Opportunity Engine customer interest, CRM status, and activity timeline data.
+- Preserved the existing portal URL for backward compatibility.
+
 ## 6.7.3 — Neve Portal Header Hotfix
 
 - Added a portal-only Neve header override that runs only on verified Elev8 OS teacher pages.

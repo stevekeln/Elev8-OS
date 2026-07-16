@@ -1,9 +1,1 @@
-Elev8 OS 6.7.3 — Artist Waitlist Redesign
-
-1. Extract this source update.
-2. Copy plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os.
-3. Replace the matching files.
-4. Commit and push to develop.
-5. Run Build Elev8 OS Release.bat.
-6. Install the generated ZIP on Local and test the Artist Portal Waitlist.
-7. Install the exact same generated ZIP on Live only after Local passes.
+Elev8 OS 6.8.0 source-only update. Copy plugin/elev8-os into the GitHub repository, commit to develop, run Build Elev8 OS Release.bat, and install the generated ZIP on Local first.
