@@ -1,3 +1,22 @@
+# Changelog
+
+## 6.3.0 — Class Demand Manager
+- Added the WordPress-owned Opportunity Engine foundation.
+- Added Class Demand Manager for class ideas that do not yet exist in Amelia.
+- Added customer interest, requested seats, scheduling preferences, source, and notes.
+- Added teacher-needed, assigned teacher, planning status, pricing, duration, difficulty, and supplies fields.
+- Added centralized demand metrics and fail-closed potential revenue reporting.
+- Preserved the existing Amelia-integrated scheduled-class waitlist.
+
+# 6.2.1 — Hybrid Class Discovery
+
+- Added one reusable class discovery service for waitlists.
+- Uses real Amelia appointments first.
+- Falls back to verified, artist-assigned service dates when appointments do not exist yet.
+- Supports Heather's Sunbrew and Jessica's Sound Bowl schedules without inventing appointment IDs.
+- Preserves live capacity and booked-seat data for appointment-backed classes.
+- Validates synthetic service occurrences securely before saving a waitlist entry.
+
 # 6.2.0 — Amelia Integrated Waitlists
 
 - Replaced manual employee, class, date, and time entry with verified Amelia artist and class selectors.
@@ -107,7 +126,6 @@
 - Added a one-click Check and Repair Portal Pages tool.
 - Portal navigation now survives page title and permalink changes.
 
-# Changelog
 
 ## 5.4.1 — Version Display Hotfix
 

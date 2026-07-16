@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS {
-    const VERSION = '6.1.0'; // Legacy compatibility; UI and assets use ELEV8_OS_VERSION.
+    const VERSION = '6.3.0'; // Legacy compatibility; UI and assets use ELEV8_OS_VERSION.
     const OPTION_PROFILES = 'elev8_os_artist_profiles';
     const OPTION_PAYOUTS = 'elev8_os_artist_payouts';
     const OPTION_RULES = 'elev8_os_teacher_rules';
@@ -42,6 +42,9 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Waitlist_Module')) {
             Elev8_OS_Waitlist_Module::activate();
+        }
+        if (class_exists('Elev8_OS_Class_Demand_Module')) {
+            Elev8_OS_Class_Demand_Module::activate();
         }
         self::add_rewrite_rules();
         flush_rewrite_rules();
@@ -1821,6 +1824,9 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Waitlist_Module')) {
             Elev8_OS_Waitlist_Module::activate();
+        }
+        if (class_exists('Elev8_OS_Class_Demand_Module')) {
+            Elev8_OS_Class_Demand_Module::activate();
         }
         $items=get_option(self::OPTION_DEV_ITEMS,[]);
         return is_array($items)?$items:[];
