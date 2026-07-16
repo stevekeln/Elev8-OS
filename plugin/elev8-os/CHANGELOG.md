@@ -1,4 +1,13 @@
-# Changelog
+# Elev8 OS Changelog
+
+## 6.1.0
+- Added Waitlist Manager Phase 1 foundation.
+- Added an Elev8-owned waitlist database table.
+- Added administrator and artist waitlist screens.
+- Added secure add, status-update, and remove actions.
+- Added automatic Waitlist portal page management.
+- Deferred class integration, recommendations, and automation to later milestones.
+
 
 ## 6.0.5 — Service Occurrence Parsing Hotfix
 

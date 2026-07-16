@@ -35,6 +35,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'artist-students',
                 'shortcode' => 'elev8_artist_students',
             ],
+            'waitlist' => [
+                'option' => 'elev8_os_artist_waitlist_page_id',
+                'title' => __('Waitlist', 'elev8-os'),
+                'slug' => 'artist-waitlist',
+                'shortcode' => 'elev8_artist_waitlist',
+            ],
             'website' => [
                 'option' => 'elev8_os_artist_website_page_id',
                 'title' => __('My Website', 'elev8-os'),

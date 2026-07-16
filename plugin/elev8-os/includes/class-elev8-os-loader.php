@@ -29,6 +29,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Dashboard_Module::init();
         Elev8_OS_My_Classes_Module::init();
         Elev8_OS_Students_Module::init();
+        Elev8_OS_Waitlist_Module::init();
         Elev8_OS_System_Inspector_Module::init();
         Elev8_OS_Employee_Mapping_Module::init();
         Elev8_OS_Business_Intelligence_Dashboard_Module::init();

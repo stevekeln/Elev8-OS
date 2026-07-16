@@ -623,6 +623,7 @@ final class Elev8_OS_Artist_Portal_Module {
         $edit_url = self::edit_website_url();
         $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
         $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
+        $waitlist_url = Elev8_OS_Portal_Page_Manager::get_url('waitlist');
         $booking_url = esc_url_raw((string) get_user_meta($user->ID, self::META_BOOKING, true));
 
         return [
@@ -667,6 +668,12 @@ final class Elev8_OS_Artist_Portal_Module {
                 'label' => __('Students', 'elev8-os'),
                 'icon' => 'groups',
                 'url' => $students_url,
+                'enabled' => true,
+            ],
+            'waitlist' => [
+                'label' => __('Waitlist', 'elev8-os'),
+                'icon' => 'list-view',
+                'url' => $waitlist_url,
                 'enabled' => true,
             ],
             'referrals' => [
