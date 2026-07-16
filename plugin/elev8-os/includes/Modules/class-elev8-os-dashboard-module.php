@@ -178,6 +178,8 @@ final class Elev8_OS_Dashboard_Module {
         $score = (array) ($business['score'] ?? []);
         $recommendations = (array) ($business['recommendations'] ?? []);
         $achievements = (array) ($business['achievements'] ?? []);
+        $growth_plan = (array) ($business['growth_plan'] ?? []);
+        $score_components = (array) ($growth_plan['components'] ?? []);
         ?>
         <div class="elev8-artist-dashboard elev8-dashboard-v2">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('dashboard'); ?>
@@ -233,9 +235,24 @@ final class Elev8_OS_Dashboard_Module {
             </div>
 
             <div class="elev8-business-center-grid">
-                <section class="elev8-dashboard-panel"><div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('AI Coach foundation','elev8-os'); ?></p><h2><?php esc_html_e('What To Do Next','elev8-os'); ?></h2></div></div><div class="elev8-coach-list"><?php if(!$recommendations): ?><p><?php esc_html_e('No recommendations are available yet.','elev8-os'); ?></p><?php else: foreach($recommendations as $recommendation): ?><article><span class="dashicons dashicons-lightbulb"></span><div><strong><?php echo esc_html((string)$recommendation['title']); ?></strong><p><?php echo esc_html((string)$recommendation['message']); ?></p></div></article><?php endforeach; endif; ?></div></section>
-                <section class="elev8-dashboard-panel"><div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Milestones','elev8-os'); ?></p><h2><?php esc_html_e('Achievements','elev8-os'); ?></h2></div></div><div class="elev8-achievement-list"><?php foreach($achievements as $achievement): ?><div class="<?php echo !empty($achievement['earned'])?'is-earned':'is-locked'; ?>"><span class="dashicons dashicons-<?php echo !empty($achievement['earned'])?'awards':'lock'; ?>"></span><strong><?php echo esc_html((string)$achievement['title']); ?></strong></div><?php endforeach; ?></div></section>
+                <section class="elev8-dashboard-panel">
+                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Daily growth plan','elev8-os'); ?></p><h2><?php esc_html_e('What To Do Next','elev8-os'); ?></h2></div></div>
+                    <div class="elev8-coach-list">
+                        <?php if(!$recommendations): ?><p><?php esc_html_e('You are caught up. New recommendations will appear as your business changes.','elev8-os'); ?></p><?php else: foreach($recommendations as $recommendation): $action_url=self::recommendation_url((string)($recommendation['action']??''),$artwork_url,$classes_url,$website_url,$edit_website_url); ?>
+                            <article class="priority-<?php echo esc_attr((string)($recommendation['priority']??'medium')); ?>"><span class="dashicons dashicons-lightbulb"></span><div><div class="elev8-coach-title"><strong><?php echo esc_html((string)$recommendation['title']); ?></strong><span><?php echo esc_html(ucfirst((string)($recommendation['priority']??'medium'))); ?></span></div><p><?php echo esc_html((string)$recommendation['message']); ?></p><a href="<?php echo esc_url($action_url); ?>"><?php esc_html_e('Take action','elev8-os'); ?> <span aria-hidden="true">→</span></a></div></article>
+                        <?php endforeach; endif; ?>
+                    </div>
+                </section>
+                <section class="elev8-dashboard-panel">
+                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Business health','elev8-os'); ?></p><h2><?php esc_html_e('Score Breakdown','elev8-os'); ?></h2></div></div>
+                    <div class="elev8-score-breakdown"><?php if(!$score_components): ?><p><?php esc_html_e('Score details are unavailable.','elev8-os'); ?></p><?php else: foreach($score_components as $component): ?><div><div><strong><?php echo esc_html((string)$component['label']); ?></strong><span><?php echo esc_html((string)$component['score']); ?>/100</span></div><div class="elev8-score-track"><span style="width:<?php echo esc_attr((string)$component['score']); ?>%"></span></div></div><?php endforeach; endif; ?></div>
+                </section>
             </div>
+
+            <section class="elev8-dashboard-panel elev8-achievements-panel">
+                <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Milestones','elev8-os'); ?></p><h2><?php esc_html_e('Achievements','elev8-os'); ?></h2></div></div>
+                <div class="elev8-achievement-list"><?php foreach($achievements as $achievement): $current=(float)($achievement['current']??0);$target=max(1,(float)($achievement['target']??1));$progress=min(100,(int)round(($current/$target)*100)); ?><div class="<?php echo !empty($achievement['earned'])?'is-earned':'is-locked'; ?>"><span class="dashicons dashicons-<?php echo !empty($achievement['earned'])?'awards':'lock'; ?>"></span><div><strong><?php echo esc_html((string)$achievement['title']); ?></strong><?php if(empty($achievement['earned'])): ?><small><?php echo esc_html(number_format_i18n($current).' / '.number_format_i18n($target)); ?></small><div class="elev8-achievement-track"><span style="width:<?php echo esc_attr((string)$progress); ?>%"></span></div><?php else: ?><small><?php esc_html_e('Earned','elev8-os'); ?></small><?php endif; ?></div></div><?php endforeach; ?></div>
+            </section>
 
             <section class="elev8-dashboard-panel elev8-dashboard-status-panel">
                 <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Today', 'elev8-os'); ?></p><h2><?php esc_html_e('Your Artist Checklist', 'elev8-os'); ?></h2></div></div>
@@ -264,6 +281,16 @@ final class Elev8_OS_Dashboard_Module {
         $value = isset($score['score']) && is_numeric($score['score']) ? (int)$score['score'] : null;
         $label = (string)($score['label'] ?? __('Unavailable','elev8-os'));
         ?><article class="elev8-welcome-card elev8-score-card <?php echo $value===null?'is-unavailable':''; ?>"><div><span class="dashicons dashicons-chart-line"></span><div><p class="elev8-card-label"><?php esc_html_e('Business Score','elev8-os'); ?></p><strong><?php echo $value===null?esc_html__('Unavailable','elev8-os'):esc_html($value.'/100'); ?></strong><p><?php echo esc_html($label); ?></p><?php if($value!==null): ?><div class="elev8-score-track"><span style="width:<?php echo esc_attr((string)$value); ?>%"></span></div><?php endif; ?></div></div></article><?php
+    }
+
+    private static function recommendation_url(string $action, string $artwork_url, string $classes_url, string $website_url, string $edit_website_url): string {
+        $urls = [
+            'artwork' => $artwork_url,
+            'classes' => $classes_url,
+            'website' => $edit_website_url !== '' ? $edit_website_url : $website_url,
+            'profile' => $edit_website_url !== '' ? $edit_website_url : $website_url,
+        ];
+        return $urls[$action] ?? self::dashboard_url();
     }
 
     private static function render_action_link(string $icon, string $title, string $description, string $url): void {

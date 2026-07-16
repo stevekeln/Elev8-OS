@@ -28,6 +28,7 @@ final class Elev8_OS_Artist_Business_Service {
         $snapshot['score']=Elev8_OS_Business_Score_Engine::calculate($signals);
         $snapshot['recommendations']=Elev8_OS_Recommendation_Engine::recommend($snapshot);
         $snapshot['achievements']=Elev8_OS_Achievement_Service::evaluate($snapshot);
+        $snapshot['growth_plan']=Elev8_OS_Growth_Plan_Service::build($snapshot);
         return $snapshot;
     }
     /** @param array<int,array<string,mixed>> $assets */

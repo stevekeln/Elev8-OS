@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 7.4.1 - Artist Growth Plan
+
+- Added a reusable Growth Plan Service that converts verified Business Score components and recommendations into a focused daily plan.
+- Added actionable recommendation links so artists can move directly from advice to artwork, class, or website tools.
+- Added a complete Business Score breakdown with component-level progress.
+- Added achievement progress, targets, and earned-state details.
+- Preserved all 7.4.0 Artist Business Center behavior and existing integrations.
+
 ## 7.4.0 - Artist Business Center
 
 - Transformed the Artist Dashboard into a daily business home screen.

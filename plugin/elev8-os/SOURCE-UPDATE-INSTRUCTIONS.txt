@@ -1,11 +1,11 @@
-Elev8 OS 7.4.0 Source Update
+Elev8 OS 7.4.1 Source Update
 
-1. Open your local GitHub Elev8 OS repository.
-2. Copy these files into the matching paths under plugin/elev8-os/.
-3. Commit to develop.
-4. Push to GitHub.
+1. Extract this ZIP.
+2. Copy every included file into the matching path in your local Elev8 OS GitHub repository.
+3. Allow the files to replace the 7.4.0 versions.
+4. Commit to develop and push to GitHub.
 5. Run Build Elev8 OS Release.bat.
-6. Install the generated ZIP on Local and test before Live.
+6. Install the generated ZIP on Local and test before installing the exact same ZIP on Live.
 
 Suggested commit:
-Build Elev8 OS 7.4.0 Artist Business Center
+Build Elev8 OS 7.4.1 Artist Growth Plan

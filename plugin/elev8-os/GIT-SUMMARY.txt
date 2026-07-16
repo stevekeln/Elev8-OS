@@ -1,24 +1,13 @@
-Elev8 OS 7.4.0 - Artist Business Center
+Elev8 OS 7.4.1 - Artist Growth Plan
 
-Replace the matching files in your GitHub repository on the develop branch.
-Then commit and push before running Build Elev8 OS Release.bat.
+Added:
+- Reusable Growth Plan Service
+- Actionable Artist Coach recommendations
+- Business Score component breakdown
+- Achievement progress and targets
 
-Changed files:
-- plugin/elev8-os/elev8-os.php
-- plugin/elev8-os/CHANGELOG.md
-- plugin/elev8-os/README.txt
-- plugin/elev8-os/INSTALL.txt
-- plugin/elev8-os/GIT-SUMMARY.txt
-- plugin/elev8-os/includes/class-elev8-os-loader.php
-- plugin/elev8-os/includes/Modules/class-elev8-os-dashboard-module.php
-- plugin/elev8-os/assets/css/artist-dashboard.css
-
-New files:
-- plugin/elev8-os/includes/Services/class-elev8-os-business-score-engine.php
-- plugin/elev8-os/includes/Services/class-elev8-os-recommendation-engine.php
-- plugin/elev8-os/includes/Services/class-elev8-os-achievement-service.php
-- plugin/elev8-os/includes/Services/class-elev8-os-artist-business-service.php
-- plugin/elev8-os/includes/Services/class-elev8-os-report-engine.php
-
-Suggested commit:
-Build Elev8 OS 7.4.0 Artist Business Center
+Preserved:
+- 7.4.0 Artist Business Center
+- Amelia scheduling ownership
+- WooCommerce commerce ownership
+- Existing Artist Portal pages and routes

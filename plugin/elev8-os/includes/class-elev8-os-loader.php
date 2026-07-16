@@ -21,6 +21,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-score-engine.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-engine.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-growth-plan-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-achievement-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-artist-business-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-report-engine.php';
