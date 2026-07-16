@@ -1,12 +1,9 @@
-Elev8 OS 7.2.2 Installation
+Elev8 OS 7.3.0 Installation
 
-1. Back up the current site and retain the last stable Elev8 OS ZIP.
-2. Install this complete plugin ZIP on Local.
-3. Open a public artist page while logged out.
-4. Click Add to cart on an available artwork item.
-5. Confirm the item is added and the WooCommerce Cart page opens immediately.
-6. Return to the artist page and confirm View cart and Checkout are visible.
-7. Complete a test order and confirm the inventory and artist email workflow still work.
-8. Install the exact tested ZIP on Live.
+1. Back up the current site and keep the known-good 7.2.2 ZIP.
+2. Install this complete ZIP on Local and replace the existing Elev8 OS plugin.
+3. Confirm artist pages, My Artwork, cart, checkout, and one QR code.
+4. Open Settings > Permalinks and click Save only if /artwork/ links return 404. Activation normally flushes rewrite rules automatically.
+5. Install the exact tested ZIP on Live.
 
-No database migration is required. Existing artwork, WooCommerce products, carts, orders, and artist mappings are preserved.
+No existing asset, artist, WooCommerce, order, or inventory data is removed.

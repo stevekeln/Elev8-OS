@@ -1,7 +1,7 @@
-Elev8 OS 7.2.2 — Storefront Cart Navigation
+Elev8 OS 7.3.0 — QR Asset Experience
 
-- Fixed Add to cart to open the WooCommerce Cart page after adding an artwork item.
-- Added persistent View cart and Checkout controls to public artist storefronts.
-- Preserved Artist Sale Notifications and all 7.2.x inventory behavior.
-- No database migration.
-- Updated version, changelog, README, install notes, and source summary.
+- Added canonical public asset routes at /artwork/{asset-id}/{slug}/.
+- QR codes open the asset page and record a QR scan.
+- Public pages include artwork details, artist bio, checkout, and related items.
+- Storefront cards now link to the asset experience.
+- Asset database upgraded to 3.0.0 with public view and QR scan counters.

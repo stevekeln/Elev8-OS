@@ -1,3 +1,14 @@
+# Changelog
+
+## 7.3.0 — QR Asset Experience
+- Added a canonical public page for every public Asset Engine item.
+- QR codes now open the Elev8 OS asset experience instead of a generic WooCommerce product page.
+- Added large artwork presentation, artist information, full story, price, status, medium, dimensions, asset number, cart, checkout, and related artwork.
+- Artist storefront cards now link to the public asset experience.
+- Added public view and QR scan counters to the Asset Engine for future Business Intelligence.
+- Preserved WooCommerce as the checkout and payment owner while Elev8 OS remains the asset source of truth.
+- Added responsive desktop and mobile layouts.
+
 # 7.2.2 — Storefront Cart Navigation
 
 - Fixed the Artist Storefront Add to Cart action so it opens the WooCommerce Cart page immediately after adding an artwork item.

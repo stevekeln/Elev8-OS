@@ -27,8 +27,10 @@ final class Elev8_OS {
         add_shortcode('elev8_artist_portal', [__CLASS__, 'artist_portal_shortcode']);
         add_shortcode('elev8_artist_profile', [__CLASS__, 'artist_profile_shortcode']);
         add_action('init', [__CLASS__, 'add_rewrite_rules']);
+        add_action('init', [__CLASS__, 'maybe_flush_rewrite_rules'], 99);
         add_filter('query_vars', [__CLASS__, 'query_vars']);
         add_action('template_redirect', [__CLASS__, 'capture_referral'], 5);
+        add_action('template_redirect', [__CLASS__, 'render_asset_route'], 19);
         add_action('template_redirect', [__CLASS__, 'render_public_route'], 20);
         add_action('wp_enqueue_scripts', [__CLASS__, 'front_assets']);
         add_action('woocommerce_payment_complete', [__CLASS__, 'record_woocommerce_referral']);
@@ -646,15 +648,25 @@ final class Elev8_OS {
 
     public static function add_rewrite_rules(): void {
         add_rewrite_rule('^artists/([^/]+)/?$', 'index.php?elev8_artist=$matches[1]', 'top');
+        add_rewrite_rule('^artwork/([0-9]+)/?([^/]*)/?$', 'index.php?elev8_asset=$matches[1]', 'top');
+    }
+
+    public static function maybe_flush_rewrite_rules(): void {
+        $version = (string) get_option('elev8_os_rewrite_version', '');
+        if ($version !== ELEV8_OS_VERSION) {
+            flush_rewrite_rules(false);
+            update_option('elev8_os_rewrite_version', ELEV8_OS_VERSION, false);
+        }
     }
 
     public static function query_vars(array $vars): array {
         $vars[] = 'elev8_artist';
+        $vars[] = 'elev8_asset';
         return $vars;
     }
 
     public static function front_assets(): void {
-        if (get_query_var('elev8_artist') || has_shortcode((string) get_post_field('post_content', get_queried_object_id()), 'elev8_artist_profile')) {
+        if (get_query_var('elev8_artist') || get_query_var('elev8_asset') || has_shortcode((string) get_post_field('post_content', get_queried_object_id()), 'elev8_artist_profile')) {
             wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], ELEV8_OS_VERSION);
         }
     }
@@ -803,10 +815,69 @@ final class Elev8_OS {
           <?php if($contacts || $payments):?><div class="elev8-grid elev8-public-links"><?php if($contacts):?><div class="elev8-panel"><h2>Contact</h2><?php foreach($contacts as $contact):?><p><a href="<?php echo esc_url($contact['url'], ['http','https','mailto','tel']);?>"<?php echo preg_match('/^https?:/i',$contact['url'])?' target="_blank" rel="noopener"':'';?>><?php echo esc_html($contact['name']);?></a></p><?php endforeach;?></div><?php endif;?><?php if($payments):?><div class="elev8-panel"><h2>Payments & Support</h2><?php foreach($payments as $payment):?><p><a class="button" href="<?php echo esc_url($payment['url'], ['http','https','mailto','tel']);?>" target="_blank" rel="noopener"><?php echo esc_html($payment['name']);?></a></p><?php endforeach;?></div><?php endif;?></div><?php endif;?>
           <div class="elev8-share-tools"><button type="button" class="elev8-copy-link" data-link="<?php echo esc_attr(self::public_artist_url($employee_id,true));?>">Copy page link</button><button type="button" class="elev8-open-qr" data-qr="<?php echo esc_attr('https://api.qrserver.com/v1/create-qr-code/?size=320x320&data='.rawurlencode(self::public_artist_url($employee_id,true)));?>" data-name="<?php echo esc_attr($name);?>">Open QR code</button></div>
           <div class="elev8-qr-modal" hidden><div class="elev8-qr-dialog"><button type="button" class="elev8-close-qr" aria-label="Close QR code">&times;</button><h2>Scan to visit <?php echo esc_html($name);?></h2><img alt="QR code for <?php echo esc_attr($name);?>"><p>This QR code includes the artist's referral tracking link.</p></div></div>
-          <?php if($store_assets):?><section class="elev8-panel elev8-artist-store"><?php $store_cart_url=Elev8_OS_WooCommerce::get_cart_url(); $store_checkout_url=Elev8_OS_WooCommerce::get_checkout_url();?><div class="elev8-store-heading"><div><p class="elev8-store-eyebrow">Available at Elev8 Arts</p><h2>Artwork &amp; Products</h2><p>Purchase online and Elev8 Arts will remove the item from display, pack it, and prepare it for pickup or delivery.</p></div><?php if($store_cart_url!==''):?><div class="elev8-store-cart-links"><a class="button elev8-view-cart-button" href="<?php echo esc_url($store_cart_url);?>">View cart</a><?php if($store_checkout_url!==''):?><a class="elev8-checkout-link" href="<?php echo esc_url($store_checkout_url);?>">Checkout</a><?php endif;?></div><?php endif;?></div><div class="elev8-store-grid"><?php foreach($store_assets as $asset): $image=wp_get_attachment_image_url((int)$asset['image_attachment_id'],'large'); $status=(string)$asset['status']; $is_sold=($status==='sold'); $is_reserved=($status==='reserved'); $purchase=Elev8_OS_WooCommerce::get_purchase_data($asset); $product_url=(string)$purchase['url'];?><article class="elev8-store-card<?php echo $is_sold?' is-sold':($is_reserved?' is-reserved':'');?>"><?php if($product_url!==''):?><a class="elev8-store-image-link" href="<?php echo esc_url($product_url);?>"><?php endif;?><div class="elev8-store-image"><?php if($image):?><img src="<?php echo esc_url($image);?>" alt="<?php echo esc_attr((string)$asset['title']);?>"><?php else:?><div class="elev8-store-image-missing">Image unavailable</div><?php endif;?><?php if($is_sold):?><span class="elev8-store-badge">Sold</span><?php elseif($is_reserved):?><span class="elev8-store-badge">Reserved</span><?php endif;?></div><?php if($product_url!==''):?></a><?php endif;?><div class="elev8-store-body"><div class="elev8-store-title-row"><h3><?php if($product_url!==''):?><a href="<?php echo esc_url($product_url);?>"><?php endif;?><?php echo esc_html((string)$asset['title']);?><?php if($product_url!==''):?></a><?php endif;?></h3><strong><?php echo $asset['price']===null?'Price unavailable':esc_html('$'.number_format_i18n((float)$asset['price'],2));?></strong></div><?php $meta=array_filter([(string)$asset['medium'],(string)$asset['dimensions']]); if($meta):?><p class="elev8-store-meta"><?php echo esc_html(implode(' · ',$meta));?></p><?php endif;?><?php if((string)$asset['description']!==''):?><p><?php echo esc_html(wp_trim_words((string)$asset['description'],32));?></p><?php endif;?><div class="elev8-store-actions"><?php if(!empty($purchase['purchasable'])):?><a class="button button-primary elev8-buy-button" href="<?php echo esc_url((string)$purchase['add_to_cart']);?>">Add to cart</a><?php if($product_url!==''):?><a class="elev8-details-link" href="<?php echo esc_url($product_url);?>">View details</a><?php endif;?><?php elseif($is_reserved):?><span class="elev8-unavailable-label">Currently reserved</span><?php elseif($is_sold):?><span class="elev8-unavailable-label">This item has sold</span><?php elseif($contacts): $contact=$contacts[0];?><a class="button" href="<?php echo esc_url($contact['url'],['http','https','mailto','tel']);?>"<?php echo preg_match('/^https?:/i',$contact['url'])?' target="_blank" rel="noopener"':'';?>>Ask about this item</a><?php else:?><span class="elev8-unavailable-label">Online purchase unavailable</span><?php endif;?></div></div></article><?php endforeach;?></div></section><?php endif;?>
+          <?php if($store_assets):?><section class="elev8-panel elev8-artist-store"><?php $store_cart_url=Elev8_OS_WooCommerce::get_cart_url(); $store_checkout_url=Elev8_OS_WooCommerce::get_checkout_url();?><div class="elev8-store-heading"><div><p class="elev8-store-eyebrow">Available at Elev8 Arts</p><h2>Artwork &amp; Products</h2><p>Purchase online and Elev8 Arts will remove the item from display, pack it, and prepare it for pickup or delivery.</p></div><?php if($store_cart_url!==''):?><div class="elev8-store-cart-links"><a class="button elev8-view-cart-button" href="<?php echo esc_url($store_cart_url);?>">View cart</a><?php if($store_checkout_url!==''):?><a class="elev8-checkout-link" href="<?php echo esc_url($store_checkout_url);?>">Checkout</a><?php endif;?></div><?php endif;?></div><div class="elev8-store-grid"><?php foreach($store_assets as $asset): $image=wp_get_attachment_image_url((int)$asset['image_attachment_id'],'large'); $status=(string)$asset['status']; $is_sold=($status==='sold'); $is_reserved=($status==='reserved'); $purchase=Elev8_OS_WooCommerce::get_purchase_data($asset); $product_url=(string)$purchase['url']; $asset_url=Elev8_OS_Asset_Service::get_public_url($asset);?><article class="elev8-store-card<?php echo $is_sold?' is-sold':($is_reserved?' is-reserved':'');?>"><?php if($asset_url!==''):?><a class="elev8-store-image-link" href="<?php echo esc_url($asset_url);?>"><?php endif;?><div class="elev8-store-image"><?php if($image):?><img src="<?php echo esc_url($image);?>" alt="<?php echo esc_attr((string)$asset['title']);?>"><?php else:?><div class="elev8-store-image-missing">Image unavailable</div><?php endif;?><?php if($is_sold):?><span class="elev8-store-badge">Sold</span><?php elseif($is_reserved):?><span class="elev8-store-badge">Reserved</span><?php endif;?></div><?php if($asset_url!==''):?></a><?php endif;?><div class="elev8-store-body"><div class="elev8-store-title-row"><h3><?php if($asset_url!==''):?><a href="<?php echo esc_url($asset_url);?>"><?php endif;?><?php echo esc_html((string)$asset['title']);?><?php if($asset_url!==''):?></a><?php endif;?></h3><strong><?php echo $asset['price']===null?'Price unavailable':esc_html('$'.number_format_i18n((float)$asset['price'],2));?></strong></div><?php $meta=array_filter([(string)$asset['medium'],(string)$asset['dimensions']]); if($meta):?><p class="elev8-store-meta"><?php echo esc_html(implode(' · ',$meta));?></p><?php endif;?><?php if((string)$asset['description']!==''):?><p><?php echo esc_html(wp_trim_words((string)$asset['description'],32));?></p><?php endif;?><div class="elev8-store-actions"><?php if(!empty($purchase['purchasable'])):?><a class="button button-primary elev8-buy-button" href="<?php echo esc_url((string)$purchase['add_to_cart']);?>">Add to cart</a><?php if($asset_url!==''):?><a class="elev8-details-link" href="<?php echo esc_url($asset_url);?>">View details</a><?php endif;?><?php elseif($is_reserved):?><span class="elev8-unavailable-label">Currently reserved</span><?php elseif($is_sold):?><span class="elev8-unavailable-label">This item has sold</span><?php elseif($contacts): $contact=$contacts[0];?><a class="button" href="<?php echo esc_url($contact['url'],['http','https','mailto','tel']);?>"<?php echo preg_match('/^https?:/i',$contact['url'])?' target="_blank" rel="noopener"':'';?>>Ask about this item</a><?php else:?><span class="elev8-unavailable-label">Online purchase unavailable</span><?php endif;?></div></div></article><?php endforeach;?></div></section><?php endif;?>
           <div class="elev8-panel elev8-book-artist"><h2>Book with <?php echo esc_html($name); ?></h2><p>See this artist's available classes, dates, and booking options.</p><?php if($booking_url!==''):?><p class="elev8-booking-cta"><a class="button button-primary" href="<?php echo esc_url(add_query_arg('elev8_ref',self::artist_slug($employee_id),$booking_url));?>"><?php echo esc_html($booking_label);?></a></p><?php elseif(current_user_can('manage_options')):?><div class="elev8-empty">Admin: add a Booking Page URL in Elev8 OS → Artist Portal so customers can book with this artist.</div><?php endif;?></div>
           <script>(function(){var root=document.currentScript.closest('.elev8-public-profile');if(!root)return;var copy=root.querySelector('.elev8-copy-link');if(copy)copy.addEventListener('click',function(){var link=this.getAttribute('data-link');if(navigator.clipboard){navigator.clipboard.writeText(link).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy page link',1500);});}else{window.prompt('Copy this link:',link);}});var open=root.querySelector('.elev8-open-qr'),modal=root.querySelector('.elev8-qr-modal'),close=root.querySelector('.elev8-close-qr');if(open&&modal){open.addEventListener('click',function(){var img=modal.querySelector('img');img.src=this.getAttribute('data-qr');modal.hidden=false;document.body.classList.add('elev8-qr-open');});}if(close&&modal)close.addEventListener('click',function(){modal.hidden=true;document.body.classList.remove('elev8-qr-open');});if(modal)modal.addEventListener('click',function(e){if(e.target===modal){modal.hidden=true;document.body.classList.remove('elev8-qr-open');}});})();</script>
         </div><?php return ob_get_clean();
+    }
+
+    private static function employee_id_from_owner_user(int $owner_user_id): int {
+        if ($owner_user_id <= 0) return 0;
+        foreach (self::get_profiles() as $employee_id => $profile) {
+            if (absint($profile['wp_user_id'] ?? 0) === $owner_user_id) return absint($employee_id);
+        }
+        return 0;
+    }
+
+    private static function public_asset_content(array $asset): string {
+        $owner_user_id = absint($asset['owner_user_id'] ?? 0);
+        $employee_id = self::employee_id_from_owner_user($owner_user_id);
+        $profiles = self::get_profiles();
+        $profile = $employee_id > 0 ? ($profiles[$employee_id] ?? []) : [];
+        $artist_name = $employee_id > 0 ? self::employee_name($employee_id) : get_the_author_meta('display_name', $owner_user_id);
+        $artist_url = $employee_id > 0 ? self::public_artist_url($employee_id, true) : '';
+        $image = wp_get_attachment_image_url(absint($asset['image_attachment_id'] ?? 0), 'full');
+        $purchase = Elev8_OS_WooCommerce::get_purchase_data($asset);
+        $status = sanitize_key((string) ($asset['status'] ?? 'draft'));
+        $more_assets = [];
+        foreach (Elev8_OS_Asset_Service::get_public_for_owner($owner_user_id) as $candidate) {
+            if (absint($candidate['id'] ?? 0) !== absint($asset['id'] ?? 0)) $more_assets[] = $candidate;
+            if (count($more_assets) >= 3) break;
+        }
+        ob_start(); ?>
+        <div class="elev8-os elev8-asset-experience">
+          <nav class="elev8-asset-nav"><?php if($artist_url!==''):?><a href="<?php echo esc_url($artist_url);?>">&larr; More from <?php echo esc_html($artist_name);?></a><?php endif;?><span><?php echo esc_html((string)$asset['asset_number']);?></span></nav>
+          <section class="elev8-asset-hero">
+            <div class="elev8-asset-hero-image"><?php if($image):?><img src="<?php echo esc_url($image);?>" alt="<?php echo esc_attr((string)$asset['title']);?>"><?php else:?><div class="elev8-store-image-missing">Image unavailable</div><?php endif;?></div>
+            <div class="elev8-asset-purchase-panel">
+              <p class="elev8-store-eyebrow">Available at Elev8 Arts</p>
+              <h1><?php echo esc_html((string)$asset['title']);?></h1>
+              <?php if($artist_name!==''):?><p class="elev8-asset-byline">By <?php if($artist_url!==''):?><a href="<?php echo esc_url($artist_url);?>"><?php endif;?><?php echo esc_html($artist_name);?><?php if($artist_url!==''):?></a><?php endif;?></p><?php endif;?>
+              <p class="elev8-asset-price"><?php echo $asset['price']===null?'Price unavailable':esc_html('$'.number_format_i18n((float)$asset['price'],2));?></p>
+              <dl class="elev8-asset-facts"><div><dt>Status</dt><dd><?php echo esc_html(ucfirst($status));?></dd></div><?php if((string)$asset['medium']!==''):?><div><dt>Medium</dt><dd><?php echo esc_html((string)$asset['medium']);?></dd></div><?php endif;?><?php if((string)$asset['dimensions']!==''):?><div><dt>Dimensions</dt><dd><?php echo esc_html((string)$asset['dimensions']);?></dd></div><?php endif;?><div><dt>Asset number</dt><dd><?php echo esc_html((string)$asset['asset_number']);?></dd></div></dl>
+              <div class="elev8-asset-buy-actions"><?php if(!empty($purchase['purchasable'])):?><a class="button button-primary elev8-asset-primary-buy" href="<?php echo esc_url((string)$purchase['add_to_cart']);?>">Add to cart</a><?php elseif($status==='reserved'):?><span class="elev8-unavailable-label">Currently reserved</span><?php elseif($status==='sold'):?><span class="elev8-unavailable-label">This item has sold</span><?php else:?><span class="elev8-unavailable-label">Online purchase unavailable</span><?php endif;?><?php if((string)$purchase['cart_url']!==''):?><a href="<?php echo esc_url((string)$purchase['cart_url']);?>">View cart</a><?php endif;?><?php $checkout=Elev8_OS_WooCommerce::get_checkout_url(); if($checkout!==''):?><a href="<?php echo esc_url($checkout);?>">Checkout</a><?php endif;?></div>
+              <p class="elev8-asset-fulfillment">Purchase online and Elev8 Arts will remove the item from display, pack it, and prepare it for pickup or delivery.</p>
+            </div>
+          </section>
+          <?php if((string)$asset['description']!==''):?><section class="elev8-panel elev8-asset-story"><h2>About this piece</h2><p><?php echo nl2br(esc_html((string)$asset['description']));?></p></section><?php endif;?>
+          <?php if($employee_id>0 && (!empty($profile['bio']) || !empty($profile['profile_photo']))):?><section class="elev8-panel elev8-asset-artist"><div><?php if(!empty($profile['profile_photo'])):?><img src="<?php echo esc_url((string)$profile['profile_photo']);?>" alt="<?php echo esc_attr($artist_name);?>"><?php endif;?></div><div><p class="elev8-store-eyebrow">Meet the artist</p><h2><?php echo esc_html($artist_name);?></h2><?php if(!empty($profile['bio'])):?><p><?php echo esc_html(wp_trim_words((string)$profile['bio'],70));?></p><?php endif;?><?php if($artist_url!==''):?><a href="<?php echo esc_url($artist_url);?>">View artist storefront</a><?php endif;?></div></section><?php endif;?>
+          <?php if($more_assets):?><section class="elev8-panel elev8-asset-more"><h2>More from <?php echo esc_html($artist_name);?></h2><div class="elev8-store-grid"><?php foreach($more_assets as $more): $more_image=wp_get_attachment_image_url(absint($more['image_attachment_id']),'medium_large'); $more_url=Elev8_OS_Asset_Service::get_public_url($more);?><article class="elev8-store-card"><a class="elev8-store-image-link" href="<?php echo esc_url($more_url);?>"><div class="elev8-store-image"><?php if($more_image):?><img src="<?php echo esc_url($more_image);?>" alt="<?php echo esc_attr((string)$more['title']);?>"><?php else:?><div class="elev8-store-image-missing">Image unavailable</div><?php endif;?></div></a><div class="elev8-store-body"><div class="elev8-store-title-row"><h3><a href="<?php echo esc_url($more_url);?>"><?php echo esc_html((string)$more['title']);?></a></h3><strong><?php echo $more['price']===null?'Price unavailable':esc_html('$'.number_format_i18n((float)$more['price'],2));?></strong></div></div></article><?php endforeach;?></div></section><?php endif;?>
+        </div><?php return ob_get_clean();
+    }
+
+    public static function render_asset_route(): void {
+        $asset_id = absint(get_query_var('elev8_asset'));
+        if ($asset_id <= 0) return;
+        $asset = Elev8_OS_Asset_Service::get($asset_id);
+        if (!$asset || empty($asset['public_visibility']) || !in_array((string)$asset['status'], ['available','reserved','sold'], true)) {
+            global $wp_query; $wp_query->set_404(); status_header(404); return;
+        }
+        Elev8_OS_Asset_Service::record_public_view($asset_id, isset($_GET['elev8_qr']) && '1' === sanitize_text_field(wp_unslash((string)$_GET['elev8_qr'])));
+        status_header(200); nocache_headers();
+        wp_enqueue_style('elev8-os-admin', ELEV8_OS_URL . 'assets/css/admin.css', [], ELEV8_OS_VERSION);
+        get_header();
+        echo '<main class="elev8-public-page elev8-public-asset-page">' . self::public_asset_content($asset) . '</main>';
+        get_footer(); exit;
     }
 
     public static function render_public_route(): void {

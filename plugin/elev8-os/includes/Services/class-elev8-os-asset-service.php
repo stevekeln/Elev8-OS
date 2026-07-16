@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
  */
 final class Elev8_OS_Asset_Service {
 
-    private const DB_VERSION = '2.0.0';
+    private const DB_VERSION = '3.0.0';
     private const DB_VERSION_OPTION = 'elev8_os_asset_db_version';
 
     public static function init(): void {
@@ -52,6 +52,8 @@ final class Elev8_OS_Asset_Service {
             internal_notes longtext NOT NULL,
             image_attachment_id bigint(20) unsigned NULL,
             wc_product_id bigint(20) unsigned NULL,
+            public_view_count bigint(20) unsigned NOT NULL DEFAULT 0,
+            qr_scan_count bigint(20) unsigned NOT NULL DEFAULT 0,
             created_at datetime NOT NULL,
             updated_at datetime NOT NULL,
             PRIMARY KEY  (id),
@@ -132,6 +134,33 @@ final class Elev8_OS_Asset_Service {
         );
 
         return is_array($rows) ? $rows : [];
+    }
+
+
+    /** Return the canonical public page for one asset. */
+    public static function get_public_url(array $asset, bool $qr_scan = false): string {
+        $asset_id = absint($asset['id'] ?? 0);
+        if ($asset_id <= 0) {
+            return '';
+        }
+        $slug = sanitize_title((string) ($asset['title'] ?? 'artwork'));
+        $url = home_url('/artwork/' . $asset_id . '/' . ($slug !== '' ? $slug : 'item') . '/');
+        return $qr_scan ? add_query_arg('elev8_qr', '1', $url) : $url;
+    }
+
+    /** Record a public view or physical QR scan without changing asset content. */
+    public static function record_public_view(int $asset_id, bool $qr_scan = false): void {
+        global $wpdb;
+        if ($asset_id <= 0) {
+            return;
+        }
+        $column = $qr_scan ? 'qr_scan_count' : 'public_view_count';
+        $wpdb->query(
+            $wpdb->prepare(
+                'UPDATE ' . self::table_name() . " SET {$column} = {$column} + 1 WHERE id = %d",
+                $asset_id
+            )
+        );
     }
 
     /** @return array<string,mixed>|null */
