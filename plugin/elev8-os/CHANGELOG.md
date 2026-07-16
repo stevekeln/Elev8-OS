@@ -36,6 +36,14 @@
 
 # Changelog
 
+## 7.4.2 - Artist Command Center
+
+- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
+- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
+- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
+- Added the Artist Command Center panel with a live business view and responsive layout.
+- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
+
 ## 7.3.0 — QR Asset Experience
 - Added a canonical public page for every public Asset Engine item.
 - QR codes now open the Elev8 OS asset experience instead of a generic WooCommerce product page.
@@ -156,6 +164,14 @@
 
 # Changelog
 
+## 7.4.2 - Artist Command Center
+
+- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
+- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
+- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
+- Added the Artist Command Center panel with a live business view and responsive layout.
+- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
+
 ## 6.8.0 — Class Requests & Teacher Experience
 - Renamed the teacher-facing Waitlist to Class Requests.
 - Removed Amelia class discovery from the Class Requests page.
@@ -234,6 +250,14 @@
 - Preserved the 6.4.0 Opportunity Detail View, Class Demand Manager, Waitlists, Artist Portal, and Amelia integration.
 
 # Changelog
+
+## 7.4.2 - Artist Command Center
+
+- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
+- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
+- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
+- Added the Artist Command Center panel with a live business view and responsive layout.
+- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
 
 ## 6.4.0 — Opportunity Detail View
 
@@ -382,6 +406,14 @@
 - Portal navigation now survives page title and permalink changes.
 
 # Changelog
+
+## 7.4.2 - Artist Command Center
+
+- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
+- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
+- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
+- Added the Artist Command Center panel with a live business view and responsive layout.
+- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
 
 ## 5.4.1 — Version Display Hotfix
 

@@ -180,6 +180,9 @@ final class Elev8_OS_Dashboard_Module {
         $achievements = (array) ($business['achievements'] ?? []);
         $growth_plan = (array) ($business['growth_plan'] ?? []);
         $score_components = (array) ($growth_plan['components'] ?? []);
+        $command_center = (array) ($business['command_center'] ?? []);
+        $momentum = (array) ($command_center['score_momentum'] ?? []);
+        $activity = (array) ($command_center['activity'] ?? []);
         ?>
         <div class="elev8-artist-dashboard elev8-dashboard-v2">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('dashboard'); ?>
@@ -233,6 +236,24 @@ final class Elev8_OS_Dashboard_Module {
                     </div>
                 </section>
             </div>
+
+
+            <section class="elev8-dashboard-panel elev8-command-center-panel">
+                <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Business momentum', 'elev8-os'); ?></p><h2><?php esc_html_e('Artist Command Center', 'elev8-os'); ?></h2></div><span class="elev8-live-badge"><span></span><?php esc_html_e('Live business view', 'elev8-os'); ?></span></div>
+                <div class="elev8-command-center-grid">
+                    <div class="elev8-momentum-card">
+                        <span class="dashicons dashicons-chart-line"></span>
+                        <div><p><?php esc_html_e('Business Score Momentum', 'elev8-os'); ?></p><strong><?php echo isset($momentum['current']) && is_numeric($momentum['current']) ? esc_html((string)$momentum['current'].'/100') : esc_html__('Unavailable','elev8-os'); ?></strong>
+                        <small><?php if (($momentum['direction'] ?? '') === 'up') { echo esc_html(sprintf(__('Up %s points since your last recorded day', 'elev8-os'), abs((int)$momentum['change']))); } elseif (($momentum['direction'] ?? '') === 'down') { echo esc_html(sprintf(__('Down %s points since your last recorded day', 'elev8-os'), abs((int)$momentum['change']))); } elseif (($momentum['direction'] ?? '') === 'steady') { esc_html_e('Holding steady since your last recorded day', 'elev8-os'); } elseif (($momentum['direction'] ?? '') === 'new') { esc_html_e('Today starts your score history', 'elev8-os'); } else { esc_html_e('Momentum is unavailable', 'elev8-os'); } ?></small></div>
+                    </div>
+                    <div class="elev8-activity-feed">
+                        <h3><?php esc_html_e('Business Activity', 'elev8-os'); ?></h3>
+                        <?php if (!$activity): ?><div class="elev8-dashboard-empty elev8-activity-empty"><span class="dashicons dashicons-chart-area"></span><p><?php esc_html_e('Verified sales, classes, views, scans, and achievements will appear here.', 'elev8-os'); ?></p></div><?php else: foreach ($activity as $item): ?>
+                            <article><span class="dashicons dashicons-<?php echo esc_attr((string)($item['icon'] ?? 'marker')); ?>"></span><div><strong><?php echo esc_html((string)($item['title'] ?? '')); ?></strong><p><?php echo esc_html((string)($item['detail'] ?? '')); ?></p></div><?php if (!empty($item['timestamp'])): ?><time><?php echo esc_html(human_time_diff((int)$item['timestamp'], current_time('timestamp')).' '.__('ago','elev8-os')); ?></time><?php endif; ?></article>
+                        <?php endforeach; endif; ?>
+                    </div>
+                </div>
+            </section>
 
             <div class="elev8-business-center-grid">
                 <section class="elev8-dashboard-panel">
