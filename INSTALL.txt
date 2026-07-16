@@ -1,7 +1,13 @@
-Elev8 OS 6.4.0 source update
+Elev8 OS 6.4.0 corrected GitHub source update
 
-1. Replace the matching files in your local GitHub repository.
-2. Commit to develop and push to GitHub.
-3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP on Local only.
-5. Test the release checklist before installing the exact same ZIP on Live.
+This corrected package includes the required Class Discovery service that was missing from the previous 6.4.0 source update.
+
+1. Extract this ZIP.
+2. Copy the contents of plugin/elev8-os into your repository at plugin/elev8-os, replacing matching files.
+3. Confirm this file exists before committing:
+   plugin/elev8-os/includes/Services/class-elev8-os-class-discovery.php
+4. Commit the correction to develop and push.
+5. Run Build Elev8 OS Release.bat.
+6. Open the generated ZIP and confirm it contains:
+   elev8-os/includes/Services/class-elev8-os-class-discovery.php
+7. Install the generated ZIP on Local only and complete testing before Live.
