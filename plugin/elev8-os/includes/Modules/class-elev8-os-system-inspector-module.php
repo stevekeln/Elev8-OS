@@ -21,7 +21,7 @@ final class Elev8_OS_System_Inspector_Module {
      * Register module hooks.
      */
     public static function init(): void {
-        add_action('admin_menu', [__CLASS__, 'register_admin_page'], 40);
+        add_action('admin_menu', [__CLASS__, 'register_admin_page'], 80);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
         add_action('admin_post_' . self::EXPORT_ACTION, [__CLASS__, 'export_json']);
     }

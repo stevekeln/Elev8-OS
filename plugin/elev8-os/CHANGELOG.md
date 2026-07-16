@@ -1,5 +1,23 @@
 # Elev8 OS Changelog
 
+## 6.0.0 — Admin Reorganization
+
+- Renamed the confusing admin **Artist Portal** screen to **Artists**.
+- Reorganized Elev8 OS admin navigation into a clearer daily-use order.
+- Renamed the admin-only Artist Dashboard screen to **Artist Dashboard Preview**.
+- Removed the duplicate legacy System Status menu entry while preserving the full System Inspector.
+- Moved CEO Dashboard and Business Intelligence ahead of system and development tools.
+- Kept the simple `develop` and `main` branch workflow unchanged.
+
+## 5.9.0 — Portal Polish
+
+- Added secure CSV downloads for artist class rosters.
+- Added print-friendly student rosters.
+- Added live roster search counts and cleaner roster actions.
+- Improved class cards, action hierarchy, mobile layouts, and portal navigation.
+- Preserved artist-scoped permissions and verified-data rules.
+
+
 ## 5.8.0
 - Added the Artist Portal Students page and automatic portal-page management.
 - Added class-specific Amelia student rosters with verified names, contact details, seats, booking status, and booking date when available.

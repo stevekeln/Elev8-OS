@@ -20,7 +20,7 @@ final class Elev8_OS_CEO_Dashboard_Module {
      * Register module hooks.
      */
     public static function init(): void {
-        add_action('admin_menu', [__CLASS__, 'register_admin_page'], 42);
+        add_action('admin_menu', [__CLASS__, 'register_admin_page'], 40);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
     }
 

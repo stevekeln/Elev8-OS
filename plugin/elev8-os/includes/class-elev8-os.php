@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS {
-    const VERSION = '5.5.0'; // Legacy compatibility; UI and assets use ELEV8_OS_VERSION.
+    const VERSION = '6.0.0'; // Legacy compatibility; UI and assets use ELEV8_OS_VERSION.
     const OPTION_PROFILES = 'elev8_os_artist_profiles';
     const OPTION_PAYOUTS = 'elev8_os_artist_payouts';
     const OPTION_RULES = 'elev8_os_teacher_rules';
@@ -11,7 +11,8 @@ final class Elev8_OS {
     const OPTION_RELEASES = 'elev8_os_releases';
 
     public static function init(): void {
-        add_action('admin_menu', [__CLASS__, 'admin_menu']);
+        add_action('admin_menu', [__CLASS__, 'admin_menu'], 10);
+        add_action('admin_menu', [__CLASS__, 'register_development_menu'], 90);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
         add_action('admin_post_elev8_os_save_rule', [__CLASS__, 'save_rule']);
         add_action('admin_post_elev8_os_delete_rule', [__CLASS__, 'delete_rule']);
@@ -55,29 +56,23 @@ final class Elev8_OS {
 
         add_submenu_page(
             'elev8-os',
+            'Artists',
+            'Artists',
+            'manage_options',
+            'elev8-artist-portal',
+            [__CLASS__, 'render_artist_portal_admin']
+        );
+    }
+
+
+    public static function register_development_menu(): void {
+        add_submenu_page(
+            'elev8-os',
             'Development Center',
             'Development',
             'manage_options',
             'elev8-development',
             [__CLASS__, 'render_development']
-        );
-
-        add_submenu_page(
-            'elev8-os',
-            'Artist Portal',
-            'Artist Portal',
-            'manage_options',
-            'elev8-artist-portal',
-            [__CLASS__, 'render_artist_portal_admin']
-        );
-
-        add_submenu_page(
-            'elev8-os',
-            'System Status',
-            'System Status',
-            'manage_options',
-            'elev8-system-status',
-            [__CLASS__, 'render_system_status']
         );
     }
 
@@ -1155,7 +1150,7 @@ final class Elev8_OS {
         $artist_id=isset($_GET['artist_id'])?absint($_GET['artist_id']):((int)($employees[0]['id']??0));
         $profile=$profiles[$artist_id]??[]; $users=get_users(['orderby'=>'display_name','order'=>'ASC']);
         $message=isset($_GET['message'])?sanitize_key($_GET['message']):'';
-        echo '<div class="wrap elev8-os"><div class="elev8-header"><div><h1>Artist Portal Setup</h1><p>Connect Amelia artists to WordPress accounts and manage profiles, documents, messages, and payouts.</p></div><span class="elev8-version">Version '.esc_html(ELEV8_OS_VERSION).'</span></div>';
+        echo '<div class="wrap elev8-os"><div class="elev8-header"><div><h1>Artists</h1><p>Manage artist profiles, partnership rules, payouts, documents, referrals, and public pages from one place.</p></div><span class="elev8-version">Version '.esc_html(ELEV8_OS_VERSION).'</span></div>';
         if($message) echo '<div class="notice notice-success is-dismissible"><p>Artist portal updated.</p></div>';
         echo '<form method="get" class="elev8-filter"><input type="hidden" name="page" value="elev8-artist-portal"><label>Elev8 Member Artist</label><select name="artist_id">';
         foreach($employees as $e){$n=trim($e['firstName'].' '.$e['lastName']);echo '<option value="'.esc_attr($e['id']).'" '.selected($artist_id,(int)$e['id'],false).'>'.esc_html($n).'</option>';}

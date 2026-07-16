@@ -71,8 +71,8 @@ final class Elev8_OS_Dashboard_Module {
     public static function register_admin_menu(): void {
         add_submenu_page(
             'elev8-os',
-            __('Artist Dashboard', 'elev8-os'),
-            __('Artist Dashboard', 'elev8-os'),
+            __('Artist Dashboard Preview', 'elev8-os'),
+            __('Artist Dashboard Preview', 'elev8-os'),
             'manage_options',
             self::ADMIN_PAGE_SLUG,
             [__CLASS__, 'render_admin_preview']
