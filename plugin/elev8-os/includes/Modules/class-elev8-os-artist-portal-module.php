@@ -30,6 +30,7 @@ final class Elev8_OS_Artist_Portal_Module {
         add_action('init', [__CLASS__, 'register_edit_website_shortcode']);
         add_action('admin_post_elev8_os_artist_save_website', [__CLASS__, 'save_artist_website']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
+        add_filter('body_class', [__CLASS__, 'body_classes']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
 
         add_action('show_user_profile', [__CLASS__, 'render_profile_fields']);
@@ -40,6 +41,35 @@ final class Elev8_OS_Artist_Portal_Module {
 
     public static function status(): string {
         return 'active';
+    }
+
+    /**
+     * Give teacher-facing portal pages one application shell instead of
+     * displaying the public website header and the portal navigation together.
+     *
+     * @param array<int,string> $classes
+     * @return array<int,string>
+     */
+    public static function body_classes(array $classes): array {
+        if (!is_user_logged_in() || !class_exists('Elev8_OS_Portal_Page_Manager')) {
+            return $classes;
+        }
+
+        $portal_pages = ['dashboard', 'classes', 'students', 'waitlist'];
+        $is_portal_page = self::is_website_page() || self::is_edit_website_page();
+
+        foreach ($portal_pages as $portal_page) {
+            if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
+                $is_portal_page = true;
+                break;
+            }
+        }
+
+        if ($is_portal_page) {
+            $classes[] = 'elev8-os-portal-shell';
+        }
+
+        return array_values(array_unique($classes));
     }
 
     public static function enqueue_assets(): void {

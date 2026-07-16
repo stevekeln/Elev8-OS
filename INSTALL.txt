@@ -1,9 +1,9 @@
-Elev8 OS 6.7.1 — Artist Portal Polish
+Elev8 OS 6.7.2 — Artist Waitlist Redesign
 
-1. Copy the plugin/elev8-os folder into your local GitHub repository.
-2. Replace matching files.
-3. Commit and push to develop.
-4. Run Build Elev8 OS Release.bat.
-5. Install the generated ZIP on Local.
-6. Test Students, Artist Dashboard, My Classes, My Website, Edit Website, and Waitlist.
-7. Install the exact tested build ZIP on Live.
+1. Extract this source update.
+2. Copy plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os.
+3. Replace the matching files.
+4. Commit and push to develop.
+5. Run Build Elev8 OS Release.bat.
+6. Install the generated ZIP on Local and test the Artist Portal Waitlist.
+7. Install the exact same generated ZIP on Live only after Local passes.

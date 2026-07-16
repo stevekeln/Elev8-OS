@@ -82,13 +82,26 @@ final class Elev8_OS_Waitlist_Module {
         }
         $user = wp_get_current_user();
         $employee_id = absint(get_user_meta($user->ID, self::EMPLOYEE_META, true));
-        if ($employee_id <= 0 && !current_user_can('manage_options')) {
+        $is_admin_preview = current_user_can('manage_options');
+
+        if ($is_admin_preview) {
+            $requested_employee_id = absint($_GET['employee_id'] ?? 0);
+            if ($requested_employee_id > 0) {
+                $employee_id = $requested_employee_id;
+            } elseif ($employee_id <= 0) {
+                $employees = self::employees();
+                $employee_id = $employees ? (int) $employees[0]['id'] : 0;
+            }
+        }
+
+        if ($employee_id <= 0 && !$is_admin_preview) {
             return '<div class="elev8-dashboard-warning"><p><strong>' . esc_html__('Your account is not connected to an Amelia artist.', 'elev8-os') . '</strong></p></div>';
         }
+
         ob_start();
         echo '<div class="elev8-artist-dashboard elev8-waitlist">';
         if (class_exists('Elev8_OS_Artist_Portal_Module')) { Elev8_OS_Artist_Portal_Module::render_navigation('waitlist'); }
-        self::render_content($employee_id, false);
+        self::render_content($employee_id, false, $is_admin_preview);
         echo '</div>';
         return (string) ob_get_clean();
     }
@@ -105,44 +118,155 @@ final class Elev8_OS_Waitlist_Module {
             echo '<option value="' . esc_attr((string) $employee['id']) . '" ' . selected($employee_id, (int) $employee['id'], false) . '>' . esc_html($employee['name']) . '</option>';
         }
         echo '</select><button class="button" type="submit">' . esc_html__('View classes', 'elev8-os') . '</button></form>';
-        self::render_content($employee_id, true);
+        self::render_content($employee_id, true, false);
         echo '</div>';
     }
 
-    private static function render_content(int $employee_id, bool $admin): void {
+    private static function render_content(int $employee_id, bool $admin, bool $admin_preview = false): void {
         $entries = self::entries($employee_id);
         $classes = $employee_id > 0 ? self::upcoming_classes($employee_id) : [];
         $redirect = $admin
             ? add_query_arg(['page' => self::ADMIN_SLUG, 'employee_id' => $employee_id], admin_url('admin.php'))
-            : Elev8_OS_Portal_Page_Manager::get_url('waitlist');
-        if (isset($_GET['elev8_waitlist_saved'])) { echo '<div class="notice notice-success"><p>' . esc_html__('Waitlist updated.', 'elev8-os') . '</p></div>'; }
+            : add_query_arg(
+                $admin_preview ? ['employee_id' => $employee_id] : [],
+                Elev8_OS_Portal_Page_Manager::get_url('waitlist')
+            );
+
+        $active_entries = array_values(array_filter($entries, static function ($entry): bool {
+            return in_array((string) $entry->status, ['waiting', 'contacted'], true);
+        }));
+        $waiting_count = count(array_filter($entries, static fn($entry): bool => (string) $entry->status === 'waiting'));
+        $contacted_count = count(array_filter($entries, static fn($entry): bool => (string) $entry->status === 'contacted'));
+        $requested_seats = array_sum(array_map(static fn($entry): int => (int) $entry->seats_requested, $active_entries));
+        $upcoming_count = count($classes);
+
+        if (isset($_GET['elev8_waitlist_saved'])) {
+            echo '<div class="elev8-waitlist-notice" role="status">' . esc_html__('Waitlist updated.', 'elev8-os') . '</div>';
+        }
         ?>
-        <header class="elev8-dashboard-header"><div><p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p><h1><?php esc_html_e('Waitlist', 'elev8-os'); ?></h1><p><?php esc_html_e('Add customers to a verified upcoming Amelia class without retyping the class details.', 'elev8-os'); ?></p></div><span class="elev8-dashboard-badge"><?php esc_html_e('Amelia integrated', 'elev8-os'); ?></span></header>
-        <section class="elev8-waitlist-panel">
-          <h2><?php esc_html_e('Add a customer', 'elev8-os'); ?></h2>
-          <?php if ($employee_id <= 0) : ?>
-            <div class="notice notice-warning inline"><p><?php esc_html_e('Select an artist before adding a customer.', 'elev8-os'); ?></p></div>
-          <?php elseif (!$classes) : ?>
-            <div class="notice notice-warning inline"><p><?php esc_html_e('No future Amelia appointment records were found for this artist. Create or schedule the class in Amelia first.', 'elev8-os'); ?></p></div>
-          <?php else : ?>
-          <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="elev8-waitlist-form">
-            <input type="hidden" name="action" value="elev8_os_waitlist_save"><input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"><input type="hidden" name="employee_id" value="<?php echo esc_attr((string) $employee_id); ?>">
-            <?php wp_nonce_field('elev8_os_waitlist_save'); ?>
-            <label class="elev8-waitlist-class-select"><?php esc_html_e('Upcoming class', 'elev8-os'); ?><select required name="appointment_id"><option value=""><?php esc_html_e('Choose a class date', 'elev8-os'); ?></option><?php foreach ($classes as $class) : ?><option value="<?php echo esc_attr((string) $class['appointment_id']); ?>"><?php echo esc_html(self::class_option_label($class)); ?></option><?php endforeach; ?></select></label>
-            <label><?php esc_html_e('Customer name', 'elev8-os'); ?><input required type="text" name="customer_name" maxlength="190"></label>
-            <label><?php esc_html_e('Email', 'elev8-os'); ?><input type="email" name="customer_email" maxlength="190"></label>
-            <label><?php esc_html_e('Phone', 'elev8-os'); ?><input type="text" name="customer_phone" maxlength="80"></label>
-            <label><?php esc_html_e('Seats requested', 'elev8-os'); ?><input type="number" min="1" max="50" name="seats_requested" value="1"></label>
-            <label class="elev8-waitlist-notes"><?php esc_html_e('Notes', 'elev8-os'); ?><textarea name="notes" rows="3"></textarea></label>
-            <div class="elev8-waitlist-submit"><button class="button button-primary" type="submit"><?php esc_html_e('Add to Waitlist', 'elev8-os'); ?></button></div>
-          </form>
-          <?php endif; ?>
+        <header class="elev8-dashboard-header elev8-waitlist-header">
+            <div>
+                <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>
+                <h1><?php esc_html_e('My Waitlist', 'elev8-os'); ?></h1>
+                <p><?php esc_html_e('Keep interested customers organized and ready for the right class date.', 'elev8-os'); ?></p>
+            </div>
+            <span class="elev8-dashboard-badge"><?php esc_html_e('Amelia connected', 'elev8-os'); ?></span>
+        </header>
+
+        <?php if ($admin_preview) : ?>
+            <form method="get" class="elev8-waitlist-preview-selector">
+                <label for="elev8-waitlist-preview-artist">
+                    <span><?php esc_html_e('Admin previewing artist', 'elev8-os'); ?></span>
+                    <select id="elev8-waitlist-preview-artist" name="employee_id" onchange="this.form.submit()">
+                        <?php foreach (self::employees() as $employee) : ?>
+                            <option value="<?php echo esc_attr((string) $employee['id']); ?>" <?php selected($employee_id, (int) $employee['id']); ?>><?php echo esc_html($employee['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <noscript><button type="submit"><?php esc_html_e('View', 'elev8-os'); ?></button></noscript>
+            </form>
+        <?php endif; ?>
+
+        <section class="elev8-waitlist-metrics" aria-label="<?php esc_attr_e('Waitlist summary', 'elev8-os'); ?>">
+            <?php self::render_metric(__('Waiting customers', 'elev8-os'), $waiting_count, __('People who have not been contacted yet.', 'elev8-os')); ?>
+            <?php self::render_metric(__('Requested seats', 'elev8-os'), $requested_seats, __('Seats requested by waiting and contacted customers.', 'elev8-os')); ?>
+            <?php self::render_metric(__('Upcoming classes', 'elev8-os'), $upcoming_count, __('Verified future Amelia class dates.', 'elev8-os')); ?>
+            <?php self::render_metric(__('Contacted', 'elev8-os'), $contacted_count, __('Customers already contacted by the artist.', 'elev8-os')); ?>
         </section>
-        <section class="elev8-waitlist-panel"><h2><?php esc_html_e('Current entries', 'elev8-os'); ?></h2>
-        <?php if (!$entries) : ?><p><?php esc_html_e('No waitlist entries yet.', 'elev8-os'); ?></p><?php else : ?>
-        <div class="elev8-waitlist-table-wrap"><table class="widefat striped elev8-waitlist-table"><thead><tr><th><?php esc_html_e('Customer', 'elev8-os'); ?></th><th><?php esc_html_e('Class', 'elev8-os'); ?></th><th><?php esc_html_e('Seats', 'elev8-os'); ?></th><th><?php esc_html_e('Status', 'elev8-os'); ?></th><th><?php esc_html_e('Actions', 'elev8-os'); ?></th></tr></thead><tbody>
-        <?php foreach ($entries as $entry) : ?><tr><td><strong><?php echo esc_html($entry->customer_name); ?></strong><br><small><?php echo esc_html(trim($entry->customer_email . ' ' . $entry->customer_phone)); ?></small></td><td><?php echo esc_html($entry->class_label); ?><br><small><?php echo esc_html(self::format_occurrence($entry)); ?></small></td><td><?php echo esc_html((string) $entry->seats_requested); ?></td><td><?php echo esc_html(ucfirst($entry->status)); ?></td><td><form class="elev8-inline-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_waitlist_status"><input type="hidden" name="id" value="<?php echo esc_attr((string) $entry->id); ?>"><input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"><?php wp_nonce_field('elev8_os_waitlist_status_' . $entry->id); ?><select name="status"><?php foreach (self::statuses() as $status) : ?><option value="<?php echo esc_attr($status); ?>" <?php selected($entry->status,$status); ?>><?php echo esc_html(ucfirst($status)); ?></option><?php endforeach; ?></select><button class="button" type="submit"><?php esc_html_e('Update', 'elev8-os'); ?></button></form><form class="elev8-inline-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" onsubmit="return confirm('<?php echo esc_js(__('Remove this waitlist entry?', 'elev8-os')); ?>');"><input type="hidden" name="action" value="elev8_os_waitlist_delete"><input type="hidden" name="id" value="<?php echo esc_attr((string) $entry->id); ?>"><input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>"><?php wp_nonce_field('elev8_os_waitlist_delete_' . $entry->id); ?><button class="button-link-delete" type="submit"><?php esc_html_e('Remove', 'elev8-os'); ?></button></form></td></tr><?php endforeach; ?>
-        </tbody></table></div><?php endif; ?></section>
+
+        <div class="elev8-waitlist-workspace">
+            <section class="elev8-waitlist-panel elev8-waitlist-add-panel">
+                <div class="elev8-waitlist-section-heading">
+                    <div>
+                        <p class="elev8-eyebrow"><?php esc_html_e('Quick action', 'elev8-os'); ?></p>
+                        <h2><?php esc_html_e('Add a customer', 'elev8-os'); ?></h2>
+                    </div>
+                    <span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span>
+                </div>
+                <?php if ($employee_id <= 0) : ?>
+                    <div class="elev8-waitlist-empty"><p><?php esc_html_e('No artist record is available for this portal account.', 'elev8-os'); ?></p></div>
+                <?php elseif (!$classes) : ?>
+                    <div class="elev8-waitlist-empty"><strong><?php esc_html_e('No upcoming classes found', 'elev8-os'); ?></strong><p><?php esc_html_e('A verified future Amelia class date is required before someone can be added.', 'elev8-os'); ?></p></div>
+                <?php else : ?>
+                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="elev8-waitlist-form">
+                        <input type="hidden" name="action" value="elev8_os_waitlist_save">
+                        <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>">
+                        <input type="hidden" name="employee_id" value="<?php echo esc_attr((string) $employee_id); ?>">
+                        <?php wp_nonce_field('elev8_os_waitlist_save'); ?>
+                        <label class="elev8-waitlist-class-select"><span><?php esc_html_e('Upcoming class', 'elev8-os'); ?></span><select required name="occurrence_key"><option value=""><?php esc_html_e('Choose a class date', 'elev8-os'); ?></option><?php foreach ($classes as $class) : ?><option value="<?php echo esc_attr((string) $class['occurrence_key']); ?>"><?php echo esc_html(self::class_option_label($class)); ?></option><?php endforeach; ?></select></label>
+                        <label><span><?php esc_html_e('Customer name', 'elev8-os'); ?></span><input required type="text" name="customer_name" maxlength="190"></label>
+                        <label><span><?php esc_html_e('Email', 'elev8-os'); ?></span><input type="email" name="customer_email" maxlength="190"></label>
+                        <label><span><?php esc_html_e('Phone', 'elev8-os'); ?></span><input type="text" name="customer_phone" maxlength="80"></label>
+                        <label><span><?php esc_html_e('Seats requested', 'elev8-os'); ?></span><input type="number" min="1" max="50" name="seats_requested" value="1"></label>
+                        <label class="elev8-waitlist-notes"><span><?php esc_html_e('Notes', 'elev8-os'); ?></span><textarea name="notes" rows="3"></textarea></label>
+                        <div class="elev8-waitlist-submit"><button class="elev8-waitlist-primary" type="submit"><?php esc_html_e('Add to Waitlist', 'elev8-os'); ?></button></div>
+                    </form>
+                <?php endif; ?>
+            </section>
+
+            <section class="elev8-waitlist-panel elev8-waitlist-entries-panel">
+                <div class="elev8-waitlist-section-heading">
+                    <div>
+                        <p class="elev8-eyebrow"><?php esc_html_e('Customer queue', 'elev8-os'); ?></p>
+                        <h2><?php esc_html_e('Waiting customers', 'elev8-os'); ?></h2>
+                    </div>
+                    <span class="elev8-waitlist-count"><?php echo esc_html(number_format_i18n(count($entries))); ?></span>
+                </div>
+                <?php if (!$entries) : ?>
+                    <div class="elev8-waitlist-empty"><strong><?php esc_html_e('No waitlist entries yet', 'elev8-os'); ?></strong><p><?php esc_html_e('New customer requests will appear here.', 'elev8-os'); ?></p></div>
+                <?php else : ?>
+                    <div class="elev8-waitlist-cards">
+                        <?php foreach ($entries as $entry) : ?>
+                            <article class="elev8-waitlist-customer-card">
+                                <div class="elev8-waitlist-customer-main">
+                                    <div class="elev8-waitlist-avatar" aria-hidden="true"><?php echo esc_html(strtoupper(substr((string) $entry->customer_name, 0, 1))); ?></div>
+                                    <div>
+                                        <h3><?php echo esc_html($entry->customer_name); ?></h3>
+                                        <div class="elev8-waitlist-contact-links">
+                                            <?php if ($entry->customer_email) : ?><a href="mailto:<?php echo esc_attr($entry->customer_email); ?>"><?php echo esc_html($entry->customer_email); ?></a><?php endif; ?>
+                                            <?php if ($entry->customer_phone) : ?><a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', (string) $entry->customer_phone)); ?>"><?php echo esc_html($entry->customer_phone); ?></a><?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="elev8-waitlist-class-info">
+                                    <span><?php esc_html_e('Requested class', 'elev8-os'); ?></span>
+                                    <strong><?php echo esc_html($entry->class_label); ?></strong>
+                                    <small><?php echo esc_html(self::format_occurrence($entry)); ?></small>
+                                </div>
+                                <div class="elev8-waitlist-seat-info"><span><?php esc_html_e('Seats', 'elev8-os'); ?></span><strong><?php echo esc_html((string) $entry->seats_requested); ?></strong></div>
+                                <div class="elev8-waitlist-card-actions">
+                                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="elev8-waitlist-status-form">
+                                        <input type="hidden" name="action" value="elev8_os_waitlist_status">
+                                        <input type="hidden" name="id" value="<?php echo esc_attr((string) $entry->id); ?>">
+                                        <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>">
+                                        <?php wp_nonce_field('elev8_os_waitlist_status_' . $entry->id); ?>
+                                        <label><span><?php esc_html_e('Status', 'elev8-os'); ?></span><select name="status"><?php foreach (self::statuses() as $status) : ?><option value="<?php echo esc_attr($status); ?>" <?php selected($entry->status, $status); ?>><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></option><?php endforeach; ?></select></label>
+                                        <button type="submit"><?php esc_html_e('Save Status', 'elev8-os'); ?></button>
+                                    </form>
+                                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" onsubmit="return confirm('<?php echo esc_js(__('Remove this waitlist entry?', 'elev8-os')); ?>');">
+                                        <input type="hidden" name="action" value="elev8_os_waitlist_delete">
+                                        <input type="hidden" name="id" value="<?php echo esc_attr((string) $entry->id); ?>">
+                                        <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>">
+                                        <?php wp_nonce_field('elev8_os_waitlist_delete_' . $entry->id); ?>
+                                        <button class="elev8-waitlist-remove" type="submit"><?php esc_html_e('Remove', 'elev8-os'); ?></button>
+                                    </form>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+        </div>
+        <?php
+    }
+
+    private static function render_metric(string $label, int $value, string $description): void {
+        ?>
+        <article class="elev8-waitlist-metric">
+            <span><?php echo esc_html($label); ?></span>
+            <strong><?php echo esc_html(number_format_i18n($value)); ?></strong>
+            <p><?php echo esc_html($description); ?></p>
+        </article>
         <?php
     }
 
@@ -151,11 +275,12 @@ final class Elev8_OS_Waitlist_Module {
         check_admin_referer('elev8_os_waitlist_save');
         $employee_id = absint($_POST['employee_id'] ?? 0);
         self::assert_employee_scope($employee_id);
-        $appointment_id = absint($_POST['appointment_id'] ?? 0);
-        $class = self::appointment_for_employee($appointment_id, $employee_id);
+        $occurrence_key = sanitize_text_field(wp_unslash($_POST['occurrence_key'] ?? ''));
+        $class = self::occurrence_for_employee($occurrence_key, $employee_id);
         if (!$class) {
             wp_die(esc_html__('The selected Amelia class could not be verified for this artist.', 'elev8-os'));
         }
+        $appointment_id = (int) $class['appointment_id'];
         $customer_name = sanitize_text_field(wp_unslash($_POST['customer_name'] ?? ''));
         if ($customer_name === '') { wp_die(esc_html__('Customer name is required.', 'elev8-os')); }
         global $wpdb;
@@ -208,57 +333,14 @@ final class Elev8_OS_Waitlist_Module {
     }
 
     private static function upcoming_classes(int $employee_id): array {
-        global $wpdb;
-        $appointments = $wpdb->prefix . 'amelia_appointments';
-        if ($employee_id <= 0 || !self::table_exists($appointments)) { return []; }
-        $columns = self::table_columns($appointments);
-        $id_col = self::first_existing_column($columns, ['id']);
-        $provider_col = self::first_existing_column($columns, ['providerId','provider_id','employeeId']);
-        $service_col = self::first_existing_column($columns, ['serviceId','service_id']);
-        $start_col = self::first_existing_column($columns, ['bookingStart','booking_start','start']);
-        $capacity_col = self::first_existing_column($columns, ['maxCapacity','max_capacity','capacity']);
-        $status_col = self::first_existing_column($columns, ['status']);
-        if (!$id_col || !$provider_col || !$start_col) { return []; }
-        $select = ["`{$id_col}` AS appointment_id", "`{$provider_col}` AS employee_id", "`{$start_col}` AS booking_start"];
-        $select[] = $service_col ? "`{$service_col}` AS service_id" : '0 AS service_id';
-        $select[] = $capacity_col ? "`{$capacity_col}` AS capacity" : 'NULL AS capacity';
-        $where_status = $status_col ? " AND LOWER(COALESCE(`{$status_col}`,'')) NOT IN ('canceled','cancelled','rejected')" : '';
-        $rows = $wpdb->get_results($wpdb->prepare(
-            'SELECT ' . implode(',', $select) . " FROM `{$appointments}` WHERE `{$provider_col}`=%d AND `{$start_col}` >= %s{$where_status} ORDER BY `{$start_col}` ASC LIMIT 250",
-            $employee_id, current_time('mysql')
-        ), ARRAY_A);
-        $services = self::service_details();
-        $booked = self::booked_seats();
-        $classes = [];
-        foreach ((array) $rows as $row) {
-            $appointment_id = (int) $row['appointment_id'];
-            $service_id = (int) $row['service_id'];
-            $start = (string) $row['booking_start'];
-            $timestamp = strtotime($start);
-            if ($timestamp === false) { continue; }
-            $capacity = self::positive_int_or_null($row['capacity'] ?? null);
-            if ($capacity === null && isset($services[$service_id]['capacity'])) { $capacity = $services[$service_id]['capacity']; }
-            $booked_seats = (int) ($booked[$appointment_id] ?? 0);
-            $classes[] = [
-                'appointment_id' => $appointment_id,
-                'employee_id' => $employee_id,
-                'service_id' => $service_id,
-                'name' => $services[$service_id]['name'] ?? __('Class', 'elev8-os'),
-                'class_date' => wp_date('Y-m-d', $timestamp),
-                'class_time' => wp_date('H:i:s', $timestamp),
-                'display' => wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp),
-                'capacity' => $capacity,
-                'booked' => $booked_seats,
-                'seats_left' => $capacity === null ? null : max(0, $capacity - $booked_seats),
-            ];
-        }
-        return $classes;
+        if (!class_exists('Elev8_OS_Class_Discovery')) { return []; }
+        return Elev8_OS_Class_Discovery::upcoming_for_employee($employee_id);
     }
 
-    private static function appointment_for_employee(int $appointment_id, int $employee_id): ?array {
-        if ($appointment_id <= 0 || $employee_id <= 0) { return null; }
+    private static function occurrence_for_employee(string $occurrence_key, int $employee_id): ?array {
+        if ($occurrence_key === '' || $employee_id <= 0) { return null; }
         foreach (self::upcoming_classes($employee_id) as $class) {
-            if ((int) $class['appointment_id'] === $appointment_id) { return $class; }
+            if (hash_equals((string) $class['occurrence_key'], $occurrence_key)) { return $class; }
         }
         return null;
     }

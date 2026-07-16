@@ -1,3 +1,12 @@
+## 6.7.2 — Artist Waitlist Redesign
+
+- Rebuilt the teacher-facing waitlist as a responsive Artist Portal workspace.
+- Added verified summary cards for waiting customers, requested seats, upcoming classes, and contacted customers.
+- Replaced the cramped WordPress table with customer cards, direct email/phone actions, and clear status controls.
+- Added an administrator artist-preview selector without exposing artist selection to normal teacher accounts.
+- Added a single-menu portal shell so the public theme navigation no longer duplicates Elev8 OS navigation on portal pages.
+- Preserved existing waitlist permissions, Amelia class verification, status updates, and deletion behavior.
+
 # 6.7.1 — Artist Portal Polish
 
 - Fixed Artist Portal navigation styles not loading on Students and Waitlist pages.
