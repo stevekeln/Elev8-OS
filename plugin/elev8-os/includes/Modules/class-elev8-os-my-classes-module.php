@@ -175,7 +175,7 @@ final class Elev8_OS_My_Classes_Module {
                     <?php else : ?>
                         <span class="elev8-action-unavailable"><?php esc_html_e('Booking link unavailable', 'elev8-os'); ?></span>
                     <?php endif; ?>
-                    <span class="elev8-action-planned"><?php esc_html_e('Student roster coming next', 'elev8-os'); ?></span>
+                    <a href="<?php echo esc_url(add_query_arg('appointment_id', (int) $class['id'], Elev8_OS_Portal_Page_Manager::get_url('students'))); ?>"><?php esc_html_e('View Students', 'elev8-os'); ?></a>
                 </div>
             </div>
         </article>

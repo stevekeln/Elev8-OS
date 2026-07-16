@@ -622,6 +622,7 @@ final class Elev8_OS_Artist_Portal_Module {
         $public_url = esc_url_raw((string) get_user_meta($user->ID, self::META_PUBLIC_PAGE, true));
         $edit_url = self::edit_website_url();
         $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
+        $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
         $booking_url = esc_url_raw((string) get_user_meta($user->ID, self::META_BOOKING, true));
 
         return [
@@ -665,8 +666,8 @@ final class Elev8_OS_Artist_Portal_Module {
             'students' => [
                 'label' => __('Students', 'elev8-os'),
                 'icon' => 'groups',
-                'url' => '',
-                'enabled' => false,
+                'url' => $students_url,
+                'enabled' => true,
             ],
             'referrals' => [
                 'label' => __('Referrals', 'elev8-os'),

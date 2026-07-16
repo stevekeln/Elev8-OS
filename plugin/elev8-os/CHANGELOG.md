@@ -1,3 +1,12 @@
+# Elev8 OS Changelog
+
+## 5.8.0
+- Added the Artist Portal Students page and automatic portal-page management.
+- Added class-specific Amelia student rosters with verified names, contact details, seats, booking status, and booking date when available.
+- Added roster search and class selection.
+- Added View Students actions to My Classes.
+- Excludes cancelled and rejected bookings and displays Unavailable instead of guessing missing data.
+
 # 5.7.0 — My Classes
 
 - Activated My Classes in the Artist Portal.

@@ -14,6 +14,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-classes-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-students-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-intelligence.php';
@@ -27,6 +28,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Artist_Portal_Module::init();
         Elev8_OS_Dashboard_Module::init();
         Elev8_OS_My_Classes_Module::init();
+        Elev8_OS_Students_Module::init();
         Elev8_OS_System_Inspector_Module::init();
         Elev8_OS_Employee_Mapping_Module::init();
         Elev8_OS_Business_Intelligence_Dashboard_Module::init();
