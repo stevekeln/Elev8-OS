@@ -29,6 +29,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
 
         Elev8_OS::init();
+        Elev8_OS_WooCommerce::init();
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Artist_Portal_Module::init();
         Elev8_OS_Dashboard_Module::init();

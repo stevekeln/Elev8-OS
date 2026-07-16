@@ -1,14 +1,9 @@
-Elev8 OS 7.1.2 — Responsive Asset Storefront Grid
+Elev8 OS 7.2.0 — Inventory & WooCommerce Checkout
 
-Source branch: develop
-Base release: 7.1.1
-
-Summary:
-- Public artist storefronts now show three product cards per row on desktop.
-- Tablet and smaller desktop screens show two cards per row.
-- Mobile screens show one card per row.
-- Asset Engine records, public visibility rules, inquiry links, and existing live data are unchanged.
-- No database migration is required.
-
-Suggested commit:
-Release 7.1.2 Responsive Asset Storefront Grid
+- Expanded Asset Engine into operational inventory.
+- Added stable asset numbers, location, quantity, received date, visibility, online-sale control, and private notes.
+- Added reusable WooCommerce synchronization integration.
+- Public artwork cards are clickable and support Add to Cart.
+- WooCommerce checkout reserves inventory; paid orders mark assets sold; failed/cancelled/refunded reservations are released.
+- Existing 7.1.x assets are migrated and synchronized automatically.
+- Updated version, changelog, README, and install notes.

@@ -102,3 +102,6 @@ body.elev8-qr-open { overflow:hidden; }
 .elev8-live-store-note,.elev8-editor-help{padding:14px 16px;border-radius:10px;background:#f3f7fb;color:#36536d}
 @media (max-width:1100px){.elev8-store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){.elev8-store-grid{grid-template-columns:1fr}.elev8-store-heading,.elev8-store-title-row{display:block}.elev8-store-heading>p{margin-top:8px}.elev8-store-title-row strong{display:block;margin-top:8px}}
+
+/* 7.2.0 Asset Store checkout */
+.elev8-store-image-link{display:block;color:inherit;text-decoration:none}.elev8-store-title-row h3 a{color:inherit;text-decoration:none}.elev8-store-title-row h3 a:hover{text-decoration:underline}.elev8-store-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}.elev8-store-actions .button{margin:0}.elev8-buy-button{font-weight:700}.elev8-details-link{font-weight:600}.elev8-unavailable-label{display:inline-block;padding:9px 12px;border-radius:7px;background:#f0f0f1;color:#50575e;font-weight:600}.elev8-store-card.is-reserved .elev8-store-image img{filter:grayscale(.2);opacity:.88}

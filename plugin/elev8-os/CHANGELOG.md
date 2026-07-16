@@ -1,3 +1,26 @@
+# Elev8 OS Changelog
+
+## 7.2.0 — Inventory & WooCommerce Checkout
+
+### Added
+- Inventory Foundation fields: stable asset number/SKU, physical location, quantity, received date, public visibility, online checkout control, and private internal notes.
+- Reserved inventory status for checkout protection.
+- Automatic WooCommerce simple-product creation and synchronization from the Elev8 OS Asset record.
+- Clickable public product cards, product detail links, and Add to Cart checkout buttons.
+- WooCommerce stock management and sold-individually protection for one-of-a-kind artwork.
+- Order lifecycle synchronization: checkout reserves the asset, paid orders mark it sold, and failed/cancelled/refunded reservations return it to available inventory.
+- Asset QR-code links and WooCommerce connection status inside My Artwork.
+- Automatic migration and synchronization for artwork created in earlier Asset Engine versions.
+
+### Architecture
+- Elev8 OS remains the source of truth for asset identity, artist ownership, inventory state, location, and future business intelligence.
+- WooCommerce remains the source of truth for cart, checkout, payment, order, and commerce stock transactions.
+- One Asset record powers the public artist store and WooCommerce product without duplicate entry.
+
+### Compatibility
+- Existing artwork and live artist pages are preserved.
+- When WooCommerce is unavailable or an item has no price, the public page safely falls back to inquiry/unavailable messaging.
+
 # 7.1.2 — Responsive Asset Storefront Grid
 
 - Changed the public artist storefront to a consistent three-column product grid on desktop.

@@ -1,10 +1,11 @@
-Elev8 OS 7.1.2 — Asset Engine: My Artwork Foundation
+Elev8 OS 7.2.0 Installation
 
-SOURCE-ONLY UPDATE
+1. Back up the current site and retain the last stable Elev8 OS ZIP.
+2. Install this complete plugin ZIP on Local.
+3. Confirm the Artist Portal, My Artwork, existing classes, and public artist pages still load.
+4. Edit an existing available artwork item and save it. Confirm WooCommerce connected appears.
+5. Open the public artist page while logged out. Confirm the item is clickable and Add to Cart works.
+6. Run a test checkout using a safe test payment method. Confirm the item becomes Reserved/Sold and cannot be purchased twice.
+7. Install the exact tested ZIP on Live.
 
-1. Copy plugin/elev8-os into the matching folder in the GitHub repository.
-2. Commit and push to develop.
-3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP on Local.
-5. Test Artist Dashboard, My Classes, Students, Class Requests, Website, QR, Class Demand, CRM, and Timeline.
-6. Promote the exact same release-builder ZIP to Live only after Local passes.
+The database upgrade preserves existing artwork and adds inventory fields. Existing public artwork is automatically synchronized to WooCommerce when WooCommerce is active and the item has a price.

@@ -1,21 +1,13 @@
-=== Elev8 OS ===
-Contributors: elev8arts
-Tags: artists, classes, amelia, payouts, creative studios
-Requires at least: 6.0
-Requires PHP: 7.4
-Stable tag: 7.1.0
+Elev8 OS 7.2.0
 
 Elev8 OS is the business operating system for creative studios, artists, and makers.
 
-== Version 5.0.0 — Foundation ==
+This release adds Inventory Foundation and WooCommerce checkout to the Asset Engine. Artwork is entered once in My Artwork and can automatically power the public artist storefront, WooCommerce product, cart, checkout, inventory status, QR code, and future reporting.
 
-* Preserves the working Version 4.99 feature set.
-* Adds a modular bootstrap and loader.
-* Adds module and integration boundaries for future development.
-* Adds a System Status page.
-* Moves admin assets into a standard folder structure.
-* Prepares the codebase for the Artist Portal, native waitlist, CRM, and CEO dashboard.
+Requirements:
+- WordPress 6.0 or newer
+- PHP 7.4 or newer
+- Amelia for scheduling and bookings
+- WooCommerce for product pages, cart, checkout, payment, and order handling
 
-This release intentionally keeps the existing working logic inside a compatibility class while future releases migrate one module at a time.
-
-7.1.2 connects public artist pages directly to available Asset Engine records. The former standalone gallery is no longer displayed.
+Always test the exact release ZIP on Local before installing it on Live.
