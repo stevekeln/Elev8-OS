@@ -9,6 +9,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Support/class-elev8-os-logger.php';
         require_once ELEV8_OS_DIR . 'includes/Integrations/class-elev8-os-amelia.php';
         require_once ELEV8_OS_DIR . 'includes/Integrations/class-elev8-os-woocommerce.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-asset-sale-notification-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';
@@ -30,6 +31,7 @@ final class Elev8_OS_Loader {
 
         Elev8_OS::init();
         Elev8_OS_WooCommerce::init();
+        Elev8_OS_Asset_Sale_Notification_Service::init();
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Artist_Portal_Module::init();
         Elev8_OS_Dashboard_Module::init();

@@ -1,11 +1,14 @@
-Elev8 OS 7.2.0 Installation
+Elev8 OS 7.2.1 Installation
 
 1. Back up the current site and retain the last stable Elev8 OS ZIP.
 2. Install this complete plugin ZIP on Local.
-3. Confirm the Artist Portal, My Artwork, existing classes, and public artist pages still load.
-4. Edit an existing available artwork item and save it. Confirm WooCommerce connected appears.
-5. Open the public artist page while logged out. Confirm the item is clickable and Add to Cart works.
-6. Run a test checkout using a safe test payment method. Confirm the item becomes Reserved/Sold and cannot be purchased twice.
-7. Install the exact tested ZIP on Live.
+3. Confirm the Artist Portal, My Artwork, existing classes, public artist pages, and WooCommerce checkout still load.
+4. Confirm the artwork owner has a valid email on the WordPress user account connected to the artist.
+5. Run a test artwork order using a safe test payment method.
+6. Move the order to Processing or Complete if the payment method does not do so automatically.
+7. Confirm the artwork becomes Sold and the artist receives one sale email.
+8. Move the same order from Processing to Completed and confirm a duplicate artist email is not sent.
+9. Review the WooCommerce order notes for the Elev8 OS notification record.
+10. Install the exact tested ZIP on Live.
 
-The database upgrade preserves existing artwork and adds inventory fields. Existing public artwork is automatically synchronized to WooCommerce when WooCommerce is active and the item has a price.
+No database migration is required. Existing artwork, WooCommerce products, orders, artist mappings, and live data are preserved.

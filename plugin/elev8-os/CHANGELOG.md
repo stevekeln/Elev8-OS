@@ -1,3 +1,15 @@
+# 7.2.1 — Artist Sale Notifications
+
+- Added a reusable Asset Engine sale-notification service.
+- Sends the owning artist an HTML email after WooCommerce confirms a paid artwork order.
+- Includes artwork image, title, asset number, sale price, order number, sold date, and inventory status.
+- Uses the shared Elev8 OS Notification Service rather than direct module-level email logic.
+- Prevents duplicate artist emails when an order moves through both Processing and Completed.
+- Adds a private WooCommerce order note recording successful or failed artist notification delivery.
+- Notifies the site administrator when an artwork owner does not have a valid email address.
+- Does not expose customer payment details or private customer information to the artist.
+- Preserves all existing Asset Engine, storefront, inventory, checkout, and live artwork data.
+
 # Elev8 OS Changelog
 
 ## 7.2.0 — Inventory & WooCommerce Checkout

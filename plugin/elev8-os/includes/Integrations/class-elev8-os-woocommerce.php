@@ -166,6 +166,7 @@ final class Elev8_OS_WooCommerce {
             if (!$asset) {
                 continue;
             }
+            $was_sold = (string) $asset['status'] === 'sold';
             if ($target_status === 'sold') {
                 Elev8_OS_Asset_Service::update_operational_fields($asset_id, ['status' => 'sold', 'location' => 'sold', 'quantity' => 0]);
             } elseif ($target_status === 'reserved' && (string) $asset['status'] === 'available') {
@@ -176,6 +177,9 @@ final class Elev8_OS_WooCommerce {
             $updated = Elev8_OS_Asset_Service::get($asset_id);
             if ($updated) {
                 self::sync_asset($updated);
+                if ($target_status === 'sold' && !$was_sold) {
+                    do_action('elev8_os_asset_sold', $updated, $order_id, $item, $order);
+                }
             }
         }
     }
