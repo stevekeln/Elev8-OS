@@ -1,3 +1,12 @@
+# 6.7.0 — Artist Dashboard 2.0
+
+- Rebuilt the artist home dashboard around verified teacher priorities.
+- Added reusable My Classes dashboard snapshot service.
+- Added upcoming classes, enrolled students, available seats, and booked value cards.
+- Added next-class panel and direct links to classes, students, website preview, and website editor.
+- Added artist checklist and clear Unavailable states for unverified data.
+- Preserved all existing portal, Opportunity Engine, CRM, timeline, waitlist, and Amelia behavior.
+
 # 6.6.1 — Customer Save Clarity Hotfix
 
 - Renamed the CRM row action from **Save Follow-up** to **Save Customer Changes**.

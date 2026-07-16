@@ -21,6 +21,24 @@ final class Elev8_OS_My_Classes_Module {
         add_shortcode(self::SHORTCODE, [__CLASS__, 'shortcode']);
     }
 
+    /**
+     * Verified, reusable artist schedule snapshot for portal dashboards.
+     *
+     * @return array<string,mixed>
+     */
+    public static function get_dashboard_snapshot(WP_User $user): array {
+        $artist = self::find_artist_for_user($user);
+
+        if (!$artist) {
+            return self::unavailable_result(__('Your WordPress account is not connected to an Amelia artist.', 'elev8-os'));
+        }
+
+        $result = self::load_classes((int) $artist['id']);
+        $result['artist'] = $artist;
+
+        return $result;
+    }
+
     public static function enqueue_assets(): void {
         if (!Elev8_OS_Portal_Page_Manager::is_current_page('classes')) {
             return;

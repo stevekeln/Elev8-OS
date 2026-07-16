@@ -151,120 +151,102 @@ final class Elev8_OS_Dashboard_Module {
 
     private static function render_dashboard(): void {
         $user = wp_get_current_user();
-        $artist = self::find_artist_for_user($user);
-        $first_name = $artist
-            ? trim((string) ($artist['firstName'] ?? ''))
-            : trim((string) $user->first_name);
-
-        if ($first_name === '') {
-            $first_name = $user->display_name ?: __('Artist', 'elev8-os');
-        }
-
-        $artist_id = $artist ? (int) $artist['id'] : 0;
-        $scheduled_dates = $artist_id > 0 ? self::get_active_service_count($artist_id) : 0;
-        $upcoming_bookings = $artist_id > 0 ? self::get_upcoming_booking_count($artist_id) : 0;
+        $snapshot = class_exists('Elev8_OS_My_Classes_Module')
+            ? Elev8_OS_My_Classes_Module::get_dashboard_snapshot($user)
+            : [
+                'available' => false,
+                'reason' => __('The class schedule service is unavailable.', 'elev8-os'),
+                'summary' => [],
+                'upcoming' => [],
+                'artist' => null,
+            ];
+        $artist = isset($snapshot['artist']) && is_array($snapshot['artist']) ? $snapshot['artist'] : self::find_artist_for_user($user);
+        $first_name = $artist ? trim((string) ($artist['firstName'] ?? '')) : trim((string) $user->first_name);
+        if ($first_name === '') { $first_name = $user->display_name ?: __('Artist', 'elev8-os'); }
+        $summary = isset($snapshot['summary']) && is_array($snapshot['summary']) ? $snapshot['summary'] : [];
+        $upcoming = isset($snapshot['upcoming']) && is_array($snapshot['upcoming']) ? $snapshot['upcoming'] : [];
+        $next_class = $upcoming[0] ?? null;
+        $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
+        $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
+        $website_url = Elev8_OS_Portal_Page_Manager::get_url('website');
+        $edit_website_url = Elev8_OS_Portal_Page_Manager::get_url('edit_website');
         ?>
-        <div class="elev8-artist-dashboard">
+        <div class="elev8-artist-dashboard elev8-dashboard-v2">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('dashboard'); ?>
-            <header class="elev8-dashboard-header">
+            <header class="elev8-dashboard-header elev8-dashboard-hero">
                 <div>
-                    <p class="elev8-eyebrow"><?php esc_html_e('Elev8 OS', 'elev8-os'); ?></p>
-                    <h1>
-                        <?php
-                        echo esc_html(
-                            sprintf(
-                                __('Welcome back, %s!', 'elev8-os'),
-                                $first_name
-                            )
-                        );
-                        ?>
-                    </h1>
-                    <p><?php esc_html_e('Your creative business at a glance.', 'elev8-os'); ?></p>
+                    <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>
+                    <h1><?php echo esc_html(sprintf(__('Welcome back, %s!', 'elev8-os'), $first_name)); ?></h1>
+                    <p><?php echo esc_html(wp_date('l, F j')); ?> · <?php esc_html_e('Here is what needs your attention.', 'elev8-os'); ?></p>
                 </div>
                 <span class="elev8-dashboard-badge"><?php esc_html_e('Founders Edition', 'elev8-os'); ?></span>
             </header>
 
-            <?php if (!$artist) : ?>
-                <div class="elev8-dashboard-warning">
-                    <p>
-                        <strong><?php esc_html_e('Your Elev8 OS account is not connected to an Amelia artist record yet.', 'elev8-os'); ?></strong><br>
-                        <?php
-                        echo esc_html(
-                            sprintf(
-                                __('Ask an administrator to match your WordPress email (%s) to your Amelia artist email.', 'elev8-os'),
-                                $user->user_email
-                            )
-                        );
-                        ?>
-                    </p>
-                </div>
+            <?php if (empty($snapshot['available'])) : ?>
+                <div class="elev8-dashboard-warning"><p><strong><?php esc_html_e('Your verified class information is unavailable.', 'elev8-os'); ?></strong><br><?php echo esc_html((string) ($snapshot['reason'] ?? __('No diagnostic was supplied.', 'elev8-os'))); ?></p></div>
             <?php endif; ?>
 
-            <section class="elev8-dashboard-grid elev8-dashboard-summary" aria-label="<?php esc_attr_e('Artist summary', 'elev8-os'); ?>">
-                <?php
-                self::render_metric_card(
-                    'art',
-                    __('Scheduled Class Dates', 'elev8-os'),
-                    $scheduled_dates,
-                    _n(
-                        'class date currently scheduled',
-                        'class dates currently scheduled',
-                        $scheduled_dates,
-                        'elev8-os'
-                    )
-                );
-
-                self::render_metric_card(
-                    'calendar-alt',
-                    __('Upcoming Bookings', 'elev8-os'),
-                    $upcoming_bookings,
-                    _n(
-                        'booking currently scheduled',
-                        'bookings currently scheduled',
-                        $upcoming_bookings,
-                        'elev8-os'
-                    )
-                );
-                ?>
+            <section class="elev8-dashboard-grid elev8-dashboard-summary elev8-dashboard-summary-v2" aria-label="<?php esc_attr_e('Artist summary', 'elev8-os'); ?>">
+                <?php self::render_value_card('calendar-alt', __('Upcoming Classes', 'elev8-os'), $summary['upcoming_count'] ?? null, __('Future class dates assigned to you', 'elev8-os')); ?>
+                <?php self::render_value_card('groups', __('Students Enrolled', 'elev8-os'), $summary['student_count'] ?? null, __('Across your upcoming classes', 'elev8-os')); ?>
+                <?php self::render_value_card('tickets-alt', __('Seats Available', 'elev8-os'), $summary['seats_available'] ?? null, __('Across classes with verified capacity', 'elev8-os')); ?>
+                <?php self::render_value_card('money-alt', __('Booked Value', 'elev8-os'), $summary['booked_value'] ?? null, __('Scheduled booking value, not payout', 'elev8-os'), true); ?>
             </section>
 
-            <section class="elev8-dashboard-grid" aria-label="<?php esc_attr_e('Dashboard modules', 'elev8-os'); ?>">
-                <?php self::render_placeholder_card('calendar-alt', __('Upcoming Bookings', 'elev8-os'), __('Booked dates, times, students, and enrollment will appear here.', 'elev8-os')); ?>
-                <?php self::render_placeholder_card('chart-bar', __('My Statistics', 'elev8-os'), __('Classes, students, revenue, and average class size.', 'elev8-os')); ?>
-                <?php self::render_placeholder_card('money-alt', __('Earnings', 'elev8-os'), __('Estimated and pending payouts will appear here.', 'elev8-os')); ?>
-                <?php self::render_placeholder_card('admin-links', __('Quick Actions', 'elev8-os'), __('Profile, schedule, referrals, and tax documents.', 'elev8-os')); ?>
-                <?php self::render_placeholder_card('bell', __('Notifications', 'elev8-os'), __('Important updates and items needing attention.', 'elev8-os')); ?>
+            <div class="elev8-dashboard-main-grid">
+                <section class="elev8-dashboard-panel elev8-next-class-panel">
+                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Up next', 'elev8-os'); ?></p><h2><?php esc_html_e('Next Class', 'elev8-os'); ?></h2></div><a href="<?php echo esc_url($classes_url); ?>"><?php esc_html_e('View all classes', 'elev8-os'); ?></a></div>
+                    <?php if (!$next_class) : ?>
+                        <div class="elev8-dashboard-empty"><span class="dashicons dashicons-calendar-alt"></span><h3><?php esc_html_e('No upcoming class found', 'elev8-os'); ?></h3><p><?php esc_html_e('Your next verified Amelia class will appear here.', 'elev8-os'); ?></p></div>
+                    <?php else : ?>
+                        <?php $ts = strtotime((string) $next_class['start']); ?>
+                        <article class="elev8-next-class">
+                            <div class="elev8-next-class-date"><span><?php echo esc_html($ts ? wp_date('M', $ts) : ''); ?></span><strong><?php echo esc_html($ts ? wp_date('j', $ts) : ''); ?></strong></div>
+                            <div class="elev8-next-class-body"><h3><?php echo esc_html((string) $next_class['name']); ?></h3><p><span class="dashicons dashicons-clock"></span><?php echo esc_html($ts ? wp_date(get_option('date_format').' '.get_option('time_format'), $ts) : (string) $next_class['start']); ?></p><?php if ((string)$next_class['location'] !== '') : ?><p><span class="dashicons dashicons-location"></span><?php echo esc_html((string)$next_class['location']); ?></p><?php endif; ?><div class="elev8-next-class-facts"><span><strong><?php echo esc_html(number_format_i18n((int)$next_class['students'])); ?></strong> <?php esc_html_e('students', 'elev8-os'); ?></span><span><strong><?php echo $next_class['seats_left'] === null ? esc_html__('Unavailable','elev8-os') : esc_html(number_format_i18n((int)$next_class['seats_left'])); ?></strong> <?php esc_html_e('seats left', 'elev8-os'); ?></span></div></div>
+                        </article>
+                    <?php endif; ?>
+                </section>
+
+                <section class="elev8-dashboard-panel">
+                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Shortcuts', 'elev8-os'); ?></p><h2><?php esc_html_e('Quick Actions', 'elev8-os'); ?></h2></div></div>
+                    <div class="elev8-quick-actions">
+                        <?php self::render_action_link('calendar-alt', __('Manage My Classes', 'elev8-os'), __('Schedule, enrollment, and booking links', 'elev8-os'), $classes_url); ?>
+                        <?php self::render_action_link('groups', __('View My Students', 'elev8-os'), __('Open class rosters and contact details', 'elev8-os'), $students_url); ?>
+                        <?php self::render_action_link('admin-home', __('View My Website', 'elev8-os'), __('See what customers see', 'elev8-os'), $website_url); ?>
+                        <?php self::render_action_link('edit', __('Edit My Website', 'elev8-os'), __('Update your bio, links, and profile', 'elev8-os'), $edit_website_url); ?>
+                    </div>
+                </section>
+            </div>
+
+            <section class="elev8-dashboard-panel elev8-dashboard-status-panel">
+                <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Today', 'elev8-os'); ?></p><h2><?php esc_html_e('Your Artist Checklist', 'elev8-os'); ?></h2></div></div>
+                <div class="elev8-artist-checklist">
+                    <div class="is-complete"><span class="dashicons dashicons-yes-alt"></span><div><strong><?php esc_html_e('Artist account connected', 'elev8-os'); ?></strong><p><?php echo $artist ? esc_html__('Your WordPress account is mapped to Amelia.', 'elev8-os') : esc_html__('Connection unavailable.', 'elev8-os'); ?></p></div></div>
+                    <div class="<?php echo $next_class ? 'is-complete' : 'is-pending'; ?>"><span class="dashicons dashicons-<?php echo $next_class ? 'yes-alt' : 'warning'; ?>"></span><div><strong><?php esc_html_e('Upcoming schedule', 'elev8-os'); ?></strong><p><?php echo $next_class ? esc_html__('Your next class is ready to review.', 'elev8-os') : esc_html__('No upcoming class is currently verified.', 'elev8-os'); ?></p></div></div>
+                    <div class="is-ready"><span class="dashicons dashicons-admin-page"></span><div><strong><?php esc_html_e('Keep your public page current', 'elev8-os'); ?></strong><p><?php esc_html_e('Review your bio, links, and class information regularly.', 'elev8-os'); ?></p></div><a href="<?php echo esc_url($edit_website_url); ?>"><?php esc_html_e('Review website', 'elev8-os'); ?></a></div>
+                </div>
             </section>
         </div>
         <?php
     }
 
-    private static function render_metric_card(string $icon, string $title, int $value, string $description): void {
+    /** @param int|float|null $value */
+    private static function render_value_card(string $icon, string $title, $value, string $description, bool $money = false): void {
+        $available = is_numeric($value);
+        $display = __('Unavailable', 'elev8-os');
+        if ($available) { $display = $money ? self::format_money((float)$value) : number_format_i18n((int)$value); }
         ?>
-        <article class="elev8-welcome-card">
-            <div>
-                <span class="dashicons dashicons-<?php echo esc_attr($icon); ?>" aria-hidden="true"></span>
-                <div>
-                    <p class="elev8-card-label"><?php echo esc_html($title); ?></p>
-                    <strong><?php echo esc_html(number_format_i18n($value)); ?></strong>
-                    <p><?php echo esc_html($description); ?></p>
-                </div>
-            </div>
-        </article>
+        <article class="elev8-welcome-card <?php echo $available ? '' : 'is-unavailable'; ?>"><div><span class="dashicons dashicons-<?php echo esc_attr($icon); ?>"></span><div><p class="elev8-card-label"><?php echo esc_html($title); ?></p><strong><?php echo esc_html($display); ?></strong><p><?php echo esc_html($description); ?></p></div></div></article>
         <?php
     }
 
-    private static function render_placeholder_card(string $icon, string $title, string $description): void {
-        ?>
-        <article class="elev8-dashboard-card">
-            <span class="dashicons dashicons-<?php echo esc_attr($icon); ?>" aria-hidden="true"></span>
-            <div>
-                <h2><?php echo esc_html($title); ?></h2>
-                <p><?php echo esc_html($description); ?></p>
-                <span class="elev8-coming-soon"><?php esc_html_e('Coming next', 'elev8-os'); ?></span>
-            </div>
-        </article>
-        <?php
+    private static function render_action_link(string $icon, string $title, string $description, string $url): void {
+        ?><a class="elev8-quick-action" href="<?php echo esc_url($url); ?>"><span class="dashicons dashicons-<?php echo esc_attr($icon); ?>"></span><span><strong><?php echo esc_html($title); ?></strong><small><?php echo esc_html($description); ?></small></span><span class="dashicons dashicons-arrow-right-alt2"></span></a><?php
+    }
+
+    private static function format_money(float $value): string {
+        if (function_exists('wc_price')) { return wp_strip_all_tags((string) wc_price($value)); }
+        return '$' . number_format_i18n($value, 2);
     }
 
     private static function is_artist_user(WP_User $user): bool {
