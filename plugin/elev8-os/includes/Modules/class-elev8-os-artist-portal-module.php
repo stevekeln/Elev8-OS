@@ -31,6 +31,7 @@ final class Elev8_OS_Artist_Portal_Module {
         add_action('admin_post_elev8_os_artist_save_website', [__CLASS__, 'save_artist_website']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
         add_filter('body_class', [__CLASS__, 'body_classes']);
+        add_action('wp_head', [__CLASS__, 'render_portal_shell_css'], 99);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
 
         add_action('show_user_profile', [__CLASS__, 'render_profile_fields']);
@@ -51,25 +52,74 @@ final class Elev8_OS_Artist_Portal_Module {
      * @return array<int,string>
      */
     public static function body_classes(array $classes): array {
-        if (!is_user_logged_in() || !class_exists('Elev8_OS_Portal_Page_Manager')) {
-            return $classes;
-        }
-
-        $portal_pages = ['dashboard', 'classes', 'students', 'waitlist'];
-        $is_portal_page = self::is_website_page() || self::is_edit_website_page();
-
-        foreach ($portal_pages as $portal_page) {
-            if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
-                $is_portal_page = true;
-                break;
-            }
-        }
-
-        if ($is_portal_page) {
+        if (self::is_portal_request()) {
             $classes[] = 'elev8-os-portal-shell';
         }
 
         return array_values(array_unique($classes));
+    }
+
+    /**
+     * Render a portal-only theme shell override.
+     *
+     * Neve can render its header through several wrapper combinations depending
+     * on the Header Builder configuration. This runs only on verified Elev8 OS
+     * portal pages, so it can safely hide the public theme header without
+     * affecting the rest of the site.
+     */
+    public static function render_portal_shell_css(): void {
+        if (!self::is_portal_request()) {
+            return;
+        }
+        ?>
+        <style id="elev8-os-portal-shell-css">
+            body.elev8-os-portal-shell #header-grid,
+            body.elev8-os-portal-shell #masthead,
+            body.elev8-os-portal-shell .site-header,
+            body.elev8-os-portal-shell .hfg_header,
+            body.elev8-os-portal-shell header.header,
+            body.elev8-os-portal-shell .header-main,
+            body.elev8-os-portal-shell .header--row,
+            body.elev8-os-portal-shell .nv-navbar,
+            body.elev8-os-portal-shell .header-menu-sidebar,
+            body.elev8-os-portal-shell .neve-main,
+            body.elev8-os-portal-shell .neve-main > header,
+            body.elev8-os-portal-shell .nv-page-title-wrap {
+                display: none !important;
+            }
+            body.elev8-os-portal-shell .site-main,
+            body.elev8-os-portal-shell main#content,
+            body.elev8-os-portal-shell .nv-single-page-wrap {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+        </style>
+        <?php
+    }
+
+    /**
+     * Determine whether the current front-end request is an Elev8 OS portal page.
+     */
+    private static function is_portal_request(): bool {
+        if (!is_user_logged_in()) {
+            return false;
+        }
+
+        if (self::is_website_page() || self::is_edit_website_page()) {
+            return true;
+        }
+
+        if (!class_exists('Elev8_OS_Portal_Page_Manager')) {
+            return false;
+        }
+
+        foreach (['dashboard', 'classes', 'students', 'waitlist'] as $portal_page) {
+            if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function enqueue_assets(): void {

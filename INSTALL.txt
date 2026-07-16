@@ -1,4 +1,4 @@
-Elev8 OS 6.7.2 — Artist Waitlist Redesign
+Elev8 OS 6.7.3 — Artist Waitlist Redesign
 
 1. Extract this source update.
 2. Copy plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os.

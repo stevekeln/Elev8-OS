@@ -1,3 +1,10 @@
+## 6.7.3 — Neve Portal Header Hotfix
+
+- Added a portal-only Neve header override that runs only on verified Elev8 OS teacher pages.
+- Added support for Neve Header Builder wrapper variants including `hfg_header`, `header-main`, `nv-navbar`, and related containers.
+- Preserved the Elev8 OS Artist Portal navigation as the single teacher-facing menu.
+- Kept all 6.7.2 waitlist redesign and 6.7.1 Students page improvements intact.
+
 ## 6.7.2 — Artist Waitlist Redesign
 
 - Rebuilt the teacher-facing waitlist as a responsive Artist Portal workspace.

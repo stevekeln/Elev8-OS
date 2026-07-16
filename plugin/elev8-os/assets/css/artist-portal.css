@@ -12,9 +12,15 @@
 
 /* Elev8 OS portal application shell: use one navigation system on teacher pages. */
 body.elev8-os-portal-shell #header-grid,
-body.elev8-os-portal-shell .header--row,
+body.elev8-os-portal-shell #masthead,
 body.elev8-os-portal-shell .site-header,
-body.elev8-os-portal-shell #masthead{display:none!important}
+body.elev8-os-portal-shell .hfg_header,
+body.elev8-os-portal-shell header.header,
+body.elev8-os-portal-shell .header-main,
+body.elev8-os-portal-shell .header--row,
+body.elev8-os-portal-shell .nv-navbar,
+body.elev8-os-portal-shell .header-menu-sidebar,
+body.elev8-os-portal-shell .nv-page-title-wrap{display:none!important}
 body.elev8-os-portal-shell .site-main{padding-top:0}
 body.elev8-os-portal-shell .nv-single-page-wrap{margin-top:0}
 body.elev8-os-portal-shell .entry-header{display:none}
