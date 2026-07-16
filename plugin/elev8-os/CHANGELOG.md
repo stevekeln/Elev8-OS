@@ -1,3 +1,11 @@
+# 5.7.0 — My Classes
+
+- Activated My Classes in the Artist Portal.
+- Added verified upcoming and recent past Amelia class dates.
+- Added student counts, detected capacity, available seats, and booked value where supported.
+- Added class booking-link actions and safe Unavailable states.
+- Added the My Classes page to Portal Setup and automatic page repair.
+
 ## 5.6.0
 
 - Added a two-column Manage My Website builder with an always-visible live preview.

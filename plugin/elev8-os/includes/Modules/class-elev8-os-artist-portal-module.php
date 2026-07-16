@@ -47,7 +47,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        if (!is_page('artist-dashboard') && !self::is_website_page() && !self::is_edit_website_page()) {
+        if (!Elev8_OS_Portal_Page_Manager::is_current_page('dashboard') && !Elev8_OS_Portal_Page_Manager::is_current_page('classes') && !self::is_website_page() && !self::is_edit_website_page()) {
             return;
         }
 
@@ -621,7 +621,7 @@ final class Elev8_OS_Artist_Portal_Module {
         $website_url = self::website_url();
         $public_url = esc_url_raw((string) get_user_meta($user->ID, self::META_PUBLIC_PAGE, true));
         $edit_url = self::edit_website_url();
-        $classes_url = esc_url_raw((string) get_user_meta($user->ID, self::META_CLASSES, true));
+        $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
         $booking_url = esc_url_raw((string) get_user_meta($user->ID, self::META_BOOKING, true));
 
         return [
@@ -635,7 +635,7 @@ final class Elev8_OS_Artist_Portal_Module {
                 'label' => __('My Classes', 'elev8-os'),
                 'icon' => 'calendar-alt',
                 'url' => $classes_url,
-                'enabled' => $classes_url !== '',
+                'enabled' => true,
             ],
             'website' => [
                 'label' => __('My Website', 'elev8-os'),

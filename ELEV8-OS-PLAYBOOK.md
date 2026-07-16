@@ -1839,3 +1839,10 @@ The Artist Portal now uses a central Portal Page Manager as the source of truth 
 
 The Artist Portal Manage My Website screen now provides a responsive live preview beside the editor. The preview consumes the same artist-owned profile fields as the public page and updates only in the browser until the verified save action is completed.
 
+
+
+## Milestone 5.7.0 — My Classes
+
+**Status:** Built for Local acceptance testing.
+
+My Classes is the first operational Artist Portal screen built on verified Amelia appointment and customer-booking data. It provides upcoming class dates, recent class history, enrollment, detected capacity, remaining seats, and booked value where the source schema supports those values. Unknown capacity, money, or links must display **Unavailable** rather than an inferred number. The page is owned by the Portal Page Manager using the `elev8_artist_classes` shortcode.
