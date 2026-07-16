@@ -1,3 +1,14 @@
+# 7.1.1 — Asset Storefront Integration
+
+- Replaced the separate public image gallery with an Asset Engine-powered artist storefront.
+- Public artist pages now display artwork and products directly from My Artwork without duplicate entry.
+- Added reusable public-asset queries that keep Draft and Archived records private.
+- Added product cards with image, title, verified price, medium, dimensions, description, availability, and sold state.
+- Added an inquiry action using the artist's existing public contact information when available.
+- Changed newly created artwork to default to Available so it can power the artist storefront immediately.
+- Removed gallery URL entry from artist website editing while preserving all legacy gallery data for backward compatibility.
+- Kept WooCommerce product linkage, checkout, inventory synchronization, and individual public asset pages as future shared-service integrations.
+
 # 7.1.0 — Asset Engine: My Artwork Foundation
 
 - Added a WordPress-owned Asset Engine database service as the single source of truth for artist artwork.

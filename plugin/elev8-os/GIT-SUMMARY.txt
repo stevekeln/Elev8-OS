@@ -1,0 +1,14 @@
+Elev8 OS 7.1.1 — Asset Storefront Integration
+
+Source branch: develop
+Base release: 7.1.0
+
+Summary:
+- Public artist pages now use Asset Engine records as the product storefront.
+- Removed duplicate gallery entry and rendering while preserving legacy data.
+- Available and Sold records may render publicly; Draft and Archived remain private.
+- New artwork defaults to Available.
+- No Amelia, WooCommerce, identity, booking, CRM, BI, or existing asset records were removed.
+
+Suggested commit:
+Release 7.1.1 Asset Storefront Integration

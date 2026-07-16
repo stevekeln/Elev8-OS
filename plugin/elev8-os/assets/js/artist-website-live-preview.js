@@ -45,21 +45,6 @@
             cover.classList.toggle('has-image', Boolean(coverUrl));
         }
 
-        var gallery = preview.querySelector('[data-preview-gallery]');
-        if (gallery) {
-            gallery.innerHTML = '';
-            value('gallery').split(/\r?\n/).map(function (item) {
-                return safeImageUrl(item.trim());
-            }).filter(Boolean).slice(0, 6).forEach(function (url) {
-                var img = document.createElement('img');
-                img.src = url;
-                img.alt = '';
-                gallery.appendChild(img);
-            });
-            gallery.hidden = gallery.children.length === 0;
-        }
-    }
-
     function updateLinks() {
         var links = preview.querySelector('[data-preview-links]');
         if (!links) {

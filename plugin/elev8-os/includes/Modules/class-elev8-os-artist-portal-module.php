@@ -397,16 +397,12 @@ final class Elev8_OS_Artist_Portal_Module {
                     </section>
 
                     <section class="elev8-editor-section">
-                        <div class="elev8-editor-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Images', 'elev8-os'); ?></p><h2><?php esc_html_e('Photos and Gallery', 'elev8-os'); ?></h2></div></div>
+                        <div class="elev8-editor-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Images', 'elev8-os'); ?></p><h2><?php esc_html_e('Profile Images', 'elev8-os'); ?></h2></div></div>
                         <div class="elev8-form-grid">
                             <?php self::render_text_input('profile_photo', __('Profile photo URL', 'elev8-os'), $profile, 'https://', 'url'); ?>
                             <?php self::render_text_input('cover_image', __('Cover image URL', 'elev8-os'), $profile, 'https://', 'url'); ?>
                         </div>
-                        <label class="elev8-field elev8-field-full">
-                            <span><?php esc_html_e('Gallery image URLs', 'elev8-os'); ?></span>
-                            <textarea name="gallery" rows="6" placeholder="<?php esc_attr_e('Paste one image URL per line.', 'elev8-os'); ?>"><?php echo esc_textarea((string) ($profile['gallery'] ?? '')); ?></textarea>
-                            <small><?php esc_html_e('Use images already uploaded to the WordPress Media Library. A visual uploader can be added in a later milestone.', 'elev8-os'); ?></small>
-                        </label>
+                        <p class="elev8-editor-help"><?php esc_html_e('Products shown on your public page come directly from My Artwork. Add each item once there and mark it Available.', 'elev8-os'); ?></p>
                     </section>
 
                     <section class="elev8-editor-section">
@@ -499,7 +495,7 @@ final class Elev8_OS_Artist_Portal_Module {
                                 <div><span><?php esc_html_e('Experience', 'elev8-os'); ?></span><strong data-preview-experience><?php echo esc_html((string) ($profile['experience'] ?? __('Not added yet', 'elev8-os'))); ?></strong></div>
                             </div>
 
-                            <div class="elev8-live-gallery" data-preview-gallery></div>
+                            <div class="elev8-live-store-note"><?php esc_html_e('Available products from My Artwork appear here automatically.', 'elev8-os'); ?></div>
                             <div class="elev8-live-links" data-preview-links></div>
                             <a class="elev8-live-book-button" data-preview-book href="#"><?php echo esc_html((string) ($profile['booking_button_label'] ?? __('Book Now with This Artist', 'elev8-os'))); ?></a>
                         </div>
@@ -539,7 +535,6 @@ final class Elev8_OS_Artist_Portal_Module {
             'website' => 'url',
             'profile_photo' => 'url',
             'cover_image' => 'url',
-            'gallery' => 'textarea',
             'booking_url' => 'url',
             'booking_button_label' => 'text',
         ];

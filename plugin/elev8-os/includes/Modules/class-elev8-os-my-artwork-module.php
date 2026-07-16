@@ -103,7 +103,7 @@ final class Elev8_OS_My_Artwork_Module {
 
                     <div class="elev8-artwork-form-grid">
                         <label class="elev8-field"><span><?php esc_html_e('Artwork title', 'elev8-os'); ?> *</span><input required name="title" value="<?php echo esc_attr((string) ($editing['title'] ?? '')); ?>"></label>
-                        <label class="elev8-field"><span><?php esc_html_e('Status', 'elev8-os'); ?></span><select name="status"><?php foreach (Elev8_OS_Asset_Service::statuses() as $status) : ?><option value="<?php echo esc_attr($status); ?>" <?php selected((string) ($editing['status'] ?? 'draft'), $status); ?>><?php echo esc_html(ucfirst($status)); ?></option><?php endforeach; ?></select></label>
+                        <label class="elev8-field"><span><?php esc_html_e('Status', 'elev8-os'); ?></span><select name="status"><?php foreach (Elev8_OS_Asset_Service::statuses() as $status) : ?><option value="<?php echo esc_attr($status); ?>" <?php selected((string) ($editing['status'] ?? 'available'), $status); ?>><?php echo esc_html(ucfirst($status)); ?></option><?php endforeach; ?></select></label>
                         <label class="elev8-field"><span><?php esc_html_e('Medium', 'elev8-os'); ?></span><input name="medium" placeholder="Oil, glass, watercolor…" value="<?php echo esc_attr((string) ($editing['medium'] ?? '')); ?>"></label>
                         <label class="elev8-field"><span><?php esc_html_e('Dimensions', 'elev8-os'); ?></span><input name="dimensions" placeholder="12 × 18 in" value="<?php echo esc_attr((string) ($editing['dimensions'] ?? '')); ?>"></label>
                         <label class="elev8-field"><span><?php esc_html_e('Price', 'elev8-os'); ?></span><input type="number" min="0" step="0.01" name="price" placeholder="Leave blank when unavailable" value="<?php echo esc_attr(isset($editing['price']) && $editing['price'] !== null ? (string) $editing['price'] : ''); ?>"></label>
@@ -117,7 +117,7 @@ final class Elev8_OS_My_Artwork_Module {
             <section class="elev8-artwork-library">
                 <div class="elev8-section-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Asset library', 'elev8-os'); ?></p><h2><?php esc_html_e('Your Artwork', 'elev8-os'); ?></h2></div></div>
                 <?php if (!$assets) : ?>
-                    <div class="elev8-artwork-empty"><span class="dashicons dashicons-format-image"></span><h3><?php esc_html_e('No artwork added yet', 'elev8-os'); ?></h3><p><?php esc_html_e('Add your first piece above to begin building your Asset Engine.', 'elev8-os'); ?></p></div>
+                    <div class="elev8-artwork-empty"><span class="dashicons dashicons-format-image"></span><h3><?php esc_html_e('No artwork added yet', 'elev8-os'); ?></h3><p><?php esc_html_e('Add your first item above. Available items automatically appear in your public artist store.', 'elev8-os'); ?></p></div>
                 <?php else : ?>
                     <div class="elev8-artwork-grid">
                         <?php foreach ($assets as $asset) : self::render_asset_card($asset); endforeach; ?>
@@ -167,7 +167,7 @@ final class Elev8_OS_My_Artwork_Module {
             'medium' => wp_unslash($_POST['medium'] ?? ''),
             'dimensions' => wp_unslash($_POST['dimensions'] ?? ''),
             'price' => wp_unslash($_POST['price'] ?? ''),
-            'status' => wp_unslash($_POST['status'] ?? 'draft'),
+            'status' => wp_unslash($_POST['status'] ?? 'available'),
             'image_attachment_id' => $attachment_id,
         ]);
 

@@ -78,6 +78,29 @@ final class Elev8_OS_Asset_Service {
         return is_array($rows) ? $rows : [];
     }
 
+    /**
+     * Return inventory records that are safe to publish on an artist storefront.
+     * Draft and archived records always remain private.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    public static function get_public_for_owner(int $owner_user_id): array {
+        global $wpdb;
+        if ($owner_user_id <= 0) {
+            return [];
+        }
+
+        $rows = $wpdb->get_results(
+            $wpdb->prepare(
+                'SELECT * FROM ' . self::table_name() . " WHERE owner_user_id = %d AND status IN ('available','sold') ORDER BY CASE status WHEN 'available' THEN 0 ELSE 1 END, updated_at DESC, id DESC",
+                $owner_user_id
+            ),
+            ARRAY_A
+        );
+
+        return is_array($rows) ? $rows : [];
+    }
+
     /** @return array<string,mixed>|null */
     public static function get(int $asset_id): ?array {
         global $wpdb;
@@ -107,9 +130,9 @@ final class Elev8_OS_Asset_Service {
             return new WP_Error('elev8_asset_invalid', __('Artwork owner and title are required.', 'elev8-os'));
         }
 
-        $status = sanitize_key((string) ($data['status'] ?? 'draft'));
+        $status = sanitize_key((string) ($data['status'] ?? 'available'));
         if (!in_array($status, self::statuses(), true)) {
-            $status = 'draft';
+            $status = 'available';
         }
 
         $price = null;
