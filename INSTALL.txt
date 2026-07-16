@@ -1,0 +1,7 @@
+Elev8 OS 6.4.0 source update
+
+1. Replace the matching files in your local GitHub repository.
+2. Commit to develop and push to GitHub.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated ZIP on Local only.
+5. Test the release checklist before installing the exact same ZIP on Live.

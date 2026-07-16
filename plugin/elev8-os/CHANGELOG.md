@@ -1,12 +1,34 @@
 # Changelog
 
-## 6.3.0 — Class Demand Manager
-- Added the WordPress-owned Opportunity Engine foundation.
-- Added Class Demand Manager for class ideas that do not yet exist in Amelia.
-- Added customer interest, requested seats, scheduling preferences, source, and notes.
-- Added teacher-needed, assigned teacher, planning status, pricing, duration, difficulty, and supplies fields.
-- Added centralized demand metrics and fail-closed potential revenue reporting.
-- Preserved the existing Amelia-integrated scheduled-class waitlist.
+## 6.4.0 — Opportunity Detail View
+
+- Added a dedicated Opportunity Detail View for every class idea.
+- Added opportunity-level metrics for people interested, requested seats, potential revenue, and teacher readiness.
+- Added a trusted opportunity summary with status, pricing, duration, preferred schedule, teacher information, supplies, and internal notes.
+- Added contextual next-action guidance without presenting unverified data as fact.
+- Moved customer interest management into the opportunity detail workflow.
+- Added an explicit disabled “Convert to Amelia — Planned” action until safe creation, validation, notification, and rollback support exists.
+- Preserved all existing Opportunity Engine, waitlist, Artist Portal, Business Intelligence, and Amelia functionality.
+
+# 6.3.1 — Class Demand Management Controls
+
+- Added safe deletion of class ideas and their attached customer interest records.
+- Added deletion of individual customer interest records.
+- Added confirmation prompts and success notices for destructive actions.
+- Preserved all 6.3.0 Opportunity Engine and Amelia waitlist behavior.
+- Updated plugin version to 6.3.1.
+
+# 6.3.0 — Class Demand Manager
+
+- Added the Opportunity Engine as a reusable Elev8 OS domain service.
+- Added WordPress-owned opportunity and customer-interest tables with automatic upgrade handling.
+- Added Class Demand Manager under Elev8 OS for creating and editing class ideas.
+- Added customer interest tracking for classes that do not yet exist.
+- Added teacher-needed, teacher assignment, scheduling preferences, pricing, duration, supplies, difficulty, and internal planning fields.
+- Added demand metrics for people waiting, seats requested, classes needing teachers, and potential revenue.
+- Routed Class Demand Manager intelligence through the centralized Business Intelligence service.
+- Potential revenue displays Unavailable whenever interested customers lack verified estimated pricing.
+- Preserved the existing Amelia waitlist and all 6.2.1 functionality.
 
 # 6.2.1 — Hybrid Class Discovery
 
@@ -126,6 +148,7 @@
 - Added a one-click Check and Repair Portal Pages tool.
 - Portal navigation now survives page title and permalink changes.
 
+# Changelog
 
 ## 5.4.1 — Version Display Hotfix
 
