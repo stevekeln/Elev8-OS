@@ -963,57 +963,141 @@ final class Elev8_OS {
      *
      * @return array<int,string>
      */
-    private static function explicit_service_dates(string $description): array {
-        $text = html_entity_decode($description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = str_replace(["\xC2\xA0", "\r", "\n", "\t"], ' ', $text);
-        $text = preg_replace('/\s+/u', ' ', wp_strip_all_tags($text));
+    /**
+     * Read explicit future occurrences from one Amelia service record.
+     *
+     * This parser is intentionally scoped to the supplied service only. It
+     * supports Amelia's formatted "Time & Location / Other dates" text and
+     * clearly written weekly date ranges such as "June 11 - 25 & July 9 - 30,
+     * 2026". When no time is written, the occurrence is marked date-only
+     * rather than inventing a time.
+     *
+     * @return array<int,array{bookingStart:string,date_only:bool}>
+     */
+    private static function explicit_service_occurrences(string $description, string $service_name = ''): array {
+        $text = preg_replace('/<\s*(?:br|\/p|\/div|\/li|\/h[1-6])\s*\/?>/i', "\n", $description);
+        $text = html_entity_decode((string) $text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = str_replace(["\xC2\xA0", "\r", "\t"], [' ', "\n", ' '], $text);
+        $text = wp_strip_all_tags($text);
+        $text = preg_replace('/[ ]+/u', ' ', (string) $text);
+        $text = preg_replace('/\n[ ]*/u', "\n", (string) $text);
         $text = trim((string) $text);
-        if ($text === '') {
-            return [];
-        }
+        if ($text === '') return [];
 
-        $years = [];
-        if (preg_match_all('/\b(20\d{2})\b/', $text, $year_matches)) {
-            $years = array_values(array_unique(array_map('intval', $year_matches[1])));
-        }
-        $context_year = count($years) === 1 ? $years[0] : 0;
+        $timezone = wp_timezone();
+        $now = new DateTimeImmutable('now', $timezone);
+        $today = $now->setTime(0, 0, 0);
 
-        $patterns = [
-            '/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)(?:day)?[,]?\s+([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(20\d{2})[,]?\s+(\d{1,2}:\d{2}\s*[AP]M)\b/i',
-            '/\b([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(20\d{2})[,]?\s+(\d{1,2}:\d{2}\s*[AP]M)\b/i',
-        ];
-
-        $timestamps = [];
-        foreach ($patterns as $pattern) {
-            if (!preg_match_all($pattern, $text, $matches, PREG_SET_ORDER)) {
-                continue;
+        $parse_local = static function (string $month, string $day, string $year, string $time = '') use ($timezone): ?DateTimeImmutable {
+            $time = trim((string) preg_replace('/\s+/u', ' ', trim($time)));
+            $candidate = trim(sprintf('%s %s %s%s', $month, $day, $year, $time !== '' ? ' ' . $time : ''));
+            $formats = $time !== ''
+                ? ['F j Y g:i A', 'M j Y g:i A']
+                : ['F j Y', 'M j Y'];
+            foreach ($formats as $format) {
+                $date = DateTimeImmutable::createFromFormat('!' . $format, $candidate, $timezone);
+                $errors = DateTimeImmutable::getLastErrors();
+                if ($date instanceof DateTimeImmutable && ($errors === false || ((int) $errors['warning_count'] === 0 && (int) $errors['error_count'] === 0))) {
+                    return $date;
+                }
             }
-            foreach ($matches as $match) {
-                $timestamp = strtotime(sprintf('%s %s %s %s', $match[1], $match[2], $match[3], $match[4]));
-                if ($timestamp && $timestamp >= current_time('timestamp')) {
-                    $timestamps[$timestamp] = wp_date('Y-m-d H:i:s', $timestamp);
+            return null;
+        };
+
+        $occurrences = [];
+        $add = static function (DateTimeImmutable $date, bool $date_only) use (&$occurrences, $now, $today): void {
+            if (($date_only && $date < $today) || (!$date_only && $date < $now)) return;
+            $key = $date->format('Y-m-d H:i:s') . '|' . ($date_only ? '1' : '0');
+            $occurrences[$key] = [
+                'bookingStart' => $date->format('Y-m-d H:i:s'),
+                'date_only' => $date_only,
+            ];
+        };
+
+        // Fully qualified Amelia date/time entries.
+        $full_pattern = '/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)(?:day)?[,]?\s*([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(20\d{2})[,]?\s+(\d{1,2}:\d{2}\s*[AP]M)\b/i';
+        $full_pattern_no_weekday = '/\b([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(20\d{2})[,]?\s+(\d{1,2}:\d{2}\s*[AP]M)\b/i';
+        $full_matches = [];
+        preg_match_all($full_pattern, $text, $full_matches, PREG_SET_ORDER);
+        if (!$full_matches) preg_match_all($full_pattern_no_weekday, $text, $full_matches, PREG_SET_ORDER);
+
+        $context_year = '';
+        $default_time = '';
+        foreach ($full_matches as $match) {
+            $date = $parse_local((string) $match[1], (string) $match[2], (string) $match[3], (string) $match[4]);
+            if ($date) {
+                $context_year = (string) $match[3];
+                $default_time = (string) $match[4];
+                $add($date, false);
+            }
+        }
+
+        if ($context_year === '' && preg_match('/\b(20\d{2})\b/', $text, $year_match)) {
+            $context_year = (string) $year_match[1];
+        }
+        if ($default_time === '' && preg_match('/\b(\d{1,2}:\d{2}\s*[AP]M)\b/i', $text, $time_match)) {
+            $default_time = (string) $time_match[1];
+        }
+
+        // Amelia often omits the year from "Other dates".
+        if ($context_year !== '') {
+            $partial_pattern = '/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)(?:day)?[,]?\s*([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(\d{1,2}:\d{2}\s*[AP]M)\b/i';
+            if (preg_match_all($partial_pattern, $text, $partial_matches, PREG_SET_ORDER)) {
+                foreach ($partial_matches as $match) {
+                    $date = $parse_local((string) $match[1], (string) $match[2], $context_year, (string) $match[3]);
+                    if ($date) $add($date, false);
                 }
             }
         }
 
-        if ($context_year > 0) {
-            $partial_pattern = '/\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)(?:day)?[,]?\s+([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(\d{1,2}:\d{2}\s*[AP]M)\b/i';
-            if (preg_match_all($partial_pattern, $text, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $match) {
-                    $matched_text = (string) ($match[0] ?? '');
-                    if (preg_match('/\b20\d{2}\b/', $matched_text)) {
-                        continue;
-                    }
-                    $timestamp = strtotime(sprintf('%s %s %d %s', $match[1], $match[2], $context_year, $match[3]));
-                    if ($timestamp && $timestamp >= current_time('timestamp')) {
-                        $timestamps[$timestamp] = wp_date('Y-m-d H:i:s', $timestamp);
+        // Weekly ranges written in service descriptions, for example:
+        // "June 11 - 25 & July 9 - 30, 2026". Each range remains scoped to
+        // this service and is expanded in seven-day increments.
+        if ($context_year !== '') {
+            $range_pattern = '/\b([A-Z][a-z]{2,8})\s+(\d{1,2})\s*(?:-|–|—|to)\s*(\d{1,2})(?:\s*,?\s*(20\d{2}))?/i';
+            if (preg_match_all($range_pattern, $text, $range_matches, PREG_SET_ORDER)) {
+                foreach ($range_matches as $match) {
+                    $year = !empty($match[4]) ? (string) $match[4] : $context_year;
+                    $start_date = $parse_local((string) $match[1], (string) $match[2], $year, $default_time);
+                    $end_date = $parse_local((string) $match[1], (string) $match[3], $year, $default_time);
+                    if (!$start_date || !$end_date || $end_date < $start_date) continue;
+                    for ($cursor = $start_date; $cursor <= $end_date; $cursor = $cursor->modify('+7 days')) {
+                        $add($cursor, $default_time === '');
                     }
                 }
             }
         }
 
-        ksort($timestamps);
-        return array_values($timestamps);
+        // Standalone explicit dates with a year, even when no time is supplied.
+        $date_only_pattern = '/\b([A-Z][a-z]{2,8})\s+(\d{1,2})[,]?\s+(20\d{2})\b/i';
+        if (preg_match_all($date_only_pattern, $text, $date_matches, PREG_SET_ORDER)) {
+            foreach ($date_matches as $match) {
+                $date = $parse_local((string) $match[1], (string) $match[2], (string) $match[3], $default_time);
+                if ($date) $add($date, $default_time === '');
+            }
+        }
+
+        // A service title containing one past date is authoritative for a
+        // one-time class. Do not let stale copied future text keep an expired
+        // workshop alive. Multi-week journeys/series remain eligible because
+        // their description may explicitly contain later dates.
+        if ($service_name !== ''
+            && !preg_match('/\b(?:\d+\s*[- ]?week|series|journey|sessions|course)\b/i', $service_name)
+            && preg_match('/\b([A-Z][a-z]{2,8})\s+(\d{1,2})(?:[,]?\s*(20\d{2}))?\b/i', $service_name, $title_match)) {
+            $title_year = !empty($title_match[3]) ? (string) $title_match[3] : ($context_year !== '' ? $context_year : $now->format('Y'));
+            $title_date = $parse_local((string) $title_match[1], (string) $title_match[2], $title_year);
+            if ($title_date && $title_date < $today) return [];
+        }
+
+        uasort($occurrences, static function (array $a, array $b): int {
+            return strcmp($a['bookingStart'], $b['bookingStart']);
+        });
+        return array_values($occurrences);
+    }
+
+    /** @return array<int,string> */
+    private static function explicit_service_dates(string $description, string $service_name = ''): array {
+        return array_map(static fn(array $item): string => $item['bookingStart'], self::explicit_service_occurrences($description, $service_name));
     }
 
     private static function upcoming_classes(int $employee_id): array {
@@ -1052,102 +1136,41 @@ final class Elev8_OS {
             self::$upcoming_diagnostics[] = 'The Amelia appointments source was unavailable or missing required provider/date columns.';
         }
 
-        // Some Amelia service/class schedules exist before any customer books.
-        // Elev8 Arts uses provider-to-service assignment rows for these dates,
-        // so include dated assignment rows instead of requiring an appointment.
+        // Amelia service assignments identify which services belong to an artist,
+        // but assignment-table date columns are not reliable schedule sources across
+        // Amelia versions. Some installations store created/updated metadata in columns
+        // named simply "date" or "start", which previously caused dates from one service
+        // to be attached to another. Use the relationship only for identity, then parse
+        // each assigned service's own explicit schedule independently.
         $relation_tables = self::amelia_provider_service_tables();
         self::$upcoming_diagnostics[] = sprintf(
             'Provider-to-service tables discovered at runtime: %s',
             $relation_tables ? implode(', ', $relation_tables) : 'none'
         );
-        $dated_assignment_rows = [];
-        foreach ($relation_tables as $relation_table) {
-            if (!self::table_exists($relation_table)) {
-                continue;
-            }
 
-            $relation_columns = $wpdb->get_col("SHOW COLUMNS FROM `{$relation_table}`", 0) ?: [];
-            $provider_column = self::first_existing_column(
-                $relation_table,
-                ['userId', 'providerId', 'employeeId', 'provider_id', 'user_id']
-            );
-            $service_column = self::first_existing_column(
-                $relation_table,
-                ['serviceId', 'service_id', 'service']
-            );
-            $date_column = self::first_existing_column(
-                $relation_table,
-                ['bookingStart', 'startDateTime', 'startDate', 'periodStart', 'dateStart', 'start', 'date', 'scheduledAt']
-            );
+        $assigned_service_ids = [];
+        $description_column = self::table_exists($services)
+            ? self::first_existing_column($services, ['description', 'details', 'content'])
+            : null;
 
-            if (!$provider_column || !$date_column) {
-                self::$upcoming_diagnostics[] = sprintf(
-                    'Assignment table %s exists but has no verified provider/date column.',
-                    $relation_table
-                );
-                continue;
-            }
-
-            $service_join = '';
-            $service_select = "'Class' AS service_name";
-            if ($service_column && self::table_exists($services) && self::column_exists($services, 'id') && self::column_exists($services, 'name')) {
-                $service_join = " LEFT JOIN `{$services}` s ON s.id = r.`{$service_column}`";
-                $service_select = "COALESCE(s.name, 'Class') AS service_name";
-            }
-
-            $relation_id = in_array('id', $relation_columns, true) ? 'r.id' : '0';
-            $assignment_sql = $wpdb->prepare(
-                "SELECT {$relation_id} AS id, r.`{$date_column}` AS bookingStart,
-                        {$service_select}, '' AS booking_url
-                 FROM `{$relation_table}` r
-                 {$service_join}
-                 WHERE r.`{$provider_column}` = %d
-                   AND r.`{$date_column}` >= %s
-                 ORDER BY r.`{$date_column}` ASC
-                 LIMIT 100",
-                $employee_id,
-                $now
-            );
-            $found_assignments = $wpdb->get_results($assignment_sql, ARRAY_A) ?: [];
-            $dated_assignment_rows = array_merge($dated_assignment_rows, $found_assignments);
-            self::$upcoming_diagnostics[] = sprintf(
-                'Future dated assignments found in %s for employee %d: %d',
-                $relation_table,
-                $employee_id,
-                count($found_assignments)
-            );
-        }
-        $rows = array_merge($rows, $dated_assignment_rows);
-
-        // If Amelia has not created appointment rows yet, use explicit dates
-        // written in assigned service descriptions. This is a compatibility
-        // fallback for Elev8 Arts service classes such as one service with
-        // multiple announced dates. Only written dates are used; nothing is guessed.
-        if (!$dated_assignment_rows && self::table_exists($services)) {
+        if (self::table_exists($services) && $description_column
+            && self::column_exists($services, 'id') && self::column_exists($services, 'name')) {
             foreach ($relation_tables as $relation_table) {
-                if (!self::table_exists($relation_table)) {
-                    continue;
-                }
                 $provider_column = self::first_existing_column(
                     $relation_table,
-                    ['userId', 'providerId', 'employeeId', 'provider_id', 'user_id']
+                    ['userId', 'providerId', 'employeeId', 'provider_id', 'user_id', 'provider', 'employee']
                 );
                 $service_column = self::first_existing_column(
                     $relation_table,
                     ['serviceId', 'service_id', 'service']
                 );
-                $description_column = self::first_existing_column(
-                    $services,
-                    ['description', 'details', 'content']
-                );
-                if (!$provider_column || !$service_column || !$description_column
-                    || !self::column_exists($services, 'id') || !self::column_exists($services, 'name')) {
+                if (!$provider_column || !$service_column) {
                     continue;
                 }
 
                 $assigned_services = $wpdb->get_results(
                     $wpdb->prepare(
-                        "SELECT s.id, s.name, s.`{$description_column}` AS description
+                        "SELECT DISTINCT s.id, s.name, s.`{$description_column}` AS description
                          FROM `{$relation_table}` r
                          INNER JOIN `{$services}` s ON s.id = r.`{$service_column}`
                          WHERE r.`{$provider_column}` = %d",
@@ -1156,39 +1179,44 @@ final class Elev8_OS {
                     ARRAY_A
                 ) ?: [];
 
-                $description_dates_found = 0;
+                $dates_from_table = 0;
                 foreach ($assigned_services as $assigned_service) {
-                    foreach (self::explicit_service_dates((string) ($assigned_service['description'] ?? '')) as $date_index => $explicit_date) {
+                    $service_id = (int) ($assigned_service['id'] ?? 0);
+                    if ($service_id <= 0 || isset($assigned_service_ids[$service_id])) {
+                        continue;
+                    }
+                    $assigned_service_ids[$service_id] = true;
+                    $explicit_occurrences = self::explicit_service_occurrences((string) ($assigned_service['description'] ?? ''), (string) ($assigned_service['name'] ?? ''));
+                    foreach ($explicit_occurrences as $date_index => $occurrence) {
+                        $explicit_date = (string) $occurrence['bookingStart'];
                         $rows[] = [
-                            'id' => 'service-' . (int) ($assigned_service['id'] ?? 0) . '-' . $date_index,
+                            'id' => 'service-' . $service_id . '-' . $date_index,
                             'bookingStart' => $explicit_date,
                             'service_name' => (string) ($assigned_service['name'] ?? 'Class'),
                             'booking_url' => '',
+                            'date_only' => !empty($occurrence['date_only']),
                         ];
-                        $description_dates_found++;
+                        $dates_from_table++;
                     }
+                    self::$upcoming_diagnostics[] = sprintf(
+                        'Assigned service %d (%s): %d verified future date(s).',
+                        $service_id,
+                        (string) ($assigned_service['name'] ?? 'Class'),
+                        count($explicit_occurrences)
+                    );
                 }
                 self::$upcoming_diagnostics[] = sprintf(
-                    'Explicit future dates read from assigned service descriptions in %s: %d',
+                    'Verified service-description dates found through %s: %d',
                     $relation_table,
-                    $description_dates_found
+                    $dates_from_table
                 );
-                if ($description_dates_found > 0) {
-                    break;
-                }
             }
         }
 
         // Final service-assignment compatibility path. Some Amelia releases keep
         // assigned employees directly inside a service column as JSON, serialized data,
         // or a comma-separated value rather than a junction table.
-        $has_description_rows = false;
-        foreach ($rows as $row) {
-            if (str_starts_with((string) ($row['id'] ?? ''), 'service-')) {
-                $has_description_rows = true;
-                break;
-            }
-        }
+        $has_description_rows = !empty($assigned_service_ids);
         if (!$has_description_rows && self::table_exists($services)) {
             $service_columns = $wpdb->get_col("SHOW COLUMNS FROM `{$services}`", 0) ?: [];
             $description_column = self::first_existing_column($services, ['description', 'details', 'content']);
@@ -1214,12 +1242,14 @@ final class Elev8_OS {
                     if (!$assigned) {
                         continue;
                     }
-                    foreach (self::explicit_service_dates((string) ($service_row[$description_column] ?? '')) as $date_index => $explicit_date) {
+                    foreach (self::explicit_service_occurrences((string) ($service_row[$description_column] ?? ''), (string) ($service_row['name'] ?? '')) as $date_index => $occurrence) {
+                        $explicit_date = (string) $occurrence['bookingStart'];
                         $rows[] = [
                             'id' => 'embedded-service-' . (int) ($service_row['id'] ?? 0) . '-' . $date_index,
                             'bookingStart' => $explicit_date,
                             'service_name' => (string) ($service_row['name'] ?? 'Class'),
                             'booking_url' => '',
+                            'date_only' => !empty($occurrence['date_only']),
                         ];
                         $embedded_dates_found++;
                     }
@@ -1420,7 +1450,7 @@ final class Elev8_OS {
           <form method="get" class="elev8-filter"><?php if($admin):?><input type="hidden" name="page" value="elev8-artist-portal"><input type="hidden" name="artist_id" value="<?php echo esc_attr((string)$employee_id); ?>"><?php endif;?><label>Report month</label><input type="month" name="elev8_month" value="<?php echo esc_attr($month); ?>"><button class="button button-primary">View month</button></form>
           <div class="elev8-cards"><div class="elev8-card"><span>Classes taught</span><strong><?php echo $tot['classes']; ?></strong></div><div class="elev8-card"><span>Students</span><strong><?php echo $tot['customers']; ?></strong></div><div class="elev8-card"><span>Gross revenue</span><strong><?php echo esc_html(self::money($tot['gross'])); ?></strong></div><div class="elev8-card"><span>Artist earnings</span><strong><?php echo esc_html(self::money($tot['teacher'])); ?></strong></div><div class="elev8-card"><span>Elev8 share</span><strong><?php echo esc_html(self::money($tot['elev8'])); ?></strong></div><div class="elev8-card"><span>Average class size</span><strong><?php echo esc_html(number_format($avg,1)); ?></strong></div></div>
           <?php $ref=self::referral_totals($employee_id); ?><div class="elev8-cards"><div class="elev8-card"><span>Referral clicks</span><strong><?php echo (int)$ref['clicks'];?></strong></div><div class="elev8-card"><span>Referral sales</span><strong><?php echo esc_html(self::money($ref['sales']));?></strong></div><div class="elev8-card"><span>Referral earnings</span><strong><?php echo esc_html(self::money($ref['commission']));?></strong></div></div><div class="elev8-private-note"><strong>Your public page:</strong> <a href="<?php echo esc_url(self::public_artist_url($employee_id));?>" target="_blank"><?php echo esc_html(self::public_artist_url($employee_id));?></a><br><strong>Your referral link:</strong> <input readonly value="<?php echo esc_attr(self::public_artist_url($employee_id,true));?>" onclick="this.select()"></div>
-          <div class="elev8-grid"><div class="elev8-panel"><h2>Upcoming classes</h2><?php if($upcoming):?><table class="widefat striped"><thead><tr><th>Date</th><th>Class</th></tr></thead><tbody><?php foreach($upcoming as $u):?><tr><td><?php echo esc_html(mysql2date('M j, Y g:i a',$u['bookingStart']));?></td><td><?php echo esc_html($u['service_name']?:'Class');?></td></tr><?php endforeach;?></tbody></table><?php else:?><div class="elev8-empty">No upcoming classes found.</div><?php endif;?><?php if($admin && current_user_can('manage_options')):?><details class="elev8-diagnostics"><summary>Upcoming class diagnostics</summary><ul><?php foreach(self::$upcoming_diagnostics as $diagnostic):?><li><?php echo esc_html($diagnostic);?></li><?php endforeach;?></ul><p><strong>Selected Amelia employee ID:</strong> <?php echo (int)$employee_id;?></p></details><?php endif;?></div>
+          <div class="elev8-grid"><div class="elev8-panel"><h2>Upcoming classes</h2><?php if($upcoming):?><table class="widefat striped"><thead><tr><th>Date</th><th>Class</th></tr></thead><tbody><?php foreach($upcoming as $u):?><tr><td><?php echo esc_html(!empty($u['date_only']) ? mysql2date('M j, Y',$u['bookingStart']) : mysql2date('M j, Y g:i a',$u['bookingStart']));?></td><td><?php echo esc_html($u['service_name']?:'Class');?></td></tr><?php endforeach;?></tbody></table><?php else:?><div class="elev8-empty">No upcoming classes found.</div><?php endif;?><?php if($admin && current_user_can('manage_options')):?><details class="elev8-diagnostics"><summary>Upcoming class diagnostics</summary><ul><?php foreach(self::$upcoming_diagnostics as $diagnostic):?><li><?php echo esc_html($diagnostic);?></li><?php endforeach;?></ul><p><strong>Selected Amelia employee ID:</strong> <?php echo (int)$employee_id;?></p></details><?php endif;?></div>
           <div class="elev8-panel"><h2>Payout status</h2><p class="elev8-big-status"><?php echo ($payout['status']==='paid')?'✓ Paid':'Pending'; ?></p><?php if($payout['paid_date']):?><p>Paid <?php echo esc_html($payout['paid_date']);?></p><?php endif;?><p><?php echo esc_html($payout['note']??'');?></p><p><strong>Amount for this month:</strong> <?php echo esc_html(self::money($tot['teacher']));?></p></div></div>
           <div class="elev8-panel"><h2>Class history</h2><?php if($classes):?><div class="elev8-table-wrap"><table class="widefat striped"><thead><tr><th>Date</th><th>Class</th><th>Students</th><th>Gross</th><th>Refunds</th><th>Your earnings</th><th>Elev8</th></tr></thead><tbody><?php foreach($classes as $c):?><tr><td><?php echo esc_html(mysql2date('M j, Y g:i a',$c['date']));?></td><td><?php echo esc_html($c['service']);?></td><td><?php echo (int)$c['customers'];?></td><td><?php echo esc_html(self::money($c['gross']));?></td><td><?php echo esc_html(self::money($c['refunds']));?></td><td><?php echo esc_html(self::money($c['calc']['teacher']));?></td><td><?php echo esc_html(self::money($c['calc']['elev8']));?></td></tr><?php endforeach;?></tbody></table></div><?php else:?><div class="elev8-empty">No classes found for this month.</div><?php endif;?></div>
           <div class="elev8-grid"><div class="elev8-panel"><h2>Profile</h2><p><strong>Medium:</strong> <?php echo esc_html($profile['medium']??''); ?></p><p><strong>Teaching specialties:</strong> <?php echo esc_html($profile['specialties']??''); ?></p><p><strong>Experience:</strong> <?php echo esc_html($profile['experience']??''); ?></p><p><?php echo nl2br(esc_html($profile['bio']??'')); ?></p><?php if(!empty($profile['website'])):?><p><a href="<?php echo esc_url($profile['website']);?>" target="_blank" rel="noopener">Website</a></p><?php endif;?><?php foreach($socials as $social):?><p><a href="<?php echo esc_url($social['url']);?>" target="_blank" rel="noopener"><?php echo esc_html($social['name']);?></a></p><?php endforeach;?></div>

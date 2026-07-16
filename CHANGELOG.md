@@ -1,3 +1,29 @@
+# Changelog
+
+## 6.0.5 — Service Occurrence Parsing Hotfix
+
+- Prevented expired one-time services from inheriting future dates from stale description content.
+- Added service-scoped weekly date-range parsing for schedules such as `June 11 - 25 & July 9 - 30, 2026`.
+- Added date-only upcoming occurrences when Amelia contains a verified date but no verified time.
+- Preserved real appointment and event schedules as higher-priority sources.
+- Kept Heather Skinner and Jessica Wyant schedules isolated to their assigned Amelia services.
+
+
+## 6.0.4 — Service Schedule Isolation Hotfix
+
+- Stopped treating Amelia assignment-table metadata dates as class schedules.
+- Dates now remain attached to the matching assigned service record.
+- Excluded expired Herbal Mocktails while preserving Heather's Sunbrew dates.
+- Preserved Jessica Wyant's assigned Sound Bowl service and other zero-booking services.
+- Added per-service schedule diagnostics.
+
+# 6.0.3 — Amelia Service Date Accuracy Hotfix
+
+- Keeps parsed dates attached to the Amelia service description they came from.
+- Uses the primary Time & Location date to exclude expired services and stale copied dates.
+- Parses all dates in the WordPress site timezone so 9:00 AM remains 9:00 AM.
+- Restores the primary dated occurrence and removes duplicate service/date rows.
+
 # 6.0.2 — Amelia Assignment Discovery Hotfix
 
 - Replaced guessed provider-to-service table names with runtime Amelia schema discovery.
