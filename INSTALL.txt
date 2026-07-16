@@ -1,1 +1,12 @@
-Elev8 OS 6.8.1 source update. Copy plugin/elev8-os into the repository, commit to develop, run Build Elev8 OS Release.bat, and test on Local before Live.
+Elev8 OS 6.9.0 — Waitlist Engine Completion
+
+SOURCE-ONLY UPDATE
+
+1. Extract this archive.
+2. Copy plugin/elev8-os into your GitHub repository at plugin/elev8-os.
+3. Replace matching files.
+4. Commit and push to develop.
+5. Run Build Elev8 OS Release.bat.
+6. Install the generated release ZIP on Local.
+7. Test Class Requests as a mapped artist and as an administrator.
+8. Install the exact same generated ZIP on Live only after Local passes.

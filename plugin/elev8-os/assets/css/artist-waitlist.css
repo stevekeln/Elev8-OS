@@ -4,3 +4,34 @@
 @media(max-width:520px){.elev8-waitlist-metrics,.elev8-waitlist-form,.elev8-waitlist-customer-card{grid-template-columns:1fr}.elev8-waitlist-class-select,.elev8-waitlist-notes,.elev8-waitlist-submit,.elev8-waitlist-customer-main,.elev8-waitlist-card-actions{grid-column:auto}.elev8-waitlist-panel{padding:18px}.elev8-waitlist-artist-filter{align-items:stretch;flex-direction:column}.elev8-waitlist-artist-filter select{min-width:0;width:100%}}
 
 .elev8-class-requests .elev8-waitlist-workspace{grid-template-columns:repeat(2,minmax(0,1fr))}.elev8-request-help{margin:-8px 0 18px;color:#646970}.elev8-request-or{grid-column:1/-1;display:flex;align-items:center;gap:12px;color:#646970;font-size:12px;font-weight:700;letter-spacing:.12em}.elev8-request-or:before,.elev8-request-or:after{content:'';height:1px;flex:1;background:#dcdcde}.elev8-request-list-panel{margin-top:20px}.elev8-waitlist-notice.is-error{border-left-color:#d63638;background:#fcf0f1;color:#8a2424}@media(max-width:900px){.elev8-class-requests .elev8-waitlist-workspace{grid-template-columns:1fr}}
+
+/* 6.9.0 Waitlist Engine completion */
+.elev8-waitlist-metrics{grid-template-columns:repeat(5,minmax(0,1fr));}
+.elev8-demand-overview{margin:22px 0;}
+.elev8-demand-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.elev8-demand-card{border:1px solid #dfe3e8;border-radius:16px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:12px;}
+.elev8-demand-card h3{margin:4px 0 0;font-size:20px;}
+.elev8-demand-category{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#52606d;}
+.elev8-demand-numbers{display:flex;gap:20px;}
+.elev8-demand-numbers span{display:flex;flex-direction:column;color:#52606d;font-size:12px;text-transform:uppercase;letter-spacing:.06em;}
+.elev8-demand-numbers strong{font-size:24px;color:#111827;line-height:1.1;}
+.elev8-demand-card p,.elev8-demand-card small{margin:0;}
+.elev8-request-filters{display:grid;grid-template-columns:minmax(170px,1fr) minmax(150px,.8fr) minmax(220px,1.4fr) auto auto;gap:12px;align-items:end;padding:16px;margin:0 0 18px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;}
+.elev8-request-filters label{display:flex;flex-direction:column;gap:6px;}
+.elev8-request-filters label span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#52606d;}
+.elev8-request-filters select,.elev8-request-filters input{width:100%;min-height:42px;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;background:#fff;}
+.elev8-request-filters button{min-height:42px;border:0;border-radius:8px;padding:0 18px;background:#2563eb;color:#fff;font-weight:700;}
+.elev8-request-filters>a{min-height:42px;display:flex;align-items:center;justify-content:center;padding:0 10px;}
+.elev8-request-editor{grid-column:1/-1;display:grid;grid-template-columns:minmax(150px,.75fr) minmax(160px,.75fr) minmax(240px,1.5fr) auto;gap:12px;align-items:end;padding-top:14px;border-top:1px solid #e5e7eb;}
+.elev8-request-editor label{display:flex;flex-direction:column;gap:6px;}
+.elev8-request-editor label>span{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#52606d;}
+.elev8-request-editor select,.elev8-request-editor input,.elev8-request-editor textarea{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:9px 10px;background:#fff;}
+.elev8-request-editor .elev8-request-notes{grid-column:3/4;}
+.elev8-request-editor .elev8-contact-check{grid-column:1/3;display:flex;flex-direction:row;align-items:center;gap:8px;}
+.elev8-request-editor .elev8-contact-check input{width:auto;}
+.elev8-request-editor .elev8-contacted-at{grid-column:3/4;color:#52606d;}
+.elev8-request-editor button{grid-column:4/5;grid-row:1/3;align-self:stretch;min-height:44px;}
+.elev8-request-delete{grid-column:1/-1;display:flex;justify-content:flex-end;}
+.elev8-waitlist-customer-card.is-follow-up-due{border-left:4px solid #f59e0b;}
+@media(max-width:1100px){.elev8-waitlist-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.elev8-demand-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.elev8-request-filters{grid-template-columns:1fr 1fr;}.elev8-filter-search{grid-column:1/-1;}.elev8-request-editor{grid-template-columns:1fr 1fr;}.elev8-request-editor .elev8-request-notes,.elev8-request-editor .elev8-contact-check,.elev8-request-editor .elev8-contacted-at,.elev8-request-editor button{grid-column:1/-1;grid-row:auto;}}
+@media(max-width:700px){.elev8-waitlist-metrics,.elev8-demand-grid,.elev8-request-filters,.elev8-request-editor{grid-template-columns:1fr;}.elev8-filter-search{grid-column:auto;}}

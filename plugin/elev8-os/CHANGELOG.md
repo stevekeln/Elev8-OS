@@ -1,3 +1,14 @@
+# 6.9.0 — Waitlist Engine Completion
+
+- Completed the Elev8-owned pre-schedule Class Requests workflow without pulling class choices from Amelia.
+- Added demand-by-class summary cards with people, requested seats, last request date, and verified potential value.
+- Added full CRM editing for status, follow-up date, notes, and contacted timestamp.
+- Added follow-up-needed counts and visual highlighting for new or due requests.
+- Added class, status, and keyword filters for the customer queue.
+- Added duplicate prevention for matching email or phone within the same class idea.
+- Added verified potential-value calculations that display Unavailable when any class lacks an estimated price.
+- Preserved Opportunity Engine ownership, artist mapping, activity timeline, and Amelia as a separate scheduling integration.
+
 ## 6.8.1 — Class Requests Artist Mapping Hotfix
 
 - Updated Class Requests to use the shared Artist Portal artist resolver.
