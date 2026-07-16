@@ -193,7 +193,11 @@ final class Elev8_OS_My_Classes_Module {
                     <?php else : ?>
                         <span class="elev8-action-unavailable"><?php esc_html_e('Booking link unavailable', 'elev8-os'); ?></span>
                     <?php endif; ?>
-                    <a href="<?php echo esc_url(add_query_arg('appointment_id', (int) $class['id'], Elev8_OS_Portal_Page_Manager::get_url('students'))); ?>"><?php esc_html_e('View Students', 'elev8-os'); ?></a>
+                    <?php if ((int) $class['id'] > 0) : ?>
+                        <a href="<?php echo esc_url(add_query_arg('appointment_id', (int) $class['id'], Elev8_OS_Portal_Page_Manager::get_url('students'))); ?>"><?php esc_html_e('View Students', 'elev8-os'); ?></a>
+                    <?php else : ?>
+                        <span class="elev8-action-unavailable"><?php esc_html_e('Roster available after Amelia creates this class date', 'elev8-os'); ?></span>
+                    <?php endif; ?>
                 </div>
             </div>
         </article>
@@ -273,10 +277,38 @@ final class Elev8_OS_My_Classes_Module {
                 'booked_value' => $aggregate['booked_value'],
                 'booking_url' => $booking_base,
             ];
-            if ($timestamp !== false && $timestamp >= $now) {
-                $upcoming[] = $class;
-            } else {
+            // Upcoming classes are normalized through the shared Class Discovery
+            // service below. Keep this direct appointment query for class history only.
+            if ($timestamp === false || $timestamp < $now) {
                 $past[] = $class;
+            }
+        }
+
+        // Appointment-first discovery with verified service-date fallback. This is
+        // required for recurring Amelia services whose future dates exist in the
+        // assigned service record before Amelia creates appointment rows.
+        if (class_exists('Elev8_OS_Class_Discovery')) {
+            foreach (Elev8_OS_Class_Discovery::upcoming_for_employee($artist_id) as $occurrence) {
+                $appointment_id = max(0, (int) ($occurrence['appointment_id'] ?? 0));
+                $aggregate = $appointment_id > 0
+                    ? ($bookings[$appointment_id] ?? ['students' => 0, 'booked_value' => null])
+                    : ['students' => 0, 'booked_value' => null];
+                $start = (string) ($occurrence['sort_start'] ?? '');
+                if ($start === '') { continue; }
+
+                $upcoming[] = [
+                    'id' => $appointment_id,
+                    'name' => (string) ($occurrence['name'] ?? __('Class', 'elev8-os')),
+                    'start' => $start,
+                    'date_only' => !empty($occurrence['date_only']),
+                    'location' => '',
+                    'students' => max(0, (int) ($occurrence['booked'] ?? $aggregate['students'] ?? 0)),
+                    'capacity' => isset($occurrence['capacity']) && $occurrence['capacity'] !== null ? (int) $occurrence['capacity'] : null,
+                    'seats_left' => isset($occurrence['seats_left']) && $occurrence['seats_left'] !== null ? (int) $occurrence['seats_left'] : null,
+                    'booked_value' => $aggregate['booked_value'] ?? null,
+                    'booking_url' => $booking_base,
+                    'source' => (string) ($occurrence['source'] ?? 'unknown'),
+                ];
             }
         }
 

@@ -1,3 +1,11 @@
+# 7.0.1 — Recurring Class Discovery Hotfix
+
+- Updated My Classes to consume the shared appointment-first Class Discovery service.
+- Restored verified future dates from assigned Amelia service records when appointment rows do not yet exist.
+- Preserved real appointment enrollment, capacity, booked value, and student links when available.
+- Added a safe roster-unavailable state for service dates that Amelia has not converted into appointments yet.
+- Preserved Heather Skinner, Jessica Wyant, glassblower, identity, Class Requests, and Platform Foundation behavior.
+
 # 7.0.0 — Platform Foundation
 
 - Added a central Identity Service with explicit mapping priority, email fallback, and request-level caching.

@@ -1,4 +1,4 @@
-Elev8 OS 7.0.0 — Platform Foundation
+Elev8 OS 7.0.1 — Recurring Class Discovery Hotfix
 
 SOURCE-ONLY UPDATE
 
