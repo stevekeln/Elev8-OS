@@ -1,3 +1,14 @@
+# 7.1.0 — Asset Engine: My Artwork Foundation
+
+- Added a WordPress-owned Asset Engine database service as the single source of truth for artist artwork.
+- Added the My Artwork Artist Portal page and navigation item.
+- Added secure create, edit, list, and remove workflows scoped to the logged-in artist.
+- Added image uploads through the WordPress Media Library.
+- Added title, description, medium, dimensions, verified optional price, and lifecycle status fields.
+- Added artwork summary metrics and explicit Price unavailable and Image unavailable states.
+- Preserved Amelia, Opportunity Engine, CRM, Class Requests, Business Intelligence, and all 7.0.1 behavior.
+- Established the foundation for future website publishing, inventory, sales, and artwork reporting without duplicating asset data.
+
 # 7.0.1 — Recurring Class Discovery Hotfix
 
 - Updated My Classes to consume the shared appointment-first Class Discovery service.

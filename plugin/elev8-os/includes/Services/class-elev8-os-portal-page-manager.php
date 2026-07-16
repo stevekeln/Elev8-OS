@@ -29,6 +29,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'artist-classes',
                 'shortcode' => 'elev8_artist_classes',
             ],
+            'artwork' => [
+                'option' => 'elev8_os_artist_artwork_page_id',
+                'title' => __('My Artwork', 'elev8-os'),
+                'slug' => 'artist-artwork',
+                'shortcode' => 'elev8_artist_artwork',
+            ],
             'students' => [
                 'option' => 'elev8_os_artist_students_page_id',
                 'title' => __('Students', 'elev8-os'),

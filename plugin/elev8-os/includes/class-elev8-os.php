@@ -43,6 +43,9 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Waitlist_Module')) {
             Elev8_OS_Waitlist_Module::activate();
         }
+        if (class_exists('Elev8_OS_My_Artwork_Module')) {
+            Elev8_OS_My_Artwork_Module::activate();
+        }
         if (class_exists('Elev8_OS_Class_Demand_Module')) {
             Elev8_OS_Class_Demand_Module::activate();
         }
@@ -1824,6 +1827,9 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Waitlist_Module')) {
             Elev8_OS_Waitlist_Module::activate();
+        }
+        if (class_exists('Elev8_OS_My_Artwork_Module')) {
+            Elev8_OS_My_Artwork_Module::activate();
         }
         if (class_exists('Elev8_OS_Class_Demand_Module')) {
             Elev8_OS_Class_Demand_Module::activate();

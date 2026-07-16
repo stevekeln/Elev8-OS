@@ -119,7 +119,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return false;
         }
 
-        foreach (['dashboard', 'classes', 'students', 'waitlist'] as $portal_page) {
+        foreach (['dashboard', 'classes', 'artwork', 'students', 'waitlist'] as $portal_page) {
             if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
                 return true;
             }
@@ -133,7 +133,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        $portal_pages = ['dashboard', 'classes', 'students', 'waitlist'];
+        $portal_pages = ['dashboard', 'classes', 'artwork', 'students', 'waitlist'];
         $is_portal_page = false;
         foreach ($portal_pages as $portal_page) {
             if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
@@ -692,6 +692,7 @@ final class Elev8_OS_Artist_Portal_Module {
         $public_url = esc_url_raw((string) get_user_meta($user->ID, self::META_PUBLIC_PAGE, true));
         $edit_url = self::edit_website_url();
         $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
+        $artwork_url = Elev8_OS_Portal_Page_Manager::get_url('artwork');
         $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
         $waitlist_url = Elev8_OS_Portal_Page_Manager::get_url('waitlist');
         $booking_url = esc_url_raw((string) get_user_meta($user->ID, self::META_BOOKING, true));
@@ -707,6 +708,12 @@ final class Elev8_OS_Artist_Portal_Module {
                 'label' => __('My Classes', 'elev8-os'),
                 'icon' => 'calendar-alt',
                 'url' => $classes_url,
+                'enabled' => true,
+            ],
+            'artwork' => [
+                'label' => __('My Artwork', 'elev8-os'),
+                'icon' => 'format-image',
+                'url' => $artwork_url,
                 'enabled' => true,
             ],
             'website' => [
