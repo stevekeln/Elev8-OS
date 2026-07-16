@@ -1,4 +1,4 @@
-Elev8 OS 7.3.1
+Elev8 OS 7.4.0
 
 Business operating system for creative studios, artists, and makers.
 

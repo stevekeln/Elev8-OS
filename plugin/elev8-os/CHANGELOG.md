@@ -1,5 +1,18 @@
 # Elev8 OS Changelog
 
+## 7.4.0 - Artist Business Center
+
+- Transformed the Artist Dashboard into a daily business home screen.
+- Added a reusable Artist Business Snapshot service for dashboards, reports, recommendations, achievements, and future AI.
+- Added a reusable 0-100 Business Score Engine covering profile, artwork, classes, sales, engagement, and website readiness.
+- Added a rule-based Recommendation Engine as the foundation for the future AI Artist Coach.
+- Added a reusable Achievement Service with first artwork, first sale, 10 sales, 100 students, and $10,000 revenue milestones.
+- Added an HTML-first Report Engine with a downloadable Monthly Artist Report.
+- Added monthly artwork revenue, artwork sold, upcoming classes, students, artwork views, QR scans, low inventory, and business score cards.
+- Added expanded quick actions, coaching recommendations, and achievement progress.
+- Uses WooCommerce paid orders for verified artwork revenue and displays Unavailable when trusted data cannot be calculated.
+- Preserved Amelia scheduling, WooCommerce checkout, Asset Engine inventory, artist storefronts, QR pages, and all 7.3.1 data.
+
 ## 7.3.1 - Asset Polish
 
 - Added multiple artwork images with drag-and-drop ordering and a primary hero image.

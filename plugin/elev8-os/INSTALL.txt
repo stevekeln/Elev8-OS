@@ -1,8 +1,8 @@
-Elev8 OS 7.3.1 Installation
+Elev8 OS 7.4.0 Installation
 
 1. Back up the WordPress site and database.
 2. Install this ZIP on Local first by replacing the existing Elev8 OS plugin.
-3. Confirm the plugin reports version 7.3.1.
+3. Confirm the plugin reports version 7.4.0.
 4. Edit an existing artwork and test multiple images, story fields, video, documents, preview, and checkout.
 5. Confirm existing artwork, WooCommerce products, QR pages, cart navigation, and sale notifications still work.
 6. Install the exact same tested ZIP on Live.

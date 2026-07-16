@@ -1,16 +1,24 @@
-Elev8 OS 7.3.1 - Asset Polish
+Elev8 OS 7.4.0 - Artist Business Center
+
+Replace the matching files in your GitHub repository on the develop branch.
+Then commit and push before running Build Elev8 OS Release.bat.
+
+Changed files:
+- plugin/elev8-os/elev8-os.php
+- plugin/elev8-os/CHANGELOG.md
+- plugin/elev8-os/README.txt
+- plugin/elev8-os/INSTALL.txt
+- plugin/elev8-os/GIT-SUMMARY.txt
+- plugin/elev8-os/includes/class-elev8-os-loader.php
+- plugin/elev8-os/includes/Modules/class-elev8-os-dashboard-module.php
+- plugin/elev8-os/assets/css/artist-dashboard.css
+
+New files:
+- plugin/elev8-os/includes/Services/class-elev8-os-business-score-engine.php
+- plugin/elev8-os/includes/Services/class-elev8-os-recommendation-engine.php
+- plugin/elev8-os/includes/Services/class-elev8-os-achievement-service.php
+- plugin/elev8-os/includes/Services/class-elev8-os-artist-business-service.php
+- plugin/elev8-os/includes/Services/class-elev8-os-report-engine.php
 
 Suggested commit:
-feat(asset-engine): add rich media and listing polish
-
-Changed:
-- Asset schema and reusable Asset Service
-- My Artwork editor and media ordering
-- Public QR asset experience
-- Asset SEO and social sharing
-- Artist artwork and public-page styling
-- Version, changelog, README, and installation notes
-
-Database:
-- Asset DB version 3.1.0
-- Existing artwork and WooCommerce connections are preserved
+Build Elev8 OS 7.4.0 Artist Business Center

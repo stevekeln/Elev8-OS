@@ -19,6 +19,11 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-students-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-score-engine.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-engine.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-achievement-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-artist-business-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-report-engine.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-intelligence.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-class-discovery.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-portal-page-manager.php';
@@ -33,6 +38,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_WooCommerce::init();
         Elev8_OS_Asset_Sale_Notification_Service::init();
         Elev8_OS_Portal_Page_Manager::init();
+        Elev8_OS_Report_Engine::init();
         Elev8_OS_Artist_Portal_Module::init();
         Elev8_OS_Dashboard_Module::init();
         Elev8_OS_My_Classes_Module::init();
