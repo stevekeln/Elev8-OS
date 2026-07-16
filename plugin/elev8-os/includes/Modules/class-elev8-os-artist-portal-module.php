@@ -57,6 +57,16 @@ final class Elev8_OS_Artist_Portal_Module {
             [],
             ELEV8_OS_VERSION
         );
+
+        if (self::is_edit_website_page()) {
+            wp_enqueue_script(
+                'elev8-os-artist-website-preview',
+                ELEV8_OS_URL . 'assets/js/artist-website-live-preview.js',
+                [],
+                ELEV8_OS_VERSION,
+                true
+            );
+        }
     }
 
     public static function enqueue_admin_assets(string $hook): void {
@@ -263,7 +273,12 @@ final class Elev8_OS_Artist_Portal_Module {
                 $profile = isset($profiles[$employee_id]) && is_array($profiles[$employee_id]) ? $profiles[$employee_id] : [];
                 $slug = self::artist_slug($artist);
                 $public_url = home_url('/artists/' . $slug . '/');
+                $artist_name = trim((string) ($artist['firstName'] ?? '') . ' ' . (string) ($artist['lastName'] ?? ''));
+                if ($artist_name === '') {
+                    $artist_name = $user->display_name ?: __('Artist', 'elev8-os');
+                }
                 ?>
+                <div class="elev8-website-builder">
                 <form class="elev8-manage-website-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <input type="hidden" name="action" value="elev8_os_artist_save_website">
                     <input type="hidden" name="employee_id" value="<?php echo esc_attr((string) $employee_id); ?>">
@@ -349,6 +364,54 @@ final class Elev8_OS_Artist_Portal_Module {
                         <button class="elev8-primary-button" type="submit"><?php esc_html_e('Save My Website', 'elev8-os'); ?></button>
                     </div>
                 </form>
+
+                <aside class="elev8-live-preview-panel" aria-labelledby="elev8-live-preview-heading">
+                    <div class="elev8-live-preview-heading">
+                        <div>
+                            <p class="elev8-eyebrow"><?php esc_html_e('Live preview', 'elev8-os'); ?></p>
+                            <h2 id="elev8-live-preview-heading"><?php esc_html_e('Your Public Artist Website', 'elev8-os'); ?></h2>
+                            <p><?php esc_html_e('Changes appear here instantly. Save when you are ready to publish them.', 'elev8-os'); ?></p>
+                        </div>
+                        <span class="elev8-preview-status"><?php esc_html_e('Preview only', 'elev8-os'); ?></span>
+                    </div>
+
+                    <div class="elev8-live-profile-preview" data-artist-name="<?php echo esc_attr($artist_name); ?>">
+                        <div class="elev8-live-cover" data-preview-cover<?php echo !empty($profile['cover_image']) ? ' style="background-image:url(' . esc_url($profile['cover_image']) . ')"' : ''; ?>>
+                            <div class="elev8-live-cover-overlay"></div>
+                        </div>
+                        <div class="elev8-live-profile-body">
+                            <div class="elev8-live-profile-head">
+                                <div class="elev8-live-avatar" data-preview-avatar>
+                                    <?php if (!empty($profile['profile_photo'])) : ?>
+                                        <img src="<?php echo esc_url($profile['profile_photo']); ?>" alt="">
+                                    <?php else : ?>
+                                        <span><?php echo esc_html(strtoupper(substr($artist_name, 0, 1))); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div>
+                                    <h3 data-preview-name><?php echo esc_html($artist_name); ?></h3>
+                                    <p data-preview-medium><?php echo esc_html((string) ($profile['medium'] ?? __('Artist and Instructor', 'elev8-os'))); ?></p>
+                                </div>
+                            </div>
+
+                            <div class="elev8-live-bio">
+                                <h4><?php esc_html_e('About', 'elev8-os'); ?></h4>
+                                <p data-preview-bio><?php echo esc_html((string) ($profile['bio'] ?? __('Your artist story will appear here.', 'elev8-os'))); ?></p>
+                            </div>
+
+                            <div class="elev8-live-details">
+                                <div><span><?php esc_html_e('Specialties', 'elev8-os'); ?></span><strong data-preview-specialties><?php echo esc_html((string) ($profile['specialties'] ?? __('Not added yet', 'elev8-os'))); ?></strong></div>
+                                <div><span><?php esc_html_e('Experience', 'elev8-os'); ?></span><strong data-preview-experience><?php echo esc_html((string) ($profile['experience'] ?? __('Not added yet', 'elev8-os'))); ?></strong></div>
+                            </div>
+
+                            <div class="elev8-live-gallery" data-preview-gallery></div>
+                            <div class="elev8-live-links" data-preview-links></div>
+                            <a class="elev8-live-book-button" data-preview-book href="#"><?php echo esc_html((string) ($profile['booking_button_label'] ?? __('Book Now with This Artist', 'elev8-os'))); ?></a>
+                        </div>
+                    </div>
+                    <p class="elev8-preview-note"><?php esc_html_e('This preview reflects the content and structure of the public page. Your WordPress theme may add its own header, footer, and spacing.', 'elev8-os'); ?></p>
+                </aside>
+                </div>
             <?php endif; ?>
         </div>
         <?php

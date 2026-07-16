@@ -1,3 +1,10 @@
+## 5.6.0 — Live Artist Website Builder
+
+- Added a split-screen Manage My Website experience with an instant public-page preview.
+- Preview updates bio, medium, specialties, experience, profile and cover images, gallery, social links, and booking button as the artist types.
+- The preview is explicitly preview-only until the artist saves, preserving the existing secure save workflow.
+- Added responsive behavior for tablets and phones.
+
 ## 5.5.0 — Artist Portal Foundation Hardening
 
 - Added a central Portal Page Manager.

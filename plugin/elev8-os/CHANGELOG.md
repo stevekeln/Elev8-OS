@@ -1,3 +1,10 @@
+## 5.6.0
+
+- Added a two-column Manage My Website builder with an always-visible live preview.
+- Bio, medium, specialties, experience, profile photo, cover image, gallery, social links, and booking button update instantly while the artist types.
+- Preview uses the same saved profile fields as the public artist page and clearly identifies unsaved changes as preview-only.
+- Added responsive behavior so the preview moves above the form on smaller screens.
+
 ## 5.5.0
 
 - Added Artist Portal Setup under Elev8 OS.

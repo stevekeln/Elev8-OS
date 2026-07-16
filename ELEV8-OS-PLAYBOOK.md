@@ -1834,3 +1834,8 @@ This is safer than immediately extending a historical copy because the available
 ## Milestone 5.5.0 — Artist Portal Foundation Hardening
 
 The Artist Portal now uses a central Portal Page Manager as the source of truth for WordPress portal pages. The manager stores exact page IDs for Artist Dashboard, My Website, and Edit Website; discovers existing pages by saved ID, canonical slug, or registered shortcode; repairs missing shortcode content; and creates missing pages when an administrator is available. Portal navigation must resolve links from stored page IDs through `get_permalink()` rather than assume fixed slugs. An administrator-facing Portal Setup screen reports page health and provides one-click repair.
+
+### 5.6.0 — Live Artist Website Builder
+
+The Artist Portal Manage My Website screen now provides a responsive live preview beside the editor. The preview consumes the same artist-owned profile fields as the public page and updates only in the browser until the verified save action is completed.
+
