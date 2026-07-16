@@ -1,3 +1,11 @@
+# 7.2.2 — Storefront Cart Navigation
+
+- Fixed the Artist Storefront Add to Cart action so it opens the WooCommerce Cart page immediately after adding an artwork item.
+- Added a persistent View Cart button to public artist storefronts.
+- Added a direct Checkout link beside the cart control.
+- Kept WooCommerce as the owner of cart and checkout behavior while Elev8 OS continues to own asset and inventory state.
+- Preserved artist sale notifications, existing products, artwork, orders, and live data.
+
 # 7.2.1 — Artist Sale Notifications
 
 - Added a reusable Asset Engine sale-notification service.

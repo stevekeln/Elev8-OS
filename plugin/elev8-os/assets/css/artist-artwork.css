@@ -2,3 +2,53 @@
 
 /* 7.2.0 inventory and checkout fields */
 .elev8-asset-number{display:inline-flex;align-items:center;gap:12px;margin-top:18px;padding:10px 13px;border-radius:8px;background:#f0f6fc}.elev8-asset-number span{color:#50575e;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.elev8-artwork-switches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}.elev8-artwork-switches label{display:flex;align-items:flex-start;gap:10px;padding:15px;border:1px solid #dcdcde;border-radius:10px;background:#f9f9f9}.elev8-artwork-switches input{width:auto;margin-top:3px}.elev8-artwork-switches span,.elev8-artwork-switches small{display:block}.elev8-artwork-switches small{margin-top:3px;color:#646970}.elev8-asset-id{margin:12px 0 0!important;color:#646970!important;font-size:11px!important;font-weight:700;letter-spacing:.08em}.elev8-product-state{margin-top:14px;padding:9px 11px;border-radius:8px;background:#f6f7f7;color:#646970;font-size:12px}.elev8-product-state .is-connected{color:#135e1f;font-weight:700}.elev8-artwork-status.is-reserved{background:#fff8e5;color:#8a4b00}.elev8-artwork-actions{flex-wrap:wrap}.elev8-artwork-actions>a{font-size:13px}@media(max-width:650px){.elev8-artwork-switches{grid-template-columns:1fr}}
+
+/* 7.2.2 storefront cart navigation */
+.elev8-store-heading {
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.elev8-store-heading > div:first-child {
+    flex: 1 1 auto;
+}
+
+.elev8-store-heading > div:first-child > p:last-child {
+    margin-bottom: 0;
+}
+
+.elev8-store-cart-links {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    min-width: 130px;
+}
+
+.elev8-store-cart-links .button {
+    margin: 0;
+    text-align: center;
+}
+
+.elev8-checkout-link {
+    text-align: center;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .elev8-store-heading {
+        display: block;
+    }
+
+    .elev8-store-cart-links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    .elev8-checkout-link {
+        align-content: center;
+    }
+}

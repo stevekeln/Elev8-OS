@@ -184,17 +184,56 @@ final class Elev8_OS_WooCommerce {
         }
     }
 
+    public static function get_cart_url(): string {
+        if (!self::is_available() || !function_exists('wc_get_cart_url')) {
+            return '';
+        }
+
+        return (string) wc_get_cart_url();
+    }
+
+    public static function get_checkout_url(): string {
+        if (!self::is_available() || !function_exists('wc_get_checkout_url')) {
+            return '';
+        }
+
+        return (string) wc_get_checkout_url();
+    }
+
     /** @param array<string,mixed> $asset */
     public static function get_purchase_data(array $asset): array {
         $product_id = absint($asset['wc_product_id'] ?? 0);
         $product = self::is_available() && $product_id > 0 ? wc_get_product($product_id) : false;
         if (!$product || $product->get_status() !== 'publish') {
-            return ['url' => '', 'cart_url' => '', 'purchasable' => false];
+            return [
+                'url'         => '',
+                'add_to_cart' => '',
+                'cart_url'    => self::get_cart_url(),
+                'purchasable' => false,
+            ];
         }
+
+        $purchasable = $product->is_purchasable() && $product->is_in_stock();
+        $cart_url = self::get_cart_url();
+        $add_to_cart_url = '';
+
+        if ($purchasable && $cart_url !== '') {
+            // Load the actual Cart page after adding the item. This avoids a dead-end
+            // storefront state and works independently of WooCommerce AJAX settings.
+            $add_to_cart_url = add_query_arg(
+                [
+                    'add-to-cart' => $product_id,
+                    'quantity'    => 1,
+                ],
+                $cart_url
+            );
+        }
+
         return [
-            'url' => (string) get_permalink($product_id),
-            'cart_url' => $product->is_purchasable() && $product->is_in_stock() ? (string) $product->add_to_cart_url() : '',
-            'purchasable' => $product->is_purchasable() && $product->is_in_stock(),
+            'url'         => (string) get_permalink($product_id),
+            'add_to_cart' => (string) $add_to_cart_url,
+            'cart_url'    => (string) $cart_url,
+            'purchasable' => $purchasable,
         ];
     }
 }

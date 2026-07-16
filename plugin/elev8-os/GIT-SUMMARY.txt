@@ -1,10 +1,7 @@
-Elev8 OS 7.2.1 — Artist Sale Notifications
+Elev8 OS 7.2.2 — Storefront Cart Navigation
 
-- Added a reusable Asset Engine sale-notification service.
-- Sends the owning artist a sale email after WooCommerce confirms payment.
-- Includes artwork image, title, asset number, sale price, order number, date, and sold status.
-- Uses the shared Notification Service and preserves WooCommerce customer receipts.
-- Prevents duplicate artist emails across Processing and Completed order transitions.
-- Records delivery results in private WooCommerce order notes.
-- Alerts the site administrator when the artist has no valid WordPress email.
-- Preserves all existing Asset Engine, inventory, WooCommerce, artist, and live data.
+- Fixed Add to cart to open the WooCommerce Cart page after adding an artwork item.
+- Added persistent View cart and Checkout controls to public artist storefronts.
+- Preserved Artist Sale Notifications and all 7.2.x inventory behavior.
+- No database migration.
+- Updated version, changelog, README, install notes, and source summary.

@@ -1,15 +1,12 @@
-Elev8 OS 7.2.1
+Elev8 OS 7.2.2
 
 Elev8 OS is the business operating system for creative studios, artists, and makers.
 
-This release adds Artist Sale Notifications to the Asset Engine and WooCommerce checkout workflow. After WooCommerce confirms payment for an artwork order, Elev8 OS identifies the asset owner and sends the artist a separate sale email through the shared Notification Service.
+This release restores a complete customer purchase path on public artist storefronts. Clicking Add to cart now adds the artwork and opens the WooCommerce Cart page. Each storefront also provides persistent View cart and Checkout links.
 
-The artist email includes the artwork image, title, asset number, sale price, order number, sold date, and status. Customer payment details and private customer information are not included.
+Artist sale notifications from 7.2.1 remain active. Elev8 OS owns asset identity, artist ownership, inventory state, and business intelligence. WooCommerce owns the cart, checkout, payment, receipt, and order.
 
 Requirements:
 - WordPress 6.0 or newer
 - PHP 7.4 or newer
-- Amelia for scheduling and bookings
-- WooCommerce for product pages, cart, checkout, payment, and order handling
-
-Always test the exact release ZIP on Local before installing it on Live.
+- WooCommerce for online artwork sales
