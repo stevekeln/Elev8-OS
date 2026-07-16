@@ -1,26 +1,68 @@
+# 6.0.2 — Amelia Assignment Discovery Hotfix
+
+- Replaced guessed provider-to-service table names with runtime Amelia schema discovery.
+- Added compatibility for services that store assigned employees directly in JSON or serialized fields.
+- Improved parsing of explicit service dates containing HTML, line breaks, and non-breaking spaces.
+- Expanded administrator diagnostics with discovered assignment sources.
+
+# Elev8 OS Changelog
+
+## 6.0.1 — Upcoming Class Compatibility Hotfix
+
+- Restored upcoming classes on the Artists admin screen when an Amelia service has scheduled dates but no customer bookings yet.
+- Reads verified dated provider-to-service assignment rows when available.
+- Adds a compatibility fallback that reads only explicit future dates written in an assigned Amelia service description.
+- Added an administrator-only upcoming-class diagnostics panel showing detected Amelia sources and counts.
+- Does not invent dates or create bookings.
+
+## 6.0.0 — Admin Reorganization
+
+- Renamed the confusing admin **Artist Portal** screen to **Artists**.
+- Reorganized Elev8 OS admin navigation into a clearer daily-use order.
+- Renamed the admin-only Artist Dashboard screen to **Artist Dashboard Preview**.
+- Removed the duplicate legacy System Status menu entry while preserving the full System Inspector.
+- Moved CEO Dashboard and Business Intelligence ahead of system and development tools.
+- Kept the simple `develop` and `main` branch workflow unchanged.
+
+## 5.9.0 — Portal Polish
+
+- Added secure CSV downloads for artist class rosters.
+- Added print-friendly student rosters.
+- Added live roster search counts and cleaner roster actions.
+- Improved class cards, action hierarchy, mobile layouts, and portal navigation.
+- Preserved artist-scoped permissions and verified-data rules.
+
+
+## 5.8.0
+- Added the Artist Portal Students page and automatic portal-page management.
+- Added class-specific Amelia student rosters with verified names, contact details, seats, booking status, and booking date when available.
+- Added roster search and class selection.
+- Added View Students actions to My Classes.
+- Excludes cancelled and rejected bookings and displays Unavailable instead of guessing missing data.
+
 # 5.7.0 — My Classes
 
 - Activated My Classes in the Artist Portal.
 - Added verified upcoming and recent past Amelia class dates.
 - Added student counts, detected capacity, available seats, and booked value where supported.
-- Added booking-link actions and safe Unavailable states.
-- Added My Classes to Portal Setup and automatic page repair.
+- Added class booking-link actions and safe Unavailable states.
+- Added the My Classes page to Portal Setup and automatic page repair.
 
-## 5.6.0 — Live Artist Website Builder
+## 5.6.0
 
-- Added a split-screen Manage My Website experience with an instant public-page preview.
-- Preview updates bio, medium, specialties, experience, profile and cover images, gallery, social links, and booking button as the artist types.
-- The preview is explicitly preview-only until the artist saves, preserving the existing secure save workflow.
-- Added responsive behavior for tablets and phones.
+- Added a two-column Manage My Website builder with an always-visible live preview.
+- Bio, medium, specialties, experience, profile photo, cover image, gallery, social links, and booking button update instantly while the artist types.
+- Preview uses the same saved profile fields as the public artist page and clearly identifies unsaved changes as preview-only.
+- Added responsive behavior so the preview moves above the form on smaller screens.
 
-## 5.5.0 — Artist Portal Foundation Hardening
+## 5.5.0
 
-- Added a central Portal Page Manager.
-- Stores exact WordPress page IDs for Artist Dashboard, My Website, and Edit Website.
-- Discovers existing portal pages by page ID, slug, or shortcode before creating anything.
-- Automatically repairs missing shortcodes and missing portal pages.
-- Added Elev8 OS → Portal Setup with page status and one-click repair.
-- Portal navigation now uses saved page permalinks instead of hard-coded slugs.
+- Added Artist Portal Setup under Elev8 OS.
+- Stores and uses exact WordPress page IDs for Artist Dashboard, My Website, and Edit Website.
+- Automatically discovers existing portal pages by saved ID, canonical slug, or shortcode.
+- Automatically repairs missing shortcodes and creates missing portal pages.
+- Added a one-click Check and Repair Portal Pages tool.
+- Portal navigation now survives page title and permalink changes.
 
 # Changelog
 
@@ -48,52 +90,25 @@
 - Automatically creates the `/artist-website/` portal page when an administrator loads WordPress.
 - Keeps public profile rendering in the existing Elev8 OS profile engine rather than duplicating profile logic.
 
-All notable changes to Elev8 OS should be documented here.
+## 5.1.0 — CEO Dashboard
 
-The project follows semantic versioning:
+- Expanded the CEO Dashboard with today-at-a-glance metrics.
+- Added verified owner attention items.
+- Added upcoming class dates and business-health metrics.
+- Added responsive CEO Dashboard styling.
+- Preserved the rule that unavailable data is never displayed as zero.
 
-- **MAJOR:** Breaking architectural or compatibility change
-- **MINOR:** New backward-compatible functionality
-- **PATCH:** Backward-compatible bug fix
+## 5.0.0 — Foundation
 
-## [Unreleased]
+- Preserved Version 4.99 functionality.
+- Added modular bootstrap and loader.
+- Added integration boundaries for Amelia and WooCommerce.
+- Added module scaffolds for Artist Portal, Waitlist, CRM, and Dashboard.
+- Added System Status admin page.
+- Standardized asset folders.
 
-### Planned
-
-- Founders Edition source audit
-- Architecture cleanup
-- Waitlist design
-- CEO dashboard specification
-- CRM specification
-
-## [4.99.0] — Vision Edition
-
-### Added
-
-- Vision-focused development center
-- Product philosophy
-- Roadmap and planning concepts
-- Opportunity and problem framing
-- Future waitlist, CRM, dashboard, and intelligence direction
-
-### Existing foundation
-
-- Artist partnership rules
-- Artist portal
-- Public artist pages
-- Booking destination buttons
-- Contact, payment, and social links
-- Referral links
-- QR code support
-- Tax-document fields
-- Amelia and WooCommerce integration work
-
-### Known issues
-
-- Existing code requires a complete audit before it is treated as a stable production foundation
-- Amelia scheduling structures need a documented integration strategy
-- Automated tests do not yet exist
-
-## 5.2.0 — Artist Dashboard Schedule
-- Added a practical teacher dashboard with verified upcoming classes and enrollment.
-- Preserved fail-closed data behavior and the existing CEO Dashboard and portal foundation.
+## 5.2.0
+- Rebuilt the Artist Dashboard around verified upcoming Amelia appointments.
+- Added upcoming class dates, service names, times, locations, booking records, and student totals when supported by the detected schema.
+- Added clear empty and unavailable states instead of misleading zero values.
+- Added a direct profile action while keeping payouts and tax documents visibly marked as planned.

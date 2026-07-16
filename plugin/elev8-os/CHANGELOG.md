@@ -1,4 +1,19 @@
+# 6.0.2 — Amelia Assignment Discovery Hotfix
+
+- Replaced guessed provider-to-service table names with runtime Amelia schema discovery.
+- Added compatibility for services that store assigned employees directly in JSON or serialized fields.
+- Improved parsing of explicit service dates containing HTML, line breaks, and non-breaking spaces.
+- Expanded administrator diagnostics with discovered assignment sources.
+
 # Elev8 OS Changelog
+
+## 6.0.1 — Upcoming Class Compatibility Hotfix
+
+- Restored upcoming classes on the Artists admin screen when an Amelia service has scheduled dates but no customer bookings yet.
+- Reads verified dated provider-to-service assignment rows when available.
+- Adds a compatibility fallback that reads only explicit future dates written in an assigned Amelia service description.
+- Added an administrator-only upcoming-class diagnostics panel showing detected Amelia sources and counts.
+- Does not invent dates or create bookings.
 
 ## 6.0.0 — Admin Reorganization
 
