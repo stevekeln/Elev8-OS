@@ -1,10 +1,8 @@
-Elev8 OS 6.5.0 — Customer Interest CRM
+Elev8 OS 6.5.1 source-only hotfix
 
-1. Copy the contents of plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os.
-2. Replace matching files and confirm all three Services files are present.
-3. Commit to develop and push.
-4. Run Build Elev8 OS Release.bat.
-5. Install the generated ZIP on Local only.
-6. Test creating an opportunity, adding interest, changing CRM status, setting a follow-up date, marking contacted, and saving notes.
-7. Test Waitlists, Artist Portal, CEO Dashboard, Business Intelligence, and plugin reactivation.
-8. Promote the exact same generated ZIP to Live only after Local passes.
+1. Copy plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os and replace matching files.
+2. Commit and push to develop.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated ZIP on Local.
+5. Reload Class Demand once, then add a customer interest record.
+6. Only install the exact tested ZIP on Live after Local passes.

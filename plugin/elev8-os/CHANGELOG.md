@@ -1,5 +1,12 @@
 # Elev8 OS Changelog
 
+## 6.5.1 — Customer Interest Database Migration Hotfix
+
+- Increased the Opportunity Engine database schema version to `1.1.0` so CRM columns are added to existing installations.
+- Fixed customer-interest submissions failing silently when the live table had the pre-CRM schema.
+- Added a visible error notice when an interest record cannot be saved.
+- Preserved all 6.5.0 Customer Interest CRM features.
+
 ## 6.5.0 — Customer Interest CRM
 
 - Added CRM statuses for every customer interest record.

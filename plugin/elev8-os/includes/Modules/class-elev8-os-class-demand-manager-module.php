@@ -49,12 +49,17 @@ final class Elev8_OS_Class_Demand_Manager_Module {
     public static function add_interest(): void {
         self::authorize('elev8_os_add_interest');
         $opportunity_id = absint($_POST['opportunity_id'] ?? 0);
-        Elev8_OS_Opportunity_Service::add_interest(wp_unslash($_POST));
-        wp_safe_redirect(add_query_arg([
+        $interest_id = Elev8_OS_Opportunity_Service::add_interest(wp_unslash($_POST));
+        $args = [
             'page' => self::SLUG,
             'opportunity_id' => $opportunity_id,
-            'interest_saved' => 1,
-        ], admin_url('admin.php')));
+        ];
+        if ($interest_id > 0) {
+            $args['interest_saved'] = 1;
+        } else {
+            $args['interest_error'] = 1;
+        }
+        wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
         exit;
     }
 
@@ -228,6 +233,7 @@ final class Elev8_OS_Class_Demand_Manager_Module {
     private static function render_notices(): void {
         if (isset($_GET['saved'])) { self::notice(__('Opportunity saved.', 'elev8-os')); }
         if (isset($_GET['interest_saved'])) { self::notice(__('Customer interest saved.', 'elev8-os')); }
+        if (isset($_GET['interest_error'])) { self::notice(__('Customer interest could not be saved. Reload this page once and try again. If it still fails, check Elev8 OS System Status.', 'elev8-os'), 'error'); }
         if (isset($_GET['deleted'])) { self::notice(__('Class idea and its customer interest records were deleted.', 'elev8-os')); }
         if (isset($_GET['interest_deleted'])) { self::notice(__('Customer interest record deleted.', 'elev8-os')); }
         if (isset($_GET['interest_updated'])) { self::notice(__('Customer follow-up updated.', 'elev8-os')); }

@@ -7,7 +7,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Opportunity_Service {
-    private const DB_VERSION = '1.0.0';
+    private const DB_VERSION = '1.1.0';
     private const DB_OPTION = 'elev8_os_opportunity_db_version';
 
     public static function activate(): void {
