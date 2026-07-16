@@ -1,9 +1,10 @@
-Elev8 OS 6.4.0 complete service hotfix
+Elev8 OS 6.5.0 — Customer Interest CRM
 
-Copy plugin/elev8-os into the matching GitHub repository folder and replace files.
-This package includes the complete dependent service set:
-- class-elev8-os-business-intelligence.php
-- class-elev8-os-class-discovery.php
-- class-elev8-os-opportunity-service.php
-
-Commit to develop, push, run Build Elev8 OS Release.bat, then install the generated ZIP on Local only.
+1. Copy the contents of plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os.
+2. Replace matching files and confirm all three Services files are present.
+3. Commit to develop and push.
+4. Run Build Elev8 OS Release.bat.
+5. Install the generated ZIP on Local only.
+6. Test creating an opportunity, adding interest, changing CRM status, setting a follow-up date, marking contacted, and saving notes.
+7. Test Waitlists, Artist Portal, CEO Dashboard, Business Intelligence, and plugin reactivation.
+8. Promote the exact same generated ZIP to Live only after Local passes.

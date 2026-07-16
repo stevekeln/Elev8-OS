@@ -13,6 +13,7 @@ final class Elev8_OS_Class_Demand_Manager_Module {
         add_action('admin_post_elev8_os_add_interest', [__CLASS__, 'add_interest']);
         add_action('admin_post_elev8_os_delete_opportunity', [__CLASS__, 'delete_opportunity']);
         add_action('admin_post_elev8_os_delete_interest', [__CLASS__, 'delete_interest']);
+        add_action('admin_post_elev8_os_update_interest', [__CLASS__, 'update_interest']);
     }
 
     public static function admin_menu(): void {
@@ -72,6 +73,19 @@ final class Elev8_OS_Class_Demand_Manager_Module {
             'page' => self::SLUG,
             'opportunity_id' => $opportunity_id,
             'interest_deleted' => 1,
+        ], admin_url('admin.php')));
+        exit;
+    }
+
+
+    public static function update_interest(): void {
+        self::authorize('elev8_os_update_interest');
+        $opportunity_id = absint($_POST['opportunity_id'] ?? 0);
+        Elev8_OS_Opportunity_Service::update_interest(wp_unslash($_POST));
+        wp_safe_redirect(add_query_arg([
+            'page' => self::SLUG,
+            'opportunity_id' => $opportunity_id,
+            'interest_updated' => 1,
         ], admin_url('admin.php')));
         exit;
     }
@@ -216,6 +230,7 @@ final class Elev8_OS_Class_Demand_Manager_Module {
         if (isset($_GET['interest_saved'])) { self::notice(__('Customer interest saved.', 'elev8-os')); }
         if (isset($_GET['deleted'])) { self::notice(__('Class idea and its customer interest records were deleted.', 'elev8-os')); }
         if (isset($_GET['interest_deleted'])) { self::notice(__('Customer interest record deleted.', 'elev8-os')); }
+        if (isset($_GET['interest_updated'])) { self::notice(__('Customer follow-up updated.', 'elev8-os')); }
     }
 
     private static function notice(string $message, string $type = 'success'): void {
@@ -313,10 +328,29 @@ final class Elev8_OS_Class_Demand_Manager_Module {
             return;
         }
 
-        echo '<div class="elev8-demand__table-wrap"><table class="widefat striped"><thead><tr><th>' . esc_html__('Name', 'elev8-os') . '</th><th>' . esc_html__('Contact', 'elev8-os') . '</th><th>' . esc_html__('Seats', 'elev8-os') . '</th><th>' . esc_html__('Preferences', 'elev8-os') . '</th><th>' . esc_html__('Notes', 'elev8-os') . '</th><th>' . esc_html__('Added', 'elev8-os') . '</th><th>' . esc_html__('Action', 'elev8-os') . '</th></tr></thead><tbody>';
+        echo '<div class="elev8-demand__table-wrap"><table class="widefat striped"><thead><tr><th>' . esc_html__('Customer', 'elev8-os') . '</th><th>' . esc_html__('Seats', 'elev8-os') . '</th><th>' . esc_html__('CRM Status', 'elev8-os') . '</th><th>' . esc_html__('Follow Up', 'elev8-os') . '</th><th>' . esc_html__('Notes', 'elev8-os') . '</th><th>' . esc_html__('Actions', 'elev8-os') . '</th></tr></thead><tbody>';
         foreach ($items as $item) {
-            echo '<tr><td>' . esc_html((string) $item['customer_name']) . '</td><td>' . esc_html(trim((string) $item['customer_email'] . ' ' . (string) $item['customer_phone'])) . '</td><td>' . esc_html((string) $item['seats_requested']) . '</td><td>' . esc_html(trim((string) $item['preferred_days'] . ' ' . (string) $item['preferred_times'])) . '</td><td>' . esc_html((string) $item['notes']) . '</td><td>' . esc_html(mysql2date(get_option('date_format'), (string) $item['created_at'])) . '</td><td>';
-            echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(\'' . esc_js(__('Delete this customer interest record?', 'elev8-os')) . '\');">';
+            $email = trim((string) $item['customer_email']);
+            $phone = trim((string) $item['customer_phone']);
+            echo '<tr><td><strong>' . esc_html((string) $item['customer_name']) . '</strong><br>';
+            if ($email !== '') { echo '<a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a><br>'; }
+            if ($phone !== '') { echo '<a href="tel:' . esc_attr(preg_replace('/[^0-9+]/', '', $phone)) . '">' . esc_html($phone) . '</a>'; }
+            echo '</td><td>' . esc_html((string) $item['seats_requested']) . '</td><td colspan="3">';
+            echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" class="elev8-interest-crm-form">';
+            echo '<input type="hidden" name="action" value="elev8_os_update_interest"><input type="hidden" name="interest_id" value="' . esc_attr((string) $item['id']) . '"><input type="hidden" name="opportunity_id" value="' . esc_attr((string) $item['opportunity_id']) . '">';
+            wp_nonce_field('elev8_os_update_interest');
+            echo '<label><span class="screen-reader-text">' . esc_html__('CRM status', 'elev8-os') . '</span><select name="crm_status">';
+            foreach (Elev8_OS_Opportunity_Service::interest_statuses() as $status) {
+                echo '<option value="' . esc_attr($status) . '" ' . selected((string) ($item['crm_status'] ?? 'new'), $status, false) . '>' . esc_html(self::status_label($status)) . '</option>';
+            }
+            echo '</select></label> ';
+            echo '<label><span class="screen-reader-text">' . esc_html__('Follow-up date', 'elev8-os') . '</span><input type="date" name="follow_up_date" value="' . esc_attr((string) ($item['follow_up_date'] ?? '')) . '"></label> ';
+            echo '<label class="elev8-interest-notes"><span class="screen-reader-text">' . esc_html__('Notes', 'elev8-os') . '</span><textarea name="notes" rows="2">' . esc_textarea((string) $item['notes']) . '</textarea></label> ';
+            echo '<label><input type="checkbox" name="mark_contacted" value="1"> ' . esc_html__('Mark contacted now', 'elev8-os') . '</label> ';
+            echo '<button class="button button-small" type="submit">' . esc_html__('Save Follow-up', 'elev8-os') . '</button>';
+            if (!empty($item['last_contacted_at'])) { echo '<small class="elev8-interest-last-contact">' . esc_html(sprintf(__('Last contacted: %s', 'elev8-os'), mysql2date(get_option('date_format') . ' ' . get_option('time_format'), (string) $item['last_contacted_at']))) . '</small>'; }
+            echo '</form></td><td>';
+            echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(&quot;' . esc_js(__('Delete this customer interest record?', 'elev8-os')) . '&quot;);">';
             echo '<input type="hidden" name="action" value="elev8_os_delete_interest"><input type="hidden" name="interest_id" value="' . esc_attr((string) $item['id']) . '"><input type="hidden" name="opportunity_id" value="' . esc_attr((string) $item['opportunity_id']) . '">';
             wp_nonce_field('elev8_os_delete_interest');
             echo '<button class="button button-small button-link-delete" type="submit">' . esc_html__('Delete', 'elev8-os') . '</button></form></td></tr>';

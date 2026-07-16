@@ -66,6 +66,9 @@ final class Elev8_OS_Opportunity_Service {
             preferred_times varchar(190) NOT NULL DEFAULT '',
             notes text NULL,
             source varchar(80) NOT NULL DEFAULT 'admin',
+            crm_status varchar(40) NOT NULL DEFAULT 'new',
+            follow_up_date date DEFAULT NULL,
+            last_contacted_at datetime DEFAULT NULL,
             created_at datetime NOT NULL,
             PRIMARY KEY (id),
             KEY opportunity_id (opportunity_id),
@@ -135,9 +138,28 @@ final class Elev8_OS_Opportunity_Service {
             'preferred_times' => sanitize_text_field((string) ($data['preferred_times'] ?? '')),
             'notes' => sanitize_textarea_field((string) ($data['notes'] ?? '')),
             'source' => sanitize_text_field((string) ($data['source'] ?? 'admin')),
+            'crm_status' => self::allowed((string) ($data['crm_status'] ?? 'new'), self::interest_statuses(), 'new'),
+            'follow_up_date' => self::sanitize_date((string) ($data['follow_up_date'] ?? '')),
+            'last_contacted_at' => null,
             'created_at' => current_time('mysql'),
         ]);
         return (int) $wpdb->insert_id;
+    }
+
+
+    public static function update_interest(array $data): bool {
+        global $wpdb;
+        $id = absint($data['interest_id'] ?? 0);
+        if ($id <= 0) { return false; }
+        $record = [
+            'crm_status' => self::allowed((string) ($data['crm_status'] ?? 'new'), self::interest_statuses(), 'new'),
+            'follow_up_date' => self::sanitize_date((string) ($data['follow_up_date'] ?? '')),
+            'notes' => sanitize_textarea_field((string) ($data['notes'] ?? '')),
+        ];
+        if (!empty($data['mark_contacted'])) {
+            $record['last_contacted_at'] = current_time('mysql');
+        }
+        return false !== $wpdb->update(self::interests_table(), $record, ['id' => $id]);
     }
 
     public static function get(int $id): ?array {
@@ -189,6 +211,13 @@ final class Elev8_OS_Opportunity_Service {
     }
 
     public static function statuses(): array { return ['idea','research','teacher_needed','recruiting','planning','scheduled','active','completed','archived','cancelled']; }
+    public static function interest_statuses(): array { return ['new','contacted','qualified','scheduled','converted','not_interested']; }
+    private static function sanitize_date(string $value): ?string {
+        $value = trim($value);
+        if ($value === '') { return null; }
+        $date = DateTime::createFromFormat('Y-m-d', $value);
+        return ($date && $date->format('Y-m-d') === $value) ? $value : null;
+    }
     private static function allowed(string $value, array $allowed, string $default): string { return in_array($value, $allowed, true) ? $value : $default; }
     private static function metric($value, bool $available, string $format, string $diagnostic): array { return ['available'=>$available,'value'=>$value,'format'=>$format,'confidence'=>$available?'high':'unavailable','diagnostic'=>$diagnostic]; }
 }

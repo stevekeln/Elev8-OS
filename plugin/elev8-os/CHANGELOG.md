@@ -1,3 +1,15 @@
+# Elev8 OS Changelog
+
+## 6.5.0 — Customer Interest CRM
+
+- Added CRM statuses for every customer interest record.
+- Added follow-up dates and last-contacted tracking.
+- Added one-click email and phone links.
+- Added editable customer notes directly in the opportunity detail view.
+- Added a Mark Contacted action that records the verified contact time.
+- Kept all customer data owned by the Opportunity Engine and available to Business Intelligence.
+- Preserved the 6.4.0 Opportunity Detail View, Class Demand Manager, Waitlists, Artist Portal, and Amelia integration.
+
 # Changelog
 
 ## 6.4.0 — Opportunity Detail View
@@ -46,8 +58,6 @@
 - Added an artist filter to the administrator Waitlists screen.
 - Added server-side validation that the selected class belongs to the selected artist.
 - Added appointment IDs to Elev8 OS waitlist records while preserving existing Phase 1 entries.
-
-# Elev8 OS Changelog
 
 ## 6.1.0
 - Added Waitlist Manager Phase 1 foundation.
