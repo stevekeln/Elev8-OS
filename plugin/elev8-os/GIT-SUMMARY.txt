@@ -1,14 +1,14 @@
-Elev8 OS 7.1.1 — Asset Storefront Integration
+Elev8 OS 7.1.2 — Responsive Asset Storefront Grid
 
 Source branch: develop
-Base release: 7.1.0
+Base release: 7.1.1
 
 Summary:
-- Public artist pages now use Asset Engine records as the product storefront.
-- Removed duplicate gallery entry and rendering while preserving legacy data.
-- Available and Sold records may render publicly; Draft and Archived remain private.
-- New artwork defaults to Available.
-- No Amelia, WooCommerce, identity, booking, CRM, BI, or existing asset records were removed.
+- Public artist storefronts now show three product cards per row on desktop.
+- Tablet and smaller desktop screens show two cards per row.
+- Mobile screens show one card per row.
+- Asset Engine records, public visibility rules, inquiry links, and existing live data are unchanged.
+- No database migration is required.
 
 Suggested commit:
-Release 7.1.1 Asset Storefront Integration
+Release 7.1.2 Responsive Asset Storefront Grid

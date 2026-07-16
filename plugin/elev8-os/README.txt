@@ -18,4 +18,4 @@ Elev8 OS is the business operating system for creative studios, artists, and mak
 
 This release intentionally keeps the existing working logic inside a compatibility class while future releases migrate one module at a time.
 
-7.1.1 connects public artist pages directly to available Asset Engine records. The former standalone gallery is no longer displayed.
+7.1.2 connects public artist pages directly to available Asset Engine records. The former standalone gallery is no longer displayed.

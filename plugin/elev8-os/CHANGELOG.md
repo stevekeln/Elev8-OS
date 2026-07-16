@@ -1,3 +1,11 @@
+# 7.1.2 — Responsive Asset Storefront Grid
+
+- Changed the public artist storefront to a consistent three-column product grid on desktop.
+- Added a two-column tablet and smaller-desktop layout.
+- Added a single-column mobile layout for readable product cards and touch-friendly actions.
+- Preserved the existing Asset Engine source of truth, product details, sold state, and inquiry workflow.
+- No database changes or asset data migration are required.
+
 # 7.1.1 — Asset Storefront Integration
 
 - Replaced the separate public image gallery with an Asset Engine-powered artist storefront.
