@@ -1,3 +1,9 @@
+# 6.6.1 — Customer Save Clarity Hotfix
+
+- Renamed the CRM row action from **Save Follow-up** to **Save Customer Changes**.
+- Clarifies that CRM status, follow-up date, notes, and contact timestamp are saved together.
+- Preserves Activity & Opportunity Timeline logging for every saved customer change.
+
 # Elev8 OS Changelog
 
 ## 6.6.0 — Activity & Opportunity Timeline

@@ -1,1 +1,9 @@
-Elev8 OS 6.6.0 source update. Copy plugin/elev8-os into the repository plugin/elev8-os folder, commit to develop, push, run Build Elev8 OS Release.bat, and test the generated ZIP on Local before Live.
+Elev8 OS 6.6.1 — Customer Save Clarity Hotfix
+
+1. Copy plugin/elev8-os into the matching GitHub repository folder.
+2. Commit and push to develop.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated ZIP on Local.
+5. Open Class Demand > an opportunity.
+6. Change CRM status, follow-up date, notes, or Mark contacted now.
+7. Click Save Customer Changes and confirm the values persist and the timeline records the update.

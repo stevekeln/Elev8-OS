@@ -409,7 +409,7 @@ final class Elev8_OS_Class_Demand_Manager_Module {
             echo '<label><span class="screen-reader-text">' . esc_html__('Follow-up date', 'elev8-os') . '</span><input type="date" name="follow_up_date" value="' . esc_attr((string) ($item['follow_up_date'] ?? '')) . '"></label> ';
             echo '<label class="elev8-interest-notes"><span class="screen-reader-text">' . esc_html__('Notes', 'elev8-os') . '</span><textarea name="notes" rows="2">' . esc_textarea((string) $item['notes']) . '</textarea></label> ';
             echo '<label><input type="checkbox" name="mark_contacted" value="1"> ' . esc_html__('Mark contacted now', 'elev8-os') . '</label> ';
-            echo '<button class="button button-small" type="submit">' . esc_html__('Save Follow-up', 'elev8-os') . '</button>';
+            echo '<button class="button button-small" type="submit">' . esc_html__('Save Customer Changes', 'elev8-os') . '</button>';
             if (!empty($item['last_contacted_at'])) { echo '<small class="elev8-interest-last-contact">' . esc_html(sprintf(__('Last contacted: %s', 'elev8-os'), mysql2date(get_option('date_format') . ' ' . get_option('time_format'), (string) $item['last_contacted_at']))) . '</small>'; }
             echo '</form></td><td>';
             echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(&quot;' . esc_js(__('Delete this customer interest record?', 'elev8-os')) . '&quot;);">';
