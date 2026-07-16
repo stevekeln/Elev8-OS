@@ -1,3 +1,11 @@
+# 6.2.0 — Amelia Integrated Waitlists
+
+- Replaced manual employee, class, date, and time entry with verified Amelia artist and class selectors.
+- Added automatic service, appointment, date, time, capacity, enrolled-seat, and remaining-seat lookup.
+- Added an artist filter to the administrator Waitlists screen.
+- Added server-side validation that the selected class belongs to the selected artist.
+- Added appointment IDs to Elev8 OS waitlist records while preserving existing Phase 1 entries.
+
 # Elev8 OS Changelog
 
 ## 6.1.0
