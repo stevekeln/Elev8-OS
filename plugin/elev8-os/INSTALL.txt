@@ -1,0 +1,10 @@
+Elev8 OS 7.0.0 — Platform Foundation
+
+SOURCE-ONLY UPDATE
+
+1. Copy plugin/elev8-os into the matching folder in the GitHub repository.
+2. Commit and push to develop.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated ZIP on Local.
+5. Test Artist Dashboard, My Classes, Students, Class Requests, Website, QR, Class Demand, CRM, and Timeline.
+6. Promote the exact same release-builder ZIP to Live only after Local passes.

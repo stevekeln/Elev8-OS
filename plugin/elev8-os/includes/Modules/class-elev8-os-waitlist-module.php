@@ -1,6 +1,12 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
 
+require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-identity-service.php';
+require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-settings-service.php';
+require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-notification-service.php';
+require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-activity-service.php';
+require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-opportunity-gateway.php';
+
 /**
  * Elev8-owned Class Requests / Waitlist Engine.
  *
@@ -49,7 +55,7 @@ final class Elev8_OS_Waitlist_Module {
         if (!is_user_logged_in()) {
             return '<div class="elev8-dashboard-login"><p>' . esc_html__('Please log in to view class requests.', 'elev8-os') . '</p></div>';
         }
-        if (!class_exists('Elev8_OS_Opportunity_Service')) {
+        if (!class_exists('Elev8_OS_Opportunity_Service') || !class_exists('Elev8_OS_Opportunity_Gateway')) {
             return '<div class="elev8-dashboard-warning"><p><strong>' . esc_html__('Class Requests are temporarily unavailable.', 'elev8-os') . '</strong></p></div>';
         }
 
@@ -220,7 +226,7 @@ final class Elev8_OS_Waitlist_Module {
     }
 
     private static function render_filters(array $opportunities, array $filters, string $redirect): void {
-        $statuses = class_exists('Elev8_OS_Opportunity_Service') ? Elev8_OS_Opportunity_Service::interest_statuses() : [];
+        $statuses = class_exists('Elev8_OS_Opportunity_Service') ? Elev8_OS_Opportunity_Gateway::interest_statuses() : [];
         ?>
         <form class="elev8-request-filters" method="get" action="<?php echo esc_url($redirect); ?>">
             <?php if (isset($_GET['page'])) : ?><input type="hidden" name="page" value="<?php echo esc_attr(sanitize_key((string) $_GET['page'])); ?>"><?php endif; ?>
@@ -242,7 +248,7 @@ final class Elev8_OS_Waitlist_Module {
         $new_title = sanitize_text_field(wp_unslash((string) ($_POST['new_class_title'] ?? '')));
 
         if ($opportunity_id <= 0 && $new_title !== '') {
-            $opportunity_id = Elev8_OS_Opportunity_Service::save_opportunity([
+            $opportunity_id = Elev8_OS_Opportunity_Gateway::save([
                 'type' => 'class',
                 'title' => $new_title,
                 'category' => wp_unslash($_POST['new_class_category'] ?? ''),
@@ -264,7 +270,7 @@ final class Elev8_OS_Waitlist_Module {
             self::redirect('class_request_duplicate');
         }
 
-        $interest_id = Elev8_OS_Opportunity_Service::add_interest([
+        $interest_id = Elev8_OS_Opportunity_Gateway::add_interest([
             'opportunity_id' => $opportunity_id,
             'customer_name' => wp_unslash($_POST['customer_name'] ?? ''),
             'customer_email' => $email,
@@ -287,7 +293,7 @@ final class Elev8_OS_Waitlist_Module {
         self::authorize('elev8_os_class_idea_suggest');
         $teacher_id = absint($_POST['teacher_id'] ?? 0);
         self::verify_teacher_scope($teacher_id);
-        $id = Elev8_OS_Opportunity_Service::save_opportunity([
+        $id = Elev8_OS_Opportunity_Gateway::save([
             'type' => 'class',
             'title' => wp_unslash($_POST['title'] ?? ''),
             'category' => wp_unslash($_POST['category'] ?? ''),
@@ -309,10 +315,10 @@ final class Elev8_OS_Waitlist_Module {
     public static function handle_update_request(): void {
         self::authorize('elev8_os_class_request_update');
         $interest_id = absint($_POST['interest_id'] ?? 0);
-        $before = Elev8_OS_Opportunity_Service::get_interest($interest_id);
+        $before = Elev8_OS_Opportunity_Gateway::get_interest($interest_id);
         if (!$before) { self::redirect('class_request_error'); }
         self::verify_opportunity_access((int) $before['opportunity_id']);
-        $ok = Elev8_OS_Opportunity_Service::update_interest(wp_unslash($_POST));
+        $ok = Elev8_OS_Opportunity_Gateway::update_interest(wp_unslash($_POST));
         if ($ok) {
             self::record((int) $before['opportunity_id'], 'customer_class_request_updated', __('Customer class request updated', 'elev8-os'), '', $interest_id);
         }
@@ -322,10 +328,10 @@ final class Elev8_OS_Waitlist_Module {
     public static function handle_delete_request(): void {
         self::authorize('elev8_os_class_request_delete');
         $interest_id = absint($_POST['interest_id'] ?? 0);
-        $before = Elev8_OS_Opportunity_Service::get_interest($interest_id);
+        $before = Elev8_OS_Opportunity_Gateway::get_interest($interest_id);
         if (!$before) { self::redirect('class_request_error'); }
         self::verify_opportunity_access((int) $before['opportunity_id']);
-        $ok = Elev8_OS_Opportunity_Service::delete_interest($interest_id);
+        $ok = Elev8_OS_Opportunity_Gateway::delete_interest($interest_id);
         if ($ok) {
             self::record((int) $before['opportunity_id'], 'customer_class_request_deleted', __('Customer class request deleted', 'elev8-os'), (string) $before['customer_name'], $interest_id);
         }
@@ -333,7 +339,7 @@ final class Elev8_OS_Waitlist_Module {
     }
 
     private static function available_opportunities(int $teacher_id, bool $admin): array {
-        $all = Elev8_OS_Opportunity_Service::all();
+        $all = Elev8_OS_Opportunity_Gateway::all();
         return array_values(array_filter($all, static function(array $opportunity) use ($teacher_id, $admin): bool {
             if ((string) ($opportunity['type'] ?? '') !== 'class' || in_array((string) ($opportunity['status'] ?? ''), ['completed', 'archived', 'cancelled'], true)) {
                 return false;
@@ -345,10 +351,10 @@ final class Elev8_OS_Waitlist_Module {
 
     private static function request_rows(int $teacher_id, bool $admin): array {
         $rows = [];
-        foreach (Elev8_OS_Opportunity_Service::all() as $opportunity) {
+        foreach (Elev8_OS_Opportunity_Gateway::all() as $opportunity) {
             if ((string) ($opportunity['type'] ?? '') !== 'class') { continue; }
             if (!$admin && $teacher_id > 0 && (int) ($opportunity['teacher_id'] ?? 0) !== $teacher_id) { continue; }
-            foreach (Elev8_OS_Opportunity_Service::interests((int) $opportunity['id']) as $interest) {
+            foreach (Elev8_OS_Opportunity_Gateway::interests((int) $opportunity['id']) as $interest) {
                 $interest['opportunity_title'] = $opportunity['title'] ?? '';
                 $interest['category'] = $opportunity['category'] ?? '';
                 $interest['estimated_price'] = $opportunity['estimated_price'] ?? '';
@@ -388,7 +394,7 @@ final class Elev8_OS_Waitlist_Module {
                 <input type="hidden" name="interest_id" value="<?php echo esc_attr((string) ($request['id'] ?? 0)); ?>">
                 <input type="hidden" name="redirect_to" value="<?php echo esc_url($redirect); ?>">
                 <?php wp_nonce_field('elev8_os_class_request_update'); ?>
-                <label><span><?php esc_html_e('Status', 'elev8-os'); ?></span><select name="crm_status"><?php foreach (Elev8_OS_Opportunity_Service::interest_statuses() as $available_status) : ?><option value="<?php echo esc_attr($available_status); ?>" <?php selected($status, $available_status); ?>><?php echo esc_html(ucwords(str_replace('_', ' ', $available_status))); ?></option><?php endforeach; ?></select></label>
+                <label><span><?php esc_html_e('Status', 'elev8-os'); ?></span><select name="crm_status"><?php foreach (Elev8_OS_Opportunity_Gateway::interest_statuses() as $available_status) : ?><option value="<?php echo esc_attr($available_status); ?>" <?php selected($status, $available_status); ?>><?php echo esc_html(ucwords(str_replace('_', ' ', $available_status))); ?></option><?php endforeach; ?></select></label>
                 <label><span><?php esc_html_e('Follow-up date', 'elev8-os'); ?></span><input type="date" name="follow_up_date" value="<?php echo esc_attr($follow_up); ?>"></label>
                 <label class="elev8-request-notes"><span><?php esc_html_e('Notes', 'elev8-os'); ?></span><textarea name="notes" rows="3"><?php echo esc_textarea($notes); ?></textarea></label>
                 <label class="elev8-contact-check"><input type="checkbox" name="mark_contacted_now" value="1"><span><?php esc_html_e('Mark contacted now', 'elev8-os'); ?></span></label>
@@ -495,7 +501,7 @@ final class Elev8_OS_Waitlist_Module {
     private static function duplicate_exists(int $opportunity_id, string $email, string $phone): bool {
         if ($email === '' && $phone === '') { return false; }
         $normalized_phone = preg_replace('/\D+/', '', $phone);
-        foreach (Elev8_OS_Opportunity_Service::interests($opportunity_id) as $interest) {
+        foreach (Elev8_OS_Opportunity_Gateway::interests($opportunity_id) as $interest) {
             $existing_email = strtolower(sanitize_email((string) ($interest['customer_email'] ?? '')));
             $existing_phone = preg_replace('/\D+/', '', (string) ($interest['customer_phone'] ?? ''));
             if ($email !== '' && $existing_email !== '' && strtolower($email) === $existing_email) { return true; }
@@ -539,14 +545,10 @@ final class Elev8_OS_Waitlist_Module {
         check_admin_referer($action);
     }
 
-    /** Resolve the current teacher through the shared Artist Portal identity path. */
+    /** Resolve the current teacher through the central identity service. */
     private static function resolve_teacher_id(WP_User $user): int {
-        if (class_exists('Elev8_OS_Artist_Portal_Module') && method_exists('Elev8_OS_Artist_Portal_Module', 'find_artist_for_user')) {
-            $artist = Elev8_OS_Artist_Portal_Module::find_artist_for_user($user);
-            $artist_id = is_array($artist) ? absint($artist['id'] ?? 0) : 0;
-            if ($artist_id > 0) { return $artist_id; }
-        }
-        return absint(get_user_meta($user->ID, self::EMPLOYEE_META, true));
+        $artist = Elev8_OS_Identity_Service::artist_for_user($user);
+        return is_array($artist) ? absint($artist['id'] ?? 0) : 0;
     }
 
     private static function verify_teacher_scope(int $teacher_id): void {
@@ -559,7 +561,7 @@ final class Elev8_OS_Waitlist_Module {
 
     private static function verify_opportunity_access(int $opportunity_id): void {
         if (current_user_can('manage_options')) { return; }
-        $opportunity = Elev8_OS_Opportunity_Service::get($opportunity_id);
+        $opportunity = Elev8_OS_Opportunity_Gateway::get($opportunity_id);
         $mapped = self::resolve_teacher_id(wp_get_current_user());
         if (!$opportunity || (int) ($opportunity['teacher_id'] ?? 0) !== $mapped) {
             wp_die(esc_html__('You do not have permission to manage this class request.', 'elev8-os'));
@@ -576,8 +578,6 @@ final class Elev8_OS_Waitlist_Module {
     }
 
     private static function record(int $opportunity_id, string $type, string $label, string $details = '', int $interest_id = 0): void {
-        if ($opportunity_id > 0 && class_exists('Elev8_OS_Opportunity_Activity_Service')) {
-            Elev8_OS_Opportunity_Activity_Service::record($opportunity_id, $type, $label, $details, $interest_id);
-        }
+        Elev8_OS_Activity_Service::record_opportunity($opportunity_id, $type, $label, $details, $interest_id);
     }
 }

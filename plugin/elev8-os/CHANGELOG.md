@@ -1,3 +1,12 @@
+# 7.0.0 — Platform Foundation
+
+- Added a central Identity Service with explicit mapping priority, email fallback, and request-level caching.
+- Added a stable Opportunity Gateway over the verified Opportunity Engine.
+- Added shared Settings, Notification, and Activity service boundaries.
+- Migrated Artist Portal identity resolution and Class Requests to the shared services.
+- Preserved existing QR, portal, opportunity, CRM, timeline, and Amelia behavior.
+- No database migration or visible workflow change is required for this foundation release.
+
 # 6.9.0 — Waitlist Engine Completion
 
 - Completed the Elev8-owned pre-schedule Class Requests workflow without pulling class choices from Amelia.
