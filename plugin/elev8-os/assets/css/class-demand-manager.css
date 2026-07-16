@@ -7,3 +7,14 @@
 .elev8-interest-crm-form > label:nth-of-type(4), .elev8-interest-crm-form > button, .elev8-interest-last-contact { grid-column:auto; }
 .elev8-interest-last-contact { display:block; color:#646970; margin-top:4px; }
 @media (max-width: 1100px) { .elev8-interest-crm-form { grid-template-columns:1fr; } }
+
+
+/* 6.6.0 Activity & Opportunity Timeline */
+.elev8-demand__panel--timeline { margin-top: 20px; }
+.elev8-opportunity-timeline { list-style: none; margin: 20px 0 0; padding: 0; }
+.elev8-opportunity-timeline__item { display: grid; grid-template-columns: 18px 1fr; gap: 12px; position: relative; padding: 0 0 22px; }
+.elev8-opportunity-timeline__item:not(:last-child)::before { content: ""; position: absolute; left: 7px; top: 14px; bottom: 0; width: 2px; background: #dcdcde; }
+.elev8-opportunity-timeline__marker { width: 14px; height: 14px; margin-top: 3px; border-radius: 50%; background: #3858e9; box-shadow: 0 0 0 4px #eef1ff; position: relative; z-index: 1; }
+.elev8-opportunity-timeline__item strong { display: block; font-size: 14px; }
+.elev8-opportunity-timeline__item time { display: block; margin-top: 3px; color: #646970; font-size: 12px; }
+.elev8-opportunity-timeline__item p { margin: 7px 0 0; }

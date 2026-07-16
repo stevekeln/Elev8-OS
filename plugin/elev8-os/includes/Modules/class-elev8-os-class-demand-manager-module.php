@@ -8,6 +8,7 @@ final class Elev8_OS_Class_Demand_Manager_Module {
     public static function init(): void {
         add_action('admin_menu', [__CLASS__, 'admin_menu'], 35);
         add_action('admin_init', ['Elev8_OS_Opportunity_Service', 'maybe_upgrade']);
+        add_action('admin_init', ['Elev8_OS_Opportunity_Activity_Service', 'maybe_upgrade']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'assets']);
         add_action('admin_post_elev8_os_save_opportunity', [__CLASS__, 'save_opportunity']);
         add_action('admin_post_elev8_os_add_interest', [__CLASS__, 'add_interest']);
@@ -39,7 +40,24 @@ final class Elev8_OS_Class_Demand_Manager_Module {
 
     public static function save_opportunity(): void {
         self::authorize('elev8_os_save_opportunity');
-        $id = Elev8_OS_Opportunity_Service::save_opportunity(wp_unslash($_POST));
+        $posted = wp_unslash($_POST);
+        $existing_id = absint($posted['id'] ?? 0);
+        $before = $existing_id > 0 ? Elev8_OS_Opportunity_Service::get($existing_id) : null;
+        $id = Elev8_OS_Opportunity_Service::save_opportunity($posted);
+        if ($id > 0) {
+            if (!$before) {
+                Elev8_OS_Opportunity_Activity_Service::record($id, 'opportunity_created', __('Opportunity created', 'elev8-os'));
+            } else {
+                $after = Elev8_OS_Opportunity_Service::get($id);
+                $changes = self::describe_opportunity_changes($before, $after ?: []);
+                Elev8_OS_Opportunity_Activity_Service::record(
+                    $id,
+                    'opportunity_updated',
+                    __('Opportunity updated', 'elev8-os'),
+                    $changes ?: __('Opportunity details were saved.', 'elev8-os')
+                );
+            }
+        }
         $args = ['page' => self::SLUG, 'saved' => 1];
         if ($id > 0) { $args['opportunity_id'] = $id; }
         wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
@@ -55,6 +73,14 @@ final class Elev8_OS_Class_Demand_Manager_Module {
             'opportunity_id' => $opportunity_id,
         ];
         if ($interest_id > 0) {
+            $customer = sanitize_text_field((string) ($_POST['customer_name'] ?? ''));
+            Elev8_OS_Opportunity_Activity_Service::record(
+                $opportunity_id,
+                'customer_interest_added',
+                __('Customer interest added', 'elev8-os'),
+                $customer !== '' ? sprintf(__('Added %s to the opportunity.', 'elev8-os'), $customer) : '',
+                $interest_id
+            );
             $args['interest_saved'] = 1;
         } else {
             $args['interest_error'] = 1;
@@ -73,7 +99,18 @@ final class Elev8_OS_Class_Demand_Manager_Module {
     public static function delete_interest(): void {
         self::authorize('elev8_os_delete_interest');
         $opportunity_id = absint($_POST['opportunity_id'] ?? 0);
-        Elev8_OS_Opportunity_Service::delete_interest(absint($_POST['interest_id'] ?? 0));
+        $interest_id = absint($_POST['interest_id'] ?? 0);
+        $interest = Elev8_OS_Opportunity_Service::get_interest($interest_id);
+        if (Elev8_OS_Opportunity_Service::delete_interest($interest_id)) {
+            $customer = is_array($interest) ? (string) ($interest['customer_name'] ?? '') : '';
+            Elev8_OS_Opportunity_Activity_Service::record(
+                $opportunity_id,
+                'customer_interest_deleted',
+                __('Customer interest deleted', 'elev8-os'),
+                $customer !== '' ? sprintf(__('Removed %s from the opportunity.', 'elev8-os'), $customer) : '',
+                $interest_id
+            );
+        }
         wp_safe_redirect(add_query_arg([
             'page' => self::SLUG,
             'opportunity_id' => $opportunity_id,
@@ -86,7 +123,19 @@ final class Elev8_OS_Class_Demand_Manager_Module {
     public static function update_interest(): void {
         self::authorize('elev8_os_update_interest');
         $opportunity_id = absint($_POST['opportunity_id'] ?? 0);
-        Elev8_OS_Opportunity_Service::update_interest(wp_unslash($_POST));
+        $interest_id = absint($_POST['interest_id'] ?? 0);
+        $before = Elev8_OS_Opportunity_Service::get_interest($interest_id);
+        if (Elev8_OS_Opportunity_Service::update_interest(wp_unslash($_POST))) {
+            $after = Elev8_OS_Opportunity_Service::get_interest($interest_id);
+            $details = self::describe_interest_changes($before ?: [], $after ?: []);
+            Elev8_OS_Opportunity_Activity_Service::record(
+                $opportunity_id,
+                !empty($_POST['mark_contacted']) ? 'customer_contacted' : 'customer_follow_up_updated',
+                !empty($_POST['mark_contacted']) ? __('Customer contacted', 'elev8-os') : __('Customer follow-up updated', 'elev8-os'),
+                $details,
+                $interest_id
+            );
+        }
         wp_safe_redirect(add_query_arg([
             'page' => self::SLUG,
             'opportunity_id' => $opportunity_id,
@@ -162,6 +211,7 @@ final class Elev8_OS_Class_Demand_Manager_Module {
         $potential = $has_price ? ((float) $opportunity['estimated_price'] * $seats) : null;
         $teacher_ready = empty($opportunity['teacher_needed']) || !empty($opportunity['teacher_id']) || trim((string) $opportunity['teacher_contact']) !== '';
         $list_url = add_query_arg(['page' => self::SLUG], admin_url('admin.php'));
+        $activity = Elev8_OS_Opportunity_Activity_Service::for_opportunity((int) $opportunity['id']);
         ?>
         <div class="wrap elev8-demand elev8-opportunity-detail">
             <p class="elev8-demand__back"><a href="<?php echo esc_url($list_url); ?>">&larr; <?php esc_html_e('Back to Class Demand', 'elev8-os'); ?></a></p>
@@ -208,6 +258,12 @@ final class Elev8_OS_Class_Demand_Manager_Module {
                     <?php self::interest_table($interests); ?>
                 </section>
             </div>
+
+            <section class="elev8-demand__panel elev8-demand__panel--timeline">
+                <h2><?php esc_html_e('Activity & Opportunity Timeline', 'elev8-os'); ?></h2>
+                <p class="description"><?php esc_html_e('A permanent history of opportunity, customer, and follow-up activity.', 'elev8-os'); ?></p>
+                <?php self::activity_timeline($activity); ?>
+            </section>
 
             <section id="elev8-opportunity-edit" class="elev8-demand__panel elev8-demand__panel--edit">
                 <h2><?php esc_html_e('Edit Opportunity', 'elev8-os'); ?></h2>
@@ -362,6 +418,64 @@ final class Elev8_OS_Class_Demand_Manager_Module {
             echo '<button class="button button-small button-link-delete" type="submit">' . esc_html__('Delete', 'elev8-os') . '</button></form></td></tr>';
         }
         echo '</tbody></table></div>';
+    }
+
+    private static function activity_timeline(array $items): void {
+        if (!$items) {
+            echo '<p>' . esc_html__('No activity has been recorded yet.', 'elev8-os') . '</p>';
+            return;
+        }
+        echo '<ol class="elev8-opportunity-timeline">';
+        foreach ($items as $item) {
+            $when = mysql2date(get_option('date_format') . ' ' . get_option('time_format'), (string) $item['created_at']);
+            $actor = absint($item['actor_user_id'] ?? 0);
+            $actor_name = '';
+            if ($actor > 0) {
+                $user = get_userdata($actor);
+                $actor_name = $user ? (string) $user->display_name : '';
+            }
+            echo '<li class="elev8-opportunity-timeline__item">';
+            echo '<span class="elev8-opportunity-timeline__marker" aria-hidden="true"></span>';
+            echo '<div><strong>' . esc_html((string) $item['event_label']) . '</strong>';
+            echo '<time>' . esc_html($when) . ($actor_name !== '' ? ' · ' . esc_html($actor_name) : '') . '</time>';
+            if (trim((string) ($item['event_details'] ?? '')) !== '') {
+                echo '<p>' . nl2br(esc_html((string) $item['event_details'])) . '</p>';
+            }
+            echo '</div></li>';
+        }
+        echo '</ol>';
+    }
+
+    private static function describe_opportunity_changes(array $before, array $after): string {
+        $labels = [
+            'title' => __('Class name', 'elev8-os'), 'category' => __('Category', 'elev8-os'),
+            'status' => __('Status', 'elev8-os'), 'estimated_price' => __('Estimated price', 'elev8-os'),
+            'estimated_duration' => __('Duration', 'elev8-os'), 'preferred_day' => __('Preferred day', 'elev8-os'),
+            'preferred_time' => __('Preferred time', 'elev8-os'), 'teacher_needed' => __('Teacher needed', 'elev8-os'),
+            'teacher_id' => __('Assigned teacher', 'elev8-os'), 'teacher_contact' => __('Teacher contact', 'elev8-os'),
+            'interview_status' => __('Interview status', 'elev8-os'), 'difficulty' => __('Difficulty', 'elev8-os'),
+            'supplies_needed' => __('Supplies', 'elev8-os'), 'internal_notes' => __('Internal notes', 'elev8-os'),
+        ];
+        $changed = [];
+        foreach ($labels as $key => $label) {
+            if ((string) ($before[$key] ?? '') !== (string) ($after[$key] ?? '')) { $changed[] = $label; }
+        }
+        return $changed ? sprintf(__('Changed: %s.', 'elev8-os'), implode(', ', $changed)) : '';
+    }
+
+    private static function describe_interest_changes(array $before, array $after): string {
+        $parts = [];
+        $name = (string) ($after['customer_name'] ?? $before['customer_name'] ?? __('Customer', 'elev8-os'));
+        if ((string) ($before['crm_status'] ?? '') !== (string) ($after['crm_status'] ?? '')) {
+            $parts[] = sprintf(__('%1$s status changed to %2$s', 'elev8-os'), $name, self::status_label((string) ($after['crm_status'] ?? 'new')));
+        }
+        if ((string) ($before['follow_up_date'] ?? '') !== (string) ($after['follow_up_date'] ?? '')) {
+            $date = trim((string) ($after['follow_up_date'] ?? ''));
+            $parts[] = $date !== '' ? sprintf(__('follow-up set for %s', 'elev8-os'), $date) : __('follow-up date cleared', 'elev8-os');
+        }
+        if ((string) ($before['notes'] ?? '') !== (string) ($after['notes'] ?? '')) { $parts[] = __('notes updated', 'elev8-os'); }
+        if ((string) ($before['last_contacted_at'] ?? '') !== (string) ($after['last_contacted_at'] ?? '')) { $parts[] = __('contact time recorded', 'elev8-os'); }
+        return $parts ? ucfirst(implode('; ', $parts)) . '.' : sprintf(__('Follow-up saved for %s.', 'elev8-os'), $name);
     }
 
     private static function summary(array $o, ?float $potential): void {

@@ -1,5 +1,15 @@
 # Elev8 OS Changelog
 
+## 6.6.0 — Activity & Opportunity Timeline
+
+- Added a WordPress-owned opportunity activity table and reusable activity service.
+- Added permanent timeline entries for opportunity creation and updates.
+- Added timeline entries when customer interest is added, updated, contacted, or deleted.
+- Added field-level summaries for opportunity and CRM changes.
+- Added automatic backfill of creation events for existing opportunities.
+- Added the Activity & Opportunity Timeline to each Opportunity Detail page.
+- Preserved Business Intelligence as the source for demand and revenue metrics.
+
 ## 6.5.1 — Customer Interest Database Migration Hotfix
 
 - Increased the Opportunity Engine database schema version to `1.1.0` so CRM columns are added to existing installations.

@@ -178,6 +178,13 @@ final class Elev8_OS_Opportunity_Service {
         return is_array($rows) ? $rows : [];
     }
 
+    public static function get_interest(int $id): ?array {
+        global $wpdb;
+        if ($id <= 0) { return null; }
+        $row = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::interests_table() . ' WHERE id=%d', $id), ARRAY_A);
+        return is_array($row) ? $row : null;
+    }
+
     public static function interests(int $opportunity_id): array {
         global $wpdb;
         $rows = $wpdb->get_results($wpdb->prepare('SELECT * FROM ' . self::interests_table() . ' WHERE opportunity_id=%d ORDER BY created_at DESC', $opportunity_id), ARRAY_A);

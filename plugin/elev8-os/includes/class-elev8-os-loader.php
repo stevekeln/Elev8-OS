@@ -21,6 +21,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-class-discovery.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-portal-page-manager.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-opportunity-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-opportunity-activity-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-demand-manager-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ceo-dashboard-module.php';

@@ -1,8 +1,1 @@
-Elev8 OS 6.5.1 source-only hotfix
-
-1. Copy plugin/elev8-os into C:\GitHub\Elev8-OS\plugin\elev8-os and replace matching files.
-2. Commit and push to develop.
-3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP on Local.
-5. Reload Class Demand once, then add a customer interest record.
-6. Only install the exact tested ZIP on Live after Local passes.
+Elev8 OS 6.6.0 source update. Copy plugin/elev8-os into the repository plugin/elev8-os folder, commit to develop, push, run Build Elev8 OS Release.bat, and test the generated ZIP on Local before Live.
