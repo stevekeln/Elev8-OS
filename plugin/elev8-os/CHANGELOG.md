@@ -1,19 +1,30 @@
 # Elev8 OS Changelog
 
-## 9.1.1 — Artist Marketing Center
+## 9.2.1 — Brand & Campaign Wizard
 
-- Added a private Artist Marketing Center to the Artist Portal.
-- Added verified student audiences: all, repeat, new, upcoming, inactive, and CRM tag.
-- Added six artist-specific email templates plus a blank campaign.
-- Added test sending, drafts, live campaign sending, and campaign history.
-- Added duplicate-email removal, 250-recipient safety limit, unsubscribe handling, and delivery totals.
-- Added referral-aware promotion links for classes, artwork, artists, and events.
-- Added owner-controlled Art Walk Assistant settings.
-- Added the third-Monday Art Walk dashboard tickler with registration and completion actions.
-- Added a dashboard shortcut for emailing students.
-- Amelia remains the source of truth for students and bookings; WordPress SMTP/wp_mail remains the email delivery boundary.
-- Detailed referral booking attribution and commissions are intentionally reserved for 9.1.2.
+### Added
+- Artist-first campaign wizard beginning with “What are you trying to accomplish today?”
+- Campaign goals for filling classes, selling artwork, announcing events, bringing customers back, introducing artists, referrals, and custom campaigns
+- Plain-language audience selection without exposing tags or merge-field mechanics
+- Master Brand Template settings for brand name, logo attachment, colors, website, CTA defaults, and footer text
+- Universal branded HTML email renderer with automatic logo, colors, CTA button, and footer
+- Campaign draft storage separate from reusable template records
+- Automatic-content controls for artist profile, upcoming classes, Elev8 events, and referrals
+- Recent campaign draft list
+- Template revision-history schema and automatic snapshot capture before template updates
+- Template-selection helper that loads reusable content into the campaign wizard
 
-## 9.1.0 — Artist Growth Center Foundation
+### Changed
+- Content Studio database version increased from 1.0.0 to 1.1.0
+- Plugin version increased from 9.2.0 to 9.2.1
+- Content Studio now loads its lightweight campaign interaction script
 
-- Added the lifetime Student Relationship Center, CRM tags, private notes, timeline, segments, and dashboard tickler.
+### Database changes
+- Added `wp_elev8_os_content_campaigns`
+- Added `wp_elev8_os_content_template_revisions`
+- Existing tables are preserved and upgraded through `dbDelta`
+
+### Compatibility
+- Existing 9.2.0 content categories and templates remain unchanged
+- Shared and personal template workflows remain backward compatible
+- No WordPress, Amelia, or WooCommerce trusted-system data is duplicated

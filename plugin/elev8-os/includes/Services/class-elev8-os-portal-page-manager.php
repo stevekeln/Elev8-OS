@@ -47,6 +47,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'artist-marketing',
                 'shortcode' => 'elev8_artist_marketing',
             ],
+            'content_studio' => [
+                'option' => 'elev8_os_artist_content_studio_page_id',
+                'title' => __('Content Studio', 'elev8-os'),
+                'slug' => 'artist-content-studio',
+                'shortcode' => 'elev8_artist_content_studio',
+            ],
             'waitlist' => [
                 'option' => 'elev8_os_artist_waitlist_page_id',
                 'title' => __('Waitlist', 'elev8-os'),

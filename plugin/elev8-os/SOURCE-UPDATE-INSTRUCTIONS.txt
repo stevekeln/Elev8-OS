@@ -1,11 +1,5 @@
-Elev8 OS 7.4.1 Source Update
+Replace the changed and new files listed in GIT-SUMMARY.txt in your local Elev8 OS source repository.
 
-1. Extract this ZIP.
-2. Copy every included file into the matching path in your local Elev8 OS GitHub repository.
-3. Allow the files to replace the 7.4.0 versions.
-4. Commit to develop and push to GitHub.
-5. Run Build Elev8 OS Release.bat.
-6. Install the generated ZIP on Local and test before installing the exact same ZIP on Live.
-
-Suggested commit:
-Build Elev8 OS 7.4.1 Artist Growth Plan
+Do not create another branch.
+Commit the update to develop, push, and run Build Elev8 OS Release.bat.
+The BAT-generated ZIP remains the release artifact used for Local and Live.

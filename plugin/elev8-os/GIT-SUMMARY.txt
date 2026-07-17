@@ -1,18 +1,22 @@
-Elev8 OS 9.1.1 Git Source Update
+Elev8 OS 9.2.1 — Brand & Campaign Wizard
 
-Added:
-- includes/Services/class-elev8-os-marketing-service.php
-- includes/Modules/class-elev8-os-marketing-module.php
-- assets/css/artist-marketing.css
-
-Updated:
+Changed files:
 - elev8-os.php
 - includes/class-elev8-os-loader.php
-- includes/class-elev8-os.php
-- includes/Services/class-elev8-os-portal-page-manager.php
-- includes/Modules/class-elev8-os-artist-portal-module.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- assets/css/artist-dashboard.css
-- CHANGELOG.md
+- includes/Services/class-elev8-os-content-studio-service.php
+- includes/Modules/class-elev8-os-content-studio-module.php
+- assets/css/content-studio.css
 - README.txt
+- CHANGELOG.md
+- GIT-SUMMARY.txt
 - INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
+
+New files:
+- includes/Services/class-elev8-os-brand-service.php
+- includes/Services/class-elev8-os-template-renderer.php
+- assets/js/content-studio.js
+
+Database upgrade:
+- Content Studio schema 1.0.0 -> 1.1.0
+- Adds content_campaigns and content_template_revisions tables

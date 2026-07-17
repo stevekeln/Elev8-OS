@@ -1,19 +1,30 @@
-Elev8 OS 9.1.1 — Artist Marketing Center
+Elev8 OS 9.2.1 — Brand & Campaign Wizard
 
-Elev8 OS is a business operating system for experience-based creative businesses.
+This release extends the reusable Content Studio foundation with an artist-first campaign workflow.
 
-This release adds a private artist Marketing Center built on the verified Student Relationship Center. Artists can create drafts, send test messages to themselves, email verified student segments through the site's configured WordPress/SMTP provider, promote another artist or experience with a referral-aware link, and review delivery totals.
+Highlights
+- “What are you trying to accomplish today?” campaign wizard
+- Plain-language audience choices
+- Master Brand Template settings
+- Universal branded email renderer
+- Automatic CTA styling
+- Campaign drafts stored separately from templates
+- Artist profile, upcoming classes, Elev8 events, and referral inclusion controls
+- Shared owner templates and personal artist template library remain intact
+- Template version-history database foundation
 
-Owner setup:
-1. Open Elev8 OS > Growth Settings.
-2. Configure the Art Walk event date, registration dates, registration URL, expected visitors, and enable the assistant.
-3. Confirm the WordPress site has a reliable SMTP provider before artists send live campaigns.
+Admin
+- Elev8 OS > Content Studio
+- Configure shared brand settings and shared templates
 
-Artist workflow:
-1. Open Artist Portal > Marketing.
-2. Choose a template and verified student segment.
-3. Add a promotion URL when applicable.
-4. Send a test email to yourself.
-5. Review and send the campaign.
+Artist portal
+- Open Content Studio
+- Choose a goal, audience, template, and message
+- Preview the universal branded email layout
+- Save a reusable campaign draft
 
-Always test on Local before installing the exact same ZIP on Live.
+Architecture
+- Templates remain channel-neutral reusable content assets
+- Campaigns are one-off working records and never overwrite templates
+- Brand settings and rendering are centralized for future email, social, print, and website channels
+- WordPress owns users and media; Amelia remains the scheduling and booking source of truth

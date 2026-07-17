@@ -1,10 +1,17 @@
-Elev8 OS 9.1.1 Installation
+Elev8 OS 9.2.1 Local Testing
 
-1. Back up WordPress and the database.
-2. Install elev8-os-9.1.1-artist-marketing-center.zip on Local.
-3. Confirm the installed plugin version is 9.1.1.
-4. Open Elev8 OS > Portal Setup and confirm Marketing Center is Ready.
-5. Open Elev8 OS > Growth Settings and configure the Art Walk Assistant.
-6. Sign in as a mapped artist and test Marketing > Send Test to Me.
-7. Confirm SMTP delivery and unsubscribe behavior before sending a live student campaign.
-8. Install the exact same tested ZIP on Live.
+1. Replace the listed changed/new files in your local Git repository.
+2. Commit to develop and push to GitHub.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated ZIP into Local.
+5. Visit Elev8 OS > Content Studio once as an administrator so the schema upgrade runs.
+6. Configure Automatic Elev8 Branding and save.
+7. Open an artist Content Studio page.
+8. Select each campaign goal and verify the wizard opens.
+9. Change the starting template and verify the fields populate.
+10. Save a campaign draft and reopen it from Recent Campaign Drafts.
+11. Edit an existing personal template and verify it still saves.
+12. Confirm shared templates can still be copied into an artist library.
+13. Confirm archive, restore, duplicate, search, and category filters still work.
+14. Confirm the email preview displays the saved brand colors, logo/name, CTA, and footer.
+15. After Local passes, install the exact same generated ZIP on Live.

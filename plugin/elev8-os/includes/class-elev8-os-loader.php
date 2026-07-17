@@ -15,6 +15,9 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-gallery-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-student-relationship-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-marketing-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-brand-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-template-renderer.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-content-studio-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';
@@ -25,6 +28,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-artwork-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-students-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-marketing-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-content-studio-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-intelligence.php';
@@ -47,6 +51,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Gallery_Operations_Service::init();
         Elev8_OS_Student_Relationship_Service::init();
         Elev8_OS_Marketing_Service::init();
+        Elev8_OS_Content_Studio_Service::init();
         Elev8_OS_Artist_Portal_Module::init();
         Elev8_OS_Dashboard_Module::init();
         Elev8_OS_Artist_Print_Center_Module::init();
@@ -55,6 +60,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_My_Artwork_Module::init();
         Elev8_OS_Students_Module::init();
         Elev8_OS_Marketing_Module::init();
+        Elev8_OS_Content_Studio_Module::init();
         Elev8_OS_Waitlist_Module::init();
         Elev8_OS_Class_Demand_Manager_Module::init();
         Elev8_OS_System_Inspector_Module::init();
