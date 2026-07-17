@@ -1,3 +1,13 @@
+# Changelog
+
+## 8.0.3 — Clean Print Identity Fix
+- Removed artist print controls from public profile pages and moved them into the logged-in Artist Dashboard.
+- Allowed mapped artists to print only their own artist card and profile QR while administrators retain full access.
+- Styled Copy Page Link and Open QR Code as consistent buttons on public profiles.
+- Removed visible URLs and tiny logo marks from artist cards and artwork labels.
+- Embedded the configured paisley image directly into print documents for reliable preview, print, and PDF rendering.
+- Increased paisley visibility while preserving QR readability and minimal gallery styling.
+
 # Elev8 OS Changelog
 
 ## 8.0.2 — Minimal Gallery Print Refinement

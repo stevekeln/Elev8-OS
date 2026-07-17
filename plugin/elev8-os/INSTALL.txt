@@ -1,4 +1,4 @@
-Elev8 OS 8.0.2 — Minimal Gallery Print Refinement
+Elev8 OS 8.0.3 — Minimal Gallery Print Refinement
 
 Install this ZIP through WordPress Plugins > Add New > Upload Plugin.
 Test on Local before installing the exact same ZIP on Live.

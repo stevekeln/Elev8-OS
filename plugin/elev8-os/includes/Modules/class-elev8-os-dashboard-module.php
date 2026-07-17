@@ -181,6 +181,16 @@ final class Elev8_OS_Dashboard_Module {
         $artwork_url = Elev8_OS_Portal_Page_Manager::get_url('artwork');
         $website_url = Elev8_OS_Portal_Page_Manager::get_url('website');
         $edit_website_url = Elev8_OS_Portal_Page_Manager::get_url('edit_website');
+        $artist_print_url = '';
+        $artist_qr_url = '';
+        if ($artist && !empty($artist['id'])) {
+            $artist_name = trim((string) ($artist['firstName'] ?? '') . ' ' . (string) ($artist['lastName'] ?? ''));
+            if ($artist_name !== '') {
+                $artist_public_url = home_url('/artists/' . sanitize_title($artist_name) . '/');
+                $artist_print_url = Elev8_OS_Print_Service::artist_card_url($artist_public_url, false);
+                $artist_qr_url = Elev8_OS_Print_Service::qr_url($artist_public_url);
+            }
+        }
         ?>
         <div class="elev8-artist-dashboard elev8-dashboard-v2">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('dashboard'); ?>
@@ -226,6 +236,10 @@ final class Elev8_OS_Dashboard_Module {
                         <?php self::render_action_link('groups', __('View My Students', 'elev8-os'), __('Open class rosters and contact details', 'elev8-os'), $students_url); ?>
                         <?php self::render_action_link('admin-home', __('View My Website', 'elev8-os'), __('See what customers see', 'elev8-os'), $website_url); ?>
                         <?php self::render_action_link('edit', __('Edit My Website', 'elev8-os'), __('Update your bio, links, and profile', 'elev8-os'), $edit_website_url); ?>
+                        <?php if ($artist_print_url !== '') : ?>
+                            <?php self::render_action_link('media-document', __('Print My Artist Card', 'elev8-os'), __('Preview and print your approved gallery profile card', 'elev8-os'), $artist_print_url); ?>
+                            <?php self::render_action_link('screenoptions', __('Print My Profile QR', 'elev8-os'), __('Print the QR code that opens your public artist profile', 'elev8-os'), $artist_qr_url); ?>
+                        <?php endif; ?>
                     </div>
                 </section>
             </div>
