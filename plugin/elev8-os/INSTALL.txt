@@ -1,10 +1,11 @@
 Elev8 OS 7.4.0 Installation
 
 1. Back up the WordPress site and database.
-2. Install this ZIP on Local first by replacing the existing Elev8 OS plugin.
-3. Confirm the plugin reports version 7.4.0.
-4. Edit an existing artwork and test multiple images, story fields, video, documents, preview, and checkout.
-5. Confirm existing artwork, WooCommerce products, QR pages, cart navigation, and sale notifications still work.
-6. Install the exact same tested ZIP on Live.
+2. Install the complete elev8-os-7.4.0-recommendation-engine.zip through WordPress Plugins > Add New > Upload Plugin.
+3. Choose Replace current with uploaded when prompted.
+4. Confirm the Artist Dashboard loads and existing portal pages still work.
+5. Verify Recommended Next Steps displays recommendations supported by the artist account data.
+6. Test each displayed action button.
+7. No database migration is required.
 
-The Asset Engine database upgrade runs automatically and preserves existing records.
+Always test this exact ZIP on Local before installing it on Live.

@@ -1,3 +1,15 @@
-Elev8 OS 7.5.0 Opportunity Engine Invitations
-Copy the included files into the matching Git repository paths.
-Suggested commit: Build Elev8 OS 7.5.0 Opportunity Engine Invitations
+Elev8 OS 7.4.0 - Recommendation Engine
+
+Suggested commit:
+feat(recommendations): add reusable artist business recommendation engine
+
+Changed:
+- Added Recommendation Service and verified-data rule providers
+- Added ranked Recommended Next Steps dashboard panel
+- Added priority, impact, reason, and direct action metadata
+- Added Add Artwork quick action
+- Updated dashboard styling, version, changelog, README, and installation notes
+
+Database:
+- No schema change
+- Existing artists, assets, Amelia data, WooCommerce products/orders, QR tracking, and notifications are preserved

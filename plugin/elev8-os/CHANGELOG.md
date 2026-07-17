@@ -1,35 +1,15 @@
-# Changelog
-
-## 7.5.0 - Opportunity Engine Invitations
-- Expanded the shared Opportunity Engine for event and vendor opportunities.
-- Added owner event creation and automatic invitations for connected artists.
-- Added optional email invitations through the Notification Service.
-- Added artist dashboard confirmation, interest, decline, and remind-later responses.
-- Added live owner response counts.
-- Preserved Class Demand and all 7.4.2 behavior.
-
 # Elev8 OS Changelog
 
-## 7.4.1 - Artist Growth Plan
+## 7.4.0 - Recommendation Engine
 
-- Added a reusable Growth Plan Service that converts verified Business Score components and recommendations into a focused daily plan.
-- Added actionable recommendation links so artists can move directly from advice to artwork, class, or website tools.
-- Added a complete Business Score breakdown with component-level progress.
-- Added achievement progress, targets, and earned-state details.
-- Preserved all 7.4.0 Artist Business Center behavior and existing integrations.
-
-## 7.4.0 - Artist Business Center
-
-- Transformed the Artist Dashboard into a daily business home screen.
-- Added a reusable Artist Business Snapshot service for dashboards, reports, recommendations, achievements, and future AI.
-- Added a reusable 0-100 Business Score Engine covering profile, artwork, classes, sales, engagement, and website readiness.
-- Added a rule-based Recommendation Engine as the foundation for the future AI Artist Coach.
-- Added a reusable Achievement Service with first artwork, first sale, 10 sales, 100 students, and $10,000 revenue milestones.
-- Added an HTML-first Report Engine with a downloadable Monthly Artist Report.
-- Added monthly artwork revenue, artwork sold, upcoming classes, students, artwork views, QR scans, low inventory, and business score cards.
-- Added expanded quick actions, coaching recommendations, and achievement progress.
-- Uses WooCommerce paid orders for verified artwork revenue and displays Unavailable when trusted data cannot be calculated.
-- Preserved Amelia scheduling, WooCommerce checkout, Asset Engine inventory, artist storefronts, QR pages, and all 7.3.1 data.
+- Added a reusable, transparent Recommendation Service for Artist Dashboard, reporting, notifications, and future AI coaching.
+- Added ranked recommendation objects with priority, category, score, action, estimated impact, and a plain-language reason.
+- Added verified-data rules for profile completeness, artwork availability, incomplete listings, featured artwork, upcoming classes, nearly full classes, and high-interest unsold artwork.
+- Added the Recommended Next Steps business-coach panel to the Artist Dashboard.
+- Added direct action buttons so each recommendation leads to the relevant Elev8 OS workflow.
+- Added an Add Artwork dashboard shortcut.
+- Added extension hooks for future recommendation providers and LLM explanation layers without moving business rules into AI.
+- No database migration is required; all existing artists, assets, classes, products, orders, QR tracking, and notifications are preserved.
 
 ## 7.3.1 - Asset Polish
 
@@ -45,14 +25,6 @@
 - Preserved existing assets, WooCommerce products, checkout, QR tracking, inventory, and sale notifications.
 
 # Changelog
-
-## 7.4.2 - Artist Command Center
-
-- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
-- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
-- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
-- Added the Artist Command Center panel with a live business view and responsive layout.
-- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
 
 ## 7.3.0 — QR Asset Experience
 - Added a canonical public page for every public Asset Engine item.
@@ -174,14 +146,6 @@
 
 # Changelog
 
-## 7.4.2 - Artist Command Center
-
-- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
-- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
-- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
-- Added the Artist Command Center panel with a live business view and responsive layout.
-- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
-
 ## 6.8.0 — Class Requests & Teacher Experience
 - Renamed the teacher-facing Waitlist to Class Requests.
 - Removed Amelia class discovery from the Class Requests page.
@@ -260,14 +224,6 @@
 - Preserved the 6.4.0 Opportunity Detail View, Class Demand Manager, Waitlists, Artist Portal, and Amelia integration.
 
 # Changelog
-
-## 7.4.2 - Artist Command Center
-
-- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
-- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
-- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
-- Added the Artist Command Center panel with a live business view and responsive layout.
-- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
 
 ## 6.4.0 — Opportunity Detail View
 
@@ -416,14 +372,6 @@
 - Portal navigation now survives page title and permalink changes.
 
 # Changelog
-
-## 7.4.2 - Artist Command Center
-
-- Added a reusable Command Center Service for future dashboard, API, mobile, and AI clients.
-- Added a verified business activity feed combining artwork sales, upcoming classes, artwork views, QR scans, and earned achievements.
-- Added daily Business Score history and momentum tracking without inventing unavailable historical data.
-- Added the Artist Command Center panel with a live business view and responsive layout.
-- Preserved all 7.4.1 Artist Growth Plan functionality and existing integration ownership boundaries.
 
 ## 5.4.1 — Version Display Hotfix
 

@@ -2,4 +2,4 @@ Elev8 OS 7.4.0
 
 Business operating system for creative studios, artists, and makers.
 
-This release adds Asset Polish: multiple images, rich artwork stories and metadata, video, downloadable artwork documents, featured artwork, listing completeness, previews, social sharing, and SEO while preserving WooCommerce checkout and inventory.
+This release introduces the reusable Recommendation Engine. Elev8 OS now evaluates verified profile, Asset Engine, QR/view, inventory, and Amelia class data to give artists ranked next steps with clear reasons, estimated impact, and direct actions. Business rules remain deterministic and reusable so future dashboards, reports, notifications, and AI coaching can consume the same trusted recommendations.
