@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 9.0.11 — Placement Column Compatibility & Clean Package
+
+- Fixed artwork movement failure caused by legacy placement tables using `position_note` while newer builds use `position_label`.
+- Added compatibility for both column names and migrates both columns through the normal database upgrade.
+- Placement reads expose one consistent position value regardless of the installed schema.
+- Rebuilt the installable archive with one canonical `elev8-os` plugin folder so WordPress replaces the active plugin correctly.
+- Improved zone deletion feedback remains preserved: occupied zones must have artwork moved first.
+
 ## 9.0.10 — Placement Schema Compatibility Hotfix
 
 - Changed artwork moves to update only the essential placement fields.

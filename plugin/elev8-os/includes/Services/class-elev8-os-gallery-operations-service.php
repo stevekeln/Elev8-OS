@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Canonical gallery location, placement, rack, storage, and movement history service. */
 final class Elev8_OS_Gallery_Operations_Service {
-    private const DB_VERSION = '1.9.10';
+    private const DB_VERSION = '1.9.11';
     private const DB_OPTION = 'elev8_os_gallery_operations_db_version';
 
     public static function init(): void {
@@ -18,7 +18,7 @@ final class Elev8_OS_Gallery_Operations_Service {
         global $wpdb; require_once ABSPATH.'wp-admin/includes/upgrade.php';
         $c=$wpdb->get_charset_collate(); $z=self::zones_table(); $p=self::placements_table(); $h=self::history_table();
         dbDelta("CREATE TABLE {$z} (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, name varchar(160) NOT NULL, slug varchar(160) NOT NULL, zone_type varchar(40) NOT NULL DEFAULT 'wall', capacity int(10) unsigned NOT NULL DEFAULT 0, sort_order int(10) unsigned NOT NULL DEFAULT 0, active tinyint(1) unsigned NOT NULL DEFAULT 1, notes text NOT NULL, rack_number int(10) unsigned NOT NULL DEFAULT 0, board_number int(10) unsigned NOT NULL DEFAULT 0, side_label varchar(10) NOT NULL DEFAULT '', assigned_artist_user_id bigint(20) unsigned NOT NULL DEFAULT 0, board_status varchar(30) NOT NULL DEFAULT 'available', created_at datetime NOT NULL, updated_at datetime NOT NULL, PRIMARY KEY(id), UNIQUE KEY slug(slug), KEY active_sort(active,sort_order), KEY rack_board(rack_number,board_number), KEY assigned_artist(assigned_artist_user_id)) {$c};");
-        dbDelta("CREATE TABLE {$p} (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, asset_id bigint(20) unsigned NOT NULL, zone_id bigint(20) unsigned NULL, placement_status varchar(30) NOT NULL DEFAULT 'displayed', position_label varchar(120) NOT NULL DEFAULT '', placed_at datetime NULL, removed_at datetime NULL, updated_at datetime NOT NULL, PRIMARY KEY(id), UNIQUE KEY asset_id(asset_id), KEY zone_id(zone_id), KEY placement_status(placement_status)) {$c};");
+        dbDelta("CREATE TABLE {$p} (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, asset_id bigint(20) unsigned NOT NULL, zone_id bigint(20) unsigned NULL, placement_status varchar(30) NOT NULL DEFAULT 'displayed', position_label varchar(120) NOT NULL DEFAULT '', position_note varchar(120) NOT NULL DEFAULT '', placed_at datetime NULL, removed_at datetime NULL, updated_at datetime NOT NULL, PRIMARY KEY(id), UNIQUE KEY asset_id(asset_id), KEY zone_id(zone_id), KEY placement_status(placement_status)) {$c};");
         dbDelta("CREATE TABLE {$h} (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, asset_id bigint(20) unsigned NOT NULL, event_type varchar(40) NOT NULL, from_zone_id bigint(20) unsigned NULL, to_zone_id bigint(20) unsigned NULL, actor_user_id bigint(20) unsigned NOT NULL DEFAULT 0, note text NOT NULL, created_at datetime NOT NULL, PRIMARY KEY(id), KEY asset_created(asset_id,created_at), KEY event_type(event_type)) {$c};");
         if ((int)$wpdb->get_var("SELECT COUNT(*) FROM {$z}")===0) {
             foreach ([['Front Window','window'],['West Wall','wall'],['East Wall','wall'],['Center Display','display'],['Glass Case 1','case'],['Glass Case 2','case'],['Jewelry','display'],['Classroom','room'],['Storage','storage']] as $i=>$v) self::save_zone(['name'=>$v[0],'zone_type'=>$v[1],'sort_order'=>$i+1,'active'=>1]);
@@ -43,6 +43,26 @@ final class Elev8_OS_Gallery_Operations_Service {
             $columns=is_array($rows)?array_fill_keys($rows,true):[];
         }
         return isset($columns[$column]);
+    }
+
+    /** Placement schemas from earlier builds may use position_note instead of position_label. */
+    private static function placement_column_exists(string $column): bool {
+        static $columns=null; global $wpdb;
+        if ($columns===null) {
+            $rows=$wpdb->get_col('SHOW COLUMNS FROM '.self::placements_table(),0);
+            $columns=is_array($rows)?array_fill_keys($rows,true):[];
+        }
+        return isset($columns[$column]);
+    }
+
+    /** SQL expression that exposes either legacy note column as position_label. */
+    private static function position_select(string $alias='p'): string {
+        $has_label=self::placement_column_exists('position_label');
+        $has_note=self::placement_column_exists('position_note');
+        if ($has_label && $has_note) return "COALESCE(NULLIF({$alias}.position_label,''),{$alias}.position_note)";
+        if ($has_label) return "{$alias}.position_label";
+        if ($has_note) return "{$alias}.position_note";
+        return "''";
     }
 
     /** Strip optional columns that are not present on an older database schema. */
@@ -160,7 +180,7 @@ final class Elev8_OS_Gallery_Operations_Service {
         return self::get_zones(true);
     }
     public static function get_zone(int $id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::zones_table().' WHERE id=%d',$id),ARRAY_A); return is_array($r)?$r:null; }
-    public static function get_zone_artwork(int $zone_id,int $artist_filter=0): array { global $wpdb; $a=Elev8_OS_Asset_Service::table_name(); $p=self::placements_table(); $where=$artist_filter?$wpdb->prepare(' AND a.owner_user_id=%d',$artist_filter):''; $rows=$wpdb->get_results($wpdb->prepare("SELECT a.*,p.zone_id,p.position_label,p.placement_status,p.placed_at,u.display_name artist_name,u.user_email artist_email FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.zone_id=%d AND p.placement_status IN ('displayed','storage') {$where} ORDER BY u.display_name,a.title",$zone_id),ARRAY_A); return is_array($rows)?$rows:[]; }
+    public static function get_zone_artwork(int $zone_id,int $artist_filter=0): array { global $wpdb; $a=Elev8_OS_Asset_Service::table_name(); $p=self::placements_table(); $where=$artist_filter?$wpdb->prepare(' AND a.owner_user_id=%d',$artist_filter):''; $position=self::position_select('p'); $rows=$wpdb->get_results($wpdb->prepare("SELECT a.*,p.zone_id,{$position} AS position_label,p.placement_status,p.placed_at,u.display_name artist_name,u.user_email artist_email FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.zone_id=%d AND p.placement_status IN ('displayed','storage') {$where} ORDER BY u.display_name,a.title",$zone_id),ARRAY_A); return is_array($rows)?$rows:[]; }
     /** Return the saved placement without depending on optional gallery-zone columns. */
     public static function get_placement(int $asset_id): ?array {
         global $wpdb;
@@ -193,9 +213,12 @@ final class Elev8_OS_Gallery_Operations_Service {
         $row=[
             'zone_id'=>$zone_id?:null,
             'placement_status'=>$status,
-            'position_label'=>sanitize_text_field($position),
+            // Position text is added below using the columns present in this installation.
             'updated_at'=>$now,
         ];
+        $clean_position=sanitize_text_field($position);
+        if(self::placement_column_exists('position_label')) $row['position_label']=$clean_position;
+        if(self::placement_column_exists('position_note')) $row['position_note']=$clean_position;
         if($status==='displayed'){
             $row['placed_at']=$now;
         } else {
@@ -254,9 +277,10 @@ final class Elev8_OS_Gallery_Operations_Service {
         $zones=$wpdb->get_results("SELECT z.*,COUNT(CASE WHEN p.placement_status='displayed' THEN 1 END) piece_count,COALESCE(SUM(CASE WHEN p.placement_status='displayed' AND a.status='available' THEN a.price ELSE 0 END),0) display_value FROM {$z} z LEFT JOIN {$p} p ON p.zone_id=z.id LEFT JOIN {$a} a ON a.id=p.asset_id WHERE z.active=1 GROUP BY z.id ORDER BY CASE WHEN z.zone_type='storage' THEN 2 ELSE 1 END,z.sort_order,z.name",ARRAY_A);
         $where=$artist_filter?$wpdb->prepare(' AND a.owner_user_id=%d',$artist_filter):'';
         $unplaced=$wpdb->get_results("SELECT a.*,u.display_name artist_name FROM {$a} a LEFT JOIN {$p} p ON p.asset_id=a.id AND p.placement_status IN ('displayed','storage') LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE a.status IN ('available','reserved') AND a.location='at_elev8' AND p.id IS NULL {$where} ORDER BY u.display_name,a.title LIMIT 200",ARRAY_A);
-        $placed=$wpdb->get_results("SELECT a.*,p.zone_id,p.position_label,p.placement_status,p.placed_at,z.name zone_name,u.display_name artist_name FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$z} z ON z.id=p.zone_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.placement_status='displayed' {$where} ORDER BY z.sort_order,u.display_name,a.title",ARRAY_A);
+        $position=self::position_select('p');
+        $placed=$wpdb->get_results("SELECT a.*,p.zone_id,{$position} AS position_label,p.placement_status,p.placed_at,z.name zone_name,u.display_name artist_name FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$z} z ON z.id=p.zone_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.placement_status='displayed' {$where} ORDER BY z.sort_order,u.display_name,a.title",ARRAY_A);
         $all_where='1=1'; $params=[]; if($artist_filter){$all_where.=' AND a.owner_user_id=%d';$params[]=$artist_filter;} if($search!==''){$like='%'.$wpdb->esc_like($search).'%';$all_where.=' AND (a.title LIKE %s OR u.display_name LIKE %s OR u.user_email LIKE %s)';array_push($params,$like,$like,$like);} 
-        $all_sql="SELECT a.*,p.zone_id,p.position_label,p.placement_status,p.placed_at,z.name zone_name,z.zone_type,u.display_name artist_name,u.user_email artist_email FROM {$a} a LEFT JOIN {$p} p ON p.asset_id=a.id LEFT JOIN {$z} z ON z.id=p.zone_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE {$all_where} ORDER BY u.display_name,a.title LIMIT 500";
+        $all_sql="SELECT a.*,p.zone_id,{$position} AS position_label,p.placement_status,p.placed_at,z.name zone_name,z.zone_type,u.display_name artist_name,u.user_email artist_email FROM {$a} a LEFT JOIN {$p} p ON p.asset_id=a.id LEFT JOIN {$z} z ON z.id=p.zone_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE {$all_where} ORDER BY u.display_name,a.title LIMIT 500";
         $all=$wpdb->get_results($params?$wpdb->prepare($all_sql,$params):$all_sql,ARRAY_A);
         $artists=$wpdb->get_results("SELECT DISTINCT u.ID,u.display_name,u.user_email FROM {$a} a JOIN {$wpdb->users} u ON u.ID=a.owner_user_id ORDER BY u.display_name,u.user_email",ARRAY_A);
         return ['summary'=>$summary,'zones'=>is_array($zones)?$zones:[],'unplaced'=>is_array($unplaced)?$unplaced:[],'placed'=>is_array($placed)?$placed:[],'all'=>is_array($all)?$all:[],'artists'=>is_array($artists)?$artists:[]];
