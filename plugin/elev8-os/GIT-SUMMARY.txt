@@ -1,10 +1,20 @@
-Elev8 OS 7.6.1 - Dashboard Coach Polish
+Elev8 OS 7.7.0 - Momentum Experience
 
-Suggested commit:
-fix(dashboard): restore business-first flow and polish recommendation cards
+Git source update includes:
+- New reusable Recommendation State Service
+- One-item Today's Focus dashboard experience
+- Start, complete, dismiss, hide, priority, expiration, visibility, and history foundations
+- Recommendation activity timeline events
+- Recommendation-to-achievement trigger foundation
+- Momentum success, recent activity, and future reports UI
+- Version and changelog updates
 
-- Move recommendations below business snapshot and Up Next
-- Rename section to Today's Focus
-- Hide internal ranking language from artists
-- Add responsive recommendation card layout
-- Preserve Recommendation Engine behavior and verified-data rules
+Primary changed files:
+- elev8-os.php
+- CHANGELOG.md
+- includes/class-elev8-os-loader.php
+- includes/Services/class-elev8-os-recommendation-service.php
+- includes/Services/class-elev8-os-recommendation-state-service.php
+- includes/Services/class-elev8-os-achievement-service.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- assets/css/artist-dashboard.css

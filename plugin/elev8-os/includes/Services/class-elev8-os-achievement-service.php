@@ -3,6 +3,10 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Reusable milestone evaluator. Achievements are calculated from verified facts. */
 final class Elev8_OS_Achievement_Service {
+    /** Future achievement providers can inspect verified recommendation completions here. */
+    public static function recommendation_trigger(int $user_id, string $recommendation_id, array $recommendation = []): array {
+        return apply_filters('elev8_os_recommendation_achievement_triggers', [], $user_id, sanitize_key($recommendation_id), $recommendation);
+    }
     /** @param array<string,mixed> $snapshot @return array<int,array<string,mixed>> */
     public static function evaluate(array $snapshot): array {
         $assets=(array)($snapshot['assets']??[]); $sales=(array)($snapshot['sales']??[]); $classes=(array)($snapshot['classes']??[]);

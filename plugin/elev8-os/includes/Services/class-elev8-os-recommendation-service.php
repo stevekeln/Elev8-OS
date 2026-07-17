@@ -219,7 +219,10 @@ final class Elev8_OS_Recommendation_Service {
             'estimated_impact' => $impact,
             'reason' => $reason_args ? vsprintf($reason_format, $reason_args) : $reason_format,
             'action_label' => $action_label, 'action_url' => $action_url,
-            'dismissable' => false,
+            'dismissable' => true,
+            'estimated_time' => self::estimated_time_for($category),
+            'impact_stars' => self::impact_stars_for($priority),
+            'expires_at' => '',
         ];
     }
 
@@ -243,7 +246,27 @@ final class Elev8_OS_Recommendation_Service {
             'action_label' => sanitize_text_field((string) ($item['action_label'] ?? __('View', 'elev8-os'))),
             'action_url' => esc_url_raw((string) ($item['action_url'] ?? '')),
             'dismissable' => !empty($item['dismissable']),
+            'estimated_time' => sanitize_text_field((string) ($item['estimated_time'] ?? self::estimated_time_for($priority === 'critical' ? 'sales' : (string) ($item['category'] ?? 'business')))),
+            'impact_stars' => max(1, min(5, absint($item['impact_stars'] ?? self::impact_stars_for($priority)))),
+            'expires_at' => sanitize_text_field((string) ($item['expires_at'] ?? '')),
         ];
+    }
+
+
+    private static function estimated_time_for(string $category): string {
+        $times = [
+            'profile' => __('10–15 minutes', 'elev8-os'),
+            'artwork' => __('10–20 minutes', 'elev8-os'),
+            'inventory' => __('5–10 minutes', 'elev8-os'),
+            'marketing' => __('5–10 minutes', 'elev8-os'),
+            'classes' => __('10 minutes', 'elev8-os'),
+            'sales' => __('10–15 minutes', 'elev8-os'),
+        ];
+        return $times[sanitize_key($category)] ?? __('About 10 minutes', 'elev8-os');
+    }
+
+    private static function impact_stars_for(string $priority): int {
+        return ['critical' => 5, 'high' => 5, 'medium' => 4, 'low' => 3, 'informational' => 2][sanitize_key($priority)] ?? 3;
     }
 
     private static function compare(array $a, array $b): int {

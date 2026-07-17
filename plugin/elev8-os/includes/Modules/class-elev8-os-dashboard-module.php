@@ -167,7 +167,14 @@ final class Elev8_OS_Dashboard_Module {
         $upcoming = isset($snapshot['upcoming']) && is_array($snapshot['upcoming']) ? $snapshot['upcoming'] : [];
         $next_class = $upcoming[0] ?? null;
         $recommendations = class_exists('Elev8_OS_Recommendation_Service')
-            ? Elev8_OS_Recommendation_Service::get_recommendations($user, 3)
+            ? Elev8_OS_Recommendation_Service::get_recommendations($user, 25)
+            : [];
+        if (class_exists('Elev8_OS_Recommendation_State_Service')) {
+            $recommendations = Elev8_OS_Recommendation_State_Service::apply_states((int) $user->ID, $recommendations);
+        }
+        $today_focus = $recommendations[0] ?? null;
+        $recommendation_history = class_exists('Elev8_OS_Recommendation_State_Service')
+            ? Elev8_OS_Recommendation_State_Service::get_history((int) $user->ID, 6)
             : [];
         $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
         $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
@@ -223,29 +230,39 @@ final class Elev8_OS_Dashboard_Module {
                 </section>
             </div>
 
-            <section class="elev8-dashboard-panel elev8-recommendations-panel" aria-label="<?php esc_attr_e('Business recommendations', 'elev8-os'); ?>">
+            <?php if (isset($_GET['elev8_recommendation']) && sanitize_key((string) $_GET['elev8_recommendation']) === 'completed') : ?>
+                <div class="elev8-momentum-success" role="status"><span class="dashicons dashicons-yes-alt"></span><div><strong><?php esc_html_e('Nice work!', 'elev8-os'); ?></strong><p><?php esc_html_e('Recommendation completed. Your next recommendation is now ready.', 'elev8-os'); ?></p></div></div>
+            <?php endif; ?>
+
+            <section class="elev8-dashboard-panel elev8-recommendations-panel" aria-label="<?php esc_attr_e('Today’s focus', 'elev8-os'); ?>">
                 <div class="elev8-panel-heading">
-                    <div><p class="elev8-eyebrow"><?php esc_html_e('Business Coach', 'elev8-os'); ?></p><h2><?php esc_html_e("Today's Focus", 'elev8-os'); ?></h2><p class="elev8-panel-intro"><?php esc_html_e('The most valuable verified next steps for growing your artist business.', 'elev8-os'); ?></p></div>
+                    <div><p class="elev8-eyebrow"><?php esc_html_e('Business Coach', 'elev8-os'); ?></p><h2><?php esc_html_e("Today's Focus", 'elev8-os'); ?> ⭐</h2><p class="elev8-panel-intro"><?php esc_html_e('The single most valuable verified action you can take today.', 'elev8-os'); ?></p></div>
                 </div>
-                <?php if (!$recommendations) : ?>
+                <?php if (!$today_focus) : ?>
                     <div class="elev8-dashboard-empty"><span class="dashicons dashicons-yes-alt"></span><h3><?php esc_html_e('You are caught up', 'elev8-os'); ?></h3><p><?php esc_html_e('No high-value next step is currently supported by the available data.', 'elev8-os'); ?></p></div>
                 <?php else : ?>
-                    <div class="elev8-recommendation-list">
-                        <?php foreach ($recommendations as $index => $recommendation) : ?>
-                            <article class="elev8-recommendation-card priority-<?php echo esc_attr((string) $recommendation['priority']); ?>">
-                                <div class="elev8-recommendation-copy">
-                                    <div class="elev8-recommendation-meta"><span><?php echo esc_html(ucfirst((string) $recommendation['category'])); ?></span><span class="impact-<?php echo esc_attr((string) $recommendation['priority']); ?>"><?php echo esc_html(ucfirst((string) $recommendation['priority'])); ?> <?php esc_html_e('impact', 'elev8-os'); ?></span></div>
-                                    <h3><?php echo esc_html((string) $recommendation['title']); ?></h3>
-                                    <p><?php echo esc_html((string) $recommendation['description']); ?></p>
-                                    <div class="elev8-recommendation-explain"><strong><?php esc_html_e('Why:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $recommendation['reason']); ?></div>
-                                    <div class="elev8-recommendation-impact"><span class="dashicons dashicons-chart-line"></span><strong><?php esc_html_e('Estimated impact:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $recommendation['estimated_impact']); ?></div>
-                                </div>
-                                <?php if ((string) $recommendation['action_url'] !== '') : ?><a class="elev8-recommendation-action" href="<?php echo esc_url((string) $recommendation['action_url']); ?>"><?php echo esc_html((string) $recommendation['action_label']); ?><span class="dashicons dashicons-arrow-right-alt2"></span></a><?php endif; ?>
-                            </article>
-                        <?php endforeach; ?>
-                    </div>
+                    <?php $focus_state = sanitize_key((string) ($today_focus['state'] ?? 'not_started')); ?>
+                    <article class="elev8-focus-card priority-<?php echo esc_attr((string) $today_focus['priority']); ?>">
+                        <div class="elev8-focus-topline"><span class="elev8-focus-category"><?php echo esc_html(ucfirst((string) $today_focus['category'])); ?></span><span class="elev8-focus-status"><?php echo esc_html($focus_state === 'in_progress' ? __('In Progress', 'elev8-os') : __('Not Started', 'elev8-os')); ?></span></div>
+                        <h3><?php echo esc_html((string) $today_focus['title']); ?></h3>
+                        <p class="elev8-focus-description"><?php echo esc_html((string) $today_focus['description']); ?></p>
+                        <div class="elev8-focus-facts">
+                            <div><span><?php esc_html_e('Impact', 'elev8-os'); ?></span><strong aria-label="<?php echo esc_attr(sprintf(__('%d out of 5 stars', 'elev8-os'), (int) $today_focus['impact_stars'])); ?>"><?php echo esc_html(str_repeat('★', (int) $today_focus['impact_stars']) . str_repeat('☆', 5 - (int) $today_focus['impact_stars'])); ?></strong></div>
+                            <div><span><?php esc_html_e('Estimated Time', 'elev8-os'); ?></span><strong><?php echo esc_html((string) $today_focus['estimated_time']); ?></strong></div>
+                            <div><span><?php esc_html_e('Expected Result', 'elev8-os'); ?></span><strong><?php echo esc_html((string) $today_focus['estimated_impact']); ?></strong></div>
+                        </div>
+                        <div class="elev8-focus-reason"><strong><?php esc_html_e('Why this matters:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $today_focus['reason']); ?></div>
+                        <div class="elev8-focus-actions">
+                            <?php if ($focus_state !== 'in_progress') : ?>
+                                <?php self::render_recommendation_state_form($today_focus, 'in_progress', __('Start This Focus', 'elev8-os'), 'primary'); ?>
+                            <?php endif; ?>
+                            <?php if ($focus_state === 'in_progress' && (string) $today_focus['action_url'] !== '') : ?><a class="elev8-recommendation-action" href="<?php echo esc_url((string) $today_focus['action_url']); ?>"><?php echo esc_html((string) $today_focus['action_label']); ?><span class="dashicons dashicons-arrow-right-alt2"></span></a><?php endif; ?>
+                            <?php if ($focus_state === 'in_progress') : ?><?php self::render_recommendation_state_form($today_focus, 'completed', __('Mark Complete', 'elev8-os'), 'complete'); ?><?php endif; ?>
+                            <?php if (!empty($today_focus['dismissable'])) : ?><?php self::render_recommendation_state_form($today_focus, 'dismissed', __('Not Relevant', 'elev8-os'), 'quiet'); ?><?php endif; ?>
+                        </div>
+                    </article>
                 <?php endif; ?>
-                <p class="elev8-recommendation-source"><?php esc_html_e('Recommendations are powered by verified Elev8 OS data.', 'elev8-os'); ?></p>
+                <p class="elev8-recommendation-source"><?php esc_html_e('Powered by verified Elev8 OS business data and rules.', 'elev8-os'); ?></p>
             </section>
 
 
@@ -257,8 +274,41 @@ final class Elev8_OS_Dashboard_Module {
                     <div class="is-ready"><span class="dashicons dashicons-admin-page"></span><div><strong><?php esc_html_e('Keep your public page current', 'elev8-os'); ?></strong><p><?php esc_html_e('Review your bio, links, and class information regularly.', 'elev8-os'); ?></p></div><a href="<?php echo esc_url($edit_website_url); ?>"><?php esc_html_e('Review website', 'elev8-os'); ?></a></div>
                 </div>
             </section>
+
+            <section class="elev8-dashboard-panel elev8-momentum-activity-panel">
+                <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Momentum', 'elev8-os'); ?></p><h2><?php esc_html_e('Recent Activity', 'elev8-os'); ?></h2></div></div>
+                <?php if (!$recommendation_history) : ?><div class="elev8-dashboard-empty"><p><?php esc_html_e('Your recommendation activity will appear here as you build momentum.', 'elev8-os'); ?></p></div><?php else : ?>
+                    <div class="elev8-momentum-activity-list"><?php foreach ($recommendation_history as $activity) : ?><div><span class="dashicons dashicons-<?php echo esc_attr((string) $activity['type'] === 'recommendation_completed' ? 'yes-alt' : ((string) $activity['type'] === 'recommendation_dismissed' ? 'dismiss' : 'controls-play')); ?>"></span><div><strong><?php echo esc_html((string) $activity['label']); ?></strong><p><?php echo esc_html(self::activity_label((string) $activity['type'])); ?> · <?php echo esc_html(mysql2date(get_option('date_format') . ' ' . get_option('time_format'), (string) $activity['occurred_at'])); ?></p></div></div><?php endforeach; ?></div>
+                <?php endif; ?>
+            </section>
+
+            <section class="elev8-dashboard-panel elev8-future-reports"><p class="elev8-eyebrow"><?php esc_html_e('Coming Later', 'elev8-os'); ?></p><h2><?php esc_html_e('Future Reports', 'elev8-os'); ?></h2><p><?php esc_html_e('Your completed actions are building the history future coaching and reports will use.', 'elev8-os'); ?></p></section>
         </div>
         <?php
+    }
+
+    /** @param array<string,mixed> $recommendation */
+    private static function render_recommendation_state_form(array $recommendation, string $status, string $label, string $style): void {
+        ?>
+        <form class="elev8-focus-state-form style-<?php echo esc_attr($style); ?>" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+            <input type="hidden" name="action" value="elev8_recommendation_state">
+            <input type="hidden" name="recommendation_id" value="<?php echo esc_attr((string) $recommendation['id']); ?>">
+            <input type="hidden" name="recommendation_title" value="<?php echo esc_attr((string) $recommendation['title']); ?>">
+            <input type="hidden" name="recommendation_priority" value="<?php echo esc_attr((string) $recommendation['priority']); ?>">
+            <input type="hidden" name="recommendation_status" value="<?php echo esc_attr($status); ?>">
+            <input type="hidden" name="redirect_to" value="<?php echo esc_url(self::dashboard_url()); ?>">
+            <?php wp_nonce_field('elev8_recommendation_state_' . get_current_user_id()); ?>
+            <button type="submit"><?php echo esc_html($label); ?></button>
+        </form>
+        <?php
+    }
+
+    private static function activity_label(string $type): string {
+        return [
+            'recommendation_started' => __('Recommendation Started', 'elev8-os'),
+            'recommendation_completed' => __('Recommendation Completed', 'elev8-os'),
+            'recommendation_dismissed' => __('Recommendation Dismissed', 'elev8-os'),
+        ][$type] ?? __('Recommendation Updated', 'elev8-os');
     }
 
     /** @param int|float|null $value */

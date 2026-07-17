@@ -1,9 +1,18 @@
-Elev8 OS 7.6.1 Installation
+Elev8 OS 7.7.0 Installation
 
-1. Back up the current Elev8 OS plugin and database.
-2. Install the complete elev8-os-7.6.1-dashboard-coach-polish.zip through WordPress Plugins > Add New > Upload Plugin.
-3. Replace the existing plugin when WordPress prompts you.
-4. Activate Elev8 OS if needed.
-5. Open the Artist Dashboard and verify the order: navigation, welcome, business snapshot, Up Next, Today's Focus.
-6. Confirm recommendation buttons and existing artwork, QR, cart, checkout, and classes still work.
-7. Test on Local before installing the exact same ZIP on Live.
+1. Back up the WordPress site and database.
+2. Install the complete elev8-os-7.7.0-momentum-experience.zip through WordPress Plugins > Add New > Upload Plugin.
+3. Choose Replace current with uploaded when WordPress detects the existing Elev8 OS plugin.
+4. Confirm the installed plugin reports Version 7.7.0.
+5. Test on Local before installing the exact same ZIP on Live.
+
+Local test checklist:
+- Artist Dashboard loads without errors.
+- Existing portal navigation, classes, students, artwork, website, and waitlist features still load.
+- Today's Focus displays no more than one recommendation.
+- Start This Focus changes the state to In Progress.
+- The recommendation action opens the correct existing module.
+- Mark Complete displays the success message and advances to the next recommendation.
+- Not Relevant dismisses the recommendation and advances to the next recommendation.
+- Recent Activity records Started, Completed, and Dismissed events.
+- Dashboard remains usable on mobile.

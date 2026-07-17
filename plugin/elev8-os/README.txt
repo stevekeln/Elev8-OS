@@ -1,7 +1,11 @@
-Elev8 OS 7.6.1 - Dashboard Coach Polish
+Elev8 OS 7.7.0 - Momentum Experience
 
-Business operating system for creative studios, artists, and makers.
+Elev8 OS is the production business operating system for Elev8 Arts and its artist ecosystem.
 
-This release introduces the reusable Recommendation Engine. Elev8 OS now evaluates verified profile, Asset Engine, QR/view, inventory, and Amelia class data to give artists ranked next steps with clear reasons, estimated impact, and direct actions. Business rules remain deterministic and reusable so future dashboards, reports, notifications, and AI coaching can consume the same trusted recommendations.
+This release evolves the rule-based Recommendation Engine into a focused daily momentum workflow. The Artist Dashboard now features one verified Today's Focus action with impact, estimated time, expected result, reason, and a reusable state workflow.
 
-This release restores a business-first Artist Dashboard flow and presents Recommendation Engine results as polished, artist-friendly Today's Focus cards.
+Trusted system boundaries remain unchanged:
+- Elev8 OS owns business logic and intelligence.
+- WordPress owns authentication, users, and roles.
+- Amelia owns scheduling and bookings.
+- WooCommerce owns products, checkout, payments, and orders.

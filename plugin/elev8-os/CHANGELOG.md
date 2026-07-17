@@ -1,5 +1,16 @@
 # Elev8 OS Changelog
 
+## 7.7.0 - Momentum Experience
+- Added a reusable Recommendation State Service with Not Started, In Progress, Completed, Dismissed, and Hidden states.
+- Added recommendation priority, expiration, history, and dashboard visibility handling.
+- Changed the Artist Dashboard to feature exactly one high-value Today's Focus recommendation.
+- Added impact stars, estimated time, expected business result, reason, and focused action controls.
+- Added clean completion messaging and automatic advancement to the next eligible recommendation.
+- Added recommendation Started, Completed, and Dismissed activity history.
+- Added a reusable recommendation-to-achievement trigger foundation for future achievement modules.
+- Added Momentum Recent Activity and Future Reports dashboard sections.
+- Preserved rule-based recommendations backed by verified Elev8 OS data.
+
 ## 7.6.1 - Dashboard Coach Polish
 
 - Restored the Artist Dashboard flow: portal navigation, welcome, business snapshot, Up Next, then Business Coach.
