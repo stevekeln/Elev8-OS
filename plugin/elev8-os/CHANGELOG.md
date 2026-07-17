@@ -1,5 +1,15 @@
 # Elev8 OS Changelog
 
+## 9.0.4 — Unified Location Engine
+- Fixed Artist Portal Rack boards so every active board appears immediately in all placement and move dropdowns.
+- Unified all physical locations behind one selectable-zone service with no type allowlist.
+- Re-saving an existing rack/board now updates and reactivates the canonical location instead of failing on a duplicate slug.
+- Rack and board fields now stay hidden unless Artist Portal Rack is selected.
+- Artist Portal Rack names are generated automatically.
+- Simplified clickable Gallery Floor cards with artwork count, displayed value, and direct zone access.
+- Removed capacity from active location logic while preserving legacy database fields.
+
+
 ## 9.0.3 — Unified Gallery Locations
 
 - Unified Artist Portal Rack boards with the standard Add Display Zone workflow.
