@@ -1,2 +1,3 @@
-Elev8 OS 9.0.0 — Gallery Operations
-Adds reusable gallery zones, artwork placement/history, Gallery Mode dashboard, owner controls, and artist placement visibility foundation.
+Elev8 OS 9.0.1 — Artist Portal Display Rack
+
+Adds configurable multi-rack Artist Portal boards with Side A/Side B placement and artist-filtered Gallery Operations.

@@ -1,5 +1,17 @@
 # Elev8 OS Changelog
 
+## 9.0.1 — Artist Portal Display Rack
+
+- Added reusable Artist Portal Rack display-zone type.
+- Added batch rack setup for any rack number and actual board count.
+- Every art board creates Side A and Side B positions.
+- Supports two current racks and additional future racks without hardcoded limits.
+- Added capacity and maintenance safeguards for board sides.
+- Added optional artist-reserved board-side architecture.
+- Added owner artist filter for unplaced and displayed artwork.
+- Artist dashboard displays the complete rack, board, and side location.
+- Preserved Gallery Operations, Print Center, artwork, QR, and identity features.
+
 ## 9.0.0 — Gallery Operations
 
 - Added reusable Gallery Operations Service with display zones, artwork placement, and movement history.
