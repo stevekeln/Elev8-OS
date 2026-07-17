@@ -1,15 +1,13 @@
-Elev8 OS 9.3.0 — Artist Growth Center
+Elev8 OS 9.3.1 — Campaign Wizard Layout Polish
 
-Changed:
+Changed files:
 - elev8-os.php
-- includes/class-elev8-os-loader.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- assets/css/artist-dashboard.css
+- includes/Modules/class-elev8-os-content-studio-module.php
+- assets/css/content-studio.css
 - CHANGELOG.md
 - GIT-SUMMARY.txt
 
-Added:
-- includes/Services/class-elev8-os-marketing-launcher.php
-- includes/Modules/class-elev8-os-growth-center-module.php
-
 Database changes: None.
+
+Purpose:
+Fix the shared front-end Content Studio and Campaign Wizard layout so every Growth Center marketing action opens a clean, wide, responsive builder with a stable branded preview.

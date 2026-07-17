@@ -11,6 +11,16 @@
 
 # Elev8 OS Changelog
 
+## 9.3.1 — Campaign Wizard Layout Polish
+
+- Fixed the front-end Content Studio being constrained by the WordPress theme content width.
+- Added a full-width, theme-safe Content Studio application shell.
+- Rebuilt the Campaign Wizard into a clean two-column form and preview workspace.
+- Added consistent field sizing, spacing, focus states, card styling, and mobile responsiveness.
+- Made the branded email preview sticky on desktop and stacked on smaller screens.
+- All Growth Center campaign launch buttons now benefit from the shared wizard layout fix.
+- No database changes.
+
 ## 9.2.2 — Class Requests Interface Polish
 
 ### Fixed
