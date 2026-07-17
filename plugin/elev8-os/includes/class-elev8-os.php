@@ -1031,6 +1031,21 @@ final class Elev8_OS {
         }
         usort($artists, static fn(array $a,array $b): int => strcasecmp($a['name'],$b['name']));
         $assets = Elev8_OS_Asset_Service::get_all(5000);
+        $print_assets = [];
+        foreach ($assets as $asset) {
+            $artist_id = Elev8_OS_Identity_Service::artist_id_for_user_id(absint($asset['owner_user_id'] ?? 0));
+            if ($artist_id <= 0) { continue; }
+            $print_assets[] = [
+                'asset' => $asset,
+                'artist_id' => $artist_id,
+                'artist_name' => self::employee_name($artist_id),
+            ];
+        }
+        usort($print_assets, static function(array $a, array $b): int {
+            $artist_compare = strcasecmp((string)$a['artist_name'], (string)$b['artist_name']);
+            if ($artist_compare !== 0) { return $artist_compare; }
+            return strcasecmp((string)($a['asset']['title'] ?? ''), (string)($b['asset']['title'] ?? ''));
+        });
         ?>
         <div class="wrap elev8-os elev8-print-center">
           <h1>Gallery Print Center</h1>
@@ -1050,16 +1065,18 @@ final class Elev8_OS {
             <section class="elev8-panel">
               <h2>Artwork Gallery Labels</h2>
               <p>Print the artwork title, artist name, details, and a tracked QR code that opens the artwork page.</p>
-              <form method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
+              <form method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank" data-elev8-artwork-print-form>
                 <input type="hidden" name="action" value="elev8_os_print_artwork">
                 <?php wp_nonce_field('elev8_os_print_artwork', '_wpnonce', false); ?>
-                <label><strong>Choose artwork</strong><select name="asset_id" required><option value="">Select artwork…</option><?php foreach($assets as $asset): $aid=Elev8_OS_Identity_Service::artist_id_for_user_id(absint($asset['owner_user_id']??0)); $aname=$aid>0?self::employee_name($aid):'Artist unavailable'; ?><option value="<?php echo esc_attr((string)$asset['id']); ?>"><?php echo esc_html((string)$asset['title'].' — '.$aname.' — '.ucfirst((string)$asset['status'])); ?></option><?php endforeach; ?></select></label>
+                <label><strong>Choose artist</strong><select name="artist_id" required data-elev8-print-artist><option value="">Select an artist…</option><?php foreach($artists as $artist): ?><option value="<?php echo esc_attr((string)$artist['id']); ?>"><?php echo esc_html($artist['name'] . ($artist['medium'] !== '' ? ' — '.$artist['medium'] : '')); ?></option><?php endforeach; ?></select></label>
+                <label><strong>Choose artwork</strong><select name="asset_id" required data-elev8-print-artwork disabled><option value="">Select an artist first…</option><?php foreach($print_assets as $item): $asset=$item['asset']; ?><option value="<?php echo esc_attr((string)$asset['id']); ?>" data-artist-id="<?php echo esc_attr((string)$item['artist_id']); ?>" hidden><?php echo esc_html((string)$asset['title'].' — '.ucfirst((string)$asset['status'])); ?></option><?php endforeach; ?></select><span class="description elev8-print-artwork-message" data-elev8-print-artwork-message>Select an artist to see only their artwork.</span></label>
                 <label><strong>Print format</strong><select name="print_format"><option value="artwork-label">Gallery label — 5.5 × 4.25</option><option value="artwork-label-two">Two labels — letter sheet</option><option value="artwork-qr">Artwork QR card — 4 × 6</option></select></label>
-                <button class="button button-primary" type="submit">Preview Artwork Print</button>
+                <button class="button button-primary" type="submit" data-elev8-print-artwork-submit disabled>Preview Artwork Print</button>
               </form>
             </section>
           </div>
           <div class="elev8-panel"><h2>Consistent Gallery Workflow</h2><p><strong>Artist:</strong> completes the profile, biography, artwork title, story, materials, dimensions, price, and image.</p><p><strong>Owner:</strong> reviews the information, opens Print Center, previews the branded result, and prints it.</p><p>Templates are controlled by Elev8 OS so every label and artist card has the same Elev8 Arts identity.</p></div>
+          <script>(function(){var form=document.querySelector('[data-elev8-artwork-print-form]');if(!form)return;var artist=form.querySelector('[data-elev8-print-artist]');var artwork=form.querySelector('[data-elev8-print-artwork]');var message=form.querySelector('[data-elev8-print-artwork-message]');var submit=form.querySelector('[data-elev8-print-artwork-submit]');var options=Array.prototype.slice.call(artwork.querySelectorAll('option[data-artist-id]'));function refresh(){var artistId=artist.value;var count=0;artwork.value='';options.forEach(function(option){var match=artistId!==''&&option.getAttribute('data-artist-id')===artistId;option.hidden=!match;option.disabled=!match;if(match)count++;});if(artistId===''){artwork.options[0].text='Select an artist first…';artwork.disabled=true;submit.disabled=true;message.textContent='Select an artist to see only their artwork.';return;}if(count===0){artwork.options[0].text='No artwork found for this artist';artwork.disabled=true;submit.disabled=true;message.textContent='This artist has no artwork available to print yet.';return;}artwork.options[0].text='Select artwork…';artwork.disabled=false;submit.disabled=true;message.textContent=count+' artwork '+(count===1?'item':'items')+' found for this artist.';}artist.addEventListener('change',refresh);artwork.addEventListener('change',function(){submit.disabled=this.value==='';});refresh();})();</script>
         </div><?php
     }
 
@@ -1079,10 +1096,14 @@ final class Elev8_OS {
     public static function print_artwork_action(): void {
         if (!current_user_can('manage_options')) { wp_die(esc_html__('Only an Elev8 OS administrator can print artwork materials.', 'elev8-os')); }
         check_admin_referer('elev8_os_print_artwork');
+        $selected_artist_id = absint($_GET['artist_id'] ?? 0);
         $asset = Elev8_OS_Asset_Service::get(absint($_GET['asset_id'] ?? 0));
         if (!$asset) { wp_die(esc_html__('Artwork could not be found.', 'elev8-os')); }
         $artist_id = Elev8_OS_Identity_Service::artist_id_for_user_id(absint($asset['owner_user_id'] ?? 0));
-        $artist_name = $artist_id > 0 ? self::employee_name($artist_id) : 'Artist unavailable';
+        if ($selected_artist_id <= 0 || $artist_id !== $selected_artist_id) {
+            wp_die(esc_html__('The selected artwork does not belong to the selected artist. Return to Print Center and choose the artist again.', 'elev8-os'));
+        }
+        $artist_name = self::employee_name($artist_id);
         $format = sanitize_key((string)($_GET['print_format'] ?? 'artwork-label'));
         Elev8_OS_Print_Service::render_artwork($asset, $artist_name, $format, admin_url('admin.php?page=elev8-print-center'));
     }

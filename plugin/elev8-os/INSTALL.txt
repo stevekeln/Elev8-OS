@@ -1,10 +1,10 @@
-Elev8 OS 8.0.0 — Gallery Print Center
+Elev8 OS 8.0.1 — Artist-Filtered Print Center
 
-1. Install this ZIP on Local first.
-2. Open Elev8 OS > Print Center.
-3. Select an artist or artwork and preview the print format.
-4. Confirm the QR opens the correct tracked public page.
-5. Print or choose Save as PDF in the browser print dialog.
-6. After Local testing, install this exact ZIP on Live.
-
-Only WordPress administrators with manage_options can print. Artists continue maintaining their own approved profile and artwork information.
+1. Back up the Local site.
+2. Install the complete plugin ZIP through WordPress Plugins > Add New > Upload Plugin.
+3. Replace the existing Elev8 OS version when WordPress prompts you.
+4. Open Elev8 OS > Print Center.
+5. Under Artwork Gallery Labels, choose an artist and confirm only that artist's artwork appears.
+6. Change artists and confirm the artwork selection resets.
+7. Preview an artwork label and confirm the correct artist and artwork are shown.
+8. Test on Local before installing the exact same ZIP on Live.

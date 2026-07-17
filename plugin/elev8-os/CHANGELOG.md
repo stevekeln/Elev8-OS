@@ -1,5 +1,25 @@
 # Elev8 OS Changelog
 
+## 8.0.1 — Artist-Filtered Print Center
+
+- Added an artist selector to the Artwork Gallery Labels workflow.
+- Artwork choices now update immediately to show only the selected artist’s work.
+- Reset the artwork selection whenever the artist changes.
+- Added clear empty-state messaging when an artist has no printable artwork.
+- Sorted artwork by artist and title for predictable administration.
+- Added server-side validation that prevents printing artwork under the wrong artist.
+- Preserved all Gallery Print Center, Print & Identity, Artist Portal, storefront, and business intelligence functionality.
+
+## 8.0.1 — Artist-Filtered Print Center
+
+- Added an artist selector to the Artwork Gallery Labels workflow.
+- Artwork choices now update immediately to show only the selected artist's work.
+- Reset the artwork selection whenever the artist changes.
+- Added clear empty-state messaging when an artist has no printable artwork.
+- Sorted artwork by artist and title for predictable administration.
+- Added server-side validation that prevents printing artwork under the wrong artist.
+- Preserved all Gallery Print Center, Print & Identity, Artist Portal, storefront, and business intelligence functionality.
+
 ## 8.0.0 — Gallery Print Center
 
 - Added an owner-only Gallery Print Center under Elev8 OS.

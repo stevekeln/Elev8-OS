@@ -1,3 +1,3 @@
-Elev8 OS 8.0.0 — Gallery Print Center
+Elev8 OS 8.0.1 — Artist-Filtered Print Center
 
-Adds an owner-only centralized Print Center, artist cards, artist QR sheets, artwork gallery labels, artwork QR cards, tracked artwork URLs, consistent Elev8 templates, and artist/admin workflow separation.
+Updates the owner-only Gallery Print Center so artwork labels are selected through an artist-first workflow. Choosing an artist immediately filters the artwork list to only that artist's records, resets stale selections, displays useful empty states, and validates the artist/artwork relationship on the server before printing.
