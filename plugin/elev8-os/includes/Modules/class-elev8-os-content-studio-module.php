@@ -5,6 +5,7 @@ final class Elev8_OS_Content_Studio_Module {
     public static function init(): void {
         add_shortcode('elev8_artist_content_studio', [__CLASS__, 'shortcode']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'assets']);
+        add_filter('body_class', [__CLASS__, 'body_classes']);
         add_action('admin_menu', [__CLASS__, 'admin_menu'], 45);
         add_action('admin_enqueue_scripts', [__CLASS__, 'admin_assets']);
         add_action('admin_post_elev8_os_content_save_template', [__CLASS__, 'save_template']);
@@ -14,6 +15,13 @@ final class Elev8_OS_Content_Studio_Module {
         add_action('admin_post_elev8_os_content_save_category', [__CLASS__, 'save_category']);
         add_action('admin_post_elev8_os_content_save_campaign', [__CLASS__, 'save_campaign']);
         add_action('admin_post_elev8_os_content_save_brand', [__CLASS__, 'save_brand']);
+    }
+
+    public static function body_classes(array $classes): array {
+        if (Elev8_OS_Portal_Page_Manager::is_current_page('content_studio')) {
+            $classes[] = 'elev8-content-studio-page';
+        }
+        return $classes;
     }
 
     public static function assets(): void {

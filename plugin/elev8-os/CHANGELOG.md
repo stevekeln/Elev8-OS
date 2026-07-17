@@ -1,4 +1,13 @@
-# Changelog
+# Elev8 OS Changelog
+
+## 9.3.2 — Campaign Wizard Centering Fix
+
+- Removed the viewport-based transform that pulled the front-end Campaign Wizard off the left edge.
+- Added a Content Studio page body class so the WordPress theme container can be widened safely.
+- Centered the application shell with a controlled maximum width and normal document flow.
+- Preserved the two-column campaign form and branded preview layout from 9.3.1.
+- Improved tablet and mobile page padding.
+- No database changes.
 
 ## 9.3.0 — Artist Growth Center
 - Activated the reusable Artist Business Snapshot, Business Score, Recommendation Engine, Growth Plan, and Achievement services.

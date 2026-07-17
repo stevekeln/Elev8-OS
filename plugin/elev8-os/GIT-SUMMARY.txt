@@ -1,4 +1,4 @@
-Elev8 OS 9.3.1 — Campaign Wizard Layout Polish
+Elev8 OS 9.3.2 — Campaign Wizard Centering Fix
 
 Changed files:
 - elev8-os.php
@@ -8,6 +8,3 @@ Changed files:
 - GIT-SUMMARY.txt
 
 Database changes: None.
-
-Purpose:
-Fix the shared front-end Content Studio and Campaign Wizard layout so every Growth Center marketing action opens a clean, wide, responsive builder with a stable branded preview.
