@@ -1,5 +1,16 @@
 # Elev8 OS Changelog
 
+## 8.0.0 — Gallery Print Center
+
+- Added an owner-only Gallery Print Center under Elev8 OS.
+- Added centralized artist card, artist QR, artwork gallery label, and artwork QR-card workflows.
+- Added tracked artwork QR codes containing the artwork title, artist name, and a clear scan instruction.
+- Added single and two-up letter-sheet printing formats.
+- Kept artwork and profile content entry with artists while restricting preview, PDF, and printing actions to administrators.
+- Reused the Print & Identity background, logo, and fixed Elev8 templates for consistent gallery branding.
+- Removed direct artist-facing QR generation from My Artwork and replaced it with an owner-managed printing notice.
+- Preserved all 7.8.0 functionality and existing public profile/artwork URLs.
+
 ## 7.8.0 — Print & Identity System
 
 - Added reusable Print Service for branded artist materials.

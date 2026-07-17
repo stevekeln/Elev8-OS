@@ -1,3 +1,3 @@
-Elev8 OS 7.8.0 — Print & Identity System
+Elev8 OS 8.0.0 — Gallery Print Center
 
-New reusable Print Service, artist display cards, printable QR codes, standard theme settings, paisley background upload, two-up printing, browser PDF workflow, and polished storefront cart/checkout actions.
+Adds an owner-only centralized Print Center, artist cards, artist QR sheets, artwork gallery labels, artwork QR cards, tracked artwork URLs, consistent Elev8 templates, and artist/admin workflow separation.
