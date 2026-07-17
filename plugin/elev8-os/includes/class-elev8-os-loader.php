@@ -26,6 +26,14 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-gallery-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-classes-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-artwork-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-identity-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-score-engine.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-engine.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-achievement-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-growth-plan-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-artist-business-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-marketing-launcher.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-growth-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-students-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-marketing-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-content-studio-module.php';
@@ -67,5 +75,6 @@ final class Elev8_OS_Loader {
         Elev8_OS_Employee_Mapping_Module::init();
         Elev8_OS_Business_Intelligence_Dashboard_Module::init();
         Elev8_OS_CEO_Dashboard_Module::init();
+        Elev8_OS_Growth_Center_Module::init();
     }
 }

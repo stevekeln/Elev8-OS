@@ -1,3 +1,14 @@
+# Changelog
+
+## 9.3.0 — Artist Growth Center
+- Activated the reusable Artist Business Snapshot, Business Score, Recommendation Engine, Growth Plan, and Achievement services.
+- Added an artist Business Score with transparent component scores.
+- Added Today's Opportunities with one-click Content Studio campaign launching.
+- Added verified-data achievement progress.
+- Added the owner Artist Growth Center summary under Elev8 OS.
+- Preserved the 9.2.2 Class Requests styling fix and all existing dashboard functionality.
+- No database schema changes.
+
 # Elev8 OS Changelog
 
 ## 9.2.2 — Class Requests Interface Polish

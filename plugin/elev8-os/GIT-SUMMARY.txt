@@ -1,16 +1,15 @@
-Elev8 OS 9.2.2 — Class Requests Interface Polish
+Elev8 OS 9.3.0 — Artist Growth Center
 
-Changed files:
+Changed:
 - elev8-os.php
-- includes/Modules/class-elev8-os-waitlist-module.php
-- assets/css/artist-waitlist.css
+- includes/class-elev8-os-loader.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- assets/css/artist-dashboard.css
 - CHANGELOG.md
 - GIT-SUMMARY.txt
 
-Database changes:
-- None
+Added:
+- includes/Services/class-elev8-os-marketing-launcher.php
+- includes/Modules/class-elev8-os-growth-center-module.php
 
-Purpose:
-- Load the existing Class Requests styles on the WordPress admin page.
-- Apply the same structured application wrapper used by the Artist Portal.
-- Improve admin spacing, cards, forms, and responsive presentation without changing business logic.
+Database changes: None.
