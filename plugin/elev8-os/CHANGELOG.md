@@ -1,3 +1,17 @@
+# Elev8 OS Changelog
+
+## 9.0.0 — Gallery Operations
+
+- Added reusable Gallery Operations Service with display zones, artwork placement, and movement history.
+- Added owner-only Gallery Operations dashboard and morning Gallery Mode brief.
+- Added default gallery zones with configurable capacity.
+- Added placement, movement, storage, pickup, sold, and removal workflows.
+- Added server-side ownership and zone validation.
+- Added automatic display removal when artwork becomes sold or archived.
+- Added gallery value, placement, reservation, and open-capacity metrics.
+- Added artist-facing `elev8_artist_gallery_status` shortcode foundation for Where is my artwork.
+- Preserved Elev8 Asset Service as the canonical artwork source of truth.
+
 ## 8.0.5 — Artist Print Center UX Polish
 
 - Rebuilt the artist Print Center as two polished, responsive application cards.
@@ -25,8 +39,6 @@
 - Removed visible URLs and tiny logo marks from artist cards and artwork labels.
 - Embedded the configured paisley image directly into print documents for reliable preview, print, and PDF rendering.
 - Increased paisley visibility while preserving QR readability and minimal gallery styling.
-
-# Elev8 OS Changelog
 
 ## 8.0.2 — Minimal Gallery Print Refinement
 

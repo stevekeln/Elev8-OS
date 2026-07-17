@@ -1,1 +1,2 @@
-Elev8 OS 8.0.5: private artist Print Center, one dashboard shortcut, owner/artist permissions, and clean-white print standard.
+Elev8 OS 9.0.0 — Gallery Operations
+Adds reusable gallery zones, artwork placement/history, Gallery Mode dashboard, owner controls, and artist placement visibility foundation.

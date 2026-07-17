@@ -286,6 +286,13 @@ final class Elev8_OS_Dashboard_Module {
                 <?php endif; ?>
             </section>
 
+            <?php if (class_exists('Elev8_OS_Gallery_Operations_Module')) : ?>
+                <section class="elev8-dashboard-panel elev8-gallery-location-panel">
+                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Gallery', 'elev8-os'); ?></p><h2><?php esc_html_e('Where is my artwork?', 'elev8-os'); ?></h2><p class="elev8-panel-intro"><?php esc_html_e('See what is currently displayed, where it is located, and how long it has been on the floor.', 'elev8-os'); ?></p></div></div>
+                    <?php echo do_shortcode('[elev8_artist_gallery_status]'); ?>
+                </section>
+            <?php endif; ?>
+
             <section class="elev8-dashboard-panel elev8-future-reports"><p class="elev8-eyebrow"><?php esc_html_e('Coming Later', 'elev8-os'); ?></p><h2><?php esc_html_e('Future Reports', 'elev8-os'); ?></h2><p><?php esc_html_e('Your completed actions are building the history future coaching and reports will use.', 'elev8-os'); ?></p></section>
         </div>
         <?php

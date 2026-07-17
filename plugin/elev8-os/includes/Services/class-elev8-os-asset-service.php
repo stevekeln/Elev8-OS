@@ -418,7 +418,7 @@ final class Elev8_OS_Asset_Service {
 
     /** @return string[] */
     public static function statuses(): array {
-        return ['draft', 'available', 'reserved', 'sold', 'archived'];
+        return ['draft', 'available', 'reserved', 'consignment', 'returned', 'needs_pickup', 'sold', 'archived'];
     }
 
     /** @return array<string,string> */
