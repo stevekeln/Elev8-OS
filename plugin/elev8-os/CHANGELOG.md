@@ -1,5 +1,12 @@
 # Elev8 OS Changelog
 
+## 9.0.9 — Artwork Placement Persistence Hotfix
+- Fixed artwork moves failing after a valid new gallery location was selected.
+- Rebuilt placement updates as a verified asset-ID upsert that no longer depends on optional zone columns.
+- Added the actual database error to failed placement notices for faster diagnosis.
+- Preserved the current zone-detail page after moving artwork, preventing the unrelated "Display zone not found" notice.
+- Kept the canonical active-location registry introduced in 9.0.8.
+
 ## 9.0.8 — Legacy Schema Compatibility Hotfix
 - Removed the optional legacy side-label column from all live location registry queries.
 - Zone saves now adapt to the columns actually present in the WordPress database.

@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Canonical gallery location, placement, rack, storage, and movement history service. */
 final class Elev8_OS_Gallery_Operations_Service {
-    private const DB_VERSION = '1.8.0';
+    private const DB_VERSION = '1.9.0';
     private const DB_OPTION = 'elev8_os_gallery_operations_db_version';
 
     public static function init(): void {
@@ -161,21 +161,58 @@ final class Elev8_OS_Gallery_Operations_Service {
     }
     public static function get_zone(int $id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::zones_table().' WHERE id=%d',$id),ARRAY_A); return is_array($r)?$r:null; }
     public static function get_zone_artwork(int $zone_id,int $artist_filter=0): array { global $wpdb; $a=Elev8_OS_Asset_Service::table_name(); $p=self::placements_table(); $where=$artist_filter?$wpdb->prepare(' AND a.owner_user_id=%d',$artist_filter):''; $rows=$wpdb->get_results($wpdb->prepare("SELECT a.*,p.zone_id,p.position_label,p.placement_status,p.placed_at,u.display_name artist_name,u.user_email artist_email FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.zone_id=%d AND p.placement_status IN ('displayed','storage') {$where} ORDER BY u.display_name,a.title",$zone_id),ARRAY_A); return is_array($rows)?$rows:[]; }
-    public static function get_placement(int $asset_id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT p.*,z.name zone_name,z.zone_type,z.rack_number,z.board_number FROM '.self::placements_table().' p LEFT JOIN '.self::zones_table().' z ON z.id=p.zone_id WHERE p.asset_id=%d',$asset_id),ARRAY_A); return is_array($r)?$r:null; }
+    /** Return the saved placement without depending on optional gallery-zone columns. */
+    public static function get_placement(int $asset_id): ?array {
+        global $wpdb;
+        $sql='SELECT p.*, z.name AS zone_name, z.zone_type FROM '.self::placements_table().' p LEFT JOIN '.self::zones_table().' z ON z.id=p.zone_id WHERE p.asset_id=%d';
+        $r=$wpdb->get_row($wpdb->prepare($sql,$asset_id),ARRAY_A);
+        return is_array($r)?$r:null;
+    }
 
     public static function place_asset(int $asset_id,int $zone_id,string $position='',string $note='') {
-        global $wpdb; $asset=Elev8_OS_Asset_Service::get($asset_id); if(!$asset) return new WP_Error('asset','Artwork not found.'); $zone=self::get_zone($zone_id); if(!$zone || empty($zone['active'])) return new WP_Error('zone','Gallery zone not found.');
-        if((string)$zone['board_status']==='maintenance') return new WP_Error('zone_status','That board is in maintenance.');
-        $assigned=absint($zone['assigned_artist_user_id']??0); if($assigned && $assigned!==absint($asset['owner_user_id']??0)) return new WP_Error('artist_assignment','That board is reserved for another artist.');
+        global $wpdb;
+        $asset=Elev8_OS_Asset_Service::get($asset_id);
+        if(!$asset) return new WP_Error('asset','Artwork not found.');
+        if($zone_id<1) return new WP_Error('zone','Choose a gallery location.');
+        $zone=self::get_zone($zone_id);
+        if(!$zone || (int)($zone['active']??0)!==1) return new WP_Error('zone','Display zone not found.');
+        if((string)($zone['board_status']??'available')==='maintenance') return new WP_Error('zone_status','That board is in maintenance.');
+        $assigned=absint($zone['assigned_artist_user_id']??0);
+        if($assigned && $assigned!==absint($asset['owner_user_id']??0)) return new WP_Error('artist_assignment','That board is reserved for another artist.');
         return self::save_placement($asset_id,$zone_id,'displayed',$position,$note);
     }
 
+    /** Upsert a placement by asset ID and report the actual database error when a save fails. */
     private static function save_placement(int $asset_id,int $zone_id,string $status,string $position='',string $note='') {
-        global $wpdb; $old=self::get_placement($asset_id); $now=current_time('mysql');
-        $row=['asset_id'=>$asset_id,'zone_id'=>$zone_id?:null,'placement_status'=>$status,'position_label'=>sanitize_text_field($position),'placed_at'=>$status==='displayed'?$now:($old['placed_at']??$now),'removed_at'=>$status==='displayed'?null:$now,'updated_at'=>$now];
-        $ok=$old?$wpdb->update(self::placements_table(),$row,['asset_id'=>$asset_id]):$wpdb->insert(self::placements_table(),$row);
-        if($ok===false) return new WP_Error('placement','Artwork location could not be saved.');
-        $event=$status==='displayed'?($old?'moved':'displayed'):$status; self::record($asset_id,$event,absint($old['zone_id']??0),$zone_id,$note); return true;
+        global $wpdb;
+        $table=self::placements_table();
+        $old=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.$table.' WHERE asset_id=%d',$asset_id),ARRAY_A);
+        $now=current_time('mysql');
+        $row=[
+            'asset_id'=>$asset_id,
+            'zone_id'=>$zone_id?:null,
+            'placement_status'=>$status,
+            'position_label'=>sanitize_text_field($position),
+            'placed_at'=>$status==='displayed'?$now:($old['placed_at']??$now),
+            'removed_at'=>$status==='displayed'?null:$now,
+            'updated_at'=>$now,
+        ];
+        if($old){
+            $ok=$wpdb->update($table,$row,['asset_id'=>$asset_id]);
+        } else {
+            $ok=$wpdb->insert($table,$row);
+        }
+        if($ok===false){
+            $detail=trim((string)$wpdb->last_error);
+            return new WP_Error('placement','Artwork location could not be saved'.($detail!==''?': '.$detail:'.'));
+        }
+        $saved=$wpdb->get_row($wpdb->prepare('SELECT asset_id,zone_id,placement_status FROM '.$table.' WHERE asset_id=%d',$asset_id),ARRAY_A);
+        if(!$saved || (int)($saved['zone_id']??0)!==$zone_id || (string)($saved['placement_status']??'')!==$status){
+            return new WP_Error('placement_verify','Artwork location was written but could not be verified.');
+        }
+        $event=$status==='displayed'?($old?'moved':'displayed'):$status;
+        self::record($asset_id,$event,absint($old['zone_id']??0),$zone_id,$note);
+        return true;
     }
 
     public static function remove_from_display(int $asset_id,string $status='removed',string $note='') {
