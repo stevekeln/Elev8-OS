@@ -1,5 +1,14 @@
 # Elev8 OS Changelog
 
+## 7.6.1 - Dashboard Coach Polish
+
+- Restored the Artist Dashboard flow: portal navigation, welcome, business snapshot, Up Next, then Business Coach.
+- Renamed the recommendation section to Today's Focus while preserving the reusable Recommendation Engine.
+- Replaced exposed internal priority wording and numbered rankings with customer-friendly impact labels.
+- Redesigned recommendations as polished responsive cards, featuring the highest-value action first.
+- Moved the verified-data disclosure to a subtle footer note.
+- Preserved all 7.3.1 asset, inventory, WooCommerce, QR, and notification functionality.
+
 ## 7.4.0 - Recommendation Engine
 
 - Added a reusable, transparent Recommendation Service for Artist Dashboard, reporting, notifications, and future AI coaching.

@@ -1,15 +1,10 @@
-Elev8 OS 7.4.0 - Recommendation Engine
+Elev8 OS 7.6.1 - Dashboard Coach Polish
 
 Suggested commit:
-feat(recommendations): add reusable artist business recommendation engine
+fix(dashboard): restore business-first flow and polish recommendation cards
 
-Changed:
-- Added Recommendation Service and verified-data rule providers
-- Added ranked Recommended Next Steps dashboard panel
-- Added priority, impact, reason, and direct action metadata
-- Added Add Artwork quick action
-- Updated dashboard styling, version, changelog, README, and installation notes
-
-Database:
-- No schema change
-- Existing artists, assets, Amelia data, WooCommerce products/orders, QR tracking, and notifications are preserved
+- Move recommendations below business snapshot and Up Next
+- Rename section to Today's Focus
+- Hide internal ranking language from artists
+- Add responsive recommendation card layout
+- Preserve Recommendation Engine behavior and verified-data rules

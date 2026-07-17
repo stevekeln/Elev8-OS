@@ -190,32 +190,6 @@ final class Elev8_OS_Dashboard_Module {
                 <div class="elev8-dashboard-warning"><p><strong><?php esc_html_e('Your verified class information is unavailable.', 'elev8-os'); ?></strong><br><?php echo esc_html((string) ($snapshot['reason'] ?? __('No diagnostic was supplied.', 'elev8-os'))); ?></p></div>
             <?php endif; ?>
 
-            <section class="elev8-dashboard-panel elev8-recommendations-panel" aria-label="<?php esc_attr_e('Business recommendations', 'elev8-os'); ?>">
-                <div class="elev8-panel-heading">
-                    <div><p class="elev8-eyebrow"><?php esc_html_e('Business Coach', 'elev8-os'); ?></p><h2><?php esc_html_e('Recommended Next Steps', 'elev8-os'); ?></h2></div>
-                    <span class="elev8-engine-label"><?php esc_html_e('Powered by verified Elev8 OS data', 'elev8-os'); ?></span>
-                </div>
-                <?php if (!$recommendations) : ?>
-                    <div class="elev8-dashboard-empty"><span class="dashicons dashicons-yes-alt"></span><h3><?php esc_html_e('You are caught up', 'elev8-os'); ?></h3><p><?php esc_html_e('No high-value next step is currently supported by the available data.', 'elev8-os'); ?></p></div>
-                <?php else : ?>
-                    <div class="elev8-recommendation-list">
-                        <?php foreach ($recommendations as $index => $recommendation) : ?>
-                            <article class="elev8-recommendation-card priority-<?php echo esc_attr((string) $recommendation['priority']); ?>">
-                                <div class="elev8-recommendation-rank"><?php echo esc_html((string) ($index + 1)); ?></div>
-                                <div class="elev8-recommendation-copy">
-                                    <div class="elev8-recommendation-meta"><span><?php echo esc_html(ucfirst((string) $recommendation['category'])); ?></span><span><?php echo esc_html(ucfirst((string) $recommendation['priority'])); ?> <?php esc_html_e('priority', 'elev8-os'); ?></span></div>
-                                    <h3><?php echo esc_html((string) $recommendation['title']); ?></h3>
-                                    <p><?php echo esc_html((string) $recommendation['description']); ?></p>
-                                    <div class="elev8-recommendation-explain"><strong><?php esc_html_e('Why:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $recommendation['reason']); ?></div>
-                                    <div class="elev8-recommendation-impact"><span class="dashicons dashicons-chart-line"></span><strong><?php esc_html_e('Estimated impact:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $recommendation['estimated_impact']); ?></div>
-                                </div>
-                                <?php if ((string) $recommendation['action_url'] !== '') : ?><a class="elev8-recommendation-action" href="<?php echo esc_url((string) $recommendation['action_url']); ?>"><?php echo esc_html((string) $recommendation['action_label']); ?><span class="dashicons dashicons-arrow-right-alt2"></span></a><?php endif; ?>
-                            </article>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
-
             <section class="elev8-dashboard-grid elev8-dashboard-summary elev8-dashboard-summary-v2" aria-label="<?php esc_attr_e('Artist summary', 'elev8-os'); ?>">
                 <?php self::render_value_card('calendar-alt', __('Upcoming Classes', 'elev8-os'), $summary['upcoming_count'] ?? null, __('Future class dates assigned to you', 'elev8-os')); ?>
                 <?php self::render_value_card('groups', __('Students Enrolled', 'elev8-os'), $summary['student_count'] ?? null, __('Across your upcoming classes', 'elev8-os')); ?>
@@ -248,6 +222,32 @@ final class Elev8_OS_Dashboard_Module {
                     </div>
                 </section>
             </div>
+
+            <section class="elev8-dashboard-panel elev8-recommendations-panel" aria-label="<?php esc_attr_e('Business recommendations', 'elev8-os'); ?>">
+                <div class="elev8-panel-heading">
+                    <div><p class="elev8-eyebrow"><?php esc_html_e('Business Coach', 'elev8-os'); ?></p><h2><?php esc_html_e("Today's Focus", 'elev8-os'); ?></h2><p class="elev8-panel-intro"><?php esc_html_e('The most valuable verified next steps for growing your artist business.', 'elev8-os'); ?></p></div>
+                </div>
+                <?php if (!$recommendations) : ?>
+                    <div class="elev8-dashboard-empty"><span class="dashicons dashicons-yes-alt"></span><h3><?php esc_html_e('You are caught up', 'elev8-os'); ?></h3><p><?php esc_html_e('No high-value next step is currently supported by the available data.', 'elev8-os'); ?></p></div>
+                <?php else : ?>
+                    <div class="elev8-recommendation-list">
+                        <?php foreach ($recommendations as $index => $recommendation) : ?>
+                            <article class="elev8-recommendation-card priority-<?php echo esc_attr((string) $recommendation['priority']); ?>">
+                                <div class="elev8-recommendation-copy">
+                                    <div class="elev8-recommendation-meta"><span><?php echo esc_html(ucfirst((string) $recommendation['category'])); ?></span><span class="impact-<?php echo esc_attr((string) $recommendation['priority']); ?>"><?php echo esc_html(ucfirst((string) $recommendation['priority'])); ?> <?php esc_html_e('impact', 'elev8-os'); ?></span></div>
+                                    <h3><?php echo esc_html((string) $recommendation['title']); ?></h3>
+                                    <p><?php echo esc_html((string) $recommendation['description']); ?></p>
+                                    <div class="elev8-recommendation-explain"><strong><?php esc_html_e('Why:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $recommendation['reason']); ?></div>
+                                    <div class="elev8-recommendation-impact"><span class="dashicons dashicons-chart-line"></span><strong><?php esc_html_e('Estimated impact:', 'elev8-os'); ?></strong> <?php echo esc_html((string) $recommendation['estimated_impact']); ?></div>
+                                </div>
+                                <?php if ((string) $recommendation['action_url'] !== '') : ?><a class="elev8-recommendation-action" href="<?php echo esc_url((string) $recommendation['action_url']); ?>"><?php echo esc_html((string) $recommendation['action_label']); ?><span class="dashicons dashicons-arrow-right-alt2"></span></a><?php endif; ?>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+                <p class="elev8-recommendation-source"><?php esc_html_e('Recommendations are powered by verified Elev8 OS data.', 'elev8-os'); ?></p>
+            </section>
+
 
             <section class="elev8-dashboard-panel elev8-dashboard-status-panel">
                 <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Today', 'elev8-os'); ?></p><h2><?php esc_html_e('Your Artist Checklist', 'elev8-os'); ?></h2></div></div>

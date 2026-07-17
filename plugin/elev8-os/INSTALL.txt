@@ -1,11 +1,9 @@
-Elev8 OS 7.4.0 Installation
+Elev8 OS 7.6.1 Installation
 
-1. Back up the WordPress site and database.
-2. Install the complete elev8-os-7.4.0-recommendation-engine.zip through WordPress Plugins > Add New > Upload Plugin.
-3. Choose Replace current with uploaded when prompted.
-4. Confirm the Artist Dashboard loads and existing portal pages still work.
-5. Verify Recommended Next Steps displays recommendations supported by the artist account data.
-6. Test each displayed action button.
-7. No database migration is required.
-
-Always test this exact ZIP on Local before installing it on Live.
+1. Back up the current Elev8 OS plugin and database.
+2. Install the complete elev8-os-7.6.1-dashboard-coach-polish.zip through WordPress Plugins > Add New > Upload Plugin.
+3. Replace the existing plugin when WordPress prompts you.
+4. Activate Elev8 OS if needed.
+5. Open the Artist Dashboard and verify the order: navigation, welcome, business snapshot, Up Next, Today's Focus.
+6. Confirm recommendation buttons and existing artwork, QR, cart, checkout, and classes still work.
+7. Test on Local before installing the exact same ZIP on Live.
