@@ -1,3 +1,3 @@
-Elev8 OS 9.0.4 — Unified Gallery Locations
+Elev8 OS 9.0.5 — Artist Portal Location Persistence Hotfix
 
-Unified all gallery locations, removed capacity enforcement, and added clickable zone management.
+Fixes numbered Artist Portal Rack board zones that were saved but not visible in Gallery Floor or artwork location dropdowns. Adds migration repair, canonical save enforcement, verification, and database error reporting.

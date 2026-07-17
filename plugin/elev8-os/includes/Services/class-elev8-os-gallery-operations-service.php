@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Canonical gallery location, placement, rack, storage, and movement history service. */
 final class Elev8_OS_Gallery_Operations_Service {
-    private const DB_VERSION = '1.4.0';
+    private const DB_VERSION = '1.5.0';
     private const DB_OPTION = 'elev8_os_gallery_operations_db_version';
 
     public static function init(): void {
@@ -23,6 +23,9 @@ final class Elev8_OS_Gallery_Operations_Service {
         if ((int)$wpdb->get_var("SELECT COUNT(*) FROM {$z}")===0) {
             foreach ([['Front Window','window'],['West Wall','wall'],['East Wall','wall'],['Center Display','display'],['Glass Case 1','case'],['Glass Case 2','case'],['Jewelry','display'],['Classroom','room'],['Storage','storage']] as $i=>$v) self::save_zone(['name'=>$v[0],'zone_type'=>$v[1],'sort_order'=>$i+1,'active'=>1]);
         }
+        // Repair canonical Artist Portal board locations created by earlier releases.
+        // Old A/B side records stay retired, while numbered board records are always active and selectable.
+        $wpdb->query("UPDATE {$z} SET active=1, side_label='', board_status=CASE WHEN board_status='' THEN 'available' ELSE board_status END, capacity=0, updated_at='".esc_sql(current_time('mysql'))."' WHERE zone_type='artist_portal_rack' AND rack_number>0 AND board_number>0 AND (side_label='' OR side_label IS NULL)");
         update_option(self::DB_OPTION,self::DB_VERSION,false);
     }
     public static function zones_table(): string { global $wpdb; return $wpdb->prefix.'elev8_os_gallery_zones'; }
@@ -38,8 +41,26 @@ final class Elev8_OS_Gallery_Operations_Service {
         $row=['name'=>$name,'slug'=>$slug,'zone_type'=>$zone_type,'capacity'=>0,'sort_order'=>absint($data['sort_order']??0),'active'=>array_key_exists('active',$data)?(empty($data['active'])?0:1):1,'notes'=>sanitize_textarea_field((string)($data['notes']??'')),'rack_number'=>absint($data['rack_number']??0),'board_number'=>absint($data['board_number']??0),'side_label'=>'','assigned_artist_user_id'=>absint($data['assigned_artist_user_id']??0),'board_status'=>$status,'updated_at'=>$now];
         // A canonical slug identifies one physical location. Re-saving the same rack/board updates and reactivates it.
         if(!$id) $id=(int)$wpdb->get_var($wpdb->prepare('SELECT id FROM '.self::zones_table().' WHERE slug=%s',$slug));
-        if($id){ $ok=$wpdb->update(self::zones_table(),$row,['id'=>$id]); return $ok===false?new WP_Error('zone_save','Zone could not be updated.'):$id; }
-        $row['created_at']=$now; $ok=$wpdb->insert(self::zones_table(),$row); return $ok===false?new WP_Error('zone_save','Zone could not be created.'):(int)$wpdb->insert_id;
+        if($id){
+            $ok=$wpdb->update(self::zones_table(),$row,['id'=>$id]);
+            if($ok===false) return new WP_Error('zone_save','Zone could not be updated: '.$wpdb->last_error);
+        } else {
+            $row['created_at']=$now;
+            $ok=$wpdb->insert(self::zones_table(),$row);
+            if($ok===false) return new WP_Error('zone_save','Zone could not be created: '.$wpdb->last_error);
+            $id=(int)$wpdb->insert_id;
+        }
+        // A numbered Artist Portal board is a normal active gallery location. Force canonical values and verify persistence.
+        if($zone_type==='artist_portal_rack'){
+            $wpdb->update(self::zones_table(),[
+                'active'=>1,'capacity'=>0,'side_label'=>'','board_status'=>'available',
+                'rack_number'=>absint($data['rack_number']??0),'board_number'=>absint($data['board_number']??0),
+                'updated_at'=>$now,
+            ],['id'=>$id]);
+        }
+        $saved=$wpdb->get_row($wpdb->prepare('SELECT id,active,zone_type,rack_number,board_number FROM '.self::zones_table().' WHERE id=%d',$id),ARRAY_A);
+        if(!$saved || empty($saved['active'])) return new WP_Error('zone_verify','The location was not saved as active. Please try again.');
+        return $id;
     }
 
     /** Creates one numbered position per board. Existing board positions are updated, not duplicated. */
@@ -58,8 +79,15 @@ final class Elev8_OS_Gallery_Operations_Service {
     }
 
     public static function get_zones(bool $active_only=true): array { global $wpdb; $where=$active_only?'WHERE active=1':''; $r=$wpdb->get_results("SELECT * FROM ".self::zones_table()." {$where} ORDER BY CASE WHEN zone_type='storage' THEN 2 ELSE 1 END, sort_order,name",ARRAY_A); return is_array($r)?$r:[]; }
-    /** Every active physical location is selectable, regardless of its type. */
-    public static function get_selectable_zones(): array { return self::get_zones(true); }
+    /** Every active physical location is selectable, regardless of type. Canonical rack boards are repaired on read. */
+    public static function get_selectable_zones(): array {
+        global $wpdb;
+        $table=self::zones_table();
+        // Self-heal numbered rack boards that may have been saved inactive by an earlier release.
+        $wpdb->query("UPDATE {$table} SET active=1, capacity=0, side_label='', board_status=CASE WHEN board_status='' THEN 'available' ELSE board_status END WHERE zone_type='artist_portal_rack' AND rack_number>0 AND board_number>0 AND (side_label='' OR side_label IS NULL)");
+        $rows=$wpdb->get_results("SELECT * FROM {$table} WHERE active=1 ORDER BY CASE WHEN zone_type='storage' THEN 2 ELSE 1 END, sort_order, name",ARRAY_A);
+        return is_array($rows)?$rows:[];
+    }
     public static function get_zone(int $id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::zones_table().' WHERE id=%d',$id),ARRAY_A); return is_array($r)?$r:null; }
     public static function get_zone_artwork(int $zone_id,int $artist_filter=0): array { global $wpdb; $a=Elev8_OS_Asset_Service::table_name(); $p=self::placements_table(); $where=$artist_filter?$wpdb->prepare(' AND a.owner_user_id=%d',$artist_filter):''; $rows=$wpdb->get_results($wpdb->prepare("SELECT a.*,p.zone_id,p.position_label,p.placement_status,p.placed_at,u.display_name artist_name,u.user_email artist_email FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.zone_id=%d AND p.placement_status IN ('displayed','storage') {$where} ORDER BY u.display_name,a.title",$zone_id),ARRAY_A); return is_array($rows)?$rows:[]; }
     public static function get_placement(int $asset_id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT p.*,z.name zone_name,z.zone_type,z.rack_number,z.board_number FROM '.self::placements_table().' p LEFT JOIN '.self::zones_table().' z ON z.id=p.zone_id WHERE p.asset_id=%d',$asset_id),ARRAY_A); return is_array($r)?$r:null; }

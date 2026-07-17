@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 9.0.5 — Artist Portal Location Persistence Hotfix
+
+- Fixed Artist Portal Rack boards not appearing on the Gallery Floor or in artwork location selectors.
+- Added automatic repair for previously created numbered rack boards saved inactive.
+- Added post-save verification and useful database error messages.
+- Forced canonical rack board values: active location, no A/B side, no capacity enforcement.
+- Confirmed all active locations use the unified selectable-location service.
+
 ## 9.0.4 — Unified Location Engine
 - Fixed Artist Portal Rack boards so every active board appears immediately in all placement and move dropdowns.
 - Unified all physical locations behind one selectable-zone service with no type allowlist.
