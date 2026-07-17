@@ -11,6 +11,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Integrations/class-elev8-os-woocommerce.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-asset-sale-notification-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-user-search-component.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-print-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';

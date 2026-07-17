@@ -1,18 +1,3 @@
-Elev8 OS 7.7.3 - Automatic Artist Storefront Identity
+Elev8 OS 7.8.0 — Print & Identity System
 
-Git source update includes:
-- Artist Mapping is now the source of truth for artist-to-WordPress ownership
-- Mapping saves automatically synchronize the legacy artist profile login field
-- Auto-match performs the same synchronization
-- Remapping clears stale duplicate profile ownership
-- Public artist storefronts resolve artwork through the central Identity Service
-- Public artwork pages resolve their artist through approved mapping first
-- Backward-compatible fallback for existing manually linked profiles
-- Version and changelog updates
-
-Primary changed files:
-- elev8-os.php
-- CHANGELOG.md
-- includes/Services/class-elev8-os-identity-service.php
-- includes/Modules/class-elev8-os-employee-mapping-module.php
-- includes/class-elev8-os.php
+New reusable Print Service, artist display cards, printable QR codes, standard theme settings, paisley background upload, two-up printing, browser PDF workflow, and polished storefront cart/checkout actions.

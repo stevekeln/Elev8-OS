@@ -1,17 +1,10 @@
-Elev8 OS 7.7.3 Installation
+Elev8 OS 7.8.0 Installation
 
-1. Back up the WordPress site and database.
-2. Install the complete elev8-os-7.7.3-artist-identity-hotfix.zip through WordPress Plugins > Add New > Upload Plugin.
-3. Choose Replace current with uploaded when WordPress detects the existing Elev8 OS plugin.
-4. Confirm the installed plugin reports Version 7.7.3.
-5. Test on Local before installing the exact same ZIP on Live.
-
-Local test checklist:
-- Existing Artist Dashboard and all 7.7.0 Momentum features load normally.
-- Create or use a test artist with a public artist page.
-- Map the WordPress artist account in Elev8 OS > Artist Mapping and save.
-- Add public artwork while logged in as that artist.
-- Confirm the artwork appears on the public artist page without manually selecting WordPress login account in Artist Portal.
-- Change the mapping and confirm ownership follows the newly approved mapping.
-- Remove the mapping and confirm Elev8 OS does not keep a stale automatic profile connection.
-- Confirm older artists with manually connected profile accounts continue to work.
+1. Install this ZIP on Local WordPress first.
+2. Activate or replace the existing Elev8 OS plugin.
+3. Open Elev8 OS > Print & Identity.
+4. Upload the standard paisley background and Elev8 Arts logo.
+5. Open a public artist profile and test Print Artist Card and Print QR Code.
+6. Test both single-card and two-per-sheet printing.
+7. Confirm View Cart and Checkout display as separate buttons.
+8. Install this exact ZIP on Live only after Local testing passes.

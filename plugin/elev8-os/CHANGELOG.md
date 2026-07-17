@@ -1,5 +1,19 @@
 # Elev8 OS Changelog
 
+## 7.8.0 — Print & Identity System
+
+- Added reusable Print Service for branded artist materials.
+- Added minimal 8.5 × 5.5 inch Artist Display Card with profile photo, short bio, medium, QR code, and Elev8 branding.
+- Added single-card and two-up letter-size print layouts.
+- Added standalone printable artist QR code.
+- Added Print, Preview, and browser Save-as-PDF workflow.
+- Added global Print & Identity settings with paisley background and logo uploads.
+- Added Elev8 Classic, Minimal, and Ink Saver themes.
+- Added artist-page Print QR Code and Print Artist Card actions.
+- Polished storefront View Cart and Checkout into separate responsive buttons.
+- Preserved all 7.7.4 functionality and backward compatibility.
+
+
 ## 7.7.4 - Contact Action Reliability
 
 - Normalized public artist email links to `mailto:` and phone links to `tel:` at render time.
