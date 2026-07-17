@@ -1,16 +1,19 @@
-Elev8 OS 10.0.0 — Artist Success
+Elev8 OS 10.1.0 — Brand Experience
 
-Changed:
+Changed files:
 - elev8-os.php
-- includes/class-elev8-os-loader.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- includes/Modules/class-elev8-os-growth-center-module.php
-- assets/css/artist-dashboard.css
+- includes/Services/class-elev8-os-brand-service.php
+- includes/Services/class-elev8-os-template-renderer.php
+- includes/Modules/class-elev8-os-content-studio-module.php
+- assets/js/content-studio.js
+- assets/css/content-studio.css
 - CHANGELOG.md
 - GIT-SUMMARY.txt
 
-Added:
-- includes/Services/class-elev8-os-artist-success-service.php
-- includes/Modules/class-elev8-os-artist-success-module.php
-
-Database changes: None.
+Highlights:
+- Polished responsive universal email template
+- Logo media picker and theme logo fallback
+- Book a Class and Events links
+- Campaign-specific contextual CTA panels
+- Mission, tagline, address, and optional social links
+- No database changes

@@ -68,3 +68,7 @@ body.elev8-content-studio-page #content>.container{
     .elev8-campaign-preview{padding:12px}
     .elev8-campaign-preview iframe{height:540px}
 }
+
+
+/* 10.1.0 Brand Experience */
+.elev8-brand-logo-field{display:flex;gap:20px;align-items:center;padding:18px;margin:0 0 22px;border:1px solid #dfe4e8;border-radius:12px;background:#f8fafb}.elev8-brand-logo-preview{width:180px;height:90px;display:flex;align-items:center;justify-content:center;padding:12px;border:1px dashed #b7c0c8;border-radius:9px;background:#fff;color:#687781;font-size:13px;text-align:center}.elev8-brand-logo-preview img{display:block;max-width:100%;max-height:100%;width:auto;height:auto}.elev8-brand-logo-field .description{margin:9px 0 0;max-width:620px;color:#61717e}.elev8-brand-manager textarea{width:100%}@media(max-width:680px){.elev8-brand-logo-field{align-items:flex-start;flex-direction:column}.elev8-brand-logo-preview{width:100%;box-sizing:border-box}}

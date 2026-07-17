@@ -1,3 +1,14 @@
+## 10.1.0 — Brand Experience
+
+- Rebuilt the universal email renderer into a polished, mobile-friendly branded marketing layout.
+- Added automatic Elev8 Arts logo support with a visual WordPress Media Library picker and theme-logo fallback.
+- Added configurable brand tagline, Book a Class URL, Events URL, Artist Directory URL, mission message, address, and social links.
+- Added permanent Book a Class and Upcoming Events discovery cards using the requested Elev8 Arts URLs.
+- Added campaign-aware secondary calls to action for artwork, class, and event campaigns.
+- Added a nonprofit mission panel and refined branded footer with tasteful Powered by Elev8 OS credit.
+- Preserved campaign-specific primary CTA controls and existing smart-section checkboxes.
+- No database changes. Existing brand settings remain backward compatible.
+
 ## 10.0.0 — Artist Success
 
 - Added the Artist Success welcome experience with time-aware greeting and motivational guidance.
