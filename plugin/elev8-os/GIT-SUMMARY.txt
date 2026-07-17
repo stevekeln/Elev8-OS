@@ -1,9 +1,1 @@
-Elev8 OS 8.0.3 — Minimal Gallery Print Refinement
-
-Changed files:
-- elev8-os.php
-- CHANGELOG.md
-- INSTALL.txt
-- GIT-SUMMARY.txt
-- includes/class-elev8-os.php
-- includes/Services/class-elev8-os-print-service.php
+Elev8 OS 8.0.4: private artist Print Center, one dashboard shortcut, owner/artist permissions, and clean-white print standard.

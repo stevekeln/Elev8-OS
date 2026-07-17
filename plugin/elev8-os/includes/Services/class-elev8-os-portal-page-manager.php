@@ -59,6 +59,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'artist-edit-website',
                 'shortcode' => 'elev8_artist_edit_website',
             ],
+            'print_center' => [
+                'option' => 'elev8_os_artist_print_center_page_id',
+                'title' => __('My Print Center', 'elev8-os'),
+                'slug' => 'artist-print-center',
+                'shortcode' => 'elev8_artist_print_center',
+            ],
         ];
     }
 

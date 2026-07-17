@@ -10,7 +10,7 @@ final class Elev8_OS_Print_Service {
         return wp_parse_args($settings, [
             'background_url' => '',
             'logo_url' => '',
-            'theme' => 'classic',
+            'theme' => 'minimal',
             'instruction' => 'Scan to learn more about this artist',
         ]);
     }
@@ -73,8 +73,8 @@ final class Elev8_OS_Print_Service {
         $mode = $mode === 'qr' ? 'qr' : 'artist-card';
         $title = $mode === 'qr' ? 'Artist QR Code' : 'Artist Display Card';
         $copies = ($mode === 'artist-card' && $two_up) ? 2 : 1;
-        $background = self::image_data_uri(trim((string)$settings['background_url']));
-        $theme = (string)$settings['theme'];
+        $background = ''; // Elev8 8.0.4 official clean-white print standard.
+        $theme = 'minimal';
         $profile_url = (string)$artist['profile_url'];
         $qr = self::qr_image_url($profile_url, $mode === 'qr' ? 900 : 620);
         $bio = wp_trim_words(wp_strip_all_tags((string)$artist['bio']), 62, '…');
@@ -98,7 +98,7 @@ final class Elev8_OS_Print_Service {
 </style>
 </head>
 <body class="theme-<?php echo esc_attr($theme); ?>">
-<div class="toolbar"><button type="button" onclick="window.print()">Print</button><button type="button" onclick="window.print()">Download / Save PDF</button><?php if($mode==='artist-card'): ?><a class="secondary" href="<?php echo esc_url(self::artist_card_url((string)$artist['canonical_url'], !$two_up)); ?>"><?php echo $two_up ? 'Single card' : 'Two per sheet'; ?></a><?php endif; ?><a class="secondary" href="<?php echo esc_url($artist['canonical_url']); ?>">Back to profile</a><span class="hint">For PDF, choose “Save as PDF” in the print window.</span></div>
+<div class="toolbar"><button type="button" onclick="window.print()">Print</button><button type="button" onclick="window.print()">Download / Save PDF</button><?php if($mode==='artist-card'): ?><a class="secondary" href="<?php echo esc_url(self::artist_card_url((string)$artist['canonical_url'], !$two_up)); ?>"><?php echo $two_up ? 'Single card' : 'Two per sheet'; ?></a><?php endif; ?><a class="secondary" href="<?php echo esc_url($artist['canonical_url']); ?>">Back to Print Center</a><span class="hint">For PDF, choose “Save as PDF” in the print window.</span></div>
 <?php if($mode==='qr'): ?>
 <div class="sheet qr-sheet"><section class="qr-only"><h1><?php echo esc_html($artist['name']); ?></h1><img class="qr-main" src="<?php echo esc_url($qr); ?>" alt="QR code"><p><strong><?php echo esc_html($instruction); ?></strong></p></section></div>
 <?php else: ?>

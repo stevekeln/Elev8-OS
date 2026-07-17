@@ -1,3 +1,12 @@
+## 8.0.4 — Artist Print Center
+
+- Replaced separate artist dashboard print links with one **My Print Center** action.
+- Added a private Artist Portal Print Center independent of public-profile visibility.
+- Artists can preview and print only their own artist card, profile QR, and artwork labels.
+- Preserved the administrator Gallery Print Center and controlled Elev8 templates.
+- Adopted the clean white background as the official Elev8 print standard.
+- Kept prior paisley settings stored for backward compatibility but inactive in print rendering.
+
 # Changelog
 
 ## 8.0.3 — Clean Print Identity Fix
