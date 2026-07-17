@@ -35,3 +35,23 @@
 .elev8-waitlist-customer-card.is-follow-up-due{border-left:4px solid #f59e0b;}
 @media(max-width:1100px){.elev8-waitlist-metrics{grid-template-columns:repeat(2,minmax(0,1fr));}.elev8-demand-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.elev8-request-filters{grid-template-columns:1fr 1fr;}.elev8-filter-search{grid-column:1/-1;}.elev8-request-editor{grid-template-columns:1fr 1fr;}.elev8-request-editor .elev8-request-notes,.elev8-request-editor .elev8-contact-check,.elev8-request-editor .elev8-contacted-at,.elev8-request-editor button{grid-column:1/-1;grid-row:auto;}}
 @media(max-width:700px){.elev8-waitlist-metrics,.elev8-demand-grid,.elev8-request-filters,.elev8-request-editor{grid-template-columns:1fr;}.elev8-filter-search{grid-column:auto;}}
+
+/* 9.2.2 admin presentation */
+.elev8-admin-page .elev8-class-requests-admin{max-width:1280px;margin:20px 0 60px;padding:0 20px 0 0;box-sizing:border-box}
+.elev8-class-requests-admin .elev8-dashboard-header{padding:28px 30px;border:1px solid #dcdcde;border-radius:16px;background:linear-gradient(135deg,#fff 0%,#f7f9fc 100%);box-shadow:0 8px 24px rgba(15,23,42,.05)}
+.elev8-class-requests-admin .elev8-dashboard-header h1{font-size:32px;line-height:1.15;margin:4px 0 8px}
+.elev8-class-requests-admin .elev8-dashboard-header p:last-child{max-width:760px;margin-bottom:0;color:#50575e;font-size:15px;line-height:1.6}
+.elev8-class-requests-admin .elev8-dashboard-badge{white-space:nowrap}
+.elev8-class-requests-admin .elev8-waitlist-metrics{margin-top:20px}
+.elev8-class-requests-admin .elev8-waitlist-metric{min-height:128px;box-sizing:border-box}
+.elev8-class-requests-admin .elev8-demand-overview,
+.elev8-class-requests-admin .elev8-request-list-panel{margin-top:20px}
+.elev8-class-requests-admin .elev8-waitlist-workspace{margin-top:20px}
+.elev8-class-requests-admin .elev8-waitlist-panel{box-sizing:border-box}
+.elev8-class-requests-admin .elev8-waitlist-form input,
+.elev8-class-requests-admin .elev8-waitlist-form select,
+.elev8-class-requests-admin .elev8-waitlist-form textarea{max-width:none;min-height:42px}
+.elev8-class-requests-admin .elev8-waitlist-form textarea{min-height:96px;resize:vertical}
+.elev8-class-requests-admin .elev8-request-filters{box-sizing:border-box}
+.elev8-class-requests-admin .elev8-waitlist-customer-card{box-sizing:border-box}
+@media(max-width:782px){.elev8-admin-page .elev8-class-requests-admin{padding-right:10px}.elev8-class-requests-admin .elev8-dashboard-header{padding:22px}.elev8-class-requests-admin .elev8-dashboard-badge{white-space:normal}}

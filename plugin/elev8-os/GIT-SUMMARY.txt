@@ -1,22 +1,16 @@
-Elev8 OS 9.2.1 — Brand & Campaign Wizard
+Elev8 OS 9.2.2 — Class Requests Interface Polish
 
 Changed files:
 - elev8-os.php
-- includes/class-elev8-os-loader.php
-- includes/Services/class-elev8-os-content-studio-service.php
-- includes/Modules/class-elev8-os-content-studio-module.php
-- assets/css/content-studio.css
-- README.txt
+- includes/Modules/class-elev8-os-waitlist-module.php
+- assets/css/artist-waitlist.css
 - CHANGELOG.md
 - GIT-SUMMARY.txt
-- INSTALL.txt
-- SOURCE-UPDATE-INSTRUCTIONS.txt
 
-New files:
-- includes/Services/class-elev8-os-brand-service.php
-- includes/Services/class-elev8-os-template-renderer.php
-- assets/js/content-studio.js
+Database changes:
+- None
 
-Database upgrade:
-- Content Studio schema 1.0.0 -> 1.1.0
-- Adds content_campaigns and content_template_revisions tables
+Purpose:
+- Load the existing Class Requests styles on the WordPress admin page.
+- Apply the same structured application wrapper used by the Artist Portal.
+- Improve admin spacing, cards, forms, and responsive presentation without changing business logic.

@@ -1,5 +1,23 @@
 # Elev8 OS Changelog
 
+## 9.2.2 — Class Requests Interface Polish
+
+### Fixed
+- Class Requests admin screen now loads its required portal and waitlist styles.
+- Admin output now uses the same structured Class Requests wrapper as the Artist Portal.
+- Removed the unstyled duplicate admin heading above the application interface.
+
+### Improved
+- Added a cleaner admin header, consistent cards, responsive spacing, and properly sized form controls.
+- Preserved all existing Class Requests, opportunity, filtering, follow-up, and deletion behavior.
+
+### Database changes
+- None.
+
+### Compatibility
+- Backward compatible with the existing 9.2.1 Class Requests data and Content Studio schema.
+- No WordPress, Amelia, or WooCommerce trusted-system data is duplicated.
+
 ## 9.2.1 — Brand & Campaign Wizard
 
 ### Added

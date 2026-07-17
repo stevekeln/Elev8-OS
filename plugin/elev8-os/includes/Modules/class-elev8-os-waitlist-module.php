@@ -26,6 +26,7 @@ final class Elev8_OS_Waitlist_Module {
         add_action('admin_post_elev8_os_class_request_update', [__CLASS__, 'handle_update_request']);
         add_action('admin_post_elev8_os_class_request_delete', [__CLASS__, 'handle_delete_request']);
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
+        add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
     }
 
     public static function status(): string { return 'active'; }
@@ -47,6 +48,15 @@ final class Elev8_OS_Waitlist_Module {
         if (!is_user_logged_in() || !class_exists('Elev8_OS_Portal_Page_Manager') || !Elev8_OS_Portal_Page_Manager::is_current_page('waitlist')) {
             return;
         }
+        wp_enqueue_style('elev8-os-artist-portal', ELEV8_OS_URL . 'assets/css/artist-portal.css', [], ELEV8_OS_VERSION);
+        wp_enqueue_style('elev8-os-waitlist', ELEV8_OS_URL . 'assets/css/artist-waitlist.css', ['elev8-os-artist-portal'], ELEV8_OS_VERSION);
+    }
+
+    public static function enqueue_admin_assets(string $hook_suffix): void {
+        if ($hook_suffix !== 'elev8-os_page_' . self::ADMIN_SLUG) {
+            return;
+        }
+
         wp_enqueue_style('elev8-os-artist-portal', ELEV8_OS_URL . 'assets/css/artist-portal.css', [], ELEV8_OS_VERSION);
         wp_enqueue_style('elev8-os-waitlist', ELEV8_OS_URL . 'assets/css/artist-waitlist.css', ['elev8-os-artist-portal'], ELEV8_OS_VERSION);
     }
@@ -84,9 +94,9 @@ final class Elev8_OS_Waitlist_Module {
             wp_die(esc_html__('You do not have permission to view this page.', 'elev8-os'));
         }
         $teacher_id = absint($_GET['employee_id'] ?? 0);
-        echo '<div class="wrap"><h1>' . esc_html__('Class Requests', 'elev8-os') . '</h1><p>' . esc_html__('Manage Elev8-owned demand before scheduling. This page does not use Amelia class dates.', 'elev8-os') . '</p>';
+        echo '<div class="wrap elev8-admin-page"><div class="elev8-artist-dashboard elev8-waitlist elev8-class-requests elev8-class-requests-admin">';
         self::render_content($teacher_id, true, false);
-        echo '</div>';
+        echo '</div></div>';
     }
 
     private static function render_content(int $teacher_id, bool $admin, bool $admin_preview): void {
