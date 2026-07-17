@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Canonical gallery location, placement, rack, storage, and movement history service. */
 final class Elev8_OS_Gallery_Operations_Service {
-    private const DB_VERSION = '1.5.0';
+    private const DB_VERSION = '1.6.0';
     private const DB_OPTION = 'elev8_os_gallery_operations_db_version';
 
     public static function init(): void {
@@ -76,6 +76,53 @@ final class Elev8_OS_Gallery_Operations_Service {
             if(is_wp_error($result)) return $result; $ready++;
         }
         return $ready;
+    }
+
+
+    /** Save one Artist Portal board directly by physical rack and board number. */
+    public static function save_artist_portal_board(int $rack_number, int $board_number) {
+        global $wpdb;
+        if ($rack_number < 1 || $board_number < 1) {
+            return new WP_Error('portal_board_required', 'Rack number and board number are required.');
+        }
+        $table = self::zones_table();
+        $name = sprintf('Artist Portal Rack %d — Board %d', $rack_number, $board_number);
+        $slug = sprintf('artist-portal-rack-%d-board-%d', $rack_number, $board_number);
+        $now = current_time('mysql');
+        $id = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$table} WHERE (rack_number=%d AND board_number=%d AND zone_type='artist_portal_rack') OR slug=%s ORDER BY id ASC LIMIT 1",
+            $rack_number, $board_number, $slug
+        ));
+        $row = [
+            'name' => $name, 'slug' => $slug, 'zone_type' => 'artist_portal_rack',
+            'capacity' => 0, 'sort_order' => 9000 + ($rack_number * 1000) + $board_number,
+            'active' => 1, 'notes' => '', 'rack_number' => $rack_number,
+            'board_number' => $board_number, 'side_label' => '',
+            'assigned_artist_user_id' => 0, 'board_status' => 'available',
+            'updated_at' => $now,
+        ];
+        if ($id) {
+            $ok = $wpdb->update($table, $row, ['id' => $id]);
+        } else {
+            $row['created_at'] = $now;
+            $ok = $wpdb->insert($table, $row);
+            $id = (int) $wpdb->insert_id;
+        }
+        if ($ok === false || !$id) {
+            return new WP_Error('portal_board_save', 'Artist Portal board could not be saved: ' . $wpdb->last_error);
+        }
+        $saved = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id=%d", $id), ARRAY_A);
+        if (!$saved || (int)$saved['active'] !== 1 || $saved['zone_type'] !== 'artist_portal_rack') {
+            return new WP_Error('portal_board_verify', 'Artist Portal board was written but could not be verified as an active location.');
+        }
+        return $id;
+    }
+
+    /** All location rows, including inactive records, for owner diagnostics. */
+    public static function get_location_diagnostics(): array {
+        global $wpdb;
+        $rows = $wpdb->get_results('SELECT id,name,slug,zone_type,active,rack_number,board_number,board_status FROM '.self::zones_table().' ORDER BY id DESC LIMIT 100', ARRAY_A);
+        return is_array($rows) ? $rows : [];
     }
 
     public static function get_zones(bool $active_only=true): array { global $wpdb; $where=$active_only?'WHERE active=1':''; $r=$wpdb->get_results("SELECT * FROM ".self::zones_table()." {$where} ORDER BY CASE WHEN zone_type='storage' THEN 2 ELSE 1 END, sort_order,name",ARRAY_A); return is_array($r)?$r:[]; }
