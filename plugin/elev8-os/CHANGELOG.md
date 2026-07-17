@@ -1,5 +1,16 @@
 # Elev8 OS Changelog
 
+## 9.0.3 — Unified Gallery Locations
+
+- Unified Artist Portal Rack boards with the standard Add Display Zone workflow.
+- Added Artist Portal Rack as a normal display-zone type with rack and board fields.
+- Removed capacity from active placement rules and gallery-floor cards.
+- Migrated existing Artist Portal board zones to unlimited location records.
+- Made Gallery Floor zone cards clickable.
+- Added zone detail views showing all artwork, artist, value, position note, and time in zone.
+- Added move and storage controls directly inside each zone detail view.
+- Preserved existing placements and movement history.
+
 ## 9.0.2 — Artwork Location Manager
 
 - Simplified Artist Portal racks to numbered boards without A/B sides.

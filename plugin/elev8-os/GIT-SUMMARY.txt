@@ -1,17 +1,3 @@
-Elev8 OS 9.0.2 — Artwork Location Manager
+Elev8 OS 9.0.3 — Unified Gallery Locations
 
-Changed files:
-- elev8-os.php
-- CHANGELOG.md
-- README.txt
-- INSTALL.txt
-- includes/Services/class-elev8-os-gallery-operations-service.php
-- includes/Modules/class-elev8-os-gallery-operations-module.php
-- assets/css/gallery-operations.css
-
-Key changes:
-- Number-only Artist Portal rack boards
-- 40-board rack defaults
-- See All Artwork manager
-- Change location and storage controls
-- Placement history
+Unified all gallery locations, removed capacity enforcement, and added clickable zone management.

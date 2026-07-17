@@ -1,3 +1,3 @@
-Elev8 OS 9.0.2
+Elev8 OS 9.0.3
 
-Install on Local first. In Gallery Operations, use Artist Portal racks to create Rack 1 and Rack 2 using the actual board count on each rack. Test placement and artist filtering before installing the exact ZIP on Live.
+Install on Local first. Open Gallery Operations, confirm existing Artist Portal boards appear as selectable locations, create a new rack board through Add Display Zone, and click a Gallery Floor zone to manage its artwork before installing the exact ZIP on Live.

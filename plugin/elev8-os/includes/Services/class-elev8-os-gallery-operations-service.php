@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Canonical gallery location, placement, rack, storage, and movement history service. */
 final class Elev8_OS_Gallery_Operations_Service {
-    private const DB_VERSION = '1.2.0';
+    private const DB_VERSION = '1.3.0';
     private const DB_OPTION = 'elev8_os_gallery_operations_db_version';
 
     public static function init(): void {
@@ -55,13 +55,13 @@ final class Elev8_OS_Gallery_Operations_Service {
 
     public static function get_zones(bool $active_only=true): array { global $wpdb; $where=$active_only?'WHERE active=1':''; $r=$wpdb->get_results("SELECT * FROM ".self::zones_table()." {$where} ORDER BY sort_order,name",ARRAY_A); return is_array($r)?$r:[]; }
     public static function get_zone(int $id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.self::zones_table().' WHERE id=%d',$id),ARRAY_A); return is_array($r)?$r:null; }
+    public static function get_zone_artwork(int $zone_id,int $artist_filter=0): array { global $wpdb; $a=Elev8_OS_Asset_Service::table_name(); $p=self::placements_table(); $where=$artist_filter?$wpdb->prepare(' AND a.owner_user_id=%d',$artist_filter):''; $rows=$wpdb->get_results($wpdb->prepare("SELECT a.*,p.zone_id,p.position_label,p.placement_status,p.placed_at,u.display_name artist_name,u.user_email artist_email FROM {$p} p JOIN {$a} a ON a.id=p.asset_id LEFT JOIN {$wpdb->users} u ON u.ID=a.owner_user_id WHERE p.zone_id=%d AND p.placement_status IN ('displayed','storage') {$where} ORDER BY u.display_name,a.title",$zone_id),ARRAY_A); return is_array($rows)?$rows:[]; }
     public static function get_placement(int $asset_id): ?array { global $wpdb; $r=$wpdb->get_row($wpdb->prepare('SELECT p.*,z.name zone_name,z.zone_type,z.rack_number,z.board_number FROM '.self::placements_table().' p LEFT JOIN '.self::zones_table().' z ON z.id=p.zone_id WHERE p.asset_id=%d',$asset_id),ARRAY_A); return is_array($r)?$r:null; }
 
     public static function place_asset(int $asset_id,int $zone_id,string $position='',string $note='') {
         global $wpdb; $asset=Elev8_OS_Asset_Service::get($asset_id); if(!$asset) return new WP_Error('asset','Artwork not found.'); $zone=self::get_zone($zone_id); if(!$zone||empty($zone['active'])) return new WP_Error('zone','Gallery zone not found.');
         if((string)$zone['board_status']==='maintenance') return new WP_Error('zone_status','That board is in maintenance.');
         $assigned=absint($zone['assigned_artist_user_id']??0); if($assigned && $assigned!==absint($asset['owner_user_id']??0)) return new WP_Error('artist_assignment','That board is reserved for another artist.');
-        $capacity=absint($zone['capacity']??0); if($capacity>0){ $current=(int)$wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM '.self::placements_table().' WHERE zone_id=%d AND placement_status=%s AND asset_id<>%d',$zone_id,'displayed',$asset_id)); if($current >= $capacity) return new WP_Error('capacity','That display position is full.'); }
         return self::save_placement($asset_id,$zone_id,'displayed',$position,$note);
     }
 
