@@ -27,39 +27,87 @@ final class Elev8_OS_Artist_Print_Center_Module {
         }));
         usort($assets, static fn(array $a, array $b): int => strcasecmp((string)($a['title'] ?? ''), (string)($b['title'] ?? '')));
 
+        $dashboard_url = Elev8_OS_Portal_Page_Manager::get_url('dashboard');
+        $artwork_url = Elev8_OS_Portal_Page_Manager::get_url('artwork');
+
         ob_start();
         ?>
         <div class="elev8-artist-dashboard elev8-dashboard-v2 elev8-artist-print-center">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('print_center'); ?>
-            <header class="elev8-dashboard-header elev8-dashboard-hero">
-                <div><p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p><h1><?php esc_html_e('My Print Center', 'elev8-os'); ?></h1><p><?php esc_html_e('Preview and print your approved Elev8 Arts profile card, QR code, and artwork labels.', 'elev8-os'); ?></p></div>
-                <span class="elev8-dashboard-badge"><?php esc_html_e('Elev8 Print Standard', 'elev8-os'); ?></span>
+
+            <header class="elev8-print-hero">
+                <div>
+                    <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>
+                    <h1><?php esc_html_e('My Print Center', 'elev8-os'); ?></h1>
+                    <p><?php esc_html_e('Preview and print your approved artist card, profile QR code, and artwork labels.', 'elev8-os'); ?></p>
+                </div>
+                <a class="elev8-button elev8-button-secondary" href="<?php echo esc_url($dashboard_url); ?>">
+                    <?php esc_html_e('Back to Dashboard', 'elev8-os'); ?>
+                </a>
             </header>
 
             <div class="elev8-print-center-grid">
-                <section class="elev8-dashboard-panel">
-                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Profile', 'elev8-os'); ?></p><h2><?php esc_html_e('Artist Materials', 'elev8-os'); ?></h2></div></div>
-                    <p><?php esc_html_e('Print your artist introduction card or a standalone QR code. These always use the approved Elev8 Arts template.', 'elev8-os'); ?></p>
-                    <form method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
+                <section class="elev8-print-card">
+                    <div class="elev8-print-card-icon"><span class="dashicons dashicons-id" aria-hidden="true"></span></div>
+                    <div class="elev8-print-card-heading">
+                        <p class="elev8-eyebrow"><?php esc_html_e('Artist materials', 'elev8-os'); ?></p>
+                        <h2><?php esc_html_e('Artist Display Card', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Print your approved introduction card or a standalone profile QR code using the Elev8 Arts print standard.', 'elev8-os'); ?></p>
+                    </div>
+                    <form class="elev8-print-form" method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
                         <input type="hidden" name="action" value="elev8_os_artist_print_profile">
                         <?php wp_nonce_field('elev8_os_artist_print_profile', '_wpnonce', false); ?>
-                        <label><strong><?php esc_html_e('Print format', 'elev8-os'); ?></strong><select name="print_format"><option value="artist-card"><?php esc_html_e('Artist display card — 8.5 × 5.5', 'elev8-os'); ?></option><option value="artist-card-two"><?php esc_html_e('Two cards — letter sheet', 'elev8-os'); ?></option><option value="artist-qr"><?php esc_html_e('Artist QR code only', 'elev8-os'); ?></option></select></label>
-                        <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artist Print', 'elev8-os'); ?></button>
+                        <label class="elev8-print-field">
+                            <span><?php esc_html_e('Print format', 'elev8-os'); ?></span>
+                            <select name="print_format">
+                                <option value="artist-card"><?php esc_html_e('Artist display card — 8.5 × 5.5', 'elev8-os'); ?></option>
+                                <option value="artist-card-two"><?php esc_html_e('Two artist cards — letter sheet', 'elev8-os'); ?></option>
+                                <option value="artist-qr"><?php esc_html_e('Profile QR code only', 'elev8-os'); ?></option>
+                            </select>
+                        </label>
+                        <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artist Card', 'elev8-os'); ?></button>
                     </form>
                 </section>
 
-                <section class="elev8-dashboard-panel">
-                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Artwork', 'elev8-os'); ?></p><h2><?php esc_html_e('My Artwork Labels', 'elev8-os'); ?></h2></div></div>
-                    <p><?php esc_html_e('Choose one of your artwork records and print its 3 × 3 QR label.', 'elev8-os'); ?></p>
+                <section class="elev8-print-card">
+                    <div class="elev8-print-card-icon"><span class="dashicons dashicons-format-image" aria-hidden="true"></span></div>
+                    <div class="elev8-print-card-heading">
+                        <p class="elev8-eyebrow"><?php esc_html_e('Artwork labels', 'elev8-os'); ?></p>
+                        <h2><?php esc_html_e('My Artwork Labels', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Choose one of your artwork records and preview its approved 3 × 3 QR label.', 'elev8-os'); ?></p>
+                    </div>
                     <?php if (!$assets): ?>
-                        <div class="elev8-dashboard-empty"><span class="dashicons dashicons-art"></span><h3><?php esc_html_e('No artwork ready to print', 'elev8-os'); ?></h3><p><?php esc_html_e('Add artwork first, then return here to print its gallery label.', 'elev8-os'); ?></p></div>
+                        <div class="elev8-print-empty">
+                            <span class="dashicons dashicons-art" aria-hidden="true"></span>
+                            <div>
+                                <strong><?php esc_html_e('No artwork is currently available to print.', 'elev8-os'); ?></strong>
+                                <p><?php esc_html_e('Add artwork from My Artwork, then return here to print its gallery label.', 'elev8-os'); ?></p>
+                            </div>
+                        </div>
+                        <a class="elev8-button elev8-button-secondary" href="<?php echo esc_url($artwork_url); ?>"><?php esc_html_e('Go to My Artwork', 'elev8-os'); ?></a>
                     <?php else: ?>
-                        <form method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
+                        <form class="elev8-print-form" method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
                             <input type="hidden" name="action" value="elev8_os_artist_print_artwork">
                             <?php wp_nonce_field('elev8_os_artist_print_artwork', '_wpnonce', false); ?>
-                            <label><strong><?php esc_html_e('Choose artwork', 'elev8-os'); ?></strong><select name="asset_id" required><option value=""><?php esc_html_e('Select artwork…', 'elev8-os'); ?></option><?php foreach ($assets as $asset): ?><option value="<?php echo esc_attr((string)absint($asset['id'] ?? 0)); ?>"><?php echo esc_html((string)($asset['title'] ?? __('Untitled', 'elev8-os')) . ' — ' . ucfirst((string)($asset['status'] ?? 'available'))); ?></option><?php endforeach; ?></select></label>
-                            <label><strong><?php esc_html_e('Print format', 'elev8-os'); ?></strong><select name="print_format"><option value="artwork-label"><?php esc_html_e('Artwork QR label — 3 × 3', 'elev8-os'); ?></option><option value="artwork-label-two"><?php esc_html_e('Two labels — letter sheet', 'elev8-os'); ?></option></select></label>
-                            <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artwork Print', 'elev8-os'); ?></button>
+                            <label class="elev8-print-field">
+                                <span><?php esc_html_e('Choose artwork', 'elev8-os'); ?></span>
+                                <select name="asset_id" required>
+                                    <option value=""><?php esc_html_e('Select artwork…', 'elev8-os'); ?></option>
+                                    <?php foreach ($assets as $asset): ?>
+                                        <option value="<?php echo esc_attr((string)absint($asset['id'] ?? 0)); ?>">
+                                            <?php echo esc_html((string)($asset['title'] ?? __('Untitled', 'elev8-os')) . ' — ' . ucfirst((string)($asset['status'] ?? 'available'))); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </label>
+                            <label class="elev8-print-field">
+                                <span><?php esc_html_e('Print format', 'elev8-os'); ?></span>
+                                <select name="print_format">
+                                    <option value="artwork-label"><?php esc_html_e('Artwork QR label — 3 × 3', 'elev8-os'); ?></option>
+                                    <option value="artwork-label-two"><?php esc_html_e('Two artwork labels — letter sheet', 'elev8-os'); ?></option>
+                                </select>
+                            </label>
+                            <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artwork Label', 'elev8-os'); ?></button>
                         </form>
                     <?php endif; ?>
                 </section>

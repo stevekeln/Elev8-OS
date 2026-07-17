@@ -1,1 +1,1 @@
-Elev8 OS 8.0.4: private artist Print Center, one dashboard shortcut, owner/artist permissions, and clean-white print standard.
+Elev8 OS 8.0.5: private artist Print Center, one dashboard shortcut, owner/artist permissions, and clean-white print standard.

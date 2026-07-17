@@ -35,3 +35,34 @@ body.elev8-os-portal-shell .entry-header{display:none}
 .elev8-advanced-image-url { margin-top: 3px; }
 .elev8-advanced-image-url summary { cursor: pointer; font-size: 13px; color: #53606f; }
 .elev8-advanced-image-url input { margin-top: 8px; width: 100%; }
+
+
+/* 8.0.5 Artist Print Center UX polish */
+.elev8-artist-print-center{max-width:1180px;margin:28px auto;padding:0 20px 60px}
+.elev8-artist-print-center .elev8-portal-nav{margin-bottom:22px}
+.elev8-print-hero{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:22px;padding:30px;border:1px solid #dcdcde;border-radius:16px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+.elev8-print-hero h1{margin:3px 0 8px;color:#1d2327;font-size:clamp(30px,4vw,44px);line-height:1.08}
+.elev8-print-hero p{margin:0;color:#646970;font-size:16px;line-height:1.55}
+.elev8-print-center-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.elev8-print-card{display:flex;min-height:430px;flex-direction:column;padding:28px;border:1px solid #dcdcde;border-radius:16px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+.elev8-print-card-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;margin-bottom:20px;border-radius:12px;background:#f0f6fc;color:#2271b1}
+.elev8-print-card-icon .dashicons{width:26px;height:26px;font-size:26px}
+.elev8-print-card-heading{margin-bottom:22px}
+.elev8-print-card-heading h2{margin:4px 0 9px;color:#1d2327;font-size:25px;line-height:1.2}
+.elev8-print-card-heading p:last-child{margin:0;color:#646970;line-height:1.6}
+.elev8-print-form{display:grid;gap:18px;margin-top:auto}
+.elev8-print-field{display:grid;gap:8px}
+.elev8-print-field>span{color:#1d2327;font-size:14px;font-weight:700}
+.elev8-print-field select{box-sizing:border-box;width:100%;min-height:46px;padding:8px 38px 8px 12px;border:1px solid #8c8f94;border-radius:8px;background:#fff;font:inherit}
+.elev8-print-field select:focus{border-color:#2271b1;box-shadow:0 0 0 1px #2271b1;outline:none}
+.elev8-artist-print-center .elev8-button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:10px 17px;border:1px solid transparent;border-radius:8px;font:inherit;font-weight:700;line-height:1.2;text-decoration:none;cursor:pointer}
+.elev8-artist-print-center .elev8-button-primary{justify-self:start;background:#2271b1;color:#fff;border-color:#2271b1}
+.elev8-artist-print-center .elev8-button-primary:hover,.elev8-artist-print-center .elev8-button-primary:focus{background:#135e96;border-color:#135e96;color:#fff}
+.elev8-artist-print-center .elev8-button-secondary{background:#fff;color:#135e96;border-color:#2271b1}
+.elev8-artist-print-center .elev8-button-secondary:hover,.elev8-artist-print-center .elev8-button-secondary:focus{background:#f0f6fc;color:#0a4b78}
+.elev8-print-empty{display:flex;align-items:flex-start;gap:14px;margin:4px 0 20px;padding:16px;border:1px solid #dcdcde;border-radius:10px;background:#f6f7f7;color:#50575e}
+.elev8-print-empty>.dashicons{flex:0 0 auto;width:26px;height:26px;color:#8c8f94;font-size:26px}
+.elev8-print-empty strong{display:block;color:#1d2327}
+.elev8-print-empty p{margin:5px 0 0;color:#646970;line-height:1.5}
+@media(max-width:960px){.elev8-print-center-grid{grid-template-columns:1fr}.elev8-print-card{min-height:0}.elev8-portal-links{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding-bottom:4px}.elev8-portal-link{flex:0 0 auto}}
+@media(max-width:640px){.elev8-artist-print-center{padding-right:14px;padding-left:14px}.elev8-print-hero{align-items:flex-start;flex-direction:column;padding:22px}.elev8-print-hero .elev8-button{width:100%}.elev8-print-card{padding:22px}.elev8-artist-print-center .elev8-button-primary,.elev8-artist-print-center .elev8-button-secondary{width:100%;justify-self:stretch}}

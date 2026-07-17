@@ -119,7 +119,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return false;
         }
 
-        foreach (['dashboard', 'classes', 'artwork', 'students', 'waitlist'] as $portal_page) {
+        foreach (['dashboard', 'classes', 'artwork', 'students', 'waitlist', 'print_center'] as $portal_page) {
             if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
                 return true;
             }
@@ -133,7 +133,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        $portal_pages = ['dashboard', 'classes', 'artwork', 'students', 'waitlist'];
+        $portal_pages = ['dashboard', 'classes', 'artwork', 'students', 'waitlist', 'print_center'];
         $is_portal_page = false;
         foreach ($portal_pages as $portal_page) {
             if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
@@ -841,6 +841,9 @@ final class Elev8_OS_Artist_Portal_Module {
             <div class="elev8-portal-links">
                 <?php foreach ($items as $key => $item) : ?>
                     <?php
+                    if (empty($item['enabled'])) {
+                        continue;
+                    }
                     $classes = ['elev8-portal-link'];
                     if ($key === $active) {
                         $classes[] = 'is-active';

@@ -1,3 +1,12 @@
+## 8.0.5 — Artist Print Center UX Polish
+
+- Rebuilt the artist Print Center as two polished, responsive application cards.
+- Removed duplicate headings, floating labels, and unstructured form controls.
+- Added a clear Back to Dashboard action and a direct My Artwork empty-state action.
+- Hid unfinished Coming Soon navigation items until those modules are available.
+- Added consistent controls, spacing, buttons, focus states, and mobile stacking.
+- Ensured the Print Center loads the full Artist Portal and dashboard styling.
+
 ## 8.0.4 — Artist Print Center
 
 - Replaced separate artist dashboard print links with one **My Print Center** action.
