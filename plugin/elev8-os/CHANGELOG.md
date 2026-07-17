@@ -1,5 +1,22 @@
 # Elev8 OS Changelog
 
+## 7.7.3 - Searchable Elev8 Identity
+
+- Includes the complete 7.7.2 Artist Image Upload Experience; 7.7.2 does not need to be installed separately.
+- Renamed the account field from WordPress login account to Connected Account under the Elev8 Identity workflow.
+- Added reusable `Elev8_OS_User_Search_Component` for future CRM, staff, owner, mentor, ambassador, and customer identity selectors.
+- Added instant searching by display name, email address, and WordPress username.
+- Displays Connected, Available, or Already mapped status for each account.
+- Prevents selecting an account that is already assigned to another artist.
+- Preserves Not connected, existing selections, approved Artist Mapping authority, and backward compatibility.
+
+## 7.7.2 - Artist Image Upload Experience
+- Replaced the normal profile-photo and hero-image URL workflow with direct image uploads.
+- Added image previews, replacement uploads, and remove-image controls for administrators and artists.
+- Uploaded images are stored in the WordPress Media Library and published automatically to the artist page.
+- Preserved advanced URL fields and all existing URL-based artist images for backward compatibility.
+- Kept My Artwork as the single source of truth for artwork storefront images.
+
 ## 7.7.1 - Automatic Artist Storefront Identity
 - Made approved Artist Mapping the source of truth for public artist storefront ownership.
 - Automatically synchronizes the legacy WordPress login field whenever a mapping is saved, changed, removed, or auto-matched.

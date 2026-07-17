@@ -104,6 +104,16 @@ final class Elev8_OS {
             [],
             ELEV8_OS_VERSION
         );
+
+        if ($hook === 'elev8-os_page_elev8-artist-portal') {
+            wp_enqueue_script(
+                'elev8-os-searchable-user-select',
+                ELEV8_OS_URL . 'assets/js/searchable-user-select.js',
+                [],
+                ELEV8_OS_VERSION,
+                true
+            );
+        }
     }
 
     private static function table(string $suffix): string {
@@ -565,8 +575,23 @@ final class Elev8_OS {
         $employee_id = isset($_POST['employee_id']) ? absint($_POST['employee_id']) : 0;
         if (!$employee_id) wp_die('Please select an Elev8 Member Artist.');
         $profiles = self::get_profiles();
+        $requested_user_id = isset($_POST['wp_user_id']) ? absint($_POST['wp_user_id']) : 0;
+        if ($requested_user_id > 0) {
+            $mapped_artist_id = class_exists('Elev8_OS_Identity_Service')
+                ? Elev8_OS_Identity_Service::artist_id_for_user_id($requested_user_id)
+                : 0;
+            if ($mapped_artist_id > 0 && $mapped_artist_id !== $employee_id) {
+                wp_die(esc_html__('That WordPress account is already approved for another artist. Change it through Artist Mapping before connecting it here.', 'elev8-os'));
+            }
+            foreach ($profiles as $existing_artist_id => $existing_profile) {
+                if (absint($existing_artist_id) === $employee_id || !is_array($existing_profile)) { continue; }
+                if (absint($existing_profile['wp_user_id'] ?? 0) === $requested_user_id) {
+                    wp_die(esc_html__('That WordPress account is already connected to another artist profile. Disconnect the earlier profile first.', 'elev8-os'));
+                }
+            }
+        }
         $profiles[$employee_id] = [
-            'wp_user_id' => isset($_POST['wp_user_id']) ? absint($_POST['wp_user_id']) : 0,
+            'wp_user_id' => $requested_user_id,
             'bio' => isset($_POST['bio']) ? sanitize_textarea_field(wp_unslash($_POST['bio'])) : '',
             'medium' => isset($_POST['medium']) ? sanitize_text_field(wp_unslash($_POST['medium'])) : '',
             'website' => isset($_POST['website']) ? esc_url_raw(wp_unslash($_POST['website'])) : '',
@@ -603,8 +628,8 @@ final class Elev8_OS {
             'tax_document_url' => isset($_POST['tax_document_url']) ? esc_url_raw(wp_unslash($_POST['tax_document_url'])) : '',
             'announcement' => isset($_POST['announcement']) ? sanitize_textarea_field(wp_unslash($_POST['announcement'])) : '',
             'public_enabled' => isset($_POST['public_enabled']) ? 1 : 0,
-            'profile_photo' => isset($_POST['profile_photo']) ? esc_url_raw(wp_unslash($_POST['profile_photo'])) : '',
-            'cover_image' => isset($_POST['cover_image']) ? esc_url_raw(wp_unslash($_POST['cover_image'])) : '',
+            'profile_photo' => isset($_POST['profile_photo']) ? esc_url_raw(wp_unslash($_POST['profile_photo'])) : (string) ($profiles[$employee_id]['profile_photo'] ?? ''),
+            'cover_image' => isset($_POST['cover_image']) ? esc_url_raw(wp_unslash($_POST['cover_image'])) : (string) ($profiles[$employee_id]['cover_image'] ?? ''),
             'gallery' => isset($_POST['gallery']) ? sanitize_textarea_field(wp_unslash($_POST['gallery'])) : (string) ($profiles[$employee_id]['gallery'] ?? ''),
             'booking_url' => isset($_POST['booking_url']) ? esc_url_raw(wp_unslash($_POST['booking_url'])) : '',
             'booking_destination' => isset($_POST['booking_destination']) && in_array($_POST['booking_destination'], ['category', 'custom', 'appointments'], true) ? sanitize_key($_POST['booking_destination']) : 'category',
@@ -612,6 +637,18 @@ final class Elev8_OS {
             'referral_percent' => isset($_POST['referral_percent']) ? max(0, min(100, (float) $_POST['referral_percent'])) : 0,
             'manual_upcoming_classes' => isset($_POST['manual_upcoming_classes']) ? sanitize_textarea_field(wp_unslash($_POST['manual_upcoming_classes'])) : '',
         ];
+
+        $profiles[$employee_id]['profile_photo'] = self::process_artist_image_upload(
+            'profile_photo_upload',
+            (string) ($profiles[$employee_id]['profile_photo'] ?? ''),
+            isset($_POST['remove_profile_photo'])
+        );
+        $profiles[$employee_id]['cover_image'] = self::process_artist_image_upload(
+            'cover_image_upload',
+            (string) ($profiles[$employee_id]['cover_image'] ?? ''),
+            isset($_POST['remove_cover_image'])
+        );
+
         update_option(self::OPTION_PROFILES, $profiles, false);
 
         // Artist pages are public-facing and may be cached by WordPress, LiteSpeed,
@@ -626,6 +663,36 @@ final class Elev8_OS {
 
         wp_safe_redirect(add_query_arg(['page'=>'elev8-artist-portal','artist_id'=>$employee_id,'message'=>'profile_saved'], admin_url('admin.php')));
         exit;
+    }
+
+    /**
+     * Store an uploaded artist image in the WordPress Media Library.
+     * Existing URL-based profiles remain fully supported.
+     */
+    private static function process_artist_image_upload(string $field, string $current_url, bool $remove): string {
+        if ($remove) {
+            return '';
+        }
+
+        if (empty($_FILES[$field]) || !is_array($_FILES[$field]) || (int) ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return esc_url_raw($current_url);
+        }
+
+        if ((int) ($_FILES[$field]['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            return esc_url_raw($current_url);
+        }
+
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+
+        $attachment_id = media_handle_upload($field, 0);
+        if (is_wp_error($attachment_id)) {
+            return esc_url_raw($current_url);
+        }
+
+        $url = wp_get_attachment_image_url((int) $attachment_id, 'full');
+        return $url ? esc_url_raw($url) : esc_url_raw($current_url);
     }
 
     private static function employee_name(int $employee_id): string {
@@ -1602,7 +1669,7 @@ final class Elev8_OS {
         foreach($employees as $e){$n=trim($e['firstName'].' '.$e['lastName']);echo '<option value="'.esc_attr($e['id']).'" '.selected($artist_id,(int)$e['id'],false).'>'.esc_html($n).'</option>';}
         echo '</select><button class="button button-primary">Open artist</button></form>';
         if($artist_id){ echo self::render_portal_content($artist_id,true); ?>
-        <div class="elev8-grid"><div class="elev8-panel"><h2>Artist profile & login</h2><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><input type="hidden" name="action" value="elev8_os_save_artist_profile"><input type="hidden" name="employee_id" value="<?php echo esc_attr((string)$artist_id);?>"><?php wp_nonce_field('elev8_os_save_artist_profile');?><label>WordPress login account</label><select name="wp_user_id"><option value="0">Not connected</option><?php foreach($users as $u):?><option value="<?php echo esc_attr((string)$u->ID);?>" <?php selected((int)($profile['wp_user_id']??0),$u->ID);?>><?php echo esc_html($u->display_name.' — '.$u->user_email);?></option><?php endforeach;?></select><label>Status</label><select name="status"><option value="active" <?php selected($profile['status']??'active','active');?>>Active</option><option value="inactive" <?php selected($profile['status']??'active','inactive');?>>Inactive</option></select><label>Bio</label><textarea name="bio" rows="5"><?php echo esc_textarea($profile['bio']??'');?></textarea><label>Medium</label><input name="medium" value="<?php echo esc_attr($profile['medium']??'');?>"><label>Teaching specialties</label><input name="specialties" value="<?php echo esc_attr($profile['specialties']??'');?>"><label>Years/experience</label><input name="experience" value="<?php echo esc_attr($profile['experience']??'');?>"><label>Website</label><input type="url" name="website" value="<?php echo esc_attr($profile['website']??'');?>"><h3>Social links</h3><p class="description">Add up to four links. Name each one Facebook, YouTube, Pinterest, Etsy, Instagram, or anything else.</p><?php for($social_i=1;$social_i<=4;$social_i++): $legacy_social=($social_i===1?($profile['social']??''):'');?><div class="elev8-social-row"><label>Social <?php echo $social_i;?> name</label><input type="text" name="social_<?php echo $social_i;?>_name" placeholder="Facebook" value="<?php echo esc_attr($profile['social_'.$social_i.'_name']??($social_i===1&&!empty($legacy_social)?'Social media':''));?>"><label>Social <?php echo $social_i;?> link</label><input type="url" name="social_<?php echo $social_i;?>_url" placeholder="https://" value="<?php echo esc_attr($profile['social_'.$social_i.'_url']??$legacy_social);?>"></div><?php endfor;?><h3>Payment links</h3><p class="description">Add up to four payment or support links, such as Venmo, PayPal, Cash App, Patreon, or a tip page.</p><?php for($link_i=1;$link_i<=4;$link_i++):?><div class="elev8-social-row"><label>Payment <?php echo $link_i;?> name</label><input type="text" name="payment_<?php echo $link_i;?>_name" placeholder="Venmo" value="<?php echo esc_attr($profile['payment_'.$link_i.'_name']??'');?>"><label>Payment <?php echo $link_i;?> link</label><input type="text" name="payment_<?php echo $link_i;?>_url" placeholder="https://venmo.com/u/name" value="<?php echo esc_attr($profile['payment_'.$link_i.'_url']??'');?>"></div><?php endfor;?><h3>Public contact links</h3><p class="description">Add up to four contact methods. For email, enter just the email address. For phone, enter just the phone number. Elev8 OS will automatically make them clickable. You can also enter a webpage or contact-form link.</p><?php for($link_i=1;$link_i<=4;$link_i++):?><div class="elev8-social-row"><label>Contact <?php echo $link_i;?> name</label><input type="text" name="contact_<?php echo $link_i;?>_name" placeholder="Email me" value="<?php echo esc_attr($profile['contact_'.$link_i.'_name']??'');?>"><label>Contact <?php echo $link_i;?> link</label><input type="text" name="contact_<?php echo $link_i;?>_url" placeholder="artist@example.com or 719-555-1212" value="<?php echo esc_attr($profile['contact_'.$link_i.'_url']??'');?>"></div><?php endfor;?><label><input type="checkbox" name="public_enabled" value="1" <?php checked(!empty($profile['public_enabled']));?>> Make public artist webpage active</label><label>Profile photo URL</label><input type="url" name="profile_photo" value="<?php echo esc_attr($profile['profile_photo']??'');?>"><label>Cover image URL</label><input type="url" name="cover_image" value="<?php echo esc_attr($profile['cover_image']??'');?>"><p class="description"><strong>Artwork storefront:</strong> Public products are managed once through the artist's My Artwork page. Legacy gallery data is preserved but no longer displayed.</p><h3>Booking destination</h3><p class="description">Choose where customers should go to see availability and book this artist's classes. This link is also used as the fallback for every listed class.</p><label>Booking destination type</label><select name="booking_destination"><option value="category" <?php selected($profile['booking_destination']??'category','category');?>>Amelia category page</option><option value="custom" <?php selected($profile['booking_destination']??'category','custom');?>>Custom booking page</option><option value="appointments" <?php selected($profile['booking_destination']??'category','appointments');?>>General appointment page</option></select><label>Booking page URL</label><input type="url" name="booking_url" placeholder="https://elev8arts.com/wellness-classes/" value="<?php echo esc_attr($profile['booking_url']??'');?>"><label>Booking button text</label><input type="text" name="booking_button_label" value="<?php echo esc_attr($profile['booking_button_label']??'Book Now with This Artist');?>"><label>Manual upcoming classes (optional fallback)</label><textarea name="manual_upcoming_classes" rows="5" placeholder="2026-08-15 18:00 | Herbal Workshop | https://elev8arts.com/book/"><?php echo esc_textarea($profile['manual_upcoming_classes']??'');?></textarea><p class="description">One class per line: date and time | class name | optional booking URL. Elev8 OS will combine these with upcoming Amelia appointments and Amelia events.</p><label>Referral commission percentage</label><input type="number" step="0.01" min="0" max="100" name="referral_percent" value="<?php echo esc_attr((string)($profile['referral_percent']??0));?>"><p class="description">This artist can earn this percentage when their referral link leads to a WooCommerce-paid booking or sale, including an event taught by another artist.</p><label>W-9 status</label><select name="w9_status"><option value="not_received" <?php selected($profile['w9_status']??'not_received','not_received');?>>Not received</option><option value="received" <?php selected($profile['w9_status']??'not_received','received');?>>Received</option><option value="needs_update" <?php selected($profile['w9_status']??'not_received','needs_update');?>>Needs update</option></select><label>Artist agreement URL</label><input type="url" name="agreement_url" value="<?php echo esc_attr($profile['agreement_url']??'');?>"><label>Tax document URL</label><input type="url" name="tax_document_url" value="<?php echo esc_attr($profile['tax_document_url']??'');?>"><label>Message shown in portal</label><textarea name="announcement" rows="4"><?php echo esc_textarea($profile['announcement']??'');?></textarea><p><button class="button button-primary">Save artist profile</button></p></form></div>
+        <div class="elev8-grid"><div class="elev8-panel"><h2>Artist profile & login</h2><form method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><input type="hidden" name="action" value="elev8_os_save_artist_profile"><input type="hidden" name="employee_id" value="<?php echo esc_attr((string)$artist_id);?>"><?php wp_nonce_field('elev8_os_save_artist_profile');?><?php Elev8_OS_User_Search_Component::render(['name'=>'wp_user_id','id'=>'elev8-connected-account','selected'=>(int)($profile['wp_user_id']??0),'artist_id'=>(int)$artist_id,'label'=>'Connected Account']);?><label>Status</label><select name="status"><option value="active" <?php selected($profile['status']??'active','active');?>>Active</option><option value="inactive" <?php selected($profile['status']??'active','inactive');?>>Inactive</option></select><label>Bio</label><textarea name="bio" rows="5"><?php echo esc_textarea($profile['bio']??'');?></textarea><label>Medium</label><input name="medium" value="<?php echo esc_attr($profile['medium']??'');?>"><label>Teaching specialties</label><input name="specialties" value="<?php echo esc_attr($profile['specialties']??'');?>"><label>Years/experience</label><input name="experience" value="<?php echo esc_attr($profile['experience']??'');?>"><label>Website</label><input type="url" name="website" value="<?php echo esc_attr($profile['website']??'');?>"><h3>Social links</h3><p class="description">Add up to four links. Name each one Facebook, YouTube, Pinterest, Etsy, Instagram, or anything else.</p><?php for($social_i=1;$social_i<=4;$social_i++): $legacy_social=($social_i===1?($profile['social']??''):'');?><div class="elev8-social-row"><label>Social <?php echo $social_i;?> name</label><input type="text" name="social_<?php echo $social_i;?>_name" placeholder="Facebook" value="<?php echo esc_attr($profile['social_'.$social_i.'_name']??($social_i===1&&!empty($legacy_social)?'Social media':''));?>"><label>Social <?php echo $social_i;?> link</label><input type="url" name="social_<?php echo $social_i;?>_url" placeholder="https://" value="<?php echo esc_attr($profile['social_'.$social_i.'_url']??$legacy_social);?>"></div><?php endfor;?><h3>Payment links</h3><p class="description">Add up to four payment or support links, such as Venmo, PayPal, Cash App, Patreon, or a tip page.</p><?php for($link_i=1;$link_i<=4;$link_i++):?><div class="elev8-social-row"><label>Payment <?php echo $link_i;?> name</label><input type="text" name="payment_<?php echo $link_i;?>_name" placeholder="Venmo" value="<?php echo esc_attr($profile['payment_'.$link_i.'_name']??'');?>"><label>Payment <?php echo $link_i;?> link</label><input type="text" name="payment_<?php echo $link_i;?>_url" placeholder="https://venmo.com/u/name" value="<?php echo esc_attr($profile['payment_'.$link_i.'_url']??'');?>"></div><?php endfor;?><h3>Public contact links</h3><p class="description">Add up to four contact methods. For email, enter just the email address. For phone, enter just the phone number. Elev8 OS will automatically make them clickable. You can also enter a webpage or contact-form link.</p><?php for($link_i=1;$link_i<=4;$link_i++):?><div class="elev8-social-row"><label>Contact <?php echo $link_i;?> name</label><input type="text" name="contact_<?php echo $link_i;?>_name" placeholder="Email me" value="<?php echo esc_attr($profile['contact_'.$link_i.'_name']??'');?>"><label>Contact <?php echo $link_i;?> link</label><input type="text" name="contact_<?php echo $link_i;?>_url" placeholder="artist@example.com or 719-555-1212" value="<?php echo esc_attr($profile['contact_'.$link_i.'_url']??'');?>"></div><?php endfor;?><label><input type="checkbox" name="public_enabled" value="1" <?php checked(!empty($profile['public_enabled']));?>> Make public artist webpage active</label><h3>Artist images</h3><p class="description">Upload images directly. Elev8 OS stores them in the WordPress Media Library and publishes them automatically.</p><label>Profile photo</label><?php if(!empty($profile['profile_photo'])):?><div class="elev8-artist-image-preview"><img src="<?php echo esc_url($profile['profile_photo']);?>" alt="Current profile photo" style="max-width:160px;height:auto;border-radius:12px;display:block;margin:8px 0;"><label><input type="checkbox" name="remove_profile_photo" value="1"> Remove current profile photo</label></div><?php endif;?><input type="file" name="profile_photo_upload" accept="image/*"><details><summary>Advanced: use an image URL</summary><input type="url" name="profile_photo" value="<?php echo esc_attr($profile['profile_photo']??'');?>" placeholder="https://"></details><label>Hero / cover image</label><?php if(!empty($profile['cover_image'])):?><div class="elev8-artist-image-preview"><img src="<?php echo esc_url($profile['cover_image']);?>" alt="Current hero image" style="max-width:420px;width:100%;height:auto;border-radius:12px;display:block;margin:8px 0;"><label><input type="checkbox" name="remove_cover_image" value="1"> Remove current hero image</label></div><?php endif;?><input type="file" name="cover_image_upload" accept="image/*"><details><summary>Advanced: use an image URL</summary><input type="url" name="cover_image" value="<?php echo esc_attr($profile['cover_image']??'');?>" placeholder="https://"></details><p class="description"><strong>Artwork storefront:</strong> Public products are managed once through the artist's My Artwork page. Legacy gallery data is preserved but no longer displayed.</p><h3>Booking destination</h3><p class="description">Choose where customers should go to see availability and book this artist's classes. This link is also used as the fallback for every listed class.</p><label>Booking destination type</label><select name="booking_destination"><option value="category" <?php selected($profile['booking_destination']??'category','category');?>>Amelia category page</option><option value="custom" <?php selected($profile['booking_destination']??'category','custom');?>>Custom booking page</option><option value="appointments" <?php selected($profile['booking_destination']??'category','appointments');?>>General appointment page</option></select><label>Booking page URL</label><input type="url" name="booking_url" placeholder="https://elev8arts.com/wellness-classes/" value="<?php echo esc_attr($profile['booking_url']??'');?>"><label>Booking button text</label><input type="text" name="booking_button_label" value="<?php echo esc_attr($profile['booking_button_label']??'Book Now with This Artist');?>"><label>Manual upcoming classes (optional fallback)</label><textarea name="manual_upcoming_classes" rows="5" placeholder="2026-08-15 18:00 | Herbal Workshop | https://elev8arts.com/book/"><?php echo esc_textarea($profile['manual_upcoming_classes']??'');?></textarea><p class="description">One class per line: date and time | class name | optional booking URL. Elev8 OS will combine these with upcoming Amelia appointments and Amelia events.</p><label>Referral commission percentage</label><input type="number" step="0.01" min="0" max="100" name="referral_percent" value="<?php echo esc_attr((string)($profile['referral_percent']??0));?>"><p class="description">This artist can earn this percentage when their referral link leads to a WooCommerce-paid booking or sale, including an event taught by another artist.</p><label>W-9 status</label><select name="w9_status"><option value="not_received" <?php selected($profile['w9_status']??'not_received','not_received');?>>Not received</option><option value="received" <?php selected($profile['w9_status']??'not_received','received');?>>Received</option><option value="needs_update" <?php selected($profile['w9_status']??'not_received','needs_update');?>>Needs update</option></select><label>Artist agreement URL</label><input type="url" name="agreement_url" value="<?php echo esc_attr($profile['agreement_url']??'');?>"><label>Tax document URL</label><input type="url" name="tax_document_url" value="<?php echo esc_attr($profile['tax_document_url']??'');?>"><label>Message shown in portal</label><textarea name="announcement" rows="4"><?php echo esc_textarea($profile['announcement']??'');?></textarea><p><button class="button button-primary">Save artist profile</button></p></form></div>
         <div class="elev8-panel"><h2>Record payout</h2><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><input type="hidden" name="action" value="elev8_os_save_payout"><input type="hidden" name="employee_id" value="<?php echo esc_attr((string)$artist_id);?>"><?php wp_nonce_field('elev8_os_save_payout');?><label>Payout month</label><input type="month" name="payout_month" value="<?php echo esc_attr(isset($_GET['elev8_month'])?$_GET['elev8_month']:current_time('Y-m'));?>"><label>Status</label><select name="payout_status"><option value="unpaid">Pending</option><option value="paid">Paid</option></select><label>Paid date</label><input type="date" name="paid_date"><label>Note</label><input name="payout_note"><p><button class="button button-primary">Save payout status</button></p></form><hr><h3>Portal page setup</h3><p>Create a normal WordPress page and place this shortcode in it:</p><code>[elev8_artist_portal]</code><p>Public artist pages automatically use the artist's first and last name, such as <code>/artists/nicole-casaus/</code>. You can also embed one with <code>[elev8_artist_profile artist="nicole-casaus"]</code>.</p><p>Only the connected artist can see their own information. Administrators can preview any artist here.</p></div></div>
         <?php } echo '</div>';
     }

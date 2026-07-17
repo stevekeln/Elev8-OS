@@ -374,7 +374,7 @@ final class Elev8_OS_Artist_Portal_Module {
                 }
                 ?>
                 <div class="elev8-website-builder">
-                <form class="elev8-manage-website-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <form class="elev8-manage-website-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                     <input type="hidden" name="action" value="elev8_os_artist_save_website">
                     <input type="hidden" name="employee_id" value="<?php echo esc_attr((string) $employee_id); ?>">
                     <?php wp_nonce_field('elev8_os_artist_save_website_' . $employee_id); ?>
@@ -398,11 +398,11 @@ final class Elev8_OS_Artist_Portal_Module {
 
                     <section class="elev8-editor-section">
                         <div class="elev8-editor-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Images', 'elev8-os'); ?></p><h2><?php esc_html_e('Profile Images', 'elev8-os'); ?></h2></div></div>
-                        <div class="elev8-form-grid">
-                            <?php self::render_text_input('profile_photo', __('Profile photo URL', 'elev8-os'), $profile, 'https://', 'url'); ?>
-                            <?php self::render_text_input('cover_image', __('Cover image URL', 'elev8-os'), $profile, 'https://', 'url'); ?>
+                        <div class="elev8-form-grid elev8-image-upload-grid">
+                            <?php self::render_image_upload('profile_photo', 'profile_photo_upload', __('Profile photo', 'elev8-os'), $profile, __('Use a clear square or portrait image of yourself or your logo.', 'elev8-os')); ?>
+                            <?php self::render_image_upload('cover_image', 'cover_image_upload', __('Hero / cover image', 'elev8-os'), $profile, __('Use a wide image that represents your art and fills the top of your public page.', 'elev8-os')); ?>
                         </div>
-                        <p class="elev8-editor-help"><?php esc_html_e('Products shown on your public page come directly from My Artwork. Add each item once there and mark it Available.', 'elev8-os'); ?></p>
+                        <p class="elev8-editor-help"><?php esc_html_e('Uploaded images are saved securely in the WordPress Media Library. Products shown on your public page come directly from My Artwork.', 'elev8-os'); ?></p>
                     </section>
 
                     <section class="elev8-editor-section">
@@ -533,8 +533,6 @@ final class Elev8_OS_Artist_Portal_Module {
             'specialties' => 'text',
             'experience' => 'text',
             'website' => 'url',
-            'profile_photo' => 'url',
-            'cover_image' => 'url',
             'booking_url' => 'url',
             'booking_button_label' => 'text',
         ];
@@ -549,6 +547,17 @@ final class Elev8_OS_Artist_Portal_Module {
                 $existing[$key] = sanitize_text_field($raw);
             }
         }
+
+        $existing['profile_photo'] = self::process_image_upload(
+            'profile_photo_upload',
+            isset($_POST['profile_photo']) ? esc_url_raw(wp_unslash($_POST['profile_photo'])) : (string) ($existing['profile_photo'] ?? ''),
+            isset($_POST['remove_profile_photo'])
+        );
+        $existing['cover_image'] = self::process_image_upload(
+            'cover_image_upload',
+            isset($_POST['cover_image']) ? esc_url_raw(wp_unslash($_POST['cover_image'])) : (string) ($existing['cover_image'] ?? ''),
+            isset($_POST['remove_cover_image'])
+        );
 
         for ($i = 1; $i <= 4; $i++) {
             $existing['social_' . $i . '_name'] = isset($_POST['social_' . $i . '_name']) ? sanitize_text_field(wp_unslash($_POST['social_' . $i . '_name'])) : '';
@@ -595,6 +604,54 @@ final class Elev8_OS_Artist_Portal_Module {
     }
 
     /** @param array<string,mixed> $profile */
+    private static function render_image_upload(string $url_name, string $file_name, string $label, array $profile, string $help): void {
+        $url = esc_url_raw((string) ($profile[$url_name] ?? ''));
+        ?>
+        <div class="elev8-field elev8-image-upload-field">
+            <span><?php echo esc_html($label); ?></span>
+            <?php if ($url !== '') : ?>
+                <div class="elev8-current-image">
+                    <img src="<?php echo esc_url($url); ?>" alt="">
+                    <label><input type="checkbox" name="remove_<?php echo esc_attr($url_name); ?>" value="1"> <?php esc_html_e('Remove current image', 'elev8-os'); ?></label>
+                </div>
+            <?php endif; ?>
+            <input type="file" name="<?php echo esc_attr($file_name); ?>" accept="image/*">
+            <small><?php echo esc_html($help); ?></small>
+            <details class="elev8-advanced-image-url">
+                <summary><?php esc_html_e('Advanced: use an image URL', 'elev8-os'); ?></summary>
+                <input type="url" name="<?php echo esc_attr($url_name); ?>" value="<?php echo esc_attr($url); ?>" placeholder="https://">
+            </details>
+        </div>
+        <?php
+    }
+
+    /** Save a front-end artist image into the WordPress Media Library. */
+    private static function process_image_upload(string $field, string $current_url, bool $remove): string {
+        if ($remove) {
+            return '';
+        }
+
+        if (empty($_FILES[$field]) || !is_array($_FILES[$field]) || (int) ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return esc_url_raw($current_url);
+        }
+
+        if ((int) ($_FILES[$field]['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+            return esc_url_raw($current_url);
+        }
+
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+
+        $attachment_id = media_handle_upload($field, 0);
+        if (is_wp_error($attachment_id)) {
+            return esc_url_raw($current_url);
+        }
+
+        $url = wp_get_attachment_image_url((int) $attachment_id, 'full');
+        return $url ? esc_url_raw($url) : esc_url_raw($current_url);
+    }
+
     private static function render_text_input(string $name, string $label, array $profile, string $placeholder = '', string $type = 'text'): void {
         ?>
         <label class="elev8-field">

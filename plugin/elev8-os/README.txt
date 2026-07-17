@@ -1,4 +1,4 @@
-Elev8 OS 7.7.1 - Momentum Experience
+Elev8 OS 7.7.3 - Momentum Experience
 
 Elev8 OS is the production business operating system for Elev8 Arts and its artist ecosystem.
 
@@ -9,3 +9,5 @@ Trusted system boundaries remain unchanged:
 - WordPress owns authentication, users, and roles.
 - Amelia owns scheduling and bookings.
 - WooCommerce owns products, checkout, payments, and orders.
+
+7.7.3 adds the reusable searchable Elev8 Identity account selector with conflict protection.

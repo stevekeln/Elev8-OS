@@ -1,9 +1,9 @@
-Elev8 OS 7.7.1 Installation
+Elev8 OS 7.7.3 Installation
 
 1. Back up the WordPress site and database.
-2. Install the complete elev8-os-7.7.1-artist-identity-hotfix.zip through WordPress Plugins > Add New > Upload Plugin.
+2. Install the complete elev8-os-7.7.3-artist-identity-hotfix.zip through WordPress Plugins > Add New > Upload Plugin.
 3. Choose Replace current with uploaded when WordPress detects the existing Elev8 OS plugin.
-4. Confirm the installed plugin reports Version 7.7.1.
+4. Confirm the installed plugin reports Version 7.7.3.
 5. Test on Local before installing the exact same ZIP on Live.
 
 Local test checklist:

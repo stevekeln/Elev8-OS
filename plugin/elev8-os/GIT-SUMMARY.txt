@@ -1,4 +1,4 @@
-Elev8 OS 7.7.1 - Automatic Artist Storefront Identity
+Elev8 OS 7.7.3 - Automatic Artist Storefront Identity
 
 Git source update includes:
 - Artist Mapping is now the source of truth for artist-to-WordPress ownership
