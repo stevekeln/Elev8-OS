@@ -1,5 +1,12 @@
 # Elev8 OS Changelog
 
+## 7.7.4 - Contact Action Reliability
+
+- Normalized public artist email links to `mailto:` and phone links to `tel:` at render time.
+- Added a Copy fallback beside email and phone actions for desktops without a configured mail or calling application.
+- Added clear contact behavior guidance without changing existing profile data.
+- Preserved URL contact links and all existing artist profile functionality.
+
 ## 7.7.3 - Searchable Elev8 Identity
 
 - Includes the complete 7.7.2 Artist Image Upload Experience; 7.7.2 does not need to be installed separately.
