@@ -1,5 +1,11 @@
 # Elev8 OS Changelog
 
+## 9.0.8 — Legacy Schema Compatibility Hotfix
+- Removed the optional legacy side-label column from all live location registry queries.
+- Zone saves now adapt to the columns actually present in the WordPress database.
+- Restored active zones to Gallery Floor and every artwork location dropdown.
+- Preserved safe deletion of empty zones and existing placement history.
+
 ## 9.0.7 — Canonical Location Registry Hotfix
 
 - Fixed the shared location registry so newly created walls, racks, storage areas, and other zones appear immediately in every artwork location menu.

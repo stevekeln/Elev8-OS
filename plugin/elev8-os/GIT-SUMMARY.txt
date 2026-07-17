@@ -1,1 +1,1 @@
-Elev8 OS 9.0.7 fixes the canonical gallery location registry so all newly created standard zones and Artist Portal boards appear immediately in placement menus. It also adds safe empty-zone deletion.
+Elev8 OS 9.0.8 fixes the canonical gallery location registry so all newly created standard zones and Artist Portal boards appear immediately in placement menus. It also adds safe empty-zone deletion.
