@@ -200,6 +200,8 @@ final class Elev8_OS_Dashboard_Module {
                 <span class="elev8-dashboard-badge"><?php esc_html_e('Founders Edition', 'elev8-os'); ?></span>
             </header>
 
+            <?php if (class_exists('Elev8_OS_Business_GPS_Module')) { Elev8_OS_Business_GPS_Module::render_artist($user, $business); } ?>
+
             <?php if (empty($snapshot['available'])) : ?>
                 <div class="elev8-dashboard-warning"><p><strong><?php esc_html_e('Your verified class information is unavailable.', 'elev8-os'); ?></strong><br><?php echo esc_html((string) ($snapshot['reason'] ?? __('No diagnostic was supplied.', 'elev8-os'))); ?></p></div>
             <?php endif; ?>

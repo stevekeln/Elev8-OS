@@ -1,3 +1,16 @@
+# Changelog
+
+## 9.4.0 — Business GPS & Intelligence Foundation
+
+- Added Business GPS to the Artist Dashboard with business health, estimated monthly revenue, highest opportunity, biggest risk, and recommended first step.
+- Added a reusable Business Event Service that normalizes verified Amelia, WooCommerce, artwork, QR, and achievement activity without duplicating trusted-system records.
+- Added an explainable Opportunity Engine with conservative revenue estimates only when verified price and capacity data support them.
+- Added a seven-day Content Calendar connected directly to Content Studio campaign goals.
+- Added Predictive Scheduling guidance with explicit confidence and an Unavailable state when class history is insufficient.
+- Added a unified Business Timeline for sales, classes, engagement, QR activity, and achievements.
+- Added reusable service boundaries for future conversational AI coaching and owner intelligence.
+- No database changes.
+
 # Elev8 OS Changelog
 
 ## 9.3.2 — Campaign Wizard Centering Fix
