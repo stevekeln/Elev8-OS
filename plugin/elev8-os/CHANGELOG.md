@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 9.0.10 — Placement Schema Compatibility Hotfix
+
+- Changed artwork moves to update only the essential placement fields.
+- Stopped writing `removed_at = NULL` when placing artwork, preserving compatibility with older live schemas.
+- Bumped the Gallery Operations database version so WordPress reruns the placement-table schema check.
+- Added artwork ID, zone ID, and placement-table context to any database save error.
+- Preserved the unified active-zone registry and all existing locations.
+
 ## 9.0.9 — Artwork Placement Persistence Hotfix
 - Fixed artwork moves failing after a valid new gallery location was selected.
 - Rebuilt placement updates as a verified asset-ID upsert that no longer depends on optional zone columns.

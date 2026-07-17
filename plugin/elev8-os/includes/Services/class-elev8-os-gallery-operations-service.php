@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) { exit; }
 
 /** Canonical gallery location, placement, rack, storage, and movement history service. */
 final class Elev8_OS_Gallery_Operations_Service {
-    private const DB_VERSION = '1.9.0';
+    private const DB_VERSION = '1.9.10';
     private const DB_OPTION = 'elev8_os_gallery_operations_db_version';
 
     public static function init(): void {
@@ -188,23 +188,30 @@ final class Elev8_OS_Gallery_Operations_Service {
         $table=self::placements_table();
         $old=$wpdb->get_row($wpdb->prepare('SELECT * FROM '.$table.' WHERE asset_id=%d',$asset_id),ARRAY_A);
         $now=current_time('mysql');
+        // Write only the fields required for the requested transition. Older live
+        // databases may have stricter NULL rules on removed_at than fresh installs.
         $row=[
-            'asset_id'=>$asset_id,
             'zone_id'=>$zone_id?:null,
             'placement_status'=>$status,
             'position_label'=>sanitize_text_field($position),
-            'placed_at'=>$status==='displayed'?$now:($old['placed_at']??$now),
-            'removed_at'=>$status==='displayed'?null:$now,
             'updated_at'=>$now,
         ];
+        if($status==='displayed'){
+            $row['placed_at']=$now;
+        } else {
+            $row['removed_at']=$now;
+        }
         if($old){
             $ok=$wpdb->update($table,$row,['asset_id'=>$asset_id]);
         } else {
+            $row=['asset_id'=>$asset_id]+$row;
+            if(!isset($row['placed_at'])) $row['placed_at']=$now;
             $ok=$wpdb->insert($table,$row);
         }
         if($ok===false){
             $detail=trim((string)$wpdb->last_error);
-            return new WP_Error('placement','Artwork location could not be saved'.($detail!==''?': '.$detail:'.'));
+            $context=' [asset '.$asset_id.', zone '.$zone_id.', table '.$table.']';
+            return new WP_Error('placement','Artwork location could not be saved'.$context.($detail!==''?': '.$detail:'.'));
         }
         $saved=$wpdb->get_row($wpdb->prepare('SELECT asset_id,zone_id,placement_status FROM '.$table.' WHERE asset_id=%d',$asset_id),ARRAY_A);
         if(!$saved || (int)($saved['zone_id']??0)!==$zone_id || (string)($saved['placement_status']??'')!==$status){
