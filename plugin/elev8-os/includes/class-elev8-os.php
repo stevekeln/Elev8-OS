@@ -1070,7 +1070,7 @@ final class Elev8_OS {
                 <?php wp_nonce_field('elev8_os_print_artwork', '_wpnonce', false); ?>
                 <label><strong>Choose artist</strong><select name="artist_id" required data-elev8-print-artist><option value="">Select an artist…</option><?php foreach($artists as $artist): ?><option value="<?php echo esc_attr((string)$artist['id']); ?>"><?php echo esc_html($artist['name'] . ($artist['medium'] !== '' ? ' — '.$artist['medium'] : '')); ?></option><?php endforeach; ?></select></label>
                 <label><strong>Choose artwork</strong><select name="asset_id" required data-elev8-print-artwork disabled><option value="">Select an artist first…</option><?php foreach($print_assets as $item): $asset=$item['asset']; ?><option value="<?php echo esc_attr((string)$asset['id']); ?>" data-artist-id="<?php echo esc_attr((string)$item['artist_id']); ?>" hidden><?php echo esc_html((string)$asset['title'].' — '.ucfirst((string)$asset['status'])); ?></option><?php endforeach; ?></select><span class="description elev8-print-artwork-message" data-elev8-print-artwork-message>Select an artist to see only their artwork.</span></label>
-                <label><strong>Print format</strong><select name="print_format"><option value="artwork-label">Gallery label — 5.5 × 4.25</option><option value="artwork-label-two">Two labels — letter sheet</option><option value="artwork-qr">Artwork QR card — 4 × 6</option></select></label>
+                <label><strong>Print format</strong><select name="print_format"><option value="artwork-label">Artwork QR label — 3 × 3</option><option value="artwork-label-two">Two 3 × 3 labels — letter sheet</option><option value="artwork-qr">Artwork QR label — 3 × 3</option></select></label>
                 <button class="button button-primary" type="submit" data-elev8-print-artwork-submit disabled>Preview Artwork Print</button>
               </form>
             </section>
@@ -1087,8 +1087,19 @@ final class Elev8_OS {
         $format = sanitize_key((string)($_GET['print_format'] ?? 'artist-card'));
         $profiles = self::get_profiles(); $profile = $profiles[$employee_id] ?? [];
         if ($employee_id <= 0 || empty($profile['public_enabled']) || ($profile['status'] ?? 'active') !== 'active') { wp_die(esc_html__('Choose an active public artist profile.', 'elev8-os')); }
+        $print_bio = trim((string) ($profile['bio'] ?? ''));
+        if ($print_bio === '') {
+            $print_bio = trim((string) ($profile['short_description'] ?? $profile['description'] ?? ''));
+        }
+        if ($print_bio === '' && !empty($profile['wp_user_id'])) {
+            $print_user = get_userdata(absint($profile['wp_user_id']));
+            if ($print_user) { $print_bio = trim((string) $print_user->description); }
+        }
+        if ($print_bio === '') {
+            $print_bio = trim(implode(' ', array_filter([(string) ($profile['specialties'] ?? ''), (string) ($profile['experience'] ?? '')])));
+        }
         Elev8_OS_Print_Service::render([
-            'name'=>self::employee_name($employee_id),'bio'=>(string)($profile['bio']??''),'medium'=>(string)($profile['medium']??''),'photo'=>(string)($profile['profile_photo']??''),
+            'name'=>self::employee_name($employee_id),'bio'=>$print_bio,'medium'=>(string)($profile['medium']??''),'photo'=>(string)($profile['profile_photo']??''),
             'profile_url'=>self::public_artist_url($employee_id,true),'canonical_url'=>admin_url('admin.php?page=elev8-print-center'),
         ], $format==='artist-qr'?'qr':'artist-card', $format==='artist-card-two');
     }
@@ -1123,9 +1134,16 @@ final class Elev8_OS {
         $profile = $profiles[$employee_id] ?? [];
         if (empty($profile['public_enabled']) || ($profile['status'] ?? 'active') !== 'active') { return; }
         $canonical = self::public_artist_url($employee_id, false);
+        $print_bio = trim((string) ($profile['bio'] ?? ''));
+        if ($print_bio === '') { $print_bio = trim((string) ($profile['short_description'] ?? $profile['description'] ?? '')); }
+        if ($print_bio === '' && !empty($profile['wp_user_id'])) {
+            $print_user = get_userdata(absint($profile['wp_user_id']));
+            if ($print_user) { $print_bio = trim((string) $print_user->description); }
+        }
+        if ($print_bio === '') { $print_bio = trim(implode(' ', array_filter([(string) ($profile['specialties'] ?? ''), (string) ($profile['experience'] ?? '')]))); }
         Elev8_OS_Print_Service::render([
             'name' => self::employee_name($employee_id),
-            'bio' => (string)($profile['bio'] ?? ''),
+            'bio' => $print_bio,
             'medium' => (string)($profile['medium'] ?? ''),
             'photo' => (string)($profile['profile_photo'] ?? ''),
             'profile_url' => self::public_artist_url($employee_id, true),

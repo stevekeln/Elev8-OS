@@ -1,10 +1,10 @@
-Elev8 OS 8.0.1 — Artist-Filtered Print Center
+Elev8 OS 8.0.2 — Minimal Gallery Print Refinement
 
-1. Back up the Local site.
-2. Install the complete plugin ZIP through WordPress Plugins > Add New > Upload Plugin.
-3. Replace the existing Elev8 OS version when WordPress prompts you.
-4. Open Elev8 OS > Print Center.
-5. Under Artwork Gallery Labels, choose an artist and confirm only that artist's artwork appears.
-6. Change artists and confirm the artwork selection resets.
-7. Preview an artwork label and confirm the correct artist and artwork are shown.
-8. Test on Local before installing the exact same ZIP on Live.
+Install this ZIP through WordPress Plugins > Add New > Upload Plugin.
+Test on Local before installing the exact same ZIP on Live.
+
+Verify:
+1. Artwork labels preview at exactly 3 × 3 inches.
+2. Artist display cards show the artist biography.
+3. The uploaded paisley appears in preview and print/PDF output.
+4. Enable Background graphics in the browser print dialog when required.

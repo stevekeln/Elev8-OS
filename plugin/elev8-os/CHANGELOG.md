@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 8.0.2 — Minimal Gallery Print Refinement
+
+- Changed artwork printouts to compact 3 × 3-inch square QR labels.
+- Restored artist biography text with approved profile and WordPress-description fallbacks.
+- Rendered uploaded paisley artwork as a print-safe image layer.
+- Added exact print color adjustment for reliable backgrounds in browser print and PDF output.
+- Preserved the 8.0.1 artist-filtered Print Center workflow.
+
 ## 8.0.1 — Artist-Filtered Print Center
 
 - Added an artist selector to the Artwork Gallery Labels workflow.

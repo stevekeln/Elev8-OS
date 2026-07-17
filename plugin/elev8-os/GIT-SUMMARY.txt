@@ -1,3 +1,9 @@
-Elev8 OS 8.0.1 — Artist-Filtered Print Center
+Elev8 OS 8.0.2 — Minimal Gallery Print Refinement
 
-Updates the owner-only Gallery Print Center so artwork labels are selected through an artist-first workflow. Choosing an artist immediately filters the artwork list to only that artist's records, resets stale selections, displays useful empty states, and validates the artist/artwork relationship on the server before printing.
+Changed files:
+- elev8-os.php
+- CHANGELOG.md
+- INSTALL.txt
+- GIT-SUMMARY.txt
+- includes/class-elev8-os.php
+- includes/Services/class-elev8-os-print-service.php
