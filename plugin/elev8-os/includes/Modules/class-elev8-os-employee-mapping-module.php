@@ -7,6 +7,7 @@ final class Elev8_OS_Employee_Mapping_Module {
     private const META_KEY = 'elev8_os_amelia_employee_id';
     private const NONCE_ACTION = 'elev8_os_save_employee_mapping';
     private const NONCE_NAME = 'elev8_os_employee_mapping_nonce';
+    private const PROFILE_OPTION = 'elev8_os_artist_profiles';
 
     public static function init(): void {
         add_action('admin_menu', [__CLASS__, 'register_menu'], 25);
@@ -70,14 +71,77 @@ final class Elev8_OS_Employee_Mapping_Module {
         $submitted = isset($_POST['employee_mapping']) ? (array) wp_unslash($_POST['employee_mapping']) : [];
         $valid=[]; foreach (self::employees() as $employee) { $valid[(int)$employee['id']] = true; }
         $saved=0;
-        foreach ($submitted as $user_id=>$employee_id) { $user_id=absint($user_id); $employee_id=absint($employee_id); if (!$user_id || !get_user_by('id',$user_id)) { continue; } if (!$employee_id) { delete_user_meta($user_id,self::META_KEY); $saved++; continue; } if (!isset($valid[$employee_id])) { continue; } update_user_meta($user_id,self::META_KEY,$employee_id); $saved++; }
+        foreach ($submitted as $user_id=>$employee_id) {
+            $user_id=absint($user_id);
+            $employee_id=absint($employee_id);
+            if (!$user_id || !get_user_by('id',$user_id)) { continue; }
+
+            $previous_employee_id = absint(get_user_meta($user_id, self::META_KEY, true));
+            if (!$employee_id) {
+                delete_user_meta($user_id,self::META_KEY);
+                self::sync_profile_owner($previous_employee_id, 0, $user_id);
+                Elev8_OS_Identity_Service::clear_request_cache($user_id);
+                $saved++;
+                continue;
+            }
+            if (!isset($valid[$employee_id])) { continue; }
+
+            update_user_meta($user_id,self::META_KEY,$employee_id);
+            if ($previous_employee_id > 0 && $previous_employee_id !== $employee_id) {
+                self::sync_profile_owner($previous_employee_id, 0, $user_id);
+            }
+            self::sync_profile_owner($employee_id, $user_id);
+            Elev8_OS_Identity_Service::clear_request_cache($user_id);
+            $saved++;
+        }
         return ['success'=>true,'text'=>sprintf(_n('%d artist mapping saved.','%d artist mappings saved.',$saved,'elev8-os'),$saved)];
     }
 
     private static function auto_match(): int {
         $employees=self::employees(); $count=0;
-        foreach (self::candidate_users($employees) as $user) { if (self::mapped_employee_id($user)>0) { continue; } $id=self::employee_id_by_email($user->user_email,$employees); if ($id>0) { update_user_meta($user->ID,self::META_KEY,$id); $count++; } }
+        foreach (self::candidate_users($employees) as $user) {
+            if (self::mapped_employee_id($user)>0) { continue; }
+            $id=self::employee_id_by_email($user->user_email,$employees);
+            if ($id>0) {
+                update_user_meta($user->ID,self::META_KEY,$id);
+                self::sync_profile_owner($id, $user->ID);
+                Elev8_OS_Identity_Service::clear_request_cache($user->ID);
+                $count++;
+            }
+        }
         return $count;
+    }
+
+    /**
+     * Keep the legacy artist-profile owner field synchronized for backward
+     * compatibility. Artist Mapping remains the authoritative identity source.
+     */
+    private static function sync_profile_owner(int $employee_id, int $user_id, int $only_if_user_id = 0): void {
+        $employee_id = absint($employee_id);
+        $user_id = absint($user_id);
+        $only_if_user_id = absint($only_if_user_id);
+        if ($employee_id <= 0) { return; }
+
+        $profiles = get_option(self::PROFILE_OPTION, []);
+        if (!is_array($profiles)) { $profiles = []; }
+        $profile = isset($profiles[$employee_id]) && is_array($profiles[$employee_id]) ? $profiles[$employee_id] : [];
+
+        if ($only_if_user_id > 0 && absint($profile['wp_user_id'] ?? 0) !== $only_if_user_id) { return; }
+
+        // One approved user per artist and one artist per approved user.
+        if ($user_id > 0) {
+            foreach ($profiles as $profile_employee_id => $candidate) {
+                if (absint($profile_employee_id) === $employee_id || !is_array($candidate)) { continue; }
+                if (absint($candidate['wp_user_id'] ?? 0) === $user_id) {
+                    $profiles[$profile_employee_id]['wp_user_id'] = 0;
+                }
+            }
+        }
+
+        $profile['wp_user_id'] = $user_id;
+        $profiles[$employee_id] = $profile;
+        update_option(self::PROFILE_OPTION, $profiles, false);
+        wp_cache_delete(self::PROFILE_OPTION, 'options');
     }
 
     private static function candidate_users(array $employees): array {

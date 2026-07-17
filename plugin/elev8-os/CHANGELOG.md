@@ -1,5 +1,12 @@
 # Elev8 OS Changelog
 
+## 7.7.1 - Automatic Artist Storefront Identity
+- Made approved Artist Mapping the source of truth for public artist storefront ownership.
+- Automatically synchronizes the legacy WordPress login field whenever a mapping is saved, changed, removed, or auto-matched.
+- Public artist pages now resolve artwork directly through the central Identity Service, with the old profile field retained only as a backward-compatible fallback.
+- Public artwork pages now resolve their artist through approved mapping first.
+- Prevented one WordPress artist account from remaining linked to multiple artist profiles during remapping.
+
 ## 7.7.0 - Momentum Experience
 - Added a reusable Recommendation State Service with Not Started, In Progress, Completed, Dismissed, and Hidden states.
 - Added recommendation priority, expiration, history, and dashboard visibility handling.
@@ -76,6 +83,13 @@
 - Preserves all existing Asset Engine, storefront, inventory, checkout, and live artwork data.
 
 # Elev8 OS Changelog
+
+## 7.7.1 - Automatic Artist Storefront Identity
+- Made approved Artist Mapping the source of truth for public artist storefront ownership.
+- Automatically synchronizes the legacy WordPress login field whenever a mapping is saved, changed, removed, or auto-matched.
+- Public artist pages now resolve artwork directly through the central Identity Service, with the old profile field retained only as a backward-compatible fallback.
+- Public artwork pages now resolve their artist through approved mapping first.
+- Prevented one WordPress artist account from remaining linked to multiple artist profiles during remapping.
 
 ## 7.2.0 — Inventory & WooCommerce Checkout
 
@@ -216,6 +230,13 @@
 
 # Elev8 OS Changelog
 
+## 7.7.1 - Automatic Artist Storefront Identity
+- Made approved Artist Mapping the source of truth for public artist storefront ownership.
+- Automatically synchronizes the legacy WordPress login field whenever a mapping is saved, changed, removed, or auto-matched.
+- Public artist pages now resolve artwork directly through the central Identity Service, with the old profile field retained only as a backward-compatible fallback.
+- Public artwork pages now resolve their artist through approved mapping first.
+- Prevented one WordPress artist account from remaining linked to multiple artist profiles during remapping.
+
 ## 6.6.0 — Activity & Opportunity Timeline
 
 - Added a WordPress-owned opportunity activity table and reusable activity service.
@@ -333,6 +354,13 @@
 - Expanded administrator diagnostics with discovered assignment sources.
 
 # Elev8 OS Changelog
+
+## 7.7.1 - Automatic Artist Storefront Identity
+- Made approved Artist Mapping the source of truth for public artist storefront ownership.
+- Automatically synchronizes the legacy WordPress login field whenever a mapping is saved, changed, removed, or auto-matched.
+- Public artist pages now resolve artwork directly through the central Identity Service, with the old profile field retained only as a backward-compatible fallback.
+- Public artwork pages now resolve their artist through approved mapping first.
+- Prevented one WordPress artist account from remaining linked to multiple artist profiles during remapping.
 
 ## 6.0.1 — Upcoming Class Compatibility Hotfix
 

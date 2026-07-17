@@ -1,20 +1,18 @@
-Elev8 OS 7.7.0 - Momentum Experience
+Elev8 OS 7.7.1 - Automatic Artist Storefront Identity
 
 Git source update includes:
-- New reusable Recommendation State Service
-- One-item Today's Focus dashboard experience
-- Start, complete, dismiss, hide, priority, expiration, visibility, and history foundations
-- Recommendation activity timeline events
-- Recommendation-to-achievement trigger foundation
-- Momentum success, recent activity, and future reports UI
+- Artist Mapping is now the source of truth for artist-to-WordPress ownership
+- Mapping saves automatically synchronize the legacy artist profile login field
+- Auto-match performs the same synchronization
+- Remapping clears stale duplicate profile ownership
+- Public artist storefronts resolve artwork through the central Identity Service
+- Public artwork pages resolve their artist through approved mapping first
+- Backward-compatible fallback for existing manually linked profiles
 - Version and changelog updates
 
 Primary changed files:
 - elev8-os.php
 - CHANGELOG.md
-- includes/class-elev8-os-loader.php
-- includes/Services/class-elev8-os-recommendation-service.php
-- includes/Services/class-elev8-os-recommendation-state-service.php
-- includes/Services/class-elev8-os-achievement-service.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- assets/css/artist-dashboard.css
+- includes/Services/class-elev8-os-identity-service.php
+- includes/Modules/class-elev8-os-employee-mapping-module.php
+- includes/class-elev8-os.php

@@ -76,6 +76,32 @@ final class Elev8_OS_Identity_Service {
         return self::$request_cache[$user_id] = (is_array($row) ? $row : null);
     }
 
+    /**
+     * Resolve the approved WordPress account for an Amelia artist.
+     * Explicit Artist Mapping is the source of truth.
+     */
+    public static function user_id_for_artist(int $artist_id): int {
+        $artist_id = absint($artist_id);
+        if ($artist_id <= 0) { return 0; }
+
+        $users = get_users([
+            'meta_key'   => self::EMPLOYEE_META,
+            'meta_value' => (string) $artist_id,
+            'number'     => 2,
+            'fields'     => 'ids',
+        ]);
+
+        if (!is_array($users) || count($users) !== 1) { return 0; }
+        return absint($users[0]);
+    }
+
+    /** Resolve an artist ID from an explicitly approved WordPress account. */
+    public static function artist_id_for_user_id(int $user_id): int {
+        $user_id = absint($user_id);
+        if ($user_id <= 0) { return 0; }
+        return absint(get_user_meta($user_id, self::EMPLOYEE_META, true));
+    }
+
     public static function clear_request_cache(?int $user_id = null): void {
         if ($user_id === null) { self::$request_cache = []; return; }
         unset(self::$request_cache[absint($user_id)]);

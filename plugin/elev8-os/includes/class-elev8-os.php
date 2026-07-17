@@ -808,7 +808,10 @@ final class Elev8_OS {
         $booking_url = trim((string) ($profile['booking_url'] ?? ''));
         $booking_label = trim((string) ($profile['booking_button_label'] ?? ''));
         if ($booking_label === '') $booking_label = 'Book Now with This Artist';
-        $owner_user_id = absint($profile['wp_user_id'] ?? 0);
+        $owner_user_id = Elev8_OS_Identity_Service::user_id_for_artist($employee_id);
+        if ($owner_user_id <= 0) {
+            $owner_user_id = absint($profile['wp_user_id'] ?? 0);
+        }
         $store_assets = $owner_user_id > 0 ? Elev8_OS_Asset_Service::get_public_for_owner($owner_user_id) : [];
         ob_start(); ?>
         <div class="elev8-os elev8-public-profile">
@@ -826,6 +829,11 @@ final class Elev8_OS {
 
     private static function employee_id_from_owner_user(int $owner_user_id): int {
         if ($owner_user_id <= 0) return 0;
+
+        $mapped_employee_id = Elev8_OS_Identity_Service::artist_id_for_user_id($owner_user_id);
+        if ($mapped_employee_id > 0) return $mapped_employee_id;
+
+        // Backward-compatible fallback for profiles created before Artist Mapping.
         foreach (self::get_profiles() as $employee_id => $profile) {
             if (absint($profile['wp_user_id'] ?? 0) === $owner_user_id) return absint($employee_id);
         }

@@ -1,4 +1,4 @@
-Elev8 OS 7.7.0 - Momentum Experience
+Elev8 OS 7.7.1 - Momentum Experience
 
 Elev8 OS is the production business operating system for Elev8 Arts and its artist ecosystem.
 

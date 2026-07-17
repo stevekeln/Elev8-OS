@@ -1,18 +1,17 @@
-Elev8 OS 7.7.0 Installation
+Elev8 OS 7.7.1 Installation
 
 1. Back up the WordPress site and database.
-2. Install the complete elev8-os-7.7.0-momentum-experience.zip through WordPress Plugins > Add New > Upload Plugin.
+2. Install the complete elev8-os-7.7.1-artist-identity-hotfix.zip through WordPress Plugins > Add New > Upload Plugin.
 3. Choose Replace current with uploaded when WordPress detects the existing Elev8 OS plugin.
-4. Confirm the installed plugin reports Version 7.7.0.
+4. Confirm the installed plugin reports Version 7.7.1.
 5. Test on Local before installing the exact same ZIP on Live.
 
 Local test checklist:
-- Artist Dashboard loads without errors.
-- Existing portal navigation, classes, students, artwork, website, and waitlist features still load.
-- Today's Focus displays no more than one recommendation.
-- Start This Focus changes the state to In Progress.
-- The recommendation action opens the correct existing module.
-- Mark Complete displays the success message and advances to the next recommendation.
-- Not Relevant dismisses the recommendation and advances to the next recommendation.
-- Recent Activity records Started, Completed, and Dismissed events.
-- Dashboard remains usable on mobile.
+- Existing Artist Dashboard and all 7.7.0 Momentum features load normally.
+- Create or use a test artist with a public artist page.
+- Map the WordPress artist account in Elev8 OS > Artist Mapping and save.
+- Add public artwork while logged in as that artist.
+- Confirm the artwork appears on the public artist page without manually selecting WordPress login account in Artist Portal.
+- Change the mapping and confirm ownership follows the newly approved mapping.
+- Remove the mapping and confirm Elev8 OS does not keep a stale automatic profile connection.
+- Confirm older artists with manually connected profile accounts continue to work.
