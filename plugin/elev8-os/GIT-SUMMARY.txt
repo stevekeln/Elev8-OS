@@ -1,20 +1,16 @@
-Elev8 OS 9.4.0 — Business GPS & Intelligence Foundation
+Elev8 OS 10.0.0 — Artist Success
 
-CHANGED
+Changed:
 - elev8-os.php
 - includes/class-elev8-os-loader.php
 - includes/Modules/class-elev8-os-dashboard-module.php
+- includes/Modules/class-elev8-os-growth-center-module.php
 - assets/css/artist-dashboard.css
 - CHANGELOG.md
 - GIT-SUMMARY.txt
 
-NEW
-- includes/Services/class-elev8-os-business-event-service.php
-- includes/Services/class-elev8-os-opportunity-engine.php
-- includes/Services/class-elev8-os-content-calendar-service.php
-- includes/Services/class-elev8-os-predictive-scheduling-service.php
-- includes/Services/class-elev8-os-business-gps-service.php
-- includes/Modules/class-elev8-os-business-gps-module.php
+Added:
+- includes/Services/class-elev8-os-artist-success-service.php
+- includes/Modules/class-elev8-os-artist-success-module.php
 
-DATABASE CHANGES
-- None. External trusted-system records remain in WordPress, Amelia, and WooCommerce.
+Database changes: None.

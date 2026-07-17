@@ -29,6 +29,11 @@ final class Elev8_OS_Growth_Center_Module {
                 <div><p class="elev8-eyebrow"><?php esc_html_e('Owner View', 'elev8-os'); ?></p><h1><?php esc_html_e('Artist Growth Center', 'elev8-os'); ?></h1><p><?php esc_html_e('See who is growing, who needs help, and the highest-value next action supported by verified data.', 'elev8-os'); ?></p></div>
                 <span class="elev8-dashboard-badge"><?php echo esc_html(sprintf(_n('%d artist', '%d artists', count($users), 'elev8-os'), count($users))); ?></span>
             </header>
+            <?php $gallery_health = Elev8_OS_Artist_Success_Service::gallery_health($users); ?>
+            <section class="elev8-dashboard-panel elev8-gallery-health">
+                <div class="elev8-gallery-health-score"><strong><?php echo $gallery_health['score'] === null ? esc_html__('Unavailable','elev8-os') : esc_html((string)$gallery_health['score'].'%'); ?></strong><span><?php esc_html_e('Gallery Health','elev8-os'); ?></span></div>
+                <div><p class="elev8-eyebrow"><?php esc_html_e('Organization Momentum','elev8-os'); ?></p><h2><?php echo esc_html((string)$gallery_health['label']); ?></h2><p><?php echo esc_html(sprintf(_n('%d artist currently needs focused support.','%d artists currently need focused support.',(int)$gallery_health['attention'],'elev8-os'),(int)$gallery_health['attention'])); ?></p><div class="elev8-gallery-health-categories"><?php foreach((array)$gallery_health['categories'] as $key=>$value): ?><div><strong><?php echo esc_html((string)$value.'%'); ?></strong><span><?php echo esc_html(ucwords(str_replace('_',' ',(string)$key))); ?></span></div><?php endforeach; ?></div></div>
+            </section>
             <section class="elev8-dashboard-panel elev8-owner-growth-table">
                 <?php if (!$users): ?>
                     <div class="elev8-dashboard-empty"><span class="dashicons dashicons-groups"></span><h3><?php esc_html_e('No linked artist accounts found', 'elev8-os'); ?></h3><p><?php esc_html_e('Link WordPress users to Amelia Member Artists in Employee Mapping. Scores will appear here automatically.', 'elev8-os'); ?></p></div>

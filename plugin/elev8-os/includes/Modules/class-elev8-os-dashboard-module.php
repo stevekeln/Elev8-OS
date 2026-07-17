@@ -200,6 +200,8 @@ final class Elev8_OS_Dashboard_Module {
                 <span class="elev8-dashboard-badge"><?php esc_html_e('Founders Edition', 'elev8-os'); ?></span>
             </header>
 
+            <?php if (class_exists('Elev8_OS_Artist_Success_Module')) { Elev8_OS_Artist_Success_Module::render_artist($user, $business); } ?>
+
             <?php if (class_exists('Elev8_OS_Business_GPS_Module')) { Elev8_OS_Business_GPS_Module::render_artist($user, $business); } ?>
 
             <?php if (empty($snapshot['available'])) : ?>

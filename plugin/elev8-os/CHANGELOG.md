@@ -1,3 +1,15 @@
+## 10.0.0 — Artist Success
+
+- Added the Artist Success welcome experience with time-aware greeting and motivational guidance.
+- Added verified weekly goals based on meaningful business activity.
+- Added Momentum status without inventing unsupported historical comparisons.
+- Added Artist Journey levels from Beginning Artist through Master Artist.
+- Added a prioritized 30-minute action plan using Business GPS opportunities.
+- Added Celebrate Wins cards sourced from the normalized Business Event Engine.
+- Added owner-level Gallery Health with organization-wide score categories and support signals.
+- Reused Business GPS, Opportunity Engine, achievements, Content Studio launcher, Amelia, and WooCommerce data.
+- No database changes.
+
 # Changelog
 
 ## 9.4.0 — Business GPS & Intelligence Foundation
