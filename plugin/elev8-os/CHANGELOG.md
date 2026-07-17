@@ -1,13 +1,14 @@
-# Elev8 OS 9.0.6
-
-## Artist Portal Board Direct Save
-- Replaced the fragile Artist Portal option inside the generic zone form with a dedicated Rack + Board form.
-- Added direct database upsert by rack number and board number.
-- Verifies that the board is active and canonical before reporting success.
-- Keeps all active locations available through the unified selectable-location service.
-- Preserves existing zones, placements, and movement history.
-
 # Elev8 OS Changelog
+
+## 9.0.7 — Canonical Location Registry Hotfix
+
+- Fixed the shared location registry so newly created walls, racks, storage areas, and other zones appear immediately in every artwork location menu.
+- Removed reliance on stale legacy `active` flags for canonical physical locations.
+- Continued excluding retired Artist Portal A/B side records.
+- Added safe gallery-location deletion. A location must be empty before it can be deleted.
+- Added delete controls to the location detail screen.
+- Preserved artwork placements and movement history.
+
 
 ## 9.0.5 — Artist Portal Location Persistence Hotfix
 

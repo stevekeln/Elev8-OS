@@ -1,3 +1,1 @@
-Elev8 OS 9.0.5 — Artist Portal Location Persistence Hotfix
-
-Fixes numbered Artist Portal Rack board zones that were saved but not visible in Gallery Floor or artwork location dropdowns. Adds migration repair, canonical save enforcement, verification, and database error reporting.
+Elev8 OS 9.0.7 fixes the canonical gallery location registry so all newly created standard zones and Artist Portal boards appear immediately in placement menus. It also adds safe empty-zone deletion.

@@ -5,3 +5,5 @@
 
 /* 9.0.4 unified location polish */
 .portal-zone-fields[hidden]{display:none!important}.zone{grid-template-columns:1fr!important;gap:12px}.zone-title{display:flex;align-items:flex-start;gap:10px}.zone-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#eef6fa;color:#087f9c;font-size:18px;flex:0 0 auto}.zone-metrics{display:flex;justify-content:space-between;gap:10px;border-top:1px solid #edf0f2;padding-top:10px}.zone-metrics span{grid-column:auto!important;margin:0!important}.zone em{font-style:normal;color:#2271b1;font-weight:600;font-size:12px}.portal-zone-fields{grid-template-columns:1fr 1fr}.portal-zone-fields:not([hidden]){display:grid}.standard-zone-name[style*="display: none"]{display:none!important}
+
+.zone-detail-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.zone-detail-actions form{margin:0}.zone-detail-actions .button-link-delete{color:#b32d2e;border-color:#b32d2e}.zone-detail-actions .button-link-delete:hover{color:#fff;background:#b32d2e}
