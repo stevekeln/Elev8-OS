@@ -178,6 +178,7 @@ final class Elev8_OS_Dashboard_Module {
             : [];
         $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
         $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
+        $marketing_url = Elev8_OS_Portal_Page_Manager::get_url('marketing');
         $artwork_url = Elev8_OS_Portal_Page_Manager::get_url('artwork');
         $website_url = Elev8_OS_Portal_Page_Manager::get_url('website');
         $edit_website_url = Elev8_OS_Portal_Page_Manager::get_url('edit_website');
@@ -218,6 +219,8 @@ final class Elev8_OS_Dashboard_Module {
                 </section>
             <?php endif; ?>
 
+            <?php if (class_exists('Elev8_OS_Marketing_Module')) { Elev8_OS_Marketing_Module::render_art_walk_tickler($user); } ?>
+
             <div class="elev8-dashboard-main-grid">
                 <section class="elev8-dashboard-panel elev8-next-class-panel">
                     <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Up next', 'elev8-os'); ?></p><h2><?php esc_html_e('Next Class', 'elev8-os'); ?></h2></div><a href="<?php echo esc_url($classes_url); ?>"><?php esc_html_e('View all classes', 'elev8-os'); ?></a></div>
@@ -238,6 +241,7 @@ final class Elev8_OS_Dashboard_Module {
                         <?php self::render_action_link('art', __('Add Artwork', 'elev8-os'), __('Create a product, QR page, and inventory record', 'elev8-os'), $artwork_url . '#elev8-artwork-editor'); ?>
                         <?php self::render_action_link('calendar-alt', __('Manage My Classes', 'elev8-os'), __('Schedule, enrollment, and booking links', 'elev8-os'), $classes_url); ?>
                         <?php self::render_action_link('groups', __('View My Students', 'elev8-os'), __('Open class rosters and contact details', 'elev8-os'), $students_url); ?>
+                        <?php self::render_action_link('email-alt', __('Email My Students', 'elev8-os'), __('Create a safe campaign for a verified student segment', 'elev8-os'), $marketing_url); ?>
                         <?php self::render_action_link('admin-home', __('View My Website', 'elev8-os'), __('See what customers see', 'elev8-os'), $website_url); ?>
                         <?php self::render_action_link('edit', __('Edit My Website', 'elev8-os'), __('Update your bio, links, and profile', 'elev8-os'), $edit_website_url); ?>
                         <?php if ($artist && !empty($artist['id'])) : ?>

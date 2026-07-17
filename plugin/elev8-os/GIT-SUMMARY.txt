@@ -1,11 +1,18 @@
-Elev8 OS 9.1.0 — Artist Growth Center Foundation
+Elev8 OS 9.1.1 Git Source Update
 
-Main changes:
-- New reusable Student Relationship Service
-- Amelia-backed lifetime student CRM
-- Student segments and search
-- Private notes, tags, and relationship timeline
-- Artist dashboard relationship tickler
-- Database migrations for CRM enrichment tables
+Added:
+- includes/Services/class-elev8-os-marketing-service.php
+- includes/Modules/class-elev8-os-marketing-module.php
+- assets/css/artist-marketing.css
 
-Replace the repository source with these files, commit to develop, push, and run the normal release build workflow.
+Updated:
+- elev8-os.php
+- includes/class-elev8-os-loader.php
+- includes/class-elev8-os.php
+- includes/Services/class-elev8-os-portal-page-manager.php
+- includes/Modules/class-elev8-os-artist-portal-module.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- assets/css/artist-dashboard.css
+- CHANGELOG.md
+- README.txt
+- INSTALL.txt

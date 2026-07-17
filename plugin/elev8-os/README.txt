@@ -1,17 +1,19 @@
-Elev8 OS 9.1.0 — Artist Growth Center Foundation
+Elev8 OS 9.1.1 — Artist Marketing Center
 
-This release introduces the first production stage of the Artist Growth Center: a private Student Relationship Center backed by verified Amelia booking data. Artists can see lifetime student relationships, actionable segments, private notes, reusable tags, and a relationship timeline.
+Elev8 OS is a business operating system for experience-based creative businesses.
 
-Elev8 OS 7.7.4 - Momentum Experience
+This release adds a private artist Marketing Center built on the verified Student Relationship Center. Artists can create drafts, send test messages to themselves, email verified student segments through the site's configured WordPress/SMTP provider, promote another artist or experience with a referral-aware link, and review delivery totals.
 
-Elev8 OS is the production business operating system for Elev8 Arts and its artist ecosystem.
+Owner setup:
+1. Open Elev8 OS > Growth Settings.
+2. Configure the Art Walk event date, registration dates, registration URL, expected visitors, and enable the assistant.
+3. Confirm the WordPress site has a reliable SMTP provider before artists send live campaigns.
 
-This release evolves the rule-based Recommendation Engine into a focused daily momentum workflow. The Artist Dashboard now features one verified Today's Focus action with impact, estimated time, expected result, reason, and a reusable state workflow.
+Artist workflow:
+1. Open Artist Portal > Marketing.
+2. Choose a template and verified student segment.
+3. Add a promotion URL when applicable.
+4. Send a test email to yourself.
+5. Review and send the campaign.
 
-Trusted system boundaries remain unchanged:
-- Elev8 OS owns business logic and intelligence.
-- WordPress owns authentication, users, and roles.
-- Amelia owns scheduling and bookings.
-- WooCommerce owns products, checkout, payments, and orders.
-
-7.7.3 adds the reusable searchable Elev8 Identity account selector with conflict protection.
+Always test on Local before installing the exact same ZIP on Live.
