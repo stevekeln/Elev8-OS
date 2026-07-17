@@ -55,6 +55,9 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Gallery_Operations_Service')) {
             Elev8_OS_Gallery_Operations_Service::activate();
         }
+        if (class_exists('Elev8_OS_Student_Relationship_Service')) {
+            Elev8_OS_Student_Relationship_Service::activate();
+        }
         if (class_exists('Elev8_OS_Class_Demand_Module')) {
             Elev8_OS_Class_Demand_Module::activate();
         }
@@ -2215,6 +2218,9 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Gallery_Operations_Service')) {
             Elev8_OS_Gallery_Operations_Service::activate();
+        }
+        if (class_exists('Elev8_OS_Student_Relationship_Service')) {
+            Elev8_OS_Student_Relationship_Service::activate();
         }
         if (class_exists('Elev8_OS_Class_Demand_Module')) {
             Elev8_OS_Class_Demand_Module::activate();

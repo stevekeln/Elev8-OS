@@ -1,293 +1,106 @@
 <?php
+if (!defined('ABSPATH')) { exit; }
 
-if (!defined('ABSPATH')) {
-    exit;
-}
-
-/**
- * Artist-facing student rosters backed by verified Amelia booking data.
- */
+/** Artist Growth Center: verified Student CRM, notes, tags, and relationship timeline. */
 final class Elev8_OS_Students_Module {
-
-    private const SHORTCODE = 'elev8_artist_students';
-    private const EMPLOYEE_META_KEY = 'elev8_os_amelia_employee_id';
+    private const SHORTCODE='elev8_artist_students';
 
     public static function init(): void {
-        add_action('init', [__CLASS__, 'register_shortcode']);
-        add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
+        add_action('init',[__CLASS__,'register_shortcode']);
+        add_action('wp_enqueue_scripts',[__CLASS__,'enqueue_assets']);
+        add_action('admin_post_elev8_os_student_add_note',[__CLASS__,'handle_add_note']);
+        add_action('admin_post_elev8_os_student_save_tags',[__CLASS__,'handle_save_tags']);
     }
-
-    public static function register_shortcode(): void {
-        add_shortcode(self::SHORTCODE, [__CLASS__, 'shortcode']);
-    }
-
+    public static function activate(): void { if(class_exists('Elev8_OS_Student_Relationship_Service')){Elev8_OS_Student_Relationship_Service::activate();} }
+    public static function register_shortcode(): void { add_shortcode(self::SHORTCODE,[__CLASS__,'shortcode']); }
     public static function enqueue_assets(): void {
-        if (!Elev8_OS_Portal_Page_Manager::is_current_page('students')) {
-            return;
-        }
-
+        if(!Elev8_OS_Portal_Page_Manager::is_current_page('students')){return;}
         wp_enqueue_style('dashicons');
-        wp_enqueue_style(
-            'elev8-os-students',
-            ELEV8_OS_URL . 'assets/css/artist-students.css',
-            ['elev8-os-artist-portal'],
-            ELEV8_OS_VERSION
-        );
+        wp_enqueue_style('elev8-os-students',ELEV8_OS_URL.'assets/css/artist-students.css',['elev8-os-artist-portal'],ELEV8_OS_VERSION);
     }
 
     public static function shortcode(): string {
-        if (!is_user_logged_in()) {
-            return sprintf(
-                '<div class="elev8-dashboard-login"><p>%1$s</p><p><a class="button" href="%2$s">%3$s</a></p></div>',
-                esc_html__('Please log in to view your students.', 'elev8-os'),
-                esc_url(wp_login_url(Elev8_OS_Portal_Page_Manager::get_url('students'))),
-                esc_html__('Log In', 'elev8-os')
-            );
+        if(!is_user_logged_in()){
+            return '<div class="elev8-dashboard-login"><p>'.esc_html__('Please log in to view your Student Relationship Center.','elev8-os').'</p><p><a class="button" href="'.esc_url(wp_login_url(Elev8_OS_Portal_Page_Manager::get_url('students'))).'">'.esc_html__('Log In','elev8-os').'</a></p></div>';
         }
-
-        $artist = self::find_artist_for_user(wp_get_current_user());
-        $appointment_id = isset($_GET['appointment_id']) ? absint($_GET['appointment_id']) : 0;
-        $result = $artist
-            ? self::load_roster((int) $artist['id'], $appointment_id)
-            : self::unavailable_result(__('Your WordPress account is not connected to an Amelia artist.', 'elev8-os'));
-
-        ob_start();
-        ?>
-        <div class="elev8-artist-dashboard elev8-students-page">
+        $user=wp_get_current_user();
+        $snapshot=Elev8_OS_Student_Relationship_Service::get_snapshot($user);
+        $selected_key=isset($_GET['student'])?sanitize_text_field(wp_unslash($_GET['student'])):'';
+        $selected=$selected_key!==''?Elev8_OS_Student_Relationship_Service::get_student($user,$selected_key):null;
+        $segment=isset($_GET['segment'])?sanitize_key((string)$_GET['segment']):'all';
+        $query=isset($_GET['q'])?sanitize_text_field(wp_unslash($_GET['q'])):'';
+        $students=$snapshot['students']??[];
+        $students=self::filter_students($students,$segment,$query);
+        ob_start(); ?>
+        <div class="elev8-artist-dashboard elev8-students-page elev8-growth-center">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('students'); ?>
-
-            <header class="elev8-dashboard-header">
-                <div>
-                    <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>
-                    <h1><?php esc_html_e('Students', 'elev8-os'); ?></h1>
-                    <p><?php esc_html_e('View verified rosters for classes assigned to you in Amelia.', 'elev8-os'); ?></p>
-                </div>
-                <span class="elev8-dashboard-badge"><?php esc_html_e('Private roster', 'elev8-os'); ?></span>
+            <header class="elev8-dashboard-header elev8-growth-header">
+                <div><p class="elev8-eyebrow"><?php esc_html_e('Artist Growth Center','elev8-os'); ?></p><h1><?php esc_html_e('Student Relationships','elev8-os'); ?></h1><p><?php esc_html_e('See every verified student relationship, remember important details, and know who needs follow-up.','elev8-os'); ?></p></div>
+                <span class="elev8-dashboard-badge"><?php esc_html_e('Private CRM','elev8-os'); ?></span>
             </header>
-
-            <?php if (!$result['available']) : ?>
-                <div class="elev8-dashboard-warning"><p><strong><?php esc_html_e('Student information is unavailable.', 'elev8-os'); ?></strong><br><?php echo esc_html($result['reason']); ?></p></div>
-            <?php else : ?>
-                <section class="elev8-student-class-picker">
-                    <label for="elev8-student-class-select"><?php esc_html_e('Choose a class', 'elev8-os'); ?></label>
-                    <select id="elev8-student-class-select" onchange="if(this.value){window.location.href=this.value;}">
-                        <?php foreach ($result['appointments'] as $appointment) : ?>
-                            <option value="<?php echo esc_url(add_query_arg('appointment_id', (int) $appointment['id'], Elev8_OS_Portal_Page_Manager::get_url('students'))); ?>" <?php selected((int) $appointment['id'], (int) $result['selected_id']); ?>>
-                                <?php echo esc_html((string) $appointment['label']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+            <?php if(isset($_GET['elev8_saved'])):?><div class="elev8-momentum-success"><span class="dashicons dashicons-yes-alt"></span><div><strong><?php esc_html_e('Saved','elev8-os'); ?></strong><p><?php esc_html_e('The student relationship was updated.','elev8-os'); ?></p></div></div><?php endif; ?>
+            <?php if(empty($snapshot['available'])):?><div class="elev8-dashboard-warning"><p><strong><?php esc_html_e('Student relationships are unavailable.','elev8-os'); ?></strong><br><?php echo esc_html((string)$snapshot['reason']); ?></p></div><?php else: ?>
+                <section class="elev8-student-summary elev8-growth-summary">
+                    <?php self::summary_card(__('All Students','elev8-os'),(int)$snapshot['total'],'all'); ?>
+                    <?php self::summary_card(__('Repeat Students','elev8-os'),(int)$snapshot['repeat'],'repeat'); ?>
+                    <?php self::summary_card(__('New This Month','elev8-os'),(int)$snapshot['new_this_month'],'new'); ?>
+                    <?php self::summary_card(__('Need Follow-up','elev8-os'),(int)$snapshot['inactive'],'inactive'); ?>
+                    <?php self::summary_card(__('Upcoming','elev8-os'),(int)$snapshot['upcoming'],'upcoming'); ?>
                 </section>
-
-                <?php if ($result['selected_id'] <= 0) : ?>
-                    <div class="elev8-student-empty"><span class="dashicons dashicons-groups"></span><h2><?php esc_html_e('No classes were found', 'elev8-os'); ?></h2><p><?php esc_html_e('A roster will appear after Amelia assigns a class to this artist.', 'elev8-os'); ?></p></div>
-                <?php else : ?>
-                    <section class="elev8-student-summary" aria-label="<?php esc_attr_e('Roster summary', 'elev8-os'); ?>">
-                        <?php self::summary_card(__('Students', 'elev8-os'), count($result['students'])); ?>
-                        <?php self::summary_card(__('Seats booked', 'elev8-os'), $result['seats_booked']); ?>
-                        <?php self::summary_card(__('Confirmed', 'elev8-os'), $result['confirmed']); ?>
-                        <?php self::summary_card(__('Pending', 'elev8-os'), $result['pending']); ?>
+                <section class="elev8-student-toolbar">
+                    <form method="get" action="<?php echo esc_url(Elev8_OS_Portal_Page_Manager::get_url('students')); ?>">
+                        <input type="hidden" name="segment" value="<?php echo esc_attr($segment); ?>">
+                        <label class="screen-reader-text" for="elev8-student-search"><?php esc_html_e('Search students','elev8-os'); ?></label>
+                        <input id="elev8-student-search" type="search" name="q" value="<?php echo esc_attr($query); ?>" placeholder="<?php esc_attr_e('Search name, email, phone, or tag','elev8-os'); ?>">
+                        <button class="button button-primary" type="submit"><?php esc_html_e('Search','elev8-os'); ?></button>
+                        <?php if($query!==''):?><a class="button" href="<?php echo esc_url(add_query_arg('segment',$segment,Elev8_OS_Portal_Page_Manager::get_url('students'))); ?>"><?php esc_html_e('Clear','elev8-os'); ?></a><?php endif; ?>
+                    </form>
+                    <p><?php echo esc_html(sprintf(_n('%d relationship','%d relationships',count($students),'elev8-os'),count($students))); ?></p>
+                </section>
+                <div class="elev8-growth-layout">
+                    <section class="elev8-student-directory">
+                        <?php if(!$students):?><div class="elev8-student-empty"><span class="dashicons dashicons-groups"></span><h2><?php esc_html_e('No students match this view','elev8-os'); ?></h2><p><?php esc_html_e('Try another segment or clear the search.','elev8-os'); ?></p></div>
+                        <?php else:?><div class="elev8-student-card-grid">
+                            <?php foreach($students as $student): $url=add_query_arg(['student'=>(string)$student['customer_key'],'segment'=>$segment,'q'=>$query],Elev8_OS_Portal_Page_Manager::get_url('students')); ?>
+                                <article class="elev8-student-card<?php echo $selected_key===$student['customer_key']?' is-selected':''; ?>">
+                                    <div class="elev8-student-avatar"><?php echo esc_html(self::initials((string)$student['name'])); ?></div>
+                                    <div class="elev8-student-card-body"><h2><a href="<?php echo esc_url($url); ?>"><?php echo esc_html($student['name']!==''?$student['name']:__('Name unavailable','elev8-os')); ?></a></h2>
+                                        <p><?php echo esc_html((string)$student['email']); ?></p>
+                                        <div class="elev8-student-metrics"><span><strong><?php echo esc_html(number_format_i18n((int)$student['classes_attended'])); ?></strong> <?php esc_html_e('classes','elev8-os'); ?></span><span><strong><?php echo esc_html(number_format_i18n((int)$student['upcoming_bookings'])); ?></strong> <?php esc_html_e('upcoming','elev8-os'); ?></span></div>
+                                        <?php if($student['last_class_at']!==''):?><p class="elev8-student-last"><?php esc_html_e('Last class:','elev8-os'); ?> <?php echo esc_html((string)$student['last_class_name']); ?> · <?php echo esc_html(self::date((string)$student['last_class_at'])); ?></p><?php endif; ?>
+                                        <div class="elev8-tag-list"><?php foreach(array_slice((array)$student['tags'],0,4) as $tag):?><span><?php echo esc_html((string)$tag); ?></span><?php endforeach; ?></div>
+                                        <div class="elev8-student-card-actions"><a class="button" href="<?php echo esc_url($url); ?>"><?php esc_html_e('View Relationship','elev8-os'); ?></a><?php if($student['email']!==''):?><a class="button" href="mailto:<?php echo esc_attr((string)$student['email']); ?>"><?php esc_html_e('Email','elev8-os'); ?></a><?php endif; ?></div>
+                                    </div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div><?php endif; ?>
                     </section>
-
-                    <section class="elev8-student-roster">
-                        <div class="elev8-student-roster-heading">
-                            <div><p class="elev8-eyebrow"><?php esc_html_e('Class roster', 'elev8-os'); ?></p><h2><?php echo esc_html((string) $result['selected_label']); ?></h2></div>
-                            <input type="search" id="elev8-student-search" placeholder="<?php esc_attr_e('Search name, email, or phone', 'elev8-os'); ?>" oninput="var q=this.value.toLowerCase();document.querySelectorAll('.elev8-student-row').forEach(function(r){r.hidden=r.dataset.search.indexOf(q)===-1;});">
-                        </div>
-
-                        <?php if (!$result['students']) : ?>
-                            <div class="elev8-student-empty"><span class="dashicons dashicons-groups"></span><h3><?php esc_html_e('No active students found', 'elev8-os'); ?></h3><p><?php esc_html_e('Cancelled and rejected bookings are excluded from this roster.', 'elev8-os'); ?></p></div>
-                        <?php else : ?>
-                            <div class="elev8-student-table-wrap">
-                                <table class="elev8-student-table">
-                                    <thead><tr><th><?php esc_html_e('Student', 'elev8-os'); ?></th><th><?php esc_html_e('Contact', 'elev8-os'); ?></th><th><?php esc_html_e('Seats', 'elev8-os'); ?></th><th><?php esc_html_e('Status', 'elev8-os'); ?></th><th><?php esc_html_e('Booked', 'elev8-os'); ?></th></tr></thead>
-                                    <tbody>
-                                    <?php foreach ($result['students'] as $student) : ?>
-                                        <?php $search = strtolower(trim($student['name'] . ' ' . $student['email'] . ' ' . $student['phone'])); ?>
-                                        <tr class="elev8-student-row" data-search="<?php echo esc_attr($search); ?>">
-                                            <td><strong><?php echo esc_html($student['name'] !== '' ? $student['name'] : __('Name unavailable', 'elev8-os')); ?></strong></td>
-                                            <td>
-                                                <?php if ($student['email'] !== '') : ?><a href="mailto:<?php echo esc_attr($student['email']); ?>"><?php echo esc_html($student['email']); ?></a><?php endif; ?>
-                                                <?php if ($student['phone'] !== '') : ?><a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $student['phone'])); ?>"><?php echo esc_html($student['phone']); ?></a><?php endif; ?>
-                                                <?php if ($student['email'] === '' && $student['phone'] === '') : ?><span><?php esc_html_e('Unavailable', 'elev8-os'); ?></span><?php endif; ?>
-                                            </td>
-                                            <td><?php echo esc_html(number_format_i18n((int) $student['seats'])); ?></td>
-                                            <td><span class="elev8-student-status status-<?php echo esc_attr(sanitize_html_class($student['status'])); ?>"><?php echo esc_html($student['status_label']); ?></span></td>
-                                            <td><?php echo $student['booked_at'] !== '' ? esc_html(self::format_date($student['booked_at'])) : esc_html__('Unavailable', 'elev8-os'); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <?php endif; ?>
-                    </section>
-                <?php endif; ?>
+                    <?php if($selected): self::render_detail($selected,$segment,$query); else: ?>
+                        <aside class="elev8-student-detail elev8-student-detail-empty"><span class="dashicons dashicons-id"></span><h2><?php esc_html_e('Choose a student','elev8-os'); ?></h2><p><?php esc_html_e('Open a relationship to view contact details, tags, notes, and timeline.','elev8-os'); ?></p></aside>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
-        </div>
-        <?php
-        return (string) ob_get_clean();
+        </div><?php return (string)ob_get_clean();
     }
 
-    private static function summary_card(string $label, int $value): void {
-        echo '<article><span>' . esc_html($label) . '</span><strong>' . esc_html(number_format_i18n($value)) . '</strong></article>';
-    }
+    /** @param array<string,mixed> $student */
+    private static function render_detail(array $student,string $segment,string $query): void { $return=add_query_arg(array_filter(['student'=>(string)$student['customer_key'],'segment'=>$segment,'q'=>$query]),Elev8_OS_Portal_Page_Manager::get_url('students')); ?>
+        <aside class="elev8-student-detail">
+            <div class="elev8-detail-heading"><div class="elev8-student-avatar large"><?php echo esc_html(self::initials((string)$student['name'])); ?></div><div><p class="elev8-eyebrow"><?php esc_html_e('Relationship Profile','elev8-os'); ?></p><h2><?php echo esc_html((string)$student['name']); ?></h2><p><?php echo esc_html(sprintf(__('Customer since %s','elev8-os'),self::date((string)$student['first_class_at']))); ?></p></div></div>
+            <div class="elev8-contact-actions"><?php if($student['email']!==''):?><a class="button button-primary" href="mailto:<?php echo esc_attr((string)$student['email']); ?>"><?php esc_html_e('Send Email','elev8-os'); ?></a><?php endif; ?><?php if($student['phone']!==''):?><a class="button" href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/','',(string)$student['phone'])); ?>"><?php esc_html_e('Call','elev8-os'); ?></a><?php endif; ?></div>
+            <dl class="elev8-relationship-facts"><div><dt><?php esc_html_e('Classes attended','elev8-os'); ?></dt><dd><?php echo esc_html(number_format_i18n((int)$student['classes_attended'])); ?></dd></div><div><dt><?php esc_html_e('Upcoming bookings','elev8-os'); ?></dt><dd><?php echo esc_html(number_format_i18n((int)$student['upcoming_bookings'])); ?></dd></div><div><dt><?php esc_html_e('Seats booked','elev8-os'); ?></dt><dd><?php echo esc_html(number_format_i18n((int)$student['seats_total'])); ?></dd></div><div><dt><?php esc_html_e('Verified booked value','elev8-os'); ?></dt><dd><?php echo $student['lifetime_value']>0?esc_html(function_exists('wc_price')?wp_strip_all_tags(wc_price((float)$student['lifetime_value'])):'$'.number_format_i18n((float)$student['lifetime_value'],2)):esc_html__('Unavailable','elev8-os'); ?></dd></div></dl>
+            <section class="elev8-detail-section"><h3><?php esc_html_e('Tags','elev8-os'); ?></h3><p><?php esc_html_e('Use commas to create useful groups such as Painting, Beginner, VIP, or Private Lesson.','elev8-os'); ?></p><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_student_save_tags"><input type="hidden" name="customer_key" value="<?php echo esc_attr((string)$student['customer_key']); ?>"><input type="hidden" name="return_url" value="<?php echo esc_url($return); ?>"><?php wp_nonce_field('elev8_os_student_save_tags'); ?><input type="text" name="tags" value="<?php echo esc_attr(implode(', ',(array)$student['tags'])); ?>"><button class="button" type="submit"><?php esc_html_e('Save Tags','elev8-os'); ?></button></form></section>
+            <section class="elev8-detail-section"><h3><?php esc_html_e('Private Notes','elev8-os'); ?></h3><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_student_add_note"><input type="hidden" name="customer_key" value="<?php echo esc_attr((string)$student['customer_key']); ?>"><input type="hidden" name="return_url" value="<?php echo esc_url($return); ?>"><?php wp_nonce_field('elev8_os_student_add_note'); ?><textarea name="note" rows="3" placeholder="<?php esc_attr_e('Add something useful to remember…','elev8-os'); ?>" required></textarea><button class="button button-primary" type="submit"><?php esc_html_e('Add Note','elev8-os'); ?></button></form><?php foreach((array)$student['notes'] as $note):?><article class="elev8-note"><p><?php echo esc_html((string)$note['note_text']); ?></p><time><?php echo esc_html(self::date((string)$note['created_at'],true)); ?></time></article><?php endforeach; ?></section>
+            <section class="elev8-detail-section"><h3><?php esc_html_e('Relationship Timeline','elev8-os'); ?></h3><div class="elev8-relationship-timeline"><?php foreach((array)$student['timeline'] as $event):?><article><span class="dashicons dashicons-marker"></span><div><strong><?php echo esc_html((string)$event['event_title']); ?></strong><?php if(!empty($event['event_detail'])):?><p><?php echo esc_html((string)$event['event_detail']); ?></p><?php endif; ?><time><?php echo esc_html(self::date((string)$event['event_date'],true)); ?></time></div></article><?php endforeach; ?></div></section>
+        </aside><?php }
 
-    /** @return array<string,mixed> */
-    private static function load_roster(int $artist_id, int $requested_id): array {
-        global $wpdb;
-        $appointments_table = $wpdb->prefix . 'amelia_appointments';
-        $bookings_table = $wpdb->prefix . 'amelia_customer_bookings';
-        $users_table = $wpdb->prefix . 'amelia_users';
-
-        if (!self::table_exists($appointments_table) || !self::table_exists($bookings_table)) {
-            return self::unavailable_result(__('Required Amelia appointment or booking tables were not found.', 'elev8-os'));
-        }
-
-        $ac = self::table_columns($appointments_table);
-        $appointment_id_col = self::first_existing_column($ac, ['id']);
-        $provider_col = self::first_existing_column($ac, ['providerId', 'provider_id', 'employeeId']);
-        $start_col = self::first_existing_column($ac, ['bookingStart', 'booking_start', 'start']);
-        $service_col = self::first_existing_column($ac, ['serviceId', 'service_id']);
-        if (!$appointment_id_col || !$provider_col || !$start_col) {
-            return self::unavailable_result(__('Required Amelia appointment columns could not be verified.', 'elev8-os'));
-        }
-
-        $appointments = $wpdb->get_results($wpdb->prepare(
-            "SELECT `{$appointment_id_col}` AS id, `{$start_col}` AS starts" . ($service_col ? ", `{$service_col}` AS service_id" : ', NULL AS service_id') . " FROM `{$appointments_table}` WHERE `{$provider_col}`=%d ORDER BY `{$start_col}` DESC LIMIT 100",
-            $artist_id
-        ), ARRAY_A);
-        if (!is_array($appointments)) {
-            return self::unavailable_result(__('Amelia classes could not be read.', 'elev8-os'));
-        }
-
-        $service_names = self::simple_id_label_map('amelia_services', ['name', 'title']);
-        $choices = [];
-        foreach ($appointments as $appointment) {
-            $id = (int) $appointment['id'];
-            $name = $service_names[(int) ($appointment['service_id'] ?? 0)] ?? __('Class', 'elev8-os');
-            $choices[] = ['id' => $id, 'label' => $name . ' — ' . self::format_date((string) $appointment['starts'])];
-        }
-
-        if (!$choices) {
-            return ['available' => true, 'reason' => '', 'appointments' => [], 'selected_id' => 0, 'selected_label' => '', 'students' => [], 'seats_booked' => 0, 'confirmed' => 0, 'pending' => 0];
-        }
-
-        $allowed_ids = array_map(static fn(array $row): int => (int) $row['id'], $choices);
-        $selected_id = in_array($requested_id, $allowed_ids, true) ? $requested_id : (int) $choices[0]['id'];
-        $selected_label = '';
-        foreach ($choices as $choice) { if ((int) $choice['id'] === $selected_id) { $selected_label = (string) $choice['label']; break; } }
-
-        $bc = self::table_columns($bookings_table);
-        $booking_appointment_col = self::first_existing_column($bc, ['appointmentId', 'appointment_id']);
-        $customer_col = self::first_existing_column($bc, ['customerId', 'customer_id']);
-        $persons_col = self::first_existing_column($bc, ['persons', 'personsCount', 'persons_count']);
-        $status_col = self::first_existing_column($bc, ['status']);
-        $created_col = self::first_existing_column($bc, ['created', 'createdAt', 'created_at']);
-        if (!$booking_appointment_col) {
-            return self::unavailable_result(__('The Amelia booking-to-class relationship could not be verified.', 'elev8-os'));
-        }
-
-        $select = ['b.*'];
-        $join = '';
-        $user_columns = self::table_exists($users_table) ? self::table_columns($users_table) : [];
-        if ($customer_col && in_array('id', $user_columns, true)) {
-            $join = " LEFT JOIN `{$users_table}` u ON u.`id`=b.`{$customer_col}`";
-            foreach (['firstName', 'lastName', 'email', 'phone'] as $col) {
-                if (in_array($col, $user_columns, true)) { $select[] = "u.`{$col}` AS customer_{$col}"; }
-            }
-        }
-
-        $rows = $wpdb->get_results($wpdb->prepare(
-            'SELECT ' . implode(', ', $select) . " FROM `{$bookings_table}` b{$join} WHERE b.`{$booking_appointment_col}`=%d ORDER BY b.`" . ($created_col ?: $booking_appointment_col) . '` ASC',
-            $selected_id
-        ), ARRAY_A);
-        if (!is_array($rows)) {
-            return self::unavailable_result(__('The class roster could not be read.', 'elev8-os'));
-        }
-
-        $students = [];
-        $seats_booked = 0;
-        $confirmed = 0;
-        $pending = 0;
-        foreach ($rows as $row) {
-            $status = $status_col ? strtolower((string) ($row[$status_col] ?? '')) : '';
-            if (in_array($status, ['canceled', 'cancelled', 'rejected'], true)) { continue; }
-            $seats = $persons_col ? max(1, (int) ($row[$persons_col] ?? 1)) : 1;
-            $status_key = in_array($status, ['approved', 'confirmed'], true) ? 'confirmed' : ($status === 'pending' ? 'pending' : ($status !== '' ? $status : 'unknown'));
-            if ($status_key === 'confirmed') { $confirmed += $seats; }
-            if ($status_key === 'pending') { $pending += $seats; }
-            $seats_booked += $seats;
-            $first = trim((string) ($row['customer_firstName'] ?? ''));
-            $last = trim((string) ($row['customer_lastName'] ?? ''));
-            $students[] = [
-                'name' => trim($first . ' ' . $last),
-                'email' => sanitize_email((string) ($row['customer_email'] ?? '')),
-                'phone' => sanitize_text_field((string) ($row['customer_phone'] ?? '')),
-                'seats' => $seats,
-                'status' => $status_key,
-                'status_label' => $status_key === 'confirmed' ? __('Confirmed', 'elev8-os') : ($status_key === 'pending' ? __('Pending', 'elev8-os') : ($status !== '' ? ucfirst($status) : __('Unavailable', 'elev8-os'))),
-                'booked_at' => $created_col ? (string) ($row[$created_col] ?? '') : '',
-            ];
-        }
-
-        return ['available' => true, 'reason' => '', 'appointments' => $choices, 'selected_id' => $selected_id, 'selected_label' => $selected_label, 'students' => $students, 'seats_booked' => $seats_booked, 'confirmed' => $confirmed, 'pending' => $pending];
-    }
-
-    /** @return array<string,mixed>|null */
-    private static function find_artist_for_user(WP_User $user): ?array {
-        global $wpdb;
-        $table = $wpdb->prefix . 'amelia_users';
-        if (!self::table_exists($table)) { return null; }
-        $columns = self::table_columns($table);
-        if (!in_array('id', $columns, true)) { return null; }
-        $mapped_id = max(0, (int) get_user_meta($user->ID, self::EMPLOYEE_META_KEY, true));
-        if ($mapped_id > 0) {
-            $row = $wpdb->get_row($wpdb->prepare("SELECT `id` FROM `{$table}` WHERE `id`=%d LIMIT 1", $mapped_id), ARRAY_A);
-            if (is_array($row)) { return $row; }
-        }
-        if (!in_array('email', $columns, true)) { return null; }
-        $row = $wpdb->get_row($wpdb->prepare("SELECT `id` FROM `{$table}` WHERE LOWER(`email`)=LOWER(%s) LIMIT 1", sanitize_email($user->user_email)), ARRAY_A);
-        return is_array($row) ? $row : null;
-    }
-
-    /** @return array<int,string> */
-    private static function simple_id_label_map(string $suffix, array $label_candidates): array {
-        global $wpdb;
-        $table = $wpdb->prefix . $suffix;
-        if (!self::table_exists($table)) { return []; }
-        $columns = self::table_columns($table);
-        $label_col = self::first_existing_column($columns, $label_candidates);
-        if (!$label_col || !in_array('id', $columns, true)) { return []; }
-        $rows = $wpdb->get_results("SELECT `id`, `{$label_col}` AS label FROM `{$table}`", ARRAY_A);
-        $map = [];
-        foreach ((array) $rows as $row) { $map[(int) $row['id']] = (string) $row['label']; }
-        return $map;
-    }
-
-    /** @return array<string,mixed> */
-    private static function unavailable_result(string $reason): array {
-        return ['available' => false, 'reason' => $reason, 'appointments' => [], 'selected_id' => 0, 'selected_label' => '', 'students' => [], 'seats_booked' => 0, 'confirmed' => 0, 'pending' => 0];
-    }
-
-    /** @return string[] */
-    private static function table_columns(string $table): array {
-        global $wpdb;
-        $columns = $wpdb->get_col("DESCRIBE `{$table}`", 0);
-        return is_array($columns) ? array_map('strval', $columns) : [];
-    }
-
-    private static function first_existing_column(array $available, array $candidates): ?string {
-        foreach ($candidates as $candidate) { if (in_array($candidate, $available, true)) { return $candidate; } }
-        return null;
-    }
-
-    private static function table_exists(string $table): bool {
-        global $wpdb;
-        return $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table;
-    }
-
-    private static function format_date(string $value): string {
-        $timestamp = strtotime($value);
-        return $timestamp ? wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp) : $value;
-    }
+    public static function handle_add_note(): void { self::authorize('elev8_os_student_add_note'); $user=wp_get_current_user(); $key=sanitize_text_field(wp_unslash($_POST['customer_key']??'')); $note=sanitize_textarea_field(wp_unslash($_POST['note']??'')); if(Elev8_OS_Student_Relationship_Service::get_student($user,$key)){Elev8_OS_Student_Relationship_Service::add_note((int)$user->ID,$key,$note);} self::redirect(); }
+    public static function handle_save_tags(): void { self::authorize('elev8_os_student_save_tags'); $user=wp_get_current_user(); $key=sanitize_text_field(wp_unslash($_POST['customer_key']??'')); $raw=sanitize_text_field(wp_unslash($_POST['tags']??'')); if(Elev8_OS_Student_Relationship_Service::get_student($user,$key)){Elev8_OS_Student_Relationship_Service::replace_tags((int)$user->ID,$key,array_map('trim',explode(',',$raw)));} self::redirect(); }
+    private static function authorize(string $nonce): void { if(!is_user_logged_in()){wp_die(esc_html__('Please log in.','elev8-os'));} check_admin_referer($nonce); }
+    private static function redirect(): void { $url=isset($_POST['return_url'])?esc_url_raw(wp_unslash($_POST['return_url'])):Elev8_OS_Portal_Page_Manager::get_url('students'); wp_safe_redirect(add_query_arg('elev8_saved','1',$url)); exit; }
+    /** @param array<int,array<string,mixed>> $students @return array<int,array<string,mixed>> */
+    private static function filter_students(array $students,string $segment,string $query): array { $now=current_time('timestamp'); $month=strtotime(wp_date('Y-m-01 00:00:00',$now)); return array_values(array_filter($students,static function($s)use($segment,$query,$now,$month){$match=true;if($segment==='repeat'){$match=(int)$s['classes_attended']>=2;}elseif($segment==='new'){$match=$s['first_class_at']!==''&&strtotime((string)$s['first_class_at'])>=$month;}elseif($segment==='inactive'){$match=$s['last_class_at']!==''&&strtotime((string)$s['last_class_at'])<strtotime('-90 days',$now);}elseif($segment==='upcoming'){$match=(int)$s['upcoming_bookings']>0;}if(!$match){return false;}if($query===''){return true;}$hay=strtolower(implode(' ',[(string)$s['name'],(string)$s['email'],(string)$s['phone'],implode(' ',(array)$s['tags'])]));return strpos($hay,strtolower($query))!==false;})); }
+    private static function summary_card(string $label,int $value,string $segment): void { $url=add_query_arg('segment',$segment,Elev8_OS_Portal_Page_Manager::get_url('students')); echo '<a class="elev8-growth-stat" href="'.esc_url($url).'"><strong>'.esc_html(number_format_i18n($value)).'</strong><span>'.esc_html($label).'</span></a>'; }
+    private static function initials(string $name): string { $parts=preg_split('/\s+/',trim($name));$out='';foreach(array_slice((array)$parts,0,2) as $part){$out.=strtoupper(substr((string)$part,0,1));}return $out!==''?$out:'?'; }
+    private static function date(string $value,bool $time=false): string { $ts=strtotime($value); if(!$ts){return __('Unavailable','elev8-os');} return wp_date(get_option('date_format').($time?' '.get_option('time_format'):''),$ts); }
 }

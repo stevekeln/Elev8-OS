@@ -1,1 +1,11 @@
-Elev8 OS 9.0.10 fixes artwork location updates on older Gallery Operations database schemas by writing only essential placement fields and surfacing exact save diagnostics.
+Elev8 OS 9.1.0 — Artist Growth Center Foundation
+
+Main changes:
+- New reusable Student Relationship Service
+- Amelia-backed lifetime student CRM
+- Student segments and search
+- Private notes, tags, and relationship timeline
+- Artist dashboard relationship tickler
+- Database migrations for CRM enrichment tables
+
+Replace the repository source with these files, commit to develop, push, and run the normal release build workflow.

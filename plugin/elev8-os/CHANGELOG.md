@@ -1,5 +1,19 @@
 # Elev8 OS Changelog
 
+## 9.1.0 — Artist Growth Center Foundation
+
+- Rebuilt Students as a private Student Relationship Center.
+- Added verified lifetime student relationships from Amelia booking data.
+- Added All Students, Repeat, New This Month, Need Follow-up, and Upcoming segments.
+- Added search by name, email, phone, and relationship tag.
+- Added reusable Student Relationship Service while keeping Amelia as the booking source of truth.
+- Added artist-owned private notes and reusable customer tags.
+- Added relationship timeline foundation for future marketing and AI coaching.
+- Added student relationship profiles with attendance, upcoming bookings, seats, last class, and verified booked value.
+- Added dashboard Relationship Tickler cards linking directly to actionable student segments.
+- Added schema migrations for notes, tags, and timeline tables.
+- Preserved existing class roster, Artist Portal, Gallery Operations, artwork, print, identity, and recommendation features.
+
 ## 9.0.11 — Placement Column Compatibility & Clean Package
 
 - Fixed artwork movement failure caused by legacy placement tables using `position_note` while newer builds use `position_label`.

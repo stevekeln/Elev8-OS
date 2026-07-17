@@ -1,3 +1,7 @@
+Elev8 OS 9.1.0 — Artist Growth Center Foundation
+
+This release introduces the first production stage of the Artist Growth Center: a private Student Relationship Center backed by verified Amelia booking data. Artists can see lifetime student relationships, actionable segments, private notes, reusable tags, and a relationship timeline.
+
 Elev8 OS 7.7.4 - Momentum Experience
 
 Elev8 OS is the production business operating system for Elev8 Arts and its artist ecosystem.

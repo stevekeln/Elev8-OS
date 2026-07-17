@@ -182,6 +182,7 @@ final class Elev8_OS_Dashboard_Module {
         $website_url = Elev8_OS_Portal_Page_Manager::get_url('website');
         $edit_website_url = Elev8_OS_Portal_Page_Manager::get_url('edit_website');
         $artist_print_center_url = Elev8_OS_Portal_Page_Manager::get_url('print_center');
+        $relationship_snapshot = class_exists('Elev8_OS_Student_Relationship_Service') ? Elev8_OS_Student_Relationship_Service::get_snapshot($user) : ['available'=>false];
         ?>
         <div class="elev8-artist-dashboard elev8-dashboard-v2">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('dashboard'); ?>
@@ -204,6 +205,18 @@ final class Elev8_OS_Dashboard_Module {
                 <?php self::render_value_card('tickets-alt', __('Seats Available', 'elev8-os'), $summary['seats_available'] ?? null, __('Across classes with verified capacity', 'elev8-os')); ?>
                 <?php self::render_value_card('money-alt', __('Booked Value', 'elev8-os'), $summary['booked_value'] ?? null, __('Scheduled booking value, not payout', 'elev8-os'), true); ?>
             </section>
+
+            <?php if (!empty($relationship_snapshot['available'])) : ?>
+                <section class="elev8-dashboard-panel elev8-relationship-tickler" aria-label="<?php esc_attr_e('Student relationship tickler', 'elev8-os'); ?>">
+                    <div class="elev8-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Relationship Tickler', 'elev8-os'); ?></p><h2><?php esc_html_e('Your Students', 'elev8-os'); ?></h2><p class="elev8-panel-intro"><?php esc_html_e('The people who already know your work are your strongest path to the next filled class.', 'elev8-os'); ?></p></div><a href="<?php echo esc_url($students_url); ?>"><?php esc_html_e('Open Student Relationships', 'elev8-os'); ?></a></div>
+                    <div class="elev8-tickler-grid">
+                        <a href="<?php echo esc_url(add_query_arg('segment','all',$students_url)); ?>"><strong><?php echo esc_html(number_format_i18n((int)$relationship_snapshot['total'])); ?></strong><span><?php esc_html_e('All students', 'elev8-os'); ?></span></a>
+                        <a href="<?php echo esc_url(add_query_arg('segment','upcoming',$students_url)); ?>"><strong><?php echo esc_html(number_format_i18n((int)$relationship_snapshot['upcoming'])); ?></strong><span><?php esc_html_e('Coming back', 'elev8-os'); ?></span></a>
+                        <a href="<?php echo esc_url(add_query_arg('segment','repeat',$students_url)); ?>"><strong><?php echo esc_html(number_format_i18n((int)$relationship_snapshot['repeat'])); ?></strong><span><?php esc_html_e('Repeat students', 'elev8-os'); ?></span></a>
+                        <a href="<?php echo esc_url(add_query_arg('segment','inactive',$students_url)); ?>"><strong><?php echo esc_html(number_format_i18n((int)$relationship_snapshot['inactive'])); ?></strong><span><?php esc_html_e('Need follow-up', 'elev8-os'); ?></span></a>
+                    </div>
+                </section>
+            <?php endif; ?>
 
             <div class="elev8-dashboard-main-grid">
                 <section class="elev8-dashboard-panel elev8-next-class-panel">

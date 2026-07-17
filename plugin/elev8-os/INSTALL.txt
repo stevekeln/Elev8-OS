@@ -1,3 +1,11 @@
-Elev8 OS 9.0.4
+Elev8 OS 9.1.0 Installation
 
-Install on Local first. Open Gallery Operations, confirm existing Artist Portal boards appear as selectable locations, create a new rack board through Add Display Zone, and click a Gallery Floor zone to manage its artwork before installing the exact ZIP on Live.
+1. Install elev8-os-9.1.0-artist-growth-center-foundation.zip on Local.
+2. Activate or update Elev8 OS.
+3. Sign in as a mapped artist.
+4. Open Artist Dashboard and verify the Your Students tickler.
+5. Open Students and verify lifetime relationships, segments, search, tags, notes, and timeline.
+6. Test that one artist cannot open another artist's relationship records.
+7. Install the exact same ZIP on Live only after Local testing passes.
+
+Amelia remains the source of truth for bookings and customer identity. Elev8 OS stores only artist-owned CRM enrichment such as notes and tags.
