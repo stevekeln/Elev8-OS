@@ -1,3 +1,13 @@
+# Changelog
+
+## 7.5.0 - Opportunity Engine Invitations
+- Expanded the shared Opportunity Engine for event and vendor opportunities.
+- Added owner event creation and automatic invitations for connected artists.
+- Added optional email invitations through the Notification Service.
+- Added artist dashboard confirmation, interest, decline, and remind-later responses.
+- Added live owner response counts.
+- Preserved Class Demand and all 7.4.2 behavior.
+
 # Elev8 OS Changelog
 
 ## 7.4.1 - Artist Growth Plan

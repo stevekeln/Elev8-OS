@@ -195,6 +195,8 @@ final class Elev8_OS_Dashboard_Module {
                 <span class="elev8-dashboard-badge"><?php esc_html_e('Founders Edition', 'elev8-os'); ?></span>
             </header>
 
+            <?php do_action('elev8_os_artist_dashboard_after_header', $user, $artist); ?>
+
             <?php if (empty($snapshot['available'])) : ?>
                 <div class="elev8-dashboard-warning"><p><strong><?php esc_html_e('Your verified class information is unavailable.', 'elev8-os'); ?></strong><br><?php echo esc_html((string) ($snapshot['reason'] ?? __('No diagnostic was supplied.', 'elev8-os'))); ?></p></div>
             <?php endif; ?>

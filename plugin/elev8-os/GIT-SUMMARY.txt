@@ -1,13 +1,3 @@
-Elev8 OS 7.4.1 - Artist Growth Plan
-
-Added:
-- Reusable Growth Plan Service
-- Actionable Artist Coach recommendations
-- Business Score component breakdown
-- Achievement progress and targets
-
-Preserved:
-- 7.4.0 Artist Business Center
-- Amelia scheduling ownership
-- WooCommerce commerce ownership
-- Existing Artist Portal pages and routes
+Elev8 OS 7.5.0 Opportunity Engine Invitations
+Copy the included files into the matching Git repository paths.
+Suggested commit: Build Elev8 OS 7.5.0 Opportunity Engine Invitations
