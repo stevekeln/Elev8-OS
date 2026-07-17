@@ -1,5 +1,16 @@
 # Elev8 OS Changelog
 
+## 9.0.2 — Artwork Location Manager
+
+- Simplified Artist Portal racks to numbered boards without A/B sides.
+- Defaults each rack to 40 numbered board positions and supports multiple racks.
+- Safely retires legacy A/B rack positions while preserving placement history.
+- Added See All Artwork location manager with title and artist search.
+- Added artist filtering, current-location visibility, change-location controls, and placement history.
+- Added Move to Storage, Needs Pickup, and Remove Location actions.
+- Storage moves now retain the artwork's Storage location.
+- Preserved Gallery Operations, artist dashboards, inventory, QR, and print functionality.
+
 ## 9.0.1 — Artist Portal Display Rack
 
 - Added reusable Artist Portal Rack display-zone type.

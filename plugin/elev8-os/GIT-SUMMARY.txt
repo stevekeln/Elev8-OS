@@ -1,3 +1,17 @@
-Elev8 OS 9.0.1 — Artist Portal Display Rack
+Elev8 OS 9.0.2 — Artwork Location Manager
 
-Adds configurable multi-rack Artist Portal boards with Side A/Side B placement and artist-filtered Gallery Operations.
+Changed files:
+- elev8-os.php
+- CHANGELOG.md
+- README.txt
+- INSTALL.txt
+- includes/Services/class-elev8-os-gallery-operations-service.php
+- includes/Modules/class-elev8-os-gallery-operations-module.php
+- assets/css/gallery-operations.css
+
+Key changes:
+- Number-only Artist Portal rack boards
+- 40-board rack defaults
+- See All Artwork manager
+- Change location and storage controls
+- Placement history
