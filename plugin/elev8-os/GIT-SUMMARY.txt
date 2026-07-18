@@ -1,11 +1,18 @@
-Elev8 OS 10.2.2 — Artist Website Navigation
+Elev8 OS 10.2.3 — Artist Identity System Integration
+
+Built from the uploaded 10.2.2 source as the single source of truth.
+Preserves every 10.2.2 module while integrating expanded artist displays, QR materials, and compact print labels.
 
 Changed files:
 - elev8-os.php
-- includes/Modules/class-elev8-os-artist-portal-module.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- assets/css/artist-portal.css
+- includes/class-elev8-os.php
+- includes/Modules/class-elev8-os-artist-print-center-module.php
+- includes/Services/class-elev8-os-print-service.php
+- assets/css/admin.css
 - CHANGELOG.md
+- README.txt
 - GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
 
-No database changes.
+Database changes: none.

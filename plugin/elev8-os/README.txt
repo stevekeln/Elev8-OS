@@ -28,3 +28,6 @@ Architecture
 - Campaigns are one-off working records and never overwrite templates
 - Brand settings and rendering are centralized for future email, social, print, and website channels
 - WordPress owns users and media; Amelia remains the scheduling and booking source of truth
+
+
+10.2.3 adds the Artist Identity System: lavender artist displays, 5x7 table cards, 3x1 compact labels, label sheets, and enhanced profile QR displays while preserving all 10.2.2 functionality.

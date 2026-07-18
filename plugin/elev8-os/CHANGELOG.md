@@ -1,3 +1,15 @@
+## 10.2.3 — Artist Identity System Integration
+
+- Merged the Artist Identity System into the 10.2.2 source without removing newer modules.
+- Added lavender, minimal, and ink-safe artist identity themes.
+- Added 5 × 7 artist table displays.
+- Added 3 × 1 artist labels and 16-label letter sheets.
+- Added 3 × 1 artwork labels and 16-label letter sheets.
+- Added a large standalone artist profile QR display.
+- Refined public artist profiles with a clean white-and-lavender portfolio presentation.
+- Preserved all 10.2.2 Artist Website Navigation, Growth Center, Business GPS, Artist Success, marketing, and Content Studio functionality.
+- Database changes: none.
+
 ## 10.2.2 — Artist Website Navigation
 
 - Added a permanent website navigation bar to every Elev8 OS Artist Portal screen.

@@ -1,17 +1,11 @@
-Elev8 OS 9.2.1 Local Testing
+Elev8 OS 10.2.3 Installation
 
-1. Replace the listed changed/new files in your local Git repository.
-2. Commit to develop and push to GitHub.
+1. Replace the listed changed files in the local Git repository on develop.
+2. Commit and push to GitHub.
 3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP into Local.
-5. Visit Elev8 OS > Content Studio once as an administrator so the schema upgrade runs.
-6. Configure Automatic Elev8 Branding and save.
-7. Open an artist Content Studio page.
-8. Select each campaign goal and verify the wizard opens.
-9. Change the starting template and verify the fields populate.
-10. Save a campaign draft and reopen it from Recent Campaign Drafts.
-11. Edit an existing personal template and verify it still saves.
-12. Confirm shared templates can still be copied into an artist library.
-13. Confirm archive, restore, duplicate, search, and category filters still work.
-14. Confirm the email preview displays the saved brand colors, logo/name, CTA, and footer.
-15. After Local passes, install the exact same generated ZIP on Live.
+4. Install the BAT-generated ZIP into Local.
+5. Test the Artist Dashboard, website navigation, Content Studio, Marketing, Growth Center, Business GPS, Artist Success, Print Center, public artist profiles, and QR output.
+6. Install the exact same generated ZIP on Live only after Local passes.
+
+Do not install the changed-files package directly into WordPress.
+Database changes: none.

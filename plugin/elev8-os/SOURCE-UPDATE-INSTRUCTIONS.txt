@@ -1,5 +1,7 @@
-Replace the changed and new files listed in GIT-SUMMARY.txt in your local Elev8 OS source repository.
+Elev8 OS 10.2.3 Source Update
 
-Do not create another branch.
-Commit the update to develop, push, and run Build Elev8 OS Release.bat.
-The BAT-generated ZIP remains the release artifact used for Local and Live.
+This update was built from the uploaded Elev8 OS 10.2.2 source. It does not use the older 9.3.0 source as a replacement.
+
+Replace only the files included in the changed-files package, commit to develop, push, and run Build Elev8 OS Release.bat.
+
+No feature branches. No database migration is required.

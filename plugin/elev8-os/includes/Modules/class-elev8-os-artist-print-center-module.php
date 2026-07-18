@@ -60,9 +60,12 @@ final class Elev8_OS_Artist_Print_Center_Module {
                         <label class="elev8-print-field">
                             <span><?php esc_html_e('Print format', 'elev8-os'); ?></span>
                             <select name="print_format">
-                                <option value="artist-card"><?php esc_html_e('Artist display card — 8.5 × 5.5', 'elev8-os'); ?></option>
-                                <option value="artist-card-two"><?php esc_html_e('Two artist cards — letter sheet', 'elev8-os'); ?></option>
-                                <option value="artist-qr"><?php esc_html_e('Profile QR code only', 'elev8-os'); ?></option>
+                                <option value="artist-card"><?php esc_html_e('Feature display — 8.5 × 5.5', 'elev8-os'); ?></option>
+                                <option value="artist-card-two"><?php esc_html_e('Two feature displays — letter sheet', 'elev8-os'); ?></option>
+                                <option value="artist-card-5x7"><?php esc_html_e('Table display — 5 × 7', 'elev8-os'); ?></option>
+                                <option value="artist-label-3x1"><?php esc_html_e('Small artist label — 3 × 1', 'elev8-os'); ?></option>
+                                <option value="artist-label-3x1-sheet"><?php esc_html_e('Small artist labels — 16 per sheet', 'elev8-os'); ?></option>
+                                <option value="artist-qr"><?php esc_html_e('Profile QR display', 'elev8-os'); ?></option>
                             </select>
                         </label>
                         <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artist Card', 'elev8-os'); ?></button>
@@ -103,8 +106,10 @@ final class Elev8_OS_Artist_Print_Center_Module {
                             <label class="elev8-print-field">
                                 <span><?php esc_html_e('Print format', 'elev8-os'); ?></span>
                                 <select name="print_format">
-                                    <option value="artwork-label"><?php esc_html_e('Artwork QR label — 3 × 3', 'elev8-os'); ?></option>
-                                    <option value="artwork-label-two"><?php esc_html_e('Two artwork labels — letter sheet', 'elev8-os'); ?></option>
+                                    <option value="artwork-label"><?php esc_html_e('Artwork story label — 3 × 3', 'elev8-os'); ?></option>
+                                    <option value="artwork-label-two"><?php esc_html_e('Two artwork story labels — letter sheet', 'elev8-os'); ?></option>
+                                    <option value="artwork-label-small"><?php esc_html_e('Small artwork label — 3 × 1', 'elev8-os'); ?></option>
+                                    <option value="artwork-label-small-sheet"><?php esc_html_e('Small artwork labels — 16 per sheet', 'elev8-os'); ?></option>
                                 </select>
                             </label>
                             <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artwork Label', 'elev8-os'); ?></button>
@@ -138,7 +143,7 @@ final class Elev8_OS_Artist_Print_Center_Module {
             'photo' => (string)($profile['profile_photo'] ?? ''),
             'profile_url' => $profile_url,
             'canonical_url' => Elev8_OS_Portal_Page_Manager::get_url('print_center'),
-        ], $format === 'artist-qr' ? 'qr' : 'artist-card', $format === 'artist-card-two');
+        ], $format === 'artist-qr' ? 'qr' : $format);
     }
 
     public static function print_artwork(): void {
