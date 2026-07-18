@@ -1,22 +1,3 @@
-Elev8 OS 10.2.6 — Artist Shortcut Launcher
+Elev8 OS 10.3.0 — Elev8 Design System 1.0
 
-Purpose
-Make the Artist Dashboard easier to navigate after artists scroll beyond the normal shortcut area.
-
-Changed files
-- elev8-os.php
-- includes/Modules/class-elev8-os-artist-portal-module.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- assets/css/artist-shortcut-launcher.css (new)
-- assets/js/artist-shortcut-launcher.js (new)
-- CHANGELOG.md
-- README.txt
-- GIT-SUMMARY.txt
-- INSTALL.txt
-- SOURCE-UPDATE-INSTRUCTIONS.txt
-
-Database changes
-None.
-
-Validation
-All PHP files passed php -l syntax validation.
+Dashboard and Business GPS visual unification using purple, lavender, teal, and white. Content Studio primary CTA corrected and standardized. No database changes.

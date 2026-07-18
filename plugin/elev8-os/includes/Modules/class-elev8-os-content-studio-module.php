@@ -79,7 +79,7 @@ final class Elev8_OS_Content_Studio_Module {
         <div class="elev8-content-studio">
             <header class="elev8-content-header">
                 <div><p class="elev8-eyebrow"><?php esc_html_e('Create once. Publish everywhere.', 'elev8-os'); ?></p><h1><?php esc_html_e('Content Studio', 'elev8-os'); ?></h1><p><?php esc_html_e('Build reusable content assets for classes, artwork, events, follow-up, referrals, and future publishing channels.', 'elev8-os'); ?></p></div>
-                <a class="button button-primary" href="<?php echo esc_url($base_url); ?>#elev8-template-editor"><?php esc_html_e('Create Template', 'elev8-os'); ?></a>
+                <a class="button elev8-content-primary-cta" href="<?php echo esc_url($base_url); ?>#elev8-template-editor"><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span><?php esc_html_e('Create New Template', 'elev8-os'); ?></a>
             </header>
             <?php if (!$admin && class_exists('Elev8_OS_Artist_Print_Center_Module')) { echo Elev8_OS_Artist_Print_Center_Module::render_growth_entry('content_studio'); } ?>
             <?php self::notice(); self::campaign_wizard($owner_user_id,$admin,$templates); ?>

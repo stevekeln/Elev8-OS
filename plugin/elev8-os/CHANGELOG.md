@@ -1,3 +1,20 @@
+## 10.3.0 — Elev8 Design System 1.0
+
+### Added
+- Introduced shared purple, lavender, teal, white, ink, border, and shadow design tokens for the Artist Dashboard.
+- Added a polished, reusable primary dashboard action style with guaranteed white text on dark purple buttons.
+
+### Changed
+- Redesigned Business GPS from a dark navy panel into a light purple, lavender, and teal business-health experience.
+- Converted the Business Health score into a circular teal-and-purple visual treatment.
+- Unified dashboard cards, borders, shadows, progress indicators, success panels, opportunity cards, and timeline icons.
+- Rebuilt the Content Studio Create Template action as a full-size teal CTA with white text and a plus icon.
+- Updated Content Studio hero styling to match Growth Studio.
+- Plugin version increased from 10.2.6 to 10.3.0.
+
+### Database changes
+- None.
+
 # Changelog
 
 ## 10.2.5

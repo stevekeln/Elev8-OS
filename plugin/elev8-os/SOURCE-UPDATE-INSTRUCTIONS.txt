@@ -1,15 +1,1 @@
-Elev8 OS 10.2.6 Source Update
-
-Replace these files in the Git source:
-- elev8-os.php
-- includes/Modules/class-elev8-os-artist-portal-module.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- assets/css/artist-shortcut-launcher.css
-- assets/js/artist-shortcut-launcher.js
-- CHANGELOG.md
-- README.txt
-- GIT-SUMMARY.txt
-- INSTALL.txt
-- SOURCE-UPDATE-INSTRUCTIONS.txt
-
-Then commit to develop, push, run Build Elev8 OS Release.bat, and install the generated ZIP into Local.
+Replace only the files included in the 10.3.0 changed-files package. Do not install the changed-files ZIP in WordPress. Build the installable plugin with Build Elev8 OS Release.bat after updating the Git source.

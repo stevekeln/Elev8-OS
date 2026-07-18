@@ -72,3 +72,13 @@ body.elev8-content-studio-page #content>.container{
 
 /* 10.1.0 Brand Experience */
 .elev8-brand-logo-field{display:flex;gap:20px;align-items:center;padding:18px;margin:0 0 22px;border:1px solid #dfe4e8;border-radius:12px;background:#f8fafb}.elev8-brand-logo-preview{width:180px;height:90px;display:flex;align-items:center;justify-content:center;padding:12px;border:1px dashed #b7c0c8;border-radius:9px;background:#fff;color:#687781;font-size:13px;text-align:center}.elev8-brand-logo-preview img{display:block;max-width:100%;max-height:100%;width:auto;height:auto}.elev8-brand-logo-field .description{margin:9px 0 0;max-width:620px;color:#61717e}.elev8-brand-manager textarea{width:100%}@media(max-width:680px){.elev8-brand-logo-field{align-items:flex-start;flex-direction:column}.elev8-brand-logo-preview{width:100%;box-sizing:border-box}}
+
+
+/* 10.3.0 Design System — Content Studio primary action */
+.elev8-content-header{align-items:center;background:linear-gradient(110deg,#4a1f8d 0%,#6230b7 42%,#0b96aa 100%);border:0;box-shadow:0 16px 38px rgba(74,31,141,.16)}
+.elev8-content-header h1,.elev8-content-header p,.elev8-content-header .elev8-eyebrow{color:#fff!important}
+.elev8-content-header>div>p:last-child{color:rgba(255,255,255,.86)!important}
+.elev8-content-primary-cta{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:11px 21px!important;border:2px solid rgba(255,255,255,.72)!important;border-radius:999px!important;background:#0797ac!important;color:#fff!important;font-size:15px!important;font-weight:750!important;line-height:1!important;white-space:nowrap;box-shadow:0 10px 24px rgba(3,75,88,.22);text-shadow:none!important}
+.elev8-content-primary-cta .dashicons{width:18px;height:18px;font-size:18px}
+.elev8-content-primary-cta:hover,.elev8-content-primary-cta:focus{background:#087f91!important;color:#fff!important;border-color:#fff!important;transform:translateY(-1px)}
+@media(max-width:760px){.elev8-content-primary-cta{margin-top:18px!important;width:100%}}
