@@ -11,7 +11,7 @@ final class Elev8_OS_Marketing_Module {
         add_action('admin_post_elev8_os_save_art_walk_settings',[__CLASS__,'save_art_walk_settings']);
         add_action('admin_post_elev8_os_mark_art_walk_registered',[__CLASS__,'mark_art_walk_registered']);
     }
-    public static function assets(): void { if(Elev8_OS_Portal_Page_Manager::is_current_page('marketing')){wp_enqueue_style('dashicons');wp_enqueue_style('elev8-os-marketing',ELEV8_OS_URL.'assets/css/artist-marketing.css',[],ELEV8_OS_VERSION);} }
+    public static function assets(): void { if(Elev8_OS_Portal_Page_Manager::is_current_page('marketing')){wp_enqueue_style('dashicons');wp_enqueue_style('elev8-os-marketing',ELEV8_OS_URL.'assets/css/artist-marketing.css',[],ELEV8_OS_VERSION);wp_enqueue_style('elev8-os-growth-tools',ELEV8_OS_URL.'assets/css/artist-growth-tools.css',[],ELEV8_OS_VERSION);} }
     public static function admin_menu(): void {
         add_submenu_page('elev8-os',__('Artist Growth Settings','elev8-os'),__('Growth Settings','elev8-os'),'manage_options','elev8-growth-settings',[__CLASS__,'render_settings']);
     }
@@ -57,6 +57,7 @@ final class Elev8_OS_Marketing_Module {
         $subject=sanitize_text_field(wp_unslash($_GET['subject']??$template['subject']));$message=sanitize_textarea_field(wp_unslash($_GET['message']??$template['message']));$promoted=esc_url_raw(wp_unslash($_GET['promoted_url']??''));$ref=Elev8_OS_Marketing_Service::referral_url((int)$artist->ID,$promoted);
         ob_start();?><div class="elev8-marketing-center"><?php Elev8_OS_Artist_Portal_Module::render_navigation('marketing'); ?>
         <header class="elev8-marketing-hero"><div><p class="elev8-eyebrow"><?php esc_html_e('Artist Growth Center','elev8-os'); ?></p><h1><?php esc_html_e('Marketing Center','elev8-os'); ?></h1><p><?php esc_html_e('Reconnect with verified students and help fill the next great Elev8 experience.','elev8-os'); ?></p></div><span><?php echo esc_html(sprintf(__('%d verified recipients','elev8-os'),(int)($preview['count']??0))); ?></span></header>
+        <?php if(class_exists('Elev8_OS_Artist_Print_Center_Module')){echo Elev8_OS_Artist_Print_Center_Module::render_growth_entry('marketing');} ?>
         <?php if(isset($_GET['elev8_message'])):?><div class="elev8-marketing-notice"><?php echo esc_html(sanitize_text_field(wp_unslash($_GET['elev8_message']))); ?></div><?php endif; ?>
         <div class="elev8-marketing-grid"><main class="elev8-marketing-compose"><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
         <?php wp_nonce_field('elev8_os_marketing_action'); ?><input type="hidden" name="campaign_type" value="<?php echo esc_attr($selected); ?>">

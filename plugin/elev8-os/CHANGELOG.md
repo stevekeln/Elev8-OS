@@ -1,3 +1,12 @@
+## 10.2.4 — Print Center Discovery
+
+- Added a prominent Print & QR action card inside the artist Marketing Center.
+- Added the same Print & QR action card inside the artist Content Studio.
+- Added direct links to My Print Center and My Artwork from both growth workflows.
+- Centralized the shared Print Center entry card in the existing Artist Print Center module to avoid duplicated UI logic.
+- Preserved the existing dashboard and portal navigation links.
+- Database changes: none.
+
 ## 10.2.3 — Artist Identity System Integration
 
 - Merged the Artist Identity System into the 10.2.2 source without removing newer modules.

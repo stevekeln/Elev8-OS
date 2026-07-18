@@ -10,6 +10,36 @@ final class Elev8_OS_Artist_Print_Center_Module {
         add_action('admin_post_elev8_os_artist_print_artwork', [__CLASS__, 'print_artwork']);
     }
 
+    public static function render_growth_entry(string $context = 'marketing'): string {
+        if (!is_user_logged_in()) { return ''; }
+
+        $print_url = Elev8_OS_Portal_Page_Manager::get_url('print_center');
+        $artwork_url = Elev8_OS_Portal_Page_Manager::get_url('artwork');
+        $title = $context === 'content_studio'
+            ? __('Turn your content into something customers can scan', 'elev8-os')
+            : __('Put your art in front of people', 'elev8-os');
+        $description = $context === 'content_studio'
+            ? __('Create artist displays, profile QR cards, and artwork labels using the same identity customers see online.', 'elev8-os')
+            : __('Print professional artist displays, QR cards, and small artwork labels for your booth, gallery wall, or Art Walk table.', 'elev8-os');
+
+        ob_start();
+        ?>
+        <section class="elev8-growth-tool-card elev8-growth-tool-print">
+            <div class="elev8-growth-tool-icon"><span class="dashicons dashicons-media-document" aria-hidden="true"></span></div>
+            <div class="elev8-growth-tool-copy">
+                <p class="elev8-eyebrow"><?php esc_html_e('Print & QR', 'elev8-os'); ?></p>
+                <h2><?php echo esc_html($title); ?></h2>
+                <p><?php echo esc_html($description); ?></p>
+            </div>
+            <div class="elev8-growth-tool-actions">
+                <a class="button button-primary" href="<?php echo esc_url($print_url); ?>"><?php esc_html_e('Open My Print Center', 'elev8-os'); ?></a>
+                <a class="button" href="<?php echo esc_url($artwork_url); ?>"><?php esc_html_e('Manage My Artwork', 'elev8-os'); ?></a>
+            </div>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
     public static function shortcode(): string {
         if (!is_user_logged_in()) {
             return '<div class="elev8-portal-notice"><p>' . esc_html__('Please sign in to open your Print Center.', 'elev8-os') . '</p></div>';

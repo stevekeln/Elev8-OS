@@ -28,6 +28,7 @@ final class Elev8_OS_Content_Studio_Module {
         if (Elev8_OS_Portal_Page_Manager::is_current_page('content_studio')) {
             wp_enqueue_style('dashicons');
             wp_enqueue_style('elev8-os-content-studio', ELEV8_OS_URL . 'assets/css/content-studio.css', [], ELEV8_OS_VERSION);
+            wp_enqueue_style('elev8-os-growth-tools', ELEV8_OS_URL . 'assets/css/artist-growth-tools.css', [], ELEV8_OS_VERSION);
             wp_enqueue_script('elev8-os-content-studio', ELEV8_OS_URL . 'assets/js/content-studio.js', [], ELEV8_OS_VERSION, true);
         }
     }
@@ -35,6 +36,7 @@ final class Elev8_OS_Content_Studio_Module {
     public static function admin_assets(string $hook): void {
         if ($hook !== 'elev8-os_page_elev8-content-studio') { return; }
         wp_enqueue_style('elev8-os-content-studio', ELEV8_OS_URL . 'assets/css/content-studio.css', [], ELEV8_OS_VERSION);
+        wp_enqueue_style('elev8-os-growth-tools', ELEV8_OS_URL . 'assets/css/artist-growth-tools.css', [], ELEV8_OS_VERSION);
         wp_enqueue_media();
         wp_enqueue_script('elev8-os-content-studio', ELEV8_OS_URL . 'assets/js/content-studio.js', [], ELEV8_OS_VERSION, true);
     }
@@ -79,6 +81,7 @@ final class Elev8_OS_Content_Studio_Module {
                 <div><p class="elev8-eyebrow"><?php esc_html_e('Create once. Publish everywhere.', 'elev8-os'); ?></p><h1><?php esc_html_e('Content Studio', 'elev8-os'); ?></h1><p><?php esc_html_e('Build reusable content assets for classes, artwork, events, follow-up, referrals, and future publishing channels.', 'elev8-os'); ?></p></div>
                 <a class="button button-primary" href="<?php echo esc_url($base_url); ?>#elev8-template-editor"><?php esc_html_e('Create Template', 'elev8-os'); ?></a>
             </header>
+            <?php if (!$admin && class_exists('Elev8_OS_Artist_Print_Center_Module')) { echo Elev8_OS_Artist_Print_Center_Module::render_growth_entry('content_studio'); } ?>
             <?php self::notice(); self::campaign_wizard($owner_user_id,$admin,$templates); ?>
             <section class="elev8-content-toolbar">
                 <form method="get" action="<?php echo esc_url($base_url); ?>">
