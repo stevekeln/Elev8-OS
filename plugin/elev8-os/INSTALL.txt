@@ -1,10 +1,13 @@
-Elev8 OS 10.2.5 Installation
+Elev8 OS 10.2.6 Installation
 
-1. Replace the changed files in the local Git repository.
+1. Replace the changed files in your local Git repository.
 2. Commit to develop and push to GitHub.
 3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP into Local.
-5. Visit any WordPress admin page as an administrator once so Elev8 OS can create/repair the Growth Studio portal page.
-6. Test the Growth Studio navigation, goal cards, Content Studio, Marketing, and Print Center.
+4. Install the BAT-generated ZIP into Local.
+5. Open the Artist Dashboard and scroll below the normal portal navigation.
+6. Confirm the compact desktop shortcut bar appears.
+7. On mobile, confirm the floating Shortcuts button opens the shortcut panel.
+8. Test every shortcut and confirm the current page is highlighted.
 
 Do not install the changed-files ZIP directly into WordPress.
+Database changes: none.

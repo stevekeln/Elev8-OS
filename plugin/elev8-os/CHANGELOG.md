@@ -77,6 +77,15 @@
 
 # Elev8 OS Changelog
 
+## 10.2.6
+- Added a reusable Artist Shortcut Launcher to the Artist Dashboard.
+- Added a compact desktop shortcut bar that appears after the normal navigation scrolls out of view.
+- Added a mobile floating Shortcuts button with an accessible popup panel.
+- Centralized shortcut destinations through the existing Artist Portal navigation data.
+- Added quick access to Growth Studio, Artwork, Classes, Website, Print Center, Students, and Class Requests.
+- Applied the purple, lavender, teal, and white Growth Studio palette to the launcher.
+- No database changes.
+
 ## 9.3.2 — Campaign Wizard Centering Fix
 
 - Removed the viewport-based transform that pulled the front-end Campaign Wizard off the left edge.
@@ -96,6 +105,15 @@
 - No database schema changes.
 
 # Elev8 OS Changelog
+
+## 10.2.6
+- Added a reusable Artist Shortcut Launcher to the Artist Dashboard.
+- Added a compact desktop shortcut bar that appears after the normal navigation scrolls out of view.
+- Added a mobile floating Shortcuts button with an accessible popup panel.
+- Centralized shortcut destinations through the existing Artist Portal navigation data.
+- Added quick access to Growth Studio, Artwork, Classes, Website, Print Center, Students, and Class Requests.
+- Applied the purple, lavender, teal, and white Growth Studio palette to the launcher.
+- No database changes.
 
 ## 9.3.1 — Campaign Wizard Layout Polish
 

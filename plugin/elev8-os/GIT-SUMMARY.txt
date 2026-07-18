@@ -1,17 +1,22 @@
-Elev8 OS 10.2.5 — Growth Studio
+Elev8 OS 10.2.6 — Artist Shortcut Launcher
 
-Changed files:
+Purpose
+Make the Artist Dashboard easier to navigate after artists scroll beyond the normal shortcut area.
+
+Changed files
 - elev8-os.php
-- includes/class-elev8-os-loader.php
-- includes/Services/class-elev8-os-portal-page-manager.php
 - includes/Modules/class-elev8-os-artist-portal-module.php
-- includes/Modules/class-elev8-os-marketing-module.php
-- includes/Modules/class-elev8-os-content-studio-module.php
-- includes/Modules/class-elev8-os-artist-growth-studio-module.php (new)
-- assets/css/artist-growth-studio.css (new)
+- includes/Modules/class-elev8-os-dashboard-module.php
+- assets/css/artist-shortcut-launcher.css (new)
+- assets/js/artist-shortcut-launcher.js (new)
 - CHANGELOG.md
 - README.txt
+- GIT-SUMMARY.txt
 - INSTALL.txt
 - SOURCE-UPDATE-INSTRUCTIONS.txt
 
-No database schema changes. A new managed WordPress portal page is created automatically for Growth Studio. Existing Marketing and Content Studio pages remain available for backward compatibility.
+Database changes
+None.
+
+Validation
+All PHP files passed php -l syntax validation.

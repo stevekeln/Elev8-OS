@@ -160,6 +160,22 @@ final class Elev8_OS_Artist_Portal_Module {
             ELEV8_OS_VERSION
         );
 
+        if (Elev8_OS_Portal_Page_Manager::is_current_page('dashboard')) {
+            wp_enqueue_style(
+                'elev8-os-artist-shortcut-launcher',
+                ELEV8_OS_URL . 'assets/css/artist-shortcut-launcher.css',
+                ['elev8-os-artist-portal'],
+                ELEV8_OS_VERSION
+            );
+            wp_enqueue_script(
+                'elev8-os-artist-shortcut-launcher',
+                ELEV8_OS_URL . 'assets/js/artist-shortcut-launcher.js',
+                [],
+                ELEV8_OS_VERSION,
+                true
+            );
+        }
+
         if (self::is_edit_website_page()) {
             wp_enqueue_script(
                 'elev8-os-artist-website-preview',
@@ -870,6 +886,76 @@ final class Elev8_OS_Artist_Portal_Module {
                 'enabled' => false,
             ],
         ];
+    }
+
+
+    /**
+     * Render the reusable shortcut launcher. Initially enabled on the dashboard.
+     * Both desktop and mobile launchers use the same central navigation data.
+     */
+    public static function render_shortcut_launcher(string $active = 'dashboard'): void {
+        $items = self::navigation_items();
+        $print_url = Elev8_OS_Portal_Page_Manager::get_url('print_center');
+        $items['print_center'] = [
+            'label' => __('Print Center', 'elev8-os'),
+            'icon' => 'media-document',
+            'url' => $print_url,
+            'enabled' => $print_url !== '',
+        ];
+
+        $primary_keys = ['dashboard', 'growth_studio', 'artwork', 'classes'];
+        ?>
+        <div class="elev8-shortcut-sentinel" aria-hidden="true"></div>
+        <div class="elev8-shortcut-bar" data-elev8-shortcut-bar aria-hidden="true">
+            <div class="elev8-shortcut-bar-inner">
+                <a class="elev8-shortcut-brand" href="<?php echo esc_url($items['dashboard']['url']); ?>" aria-label="<?php esc_attr_e('Elev8 OS Dashboard', 'elev8-os'); ?>">
+                    <span class="elev8-shortcut-brand-mark">E8</span><span><?php esc_html_e('Elev8 OS', 'elev8-os'); ?></span>
+                </a>
+                <div class="elev8-shortcut-primary">
+                    <?php foreach ($primary_keys as $key) : $item = $items[$key] ?? null; if (!$item || empty($item['enabled'])) { continue; } ?>
+                        <a class="elev8-shortcut-link<?php echo $key === $active ? ' is-active' : ''; ?>" href="<?php echo esc_url($item['url']); ?>">
+                            <span class="dashicons dashicons-<?php echo esc_attr($item['icon']); ?>" aria-hidden="true"></span>
+                            <span><?php echo esc_html($item['label']); ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                    <button class="elev8-shortcut-more" type="button" data-elev8-shortcut-open aria-haspopup="dialog" aria-controls="elev8-shortcut-dialog">
+                        <span class="dashicons dashicons-menu-alt3" aria-hidden="true"></span><span><?php esc_html_e('More', 'elev8-os'); ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <button class="elev8-shortcut-fab" type="button" data-elev8-shortcut-open aria-haspopup="dialog" aria-controls="elev8-shortcut-dialog">
+            <span class="dashicons dashicons-menu" aria-hidden="true"></span><span><?php esc_html_e('Shortcuts', 'elev8-os'); ?></span>
+        </button>
+
+        <div class="elev8-shortcut-dialog" id="elev8-shortcut-dialog" data-elev8-shortcut-dialog hidden>
+            <button class="elev8-shortcut-backdrop" type="button" data-elev8-shortcut-close aria-label="<?php esc_attr_e('Close shortcuts', 'elev8-os'); ?>"></button>
+            <section class="elev8-shortcut-panel" role="dialog" aria-modal="true" aria-labelledby="elev8-shortcut-title">
+                <header>
+                    <div><p><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p><h2 id="elev8-shortcut-title"><?php esc_html_e('Where do you want to go?', 'elev8-os'); ?></h2></div>
+                    <button type="button" class="elev8-shortcut-close" data-elev8-shortcut-close aria-label="<?php esc_attr_e('Close shortcuts', 'elev8-os'); ?>"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></button>
+                </header>
+                <div class="elev8-shortcut-groups">
+                    <?php
+                    $groups = [
+                        __('Create & Grow', 'elev8-os') => ['growth_studio', 'artwork', 'website', 'edit_website', 'print_center'],
+                        __('Classes', 'elev8-os') => ['classes', 'students', 'waitlist'],
+                        __('Account', 'elev8-os') => ['dashboard'],
+                    ];
+                    foreach ($groups as $group_label => $keys) : ?>
+                        <div class="elev8-shortcut-group"><h3><?php echo esc_html($group_label); ?></h3><div>
+                        <?php foreach ($keys as $key) : $item = $items[$key] ?? null; if (!$item || empty($item['enabled'])) { continue; } ?>
+                            <a class="elev8-shortcut-card<?php echo $key === $active ? ' is-active' : ''; ?>" href="<?php echo esc_url($item['url']); ?>">
+                                <span class="dashicons dashicons-<?php echo esc_attr($item['icon']); ?>" aria-hidden="true"></span><span><?php echo esc_html($item['label']); ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                        </div></div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        </div>
+        <?php
     }
 
     public static function render_navigation(string $active = 'dashboard'): void {

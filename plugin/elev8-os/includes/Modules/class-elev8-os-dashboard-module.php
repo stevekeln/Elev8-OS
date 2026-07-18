@@ -264,6 +264,7 @@ final class Elev8_OS_Dashboard_Module {
         ?>
         <div class="elev8-artist-dashboard elev8-dashboard-v2">
             <?php Elev8_OS_Artist_Portal_Module::render_navigation('dashboard'); ?>
+            <?php Elev8_OS_Artist_Portal_Module::render_shortcut_launcher('dashboard'); ?>
             <header class="elev8-dashboard-header elev8-dashboard-hero">
                 <div>
                     <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>

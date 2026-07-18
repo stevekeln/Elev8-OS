@@ -34,3 +34,6 @@ Architecture
 
 
 10.2.5 introduces Growth Studio, the unified artist-facing home for content creation, email marketing, Print Center, QR tools, and goal-based promotion.
+
+
+10.2.6 adds a reusable Artist Shortcut Launcher to the Artist Dashboard. Desktop users receive a compact sticky navigation bar after scrolling past the standard portal navigation. Mobile users receive a floating Shortcuts button that opens an accessible destination panel. The launcher reuses the central Artist Portal navigation data and follows the purple, lavender, teal, and white Growth Studio palette.

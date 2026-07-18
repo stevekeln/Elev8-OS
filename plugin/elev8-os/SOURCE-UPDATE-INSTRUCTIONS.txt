@@ -1,5 +1,15 @@
-Elev8 OS 10.2.5 Source Update
+Elev8 OS 10.2.6 Source Update
 
-Replace every file included in the changed-files package at the matching path in the Git source. Keep all other 10.2.4 files unchanged. Then commit to develop, push, run the standard BAT release builder, and install the BAT-generated ZIP into Local.
+Replace these files in the Git source:
+- elev8-os.php
+- includes/Modules/class-elev8-os-artist-portal-module.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- assets/css/artist-shortcut-launcher.css
+- assets/js/artist-shortcut-launcher.js
+- CHANGELOG.md
+- README.txt
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
 
-The new Growth Studio does not remove Marketing or Content Studio. It consolidates artist navigation while preserving those modules as reusable engines and backward-compatible pages.
+Then commit to develop, push, run Build Elev8 OS Release.bat, and install the generated ZIP into Local.
