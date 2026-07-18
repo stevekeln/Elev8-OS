@@ -24,6 +24,9 @@ final class Elev8_OS_Dashboard_Module {
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_assets']);
         add_filter('login_redirect', [__CLASS__, 'login_redirect'], 999, 3);
+        add_filter('um_login_redirect_url', [__CLASS__, 'ultimate_member_login_redirect'], 999, 2);
+        add_action('um_on_login_before_redirect', [__CLASS__, 'ultimate_member_before_redirect'], 1, 1);
+        add_action('template_redirect', [__CLASS__, 'redirect_artist_profile_to_dashboard'], 1);
     }
 
     public static function status(): string {
@@ -120,6 +123,68 @@ final class Elev8_OS_Dashboard_Module {
         }
 
         return self::dashboard_url();
+    }
+
+
+    /**
+     * Ultimate Member does not always run WordPress' login_redirect filter.
+     * This filter covers UM roles configured to redirect to a custom URL.
+     */
+    public static function ultimate_member_login_redirect(string $redirect_url, int $user_id): string {
+        $user = get_user_by('id', $user_id);
+
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+            return $redirect_url;
+        }
+
+        return self::dashboard_url();
+    }
+
+    /**
+     * Ultimate Member's default role behavior may redirect directly to the UM
+     * profile without applying um_login_redirect_url. Redirect linked artists
+     * before UM selects that destination.
+     */
+    public static function ultimate_member_before_redirect(int $user_id): void {
+        $user = get_user_by('id', $user_id);
+
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+            return;
+        }
+
+        wp_safe_redirect(self::dashboard_url());
+        exit;
+    }
+
+    /**
+     * Existing bookmarks and older Ultimate Member redirects may still point
+     * to /user/... profile screens. Treat that screen as a bridge into Elev8 OS
+     * for linked artists instead of leaving them on an empty social profile.
+     */
+    public static function redirect_artist_profile_to_dashboard(): void {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page()) {
+            return;
+        }
+
+        $user = wp_get_current_user();
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+            return;
+        }
+
+        $is_um_profile = function_exists('um_is_core_page') && um_is_core_page('user');
+
+        if (!$is_um_profile) {
+            $request_path = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '';
+            $request_path = (string) wp_parse_url($request_path, PHP_URL_PATH);
+            $is_um_profile = (bool) preg_match('#/user/[^/]+/?$#i', $request_path);
+        }
+
+        if (!$is_um_profile) {
+            return;
+        }
+
+        wp_safe_redirect(self::dashboard_url());
+        exit;
     }
 
     public static function shortcode(): string {

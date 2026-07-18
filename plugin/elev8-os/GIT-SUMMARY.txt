@@ -1,19 +1,15 @@
-Elev8 OS 10.1.0 — Brand Experience
+Elev8 OS 10.2.1 — Artist Access Fix
 
 Changed files:
 - elev8-os.php
-- includes/Services/class-elev8-os-brand-service.php
-- includes/Services/class-elev8-os-template-renderer.php
-- includes/Modules/class-elev8-os-content-studio-module.php
-- assets/js/content-studio.js
-- assets/css/content-studio.css
+- includes/Modules/class-elev8-os-dashboard-module.php
 - CHANGELOG.md
 - GIT-SUMMARY.txt
 
-Highlights:
-- Polished responsive universal email template
-- Logo media picker and theme logo fallback
-- Book a Class and Events links
-- Campaign-specific contextual CTA panels
-- Mission, tagline, address, and optional social links
-- No database changes
+What changed:
+- Linked artists now land on the Elev8 OS Artist Dashboard after either WordPress or Ultimate Member login.
+- Ultimate Member's default profile redirect is intercepted before it sends artists to /user/... pages.
+- Old /user/... profile links redirect logged-in linked artists to their dashboard.
+- Administrators and unmatched users retain their existing login behavior.
+
+Database changes: None.

@@ -112,3 +112,20 @@
 - Existing 9.2.0 content categories and templates remain unchanged
 - Shared and personal template workflows remain backward compatible
 - No WordPress, Amelia, or WooCommerce trusted-system data is duplicated
+
+## 10.2.0 — Shared Brand System
+- Clarified that the Universal Email Brand System is the owner-controlled organization brand frame.
+- Added a reusable Artist Brand Service that resolves the linked artist from the existing WordPress-to-Amelia identity mapping.
+- Added artist-managed email identity settings in Manage My Website: optional logo, accent color, featured heading, short introduction, signature, and enable/disable control.
+- Added a combined organization + artist email layout with artist image, story, profile link, website, social links, and signature.
+- Preserved the official organization logo, mission, Book a Class link, Events link, address, social links, and footer as owner-controlled settings.
+- Reused the existing artist profile option and WordPress Media Library; no new database tables were introduced.
+
+## 10.2.1 — Artist Access Fix
+
+- Redirects linked artists from Ultimate Member login directly to the Elev8 OS Artist Dashboard.
+- Supports both WordPress native login redirects and Ultimate Member's own login flow.
+- Converts legacy `/user/...` Ultimate Member profile destinations into a safe bridge to the Artist Dashboard for linked artists.
+- Preserves normal WordPress behavior for administrators and users who are not linked to an Amelia artist/provider.
+- Adds redirect-loop protections and keeps the public Artist Dashboard as the single artist home.
+- No database changes.
