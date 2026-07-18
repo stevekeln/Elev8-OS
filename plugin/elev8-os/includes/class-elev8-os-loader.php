@@ -42,6 +42,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-gps-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-success-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-growth-center-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-growth-studio-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-students-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-marketing-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-content-studio-module.php';
@@ -84,6 +85,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Business_Intelligence_Dashboard_Module::init();
         Elev8_OS_CEO_Dashboard_Module::init();
         Elev8_OS_Growth_Center_Module::init();
+        Elev8_OS_Artist_Growth_Studio_Module::init();
         Elev8_OS_Business_GPS_Module::init();
         Elev8_OS_Artist_Success_Module::init();
     }

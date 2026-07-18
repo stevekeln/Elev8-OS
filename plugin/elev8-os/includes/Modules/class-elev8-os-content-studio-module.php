@@ -73,7 +73,7 @@ final class Elev8_OS_Content_Studio_Module {
         $base_url = $admin ? admin_url('admin.php?page=elev8-content-studio') : Elev8_OS_Portal_Page_Manager::get_url('content_studio');
         ob_start();
         if (!$admin) {
-            echo '<div class="elev8-portal-layout elev8-content-studio-shell">'; Elev8_OS_Artist_Portal_Module::render_navigation('content_studio'); echo '<main class="elev8-content-main">';
+            echo '<div class="elev8-portal-layout elev8-content-studio-shell">'; Elev8_OS_Artist_Portal_Module::render_navigation('growth_studio'); echo '<main class="elev8-content-main">';
         }
         ?>
         <div class="elev8-content-studio">

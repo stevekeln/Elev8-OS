@@ -30,4 +30,7 @@ Architecture
 - WordPress owns users and media; Amelia remains the scheduling and booking source of truth
 
 
-10.2.4 makes My Print Center easy to discover from both Marketing and Content Studio while preserving the Artist Identity System and all 10.2.3 functionality.
+10.2.5 makes My Print Center easy to discover from both Marketing and Content Studio while preserving the Artist Identity System and all 10.2.3 functionality.
+
+
+10.2.5 introduces Growth Studio, the unified artist-facing home for content creation, email marketing, Print Center, QR tools, and goal-based promotion.

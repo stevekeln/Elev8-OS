@@ -1,14 +1,17 @@
-Elev8 OS 10.2.4 — Print Center Discovery
+Elev8 OS 10.2.5 — Growth Studio
 
 Changed files:
 - elev8-os.php
-- includes/Modules/class-elev8-os-artist-print-center-module.php
-- includes/Modules/class-elev8-os-content-studio-module.php
+- includes/class-elev8-os-loader.php
+- includes/Services/class-elev8-os-portal-page-manager.php
+- includes/Modules/class-elev8-os-artist-portal-module.php
 - includes/Modules/class-elev8-os-marketing-module.php
-- assets/css/artist-growth-tools.css (new)
+- includes/Modules/class-elev8-os-content-studio-module.php
+- includes/Modules/class-elev8-os-artist-growth-studio-module.php (new)
+- assets/css/artist-growth-studio.css (new)
 - CHANGELOG.md
 - README.txt
 - INSTALL.txt
 - SOURCE-UPDATE-INSTRUCTIONS.txt
 
-Database changes: none.
+No database schema changes. A new managed WordPress portal page is created automatically for Growth Studio. Existing Marketing and Content Studio pages remain available for backward compatibility.

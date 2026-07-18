@@ -119,7 +119,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return false;
         }
 
-        foreach (['dashboard', 'classes', 'artwork', 'students', 'content_studio', 'marketing', 'waitlist', 'print_center'] as $portal_page) {
+        foreach (['dashboard', 'classes', 'artwork', 'students', 'growth_studio', 'content_studio', 'marketing', 'waitlist', 'print_center'] as $portal_page) {
             if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
                 return true;
             }
@@ -133,7 +133,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        $portal_pages = ['dashboard', 'classes', 'artwork', 'students', 'content_studio', 'marketing', 'waitlist', 'print_center'];
+        $portal_pages = ['dashboard', 'classes', 'artwork', 'students', 'growth_studio', 'content_studio', 'marketing', 'waitlist', 'print_center'];
         $is_portal_page = false;
         foreach ($portal_pages as $portal_page) {
             if (Elev8_OS_Portal_Page_Manager::is_current_page($portal_page)) {
@@ -150,6 +150,13 @@ final class Elev8_OS_Artist_Portal_Module {
             'elev8-os-artist-portal',
             ELEV8_OS_URL . 'assets/css/artist-portal.css',
             [],
+            ELEV8_OS_VERSION
+        );
+
+        wp_enqueue_style(
+            'elev8-os-growth-studio-palette',
+            ELEV8_OS_URL . 'assets/css/artist-growth-studio.css',
+            ['elev8-os-artist-portal'],
             ELEV8_OS_VERSION
         );
 
@@ -776,6 +783,7 @@ final class Elev8_OS_Artist_Portal_Module {
         $classes_url = Elev8_OS_Portal_Page_Manager::get_url('classes');
         $artwork_url = Elev8_OS_Portal_Page_Manager::get_url('artwork');
         $students_url = Elev8_OS_Portal_Page_Manager::get_url('students');
+        $growth_studio_url = Elev8_OS_Portal_Page_Manager::get_url('growth_studio');
         $content_studio_url = Elev8_OS_Portal_Page_Manager::get_url('content_studio');
         $marketing_url = Elev8_OS_Portal_Page_Manager::get_url('marketing');
         $waitlist_url = Elev8_OS_Portal_Page_Manager::get_url('waitlist');
@@ -831,16 +839,10 @@ final class Elev8_OS_Artist_Portal_Module {
                 'url' => $students_url,
                 'enabled' => true,
             ],
-            'content_studio' => [
-                'label' => __('Content Studio', 'elev8-os'),
-                'icon' => 'layout',
-                'url' => $content_studio_url,
-                'enabled' => true,
-            ],
-            'marketing' => [
-                'label' => __('Marketing', 'elev8-os'),
-                'icon' => 'email-alt',
-                'url' => $marketing_url,
+            'growth_studio' => [
+                'label' => __('Growth Studio', 'elev8-os'),
+                'icon' => 'megaphone',
+                'url' => $growth_studio_url,
                 'enabled' => true,
             ],
             'waitlist' => [

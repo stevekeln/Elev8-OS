@@ -1,12 +1,10 @@
-Elev8 OS 10.2.4 Installation
+Elev8 OS 10.2.5 Installation
 
-1. Replace the changed files in your local Git repository.
+1. Replace the changed files in the local Git repository.
 2. Commit to develop and push to GitHub.
 3. Run Build Elev8 OS Release.bat.
 4. Install the generated ZIP into Local.
-5. Confirm Marketing and Content Studio each show the Print & QR card.
-6. Confirm Open My Print Center reaches the artist Print Center.
-7. Confirm Manage My Artwork reaches the artist artwork page.
-8. Test on desktop and mobile before installing the exact same ZIP on Live.
+5. Visit any WordPress admin page as an administrator once so Elev8 OS can create/repair the Growth Studio portal page.
+6. Test the Growth Studio navigation, goal cards, Content Studio, Marketing, and Print Center.
 
-Database changes: none.
+Do not install the changed-files ZIP directly into WordPress.

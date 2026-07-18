@@ -1,4 +1,13 @@
-## 10.2.4 — Print Center Discovery
+# Changelog
+
+## 10.2.5
+- Added the artist-facing Growth Studio as the single navigation destination for content, marketing, print, and QR tools.
+- Added goal-first shortcuts for promoting artwork, classes, events, and artist profiles.
+- Preserved the existing Marketing and Content Studio engines and their legacy page URLs.
+- Replaced the artist growth experience's dark blue styling with a coordinated purple, lavender, and teal palette.
+- Standardized white text on dark purple and teal buttons for readability.
+- Kept owner-facing Artist Growth Center separate from the artist Growth Studio.
+
 
 - Added a prominent Print & QR action card inside the artist Marketing Center.
 - Added the same Print & QR action card inside the artist Content Studio.

@@ -1,3 +1,5 @@
-Elev8 OS 10.2.4 Source Update
+Elev8 OS 10.2.5 Source Update
 
-Replace every file included in the changed-files package, including the new assets/css/artist-growth-tools.css file. Then follow the normal develop -> GitHub -> BAT build -> Local test workflow. Do not install the changed-files package directly into WordPress.
+Replace every file included in the changed-files package at the matching path in the Git source. Keep all other 10.2.4 files unchanged. Then commit to develop, push, run the standard BAT release builder, and install the BAT-generated ZIP into Local.
+
+The new Growth Studio does not remove Marketing or Content Studio. It consolidates artist navigation while preserving those modules as reusable engines and backward-compatible pages.
