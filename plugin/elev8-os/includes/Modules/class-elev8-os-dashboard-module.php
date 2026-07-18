@@ -248,6 +248,14 @@ final class Elev8_OS_Dashboard_Module {
         $website_url = Elev8_OS_Portal_Page_Manager::get_url('website');
         $edit_website_url = Elev8_OS_Portal_Page_Manager::get_url('edit_website');
         $artist_print_center_url = Elev8_OS_Portal_Page_Manager::get_url('print_center');
+        $public_artist_url = '';
+        if (is_array($artist)) {
+            $artist_name_for_slug = trim((string) ($artist['firstName'] ?? '') . ' ' . (string) ($artist['lastName'] ?? ''));
+            if ($artist_name_for_slug === '') {
+                $artist_name_for_slug = 'artist-' . absint($artist['id'] ?? 0);
+            }
+            $public_artist_url = home_url('/artists/' . sanitize_title($artist_name_for_slug) . '/');
+        }
         $relationship_snapshot = class_exists('Elev8_OS_Student_Relationship_Service') ? Elev8_OS_Student_Relationship_Service::get_snapshot($user) : ['available'=>false];
         $business = class_exists('Elev8_OS_Artist_Business_Service') ? Elev8_OS_Artist_Business_Service::get_snapshot($user) : [];
         $business_score = is_array($business['score'] ?? null) ? $business['score'] : ['score'=>0,'label'=>__('Unavailable','elev8-os'),'components'=>[]];
@@ -261,6 +269,9 @@ final class Elev8_OS_Dashboard_Module {
                     <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>
                     <h1><?php echo esc_html(sprintf(__('Welcome back, %s!', 'elev8-os'), $first_name)); ?></h1>
                     <p><?php echo esc_html(wp_date('l, F j')); ?> · <?php esc_html_e('Here is what needs your attention.', 'elev8-os'); ?></p>
+                    <?php if ($public_artist_url !== '') : ?>
+                        <p class="elev8-dashboard-public-link"><span class="dashicons dashicons-admin-site-alt3" aria-hidden="true"></span><a href="<?php echo esc_url($public_artist_url); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('View your public artist page', 'elev8-os'); ?></a></p>
+                    <?php endif; ?>
                 </div>
                 <span class="elev8-dashboard-badge"><?php esc_html_e('Founders Edition', 'elev8-os'); ?></span>
             </header>

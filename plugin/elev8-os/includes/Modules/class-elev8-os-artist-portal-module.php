@@ -405,6 +405,24 @@ final class Elev8_OS_Artist_Portal_Module {
                         <p class="elev8-editor-help"><?php esc_html_e('Uploaded images are saved securely in the WordPress Media Library. Products shown on your public page come directly from My Artwork.', 'elev8-os'); ?></p>
                     </section>
 
+                    <section class="elev8-editor-section elev8-artist-brand-section">
+                        <div class="elev8-editor-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Artist Brand', 'elev8-os'); ?></p><h2><?php esc_html_e('My Email Identity', 'elev8-os'); ?></h2></div></div>
+                        <p class="elev8-section-help"><?php esc_html_e('Your identity appears inside the official Elev8 Arts email design. The organization logo, mission, class links, event links, and footer remain controlled by Elev8 Arts.', 'elev8-os'); ?></p>
+                        <label class="elev8-public-toggle">
+                            <input type="checkbox" name="artist_email_brand_enabled" value="1" <?php checked(!isset($profile['artist_email_brand_enabled']) || !empty($profile['artist_email_brand_enabled'])); ?>>
+                            <span><strong><?php esc_html_e('Include my artist identity in campaigns', 'elev8-os'); ?></strong><small><?php esc_html_e('Adds your name, image, short story, links, and signature when you create a campaign.', 'elev8-os'); ?></small></span>
+                        </label>
+                        <div class="elev8-form-grid">
+                            <?php self::render_text_input('artist_brand_title', __('Artist heading', 'elev8-os'), $profile, __('Featured Artist', 'elev8-os')); ?>
+                            <?php self::render_text_input('artist_email_signature', __('Email signature', 'elev8-os'), $profile, $artist_name); ?>
+                            <label class="elev8-field"><span><?php esc_html_e('Artist accent color', 'elev8-os'); ?></span><input type="color" name="artist_brand_color" value="<?php echo esc_attr((string) ($profile['artist_brand_color'] ?? '#ff7a00')); ?>"></label>
+                        </div>
+                        <label class="elev8-field elev8-field-full"><span><?php esc_html_e('Short email introduction', 'elev8-os'); ?></span><textarea name="artist_email_bio" rows="4" placeholder="<?php esc_attr_e('A short, customer-friendly introduction to you and your work.', 'elev8-os'); ?>"><?php echo esc_textarea((string) ($profile['artist_email_bio'] ?? '')); ?></textarea></label>
+                        <div class="elev8-form-grid elev8-image-upload-grid">
+                            <?php self::render_image_upload('artist_logo', 'artist_logo_upload', __('Artist logo (optional)', 'elev8-os'), $profile, __('Use your personal artist logo. If blank, your profile photo is used.', 'elev8-os')); ?>
+                        </div>
+                    </section>
+
                     <section class="elev8-editor-section">
                         <div class="elev8-editor-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Connections', 'elev8-os'); ?></p><h2><?php esc_html_e('Social and Contact Links', 'elev8-os'); ?></h2></div></div>
                         <div class="elev8-repeat-grid">
@@ -535,6 +553,10 @@ final class Elev8_OS_Artist_Portal_Module {
             'website' => 'url',
             'booking_url' => 'url',
             'booking_button_label' => 'text',
+            'artist_brand_title' => 'text',
+            'artist_email_signature' => 'text',
+            'artist_brand_color' => 'color',
+            'artist_email_bio' => 'textarea',
         ];
 
         foreach ($editable as $key => $type) {
@@ -543,6 +565,8 @@ final class Elev8_OS_Artist_Portal_Module {
                 $existing[$key] = sanitize_textarea_field($raw);
             } elseif ($type === 'url') {
                 $existing[$key] = esc_url_raw($raw);
+            } elseif ($type === 'color') {
+                $existing[$key] = sanitize_hex_color($raw) ?: '#ff7a00';
             } else {
                 $existing[$key] = sanitize_text_field($raw);
             }
@@ -558,6 +582,11 @@ final class Elev8_OS_Artist_Portal_Module {
             isset($_POST['cover_image']) ? esc_url_raw(wp_unslash($_POST['cover_image'])) : (string) ($existing['cover_image'] ?? ''),
             isset($_POST['remove_cover_image'])
         );
+        $existing['artist_logo'] = self::process_image_upload(
+            'artist_logo_upload',
+            isset($_POST['artist_logo']) ? esc_url_raw(wp_unslash($_POST['artist_logo'])) : (string) ($existing['artist_logo'] ?? ''),
+            isset($_POST['remove_artist_logo'])
+        );
 
         for ($i = 1; $i <= 4; $i++) {
             $existing['social_' . $i . '_name'] = isset($_POST['social_' . $i . '_name']) ? sanitize_text_field(wp_unslash($_POST['social_' . $i . '_name'])) : '';
@@ -570,6 +599,7 @@ final class Elev8_OS_Artist_Portal_Module {
 
         $existing['social'] = (string) ($existing['social_1_url'] ?? '');
         $existing['public_enabled'] = isset($_POST['public_enabled']) ? 1 : 0;
+        $existing['artist_email_brand_enabled'] = isset($_POST['artist_email_brand_enabled']) ? 1 : 0;
         $existing['status'] = isset($existing['status']) && $existing['status'] === 'inactive' ? 'inactive' : 'active';
         $existing['booking_destination'] = isset($existing['booking_destination']) ? $existing['booking_destination'] : 'custom';
 
@@ -842,7 +872,19 @@ final class Elev8_OS_Artist_Portal_Module {
 
     public static function render_navigation(string $active = 'dashboard'): void {
         $items = self::navigation_items();
+        $user = wp_get_current_user();
+        $site_links = self::site_navigation_items($user);
         ?>
+        <nav class="elev8-site-nav" aria-label="<?php esc_attr_e('Elev8 Arts website navigation', 'elev8-os'); ?>">
+            <div class="elev8-site-nav-links">
+                <?php foreach ($site_links as $item) : ?>
+                    <a class="elev8-site-nav-link<?php echo !empty($item['primary']) ? ' is-primary' : ''; ?>" href="<?php echo esc_url($item['url']); ?>"<?php echo !empty($item['new_tab']) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>>
+                        <span class="dashicons dashicons-<?php echo esc_attr($item['icon']); ?>" aria-hidden="true"></span>
+                        <span><?php echo esc_html($item['label']); ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </nav>
         <nav class="elev8-portal-nav" aria-label="<?php esc_attr_e('Artist Portal', 'elev8-os'); ?>">
             <div class="elev8-portal-brand">
                 <span class="elev8-portal-brand-mark">E8</span>
@@ -886,6 +928,79 @@ final class Elev8_OS_Artist_Portal_Module {
             </div>
         </nav>
         <?php
+    }
+
+
+    /**
+     * Website-facing destinations that help artists move between their private
+     * workspace and the public Elev8 Arts experience without getting trapped.
+     *
+     * @return array<int,array<string,mixed>>
+     */
+    private static function site_navigation_items(WP_User $user): array {
+        $public_url = esc_url_raw((string) get_user_meta($user->ID, self::META_PUBLIC_PAGE, true));
+        if ($public_url === '') {
+            $artist = self::find_artist_for_user($user);
+            if (is_array($artist)) {
+                $public_url = home_url('/artists/' . self::artist_slug($artist) . '/');
+            }
+        }
+
+        $shop_url = function_exists('wc_get_page_permalink') ? (string) wc_get_page_permalink('shop') : '';
+        if ($shop_url === '') {
+            $shop_url = home_url('/shop/');
+        }
+
+        $items = [
+            [
+                'label' => __('Elev8 Arts Home', 'elev8-os'),
+                'icon' => 'admin-home',
+                'url' => home_url('/'),
+                'new_tab' => false,
+                'primary' => true,
+            ],
+        ];
+
+        if ($public_url !== '') {
+            $items[] = [
+                'label' => __('My Public Artist Page', 'elev8-os'),
+                'icon' => 'visibility',
+                'url' => $public_url,
+                'new_tab' => true,
+                'primary' => false,
+            ];
+        }
+
+        $items[] = [
+            'label' => __('Book a Class', 'elev8-os'),
+            'icon' => 'calendar-alt',
+            'url' => home_url('/book-appointment/'),
+            'new_tab' => true,
+            'primary' => false,
+        ];
+        $items[] = [
+            'label' => __('Events', 'elev8-os'),
+            'icon' => 'megaphone',
+            'url' => home_url('/elev8-events/'),
+            'new_tab' => true,
+            'primary' => false,
+        ];
+        $items[] = [
+            'label' => __('Shop', 'elev8-os'),
+            'icon' => 'cart',
+            'url' => $shop_url,
+            'new_tab' => true,
+            'primary' => false,
+        ];
+        $items[] = [
+            'label' => __('Log Out', 'elev8-os'),
+            'icon' => 'exit',
+            'url' => wp_logout_url(home_url('/')),
+            'new_tab' => false,
+            'primary' => false,
+        ];
+
+        return $items;
     }
 
     public static function render_profile_fields(WP_User $user): void {

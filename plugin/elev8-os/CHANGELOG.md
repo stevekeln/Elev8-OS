@@ -1,3 +1,14 @@
+## 10.2.2 — Artist Website Navigation
+
+- Added a permanent website navigation bar to every Elev8 OS Artist Portal screen.
+- Added direct links to Elev8 Arts Home, the logged-in artist's public page, Book a Class, Events, Shop, and Log Out.
+- Added a prominent public-page link beneath the dashboard welcome message.
+- Artist public-page links are derived from the verified artist mapping, with saved profile links taking priority.
+- WooCommerce remains the source of truth for the Shop URL.
+- Log Out safely returns the artist to the Elev8 Arts home page.
+- Added responsive mobile navigation styling.
+- No database changes.
+
 ## 10.1.0 — Brand Experience
 
 - Rebuilt the universal email renderer into a polished, mobile-friendly branded marketing layout.

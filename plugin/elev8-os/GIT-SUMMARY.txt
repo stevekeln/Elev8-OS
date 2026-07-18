@@ -1,15 +1,11 @@
-Elev8 OS 10.2.1 — Artist Access Fix
+Elev8 OS 10.2.2 — Artist Website Navigation
 
 Changed files:
 - elev8-os.php
+- includes/Modules/class-elev8-os-artist-portal-module.php
 - includes/Modules/class-elev8-os-dashboard-module.php
+- assets/css/artist-portal.css
 - CHANGELOG.md
 - GIT-SUMMARY.txt
 
-What changed:
-- Linked artists now land on the Elev8 OS Artist Dashboard after either WordPress or Ultimate Member login.
-- Ultimate Member's default profile redirect is intercepted before it sends artists to /user/... pages.
-- Old /user/... profile links redirect logged-in linked artists to their dashboard.
-- Administrators and unmatched users retain their existing login behavior.
-
-Database changes: None.
+No database changes.

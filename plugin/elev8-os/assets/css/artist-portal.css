@@ -66,3 +66,64 @@ body.elev8-os-portal-shell .entry-header{display:none}
 .elev8-print-empty p{margin:5px 0 0;color:#646970;line-height:1.5}
 @media(max-width:960px){.elev8-print-center-grid{grid-template-columns:1fr}.elev8-print-card{min-height:0}.elev8-portal-links{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding-bottom:4px}.elev8-portal-link{flex:0 0 auto}}
 @media(max-width:640px){.elev8-artist-print-center{padding-right:14px;padding-left:14px}.elev8-print-hero{align-items:flex-start;flex-direction:column;padding:22px}.elev8-print-hero .elev8-button{width:100%}.elev8-print-card{padding:22px}.elev8-artist-print-center .elev8-button-primary,.elev8-artist-print-center .elev8-button-secondary{width:100%;justify-self:stretch}}
+
+
+/* 10.2.2 — Website navigation bridge */
+.elev8-site-nav {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border: 1px solid #dfe7ec;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(22, 47, 62, .06);
+}
+.elev8-site-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+.elev8-site-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 9px;
+    color: #263b46;
+    font-weight: 650;
+    line-height: 1.2;
+    text-decoration: none;
+}
+.elev8-site-nav-link:hover,
+.elev8-site-nav-link:focus {
+    background: #eef7fa;
+    color: #137f98;
+}
+.elev8-site-nav-link.is-primary {
+    background: #168da5;
+    color: #fff;
+}
+.elev8-site-nav-link.is-primary:hover,
+.elev8-site-nav-link.is-primary:focus {
+    background: #11758b;
+    color: #fff;
+}
+.elev8-site-nav-link:last-child {
+    margin-left: auto;
+}
+.elev8-dashboard-public-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px !important;
+}
+.elev8-dashboard-public-link a {
+    font-weight: 700;
+}
+@media (max-width: 760px) {
+    .elev8-site-nav-links { display: grid; grid-template-columns: 1fr 1fr; }
+    .elev8-site-nav-link { justify-content: flex-start; }
+    .elev8-site-nav-link.is-primary,
+    .elev8-site-nav-link:last-child { grid-column: 1 / -1; margin-left: 0; }
+}
