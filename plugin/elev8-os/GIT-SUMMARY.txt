@@ -1,1 +1,14 @@
-Elev8 OS 10.4.6: render the public homepage directly for an artist’s explicit Home/logo click instead of cancelling a late membership redirect and producing a blank page.
+Elev8 OS 10.4.7
+
+Fixes public website navigation and layout for logged-in artists.
+
+Changed files:
+- elev8-os.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- CHANGELOG.md
+- README.txt
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
+
+Database changes: None.

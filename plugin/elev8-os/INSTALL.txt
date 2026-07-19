@@ -1,10 +1,10 @@
-Elev8 OS 10.4.6
+ELEV8 OS 10.4.7 INSTALL
 
-1. Replace the changed files in your local Git repository.
+1. Replace the changed files in the local Git source.
 2. Commit to develop and push to GitHub.
 3. Run Build Elev8 OS Release.bat.
 4. Install the BAT-generated ZIP on Local.
-5. Test the public homepage flow as a linked artist.
-6. Install the exact same BAT-generated ZIP on Live after Local passes.
+5. Test the artist public browsing flow before installing the same ZIP on Live.
 
-No database changes are required.
+Do not install the changed-files ZIP directly into WordPress.
+Database changes: None.

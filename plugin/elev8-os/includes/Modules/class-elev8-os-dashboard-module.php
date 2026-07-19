@@ -26,7 +26,7 @@ final class Elev8_OS_Dashboard_Module {
         add_filter('login_redirect', [__CLASS__, 'login_redirect'], 999, 3);
         add_filter('um_login_redirect_url', [__CLASS__, 'ultimate_member_login_redirect'], 999, 2);
         add_action('um_on_login_before_redirect', [__CLASS__, 'ultimate_member_before_redirect'], 1, 1);
-        add_action('template_redirect', [__CLASS__, 'capture_public_home_intent'], -999);
+        add_action('template_redirect', [__CLASS__, 'capture_public_browsing_intent'], -999);
         add_action('template_redirect', [__CLASS__, 'redirect_artist_profile_to_dashboard'], 1);
         add_filter('home_url', [__CLASS__, 'artist_public_home_url'], 999, 4);
         add_action('wp_footer', [__CLASS__, 'rewrite_public_home_links'], 999);
@@ -197,8 +197,8 @@ final class Elev8_OS_Dashboard_Module {
      * the public-home request is now handled before those redirect callbacks
      * run.
      */
-    public static function capture_public_home_intent(): void {
-        if (empty($_GET['elev8_public_home']) || !is_user_logged_in()) {
+    public static function capture_public_browsing_intent(): void {
+        if (!is_user_logged_in()) {
             return;
         }
 
@@ -207,13 +207,65 @@ final class Elev8_OS_Dashboard_Module {
             return;
         }
 
-        // The current request is already the WordPress front page. Prevent
-        // later template_redirect callbacks (Ultimate Member and similar role
-        // redirects) from replacing it with /user/ or /artist-dashboard/.
-        remove_all_actions('template_redirect');
+        $starting_public_browse = !empty($_GET['elev8_public_home']);
+        $continuing_public_browse = !empty($_COOKIE['elev8_public_browse']);
 
-        // Keep the browser address clean after the front page has rendered.
-        add_action('wp_head', [__CLASS__, 'clean_public_home_browser_url'], 1);
+        if (!$starting_public_browse && !$continuing_public_browse) {
+            return;
+        }
+
+        if ($starting_public_browse && !headers_sent()) {
+            setcookie(
+                'elev8_public_browse',
+                '1',
+                [
+                    'expires'  => time() + (30 * MINUTE_IN_SECONDS),
+                    'path'     => COOKIEPATH ?: '/',
+                    'domain'   => defined('COOKIE_DOMAIN') ? (string) COOKIE_DOMAIN : '',
+                    'secure'   => is_ssl(),
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]
+            );
+            $_COOKIE['elev8_public_browse'] = '1';
+        }
+
+        // Do not alter the private artist portal itself. The public browsing
+        // flag is only meant to stop Ultimate Member from replacing public
+        // website pages with its profile/login redirect.
+        if (self::is_dashboard_page()) {
+            return;
+        }
+
+        self::disable_ultimate_member_access_redirect();
+
+        if ($starting_public_browse) {
+            add_action('wp_head', [__CLASS__, 'clean_public_home_browser_url'], 1);
+        }
+    }
+
+    /**
+     * Disable only Ultimate Member's global access redirect for the current
+     * request. Never remove every template_redirect callback because themes,
+     * WooCommerce, WordPress canonical handling, and Elev8 OS routes rely on
+     * that hook to render pages correctly.
+     */
+    private static function disable_ultimate_member_access_redirect(): void {
+        if (!function_exists('UM')) {
+            return;
+        }
+
+        $um = UM();
+        if (!is_object($um) || !method_exists($um, 'access')) {
+            return;
+        }
+
+        $access = $um->access();
+        if (!is_object($access)) {
+            return;
+        }
+
+        remove_action('template_redirect', [$access, 'template_redirect'], 1000);
     }
 
     public static function clean_public_home_browser_url(): void {
@@ -230,7 +282,7 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     public static function redirect_artist_profile_to_dashboard(): void {
-        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page() || !empty($_GET['elev8_public_home'])) {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page() || !empty($_GET['elev8_public_home']) || !empty($_COOKIE['elev8_public_browse'])) {
             return;
         }
 

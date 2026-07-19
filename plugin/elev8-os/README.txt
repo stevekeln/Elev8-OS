@@ -1,3 +1,4 @@
+Stable tag: 10.4.7
 Elev8 OS 9.2.1 — Brand & Campaign Wizard
 
 This release extends the reusable Content Studio foundation with an artist-first campaign workflow.
@@ -44,3 +45,6 @@ Architecture
 
 
 10.4.0 adds the Class Idea Center. The existing WordPress page with slug `teach-or-suggest-a-class` is automatically rendered as a public Elev8 OS intake experience. Customers can request classes, and logged-in mapped artists can propose classes. Submissions enter the Elev8 OS Opportunity Engine and remain separate from Amelia until approved and scheduled.
+
+
+10.4.7 fixes logged-in artist public-site browsing without removing theme routing callbacks.

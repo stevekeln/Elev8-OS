@@ -1,3 +1,11 @@
+## 10.4.7 - Public Website Navigation and Layout Fix
+
+- Replaced the broad `remove_all_actions('template_redirect')` workaround with a targeted Ultimate Member access-redirect bypass.
+- Preserves theme, WordPress, WooCommerce, and Elev8 OS routing callbacks so public pages retain their correct layout and destination.
+- Adds a short-lived public browsing session for linked artists after they choose Elev8 Arts Home or the public-site logo.
+- Allows artists to continue browsing Classes, Events, Artists, About Us, Shop, and other public pages without being forced back to the Artist Dashboard.
+- Keeps normal artist login redirection and the private Artist Dashboard behavior unchanged.
+
 # Elev8 OS Changelog
 
 ## 10.4.6 - Public Homepage Render Fix
