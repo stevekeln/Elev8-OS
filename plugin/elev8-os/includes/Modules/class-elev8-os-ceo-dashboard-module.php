@@ -22,6 +22,7 @@ final class Elev8_OS_CEO_Dashboard_Module {
     public static function init(): void {
         add_action('admin_menu', [__CLASS__, 'register_admin_page'], 40);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
+        add_action('admin_menu', [__CLASS__, 'hide_owner_workspace_pages'], 999);
     }
 
     /**
@@ -36,6 +37,40 @@ final class Elev8_OS_CEO_Dashboard_Module {
             self::PAGE_SLUG,
             [__CLASS__, 'render_page']
         );
+    }
+
+
+    /**
+     * Keep owner tools available while reducing CEO sidebar clutter.
+     * The Daily Operations page remains registered and accessible from the
+     * CEO workspace, but administrators do not need a second left-menu item.
+     */
+    public static function hide_owner_workspace_pages(): void {
+        if (current_user_can('manage_options')) {
+            remove_submenu_page('elev8-os', 'elev8-daily-operations');
+        }
+    }
+
+    /**
+     * Render the shared CEO workspace navigation.
+     */
+    public static function render_workspace_navigation(string $active = 'overview'): void {
+        $items = [
+            'overview' => [__('Overview', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG)],
+            'intelligence' => [__('Business Intelligence', 'elev8-os'), admin_url('admin.php?page=elev8-business-intelligence')],
+            'operations' => [__('Business Memory', 'elev8-os'), admin_url('admin.php?page=elev8-daily-operations&view=brief')],
+            'opportunities' => [__('Opportunities', 'elev8-os'), admin_url('admin.php?page=elev8-opportunities')],
+            'class-requests' => [__('Class Requests', 'elev8-os'), admin_url('admin.php?page=elev8-class-demand-manager')],
+            'growth' => [__('Growth', 'elev8-os'), admin_url('admin.php?page=elev8-growth-center')],
+            'system' => [__('System Health', 'elev8-os'), admin_url('admin.php?page=elev8-system-inspector')],
+        ];
+
+        echo '<nav class="elev8-ceo-workspace-nav" aria-label="' . esc_attr__('CEO workspace', 'elev8-os') . '">';
+        foreach ($items as $key => $item) {
+            $class = $key === $active ? 'is-active' : '';
+            echo '<a class="' . esc_attr($class) . '" href="' . esc_url($item[1]) . '">' . esc_html($item[0]) . '</a>';
+        }
+        echo '</nav>';
     }
 
     /**
@@ -87,6 +122,7 @@ final class Elev8_OS_CEO_Dashboard_Module {
 
         ?>
         <div class="wrap elev8-bi-dashboard">
+            <?php self::render_workspace_navigation('overview'); ?>
             <header class="elev8-bi-header">
                 <div>
                     <p class="elev8-bi-eyebrow"><?php esc_html_e('Elev8 OS', 'elev8-os'); ?></p>
@@ -115,6 +151,21 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     </span>
                 </div>
             </header>
+
+            <section class="elev8-ceo-launchpad" aria-labelledby="elev8-ceo-launchpad-heading">
+                <div class="elev8-bi-section__heading">
+                    <div>
+                        <h2 id="elev8-ceo-launchpad-heading"><?php esc_html_e('CEO Command Center', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Open the part of the business that needs your attention without searching through the WordPress sidebar.', 'elev8-os'); ?></p>
+                    </div>
+                </div>
+                <div class="elev8-ceo-launchpad__grid">
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-daily-operations&view=brief')); ?>"><span class="dashicons dashicons-clipboard"></span><strong><?php esc_html_e('Business Memory', 'elev8-os'); ?></strong><small><?php esc_html_e('Daily brief, operating logs, issues, and trends.', 'elev8-os'); ?></small></a>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-business-intelligence')); ?>"><span class="dashicons dashicons-chart-area"></span><strong><?php esc_html_e('Business Intelligence', 'elev8-os'); ?></strong><small><?php esc_html_e('Verified KPIs and decision support.', 'elev8-os'); ?></small></a>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-class-demand-manager')); ?>"><span class="dashicons dashicons-lightbulb"></span><strong><?php esc_html_e('Class Requests', 'elev8-os'); ?></strong><small><?php esc_html_e('Customer demand and class opportunities.', 'elev8-os'); ?></small></a>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-opportunities')); ?>"><span class="dashicons dashicons-megaphone"></span><strong><?php esc_html_e('Opportunities', 'elev8-os'); ?></strong><small><?php esc_html_e('Actions that can help artists and the business grow.', 'elev8-os'); ?></small></a>
+                </div>
+            </section>
 
             <section class="elev8-bi-section" aria-labelledby="elev8-ceo-money-heading">
                 <div class="elev8-bi-section__heading">

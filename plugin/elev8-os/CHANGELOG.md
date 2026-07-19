@@ -1,3 +1,9 @@
+## 10.5.1 - CEO Workspace Navigation
+- Added a CEO command center with clear workspace tabs and launch cards.
+- Moved owner access to Daily Operations Intelligence under the CEO experience.
+- Kept the Daily Operations menu available to employees while removing duplicate sidebar clutter for administrators.
+- Preserved all existing direct page URLs and functionality for backward compatibility.
+
 ## 10.5.0 - Daily Operations Intelligence
 - Added role-based operating log templates and structured submissions.
 - Added searchable operational memory, attachments, owner attention flags, and workflow statuses.

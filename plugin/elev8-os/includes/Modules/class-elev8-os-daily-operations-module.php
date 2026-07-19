@@ -18,7 +18,9 @@ final class Elev8_OS_Daily_Operations_Module {
     public static function render():void{
         if(!is_user_logged_in())wp_die('Please sign in.');
         $view=sanitize_key((string)($_GET['view']??(current_user_can('manage_options')?'brief':'submit')));
-        echo '<div class="wrap elev8-ops">';self::header($view);
+        echo '<div class="wrap elev8-ops">';
+        if(current_user_can('manage_options')&&class_exists('Elev8_OS_CEO_Dashboard_Module')){Elev8_OS_CEO_Dashboard_Module::render_workspace_navigation('operations');}
+        self::header($view);
         if(isset($_GET['saved']))echo '<div class="notice notice-success is-dismissible"><p>Operating log saved. It is now part of the company memory.</p></div>';
         if(isset($_GET['error']))echo '<div class="notice notice-error"><p>'.esc_html(sanitize_text_field((string)$_GET['error'])).'</p></div>';
         if($view==='submit'){self::render_submit();}
