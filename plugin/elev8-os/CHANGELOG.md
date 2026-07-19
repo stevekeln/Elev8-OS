@@ -1,48 +1,20 @@
-## 10.4.8 — Public Theme Rendering Fix
-
-### Fixed
-- Removed the invalid `rewrite_public_home_links` footer callback registration.
-- Restored normal WordPress theme footer execution and completed public page wrappers.
-- Fixed the globally shifted public-site layout that appeared whenever Elev8 OS was active.
-- Preserved the working artist public-home navigation and Ultimate Member redirect bypass from 10.4.7.
-
-### Database changes
-- None.
-
-## 10.4.7 - Public Website Navigation and Layout Fix
-
-- Replaced the broad `remove_all_actions('template_redirect')` workaround with a targeted Ultimate Member access-redirect bypass.
-- Preserves theme, WordPress, WooCommerce, and Elev8 OS routing callbacks so public pages retain their correct layout and destination.
-- Adds a short-lived public browsing session for linked artists after they choose Elev8 Arts Home or the public-site logo.
-- Allows artists to continue browsing Classes, Events, Artists, About Us, Shop, and other public pages without being forced back to the Artist Dashboard.
-- Keeps normal artist login redirection and the private Artist Dashboard behavior unchanged.
-
 # Elev8 OS Changelog
 
-## 10.4.6 - Public Homepage Render Fix
+## 10.4.10 - 2026-07-19
 
-- Fixed the blank white page produced when a membership redirect was cancelled after its callback had already called `exit`.
-- The explicit `?elev8_public_home=1` request now renders the real WordPress homepage before Ultimate Member or another role redirect can replace it.
-- Cleans the temporary query argument from the browser address after the homepage loads.
-- Preserves the normal artist login redirect to the Artist Dashboard.
-- No database changes.
+### Fixed
+- Preserved the display-stable 10.4.3.1 public-site rendering.
+- Allowed linked artists to open the real public homepage while logged in.
+- Prevented Ultimate Member's homepage access callback from redirecting the front page to `/user/?redirect_to=...`.
+- Scoped the compatibility change only to logged-in linked artists on the WordPress front page.
+- Kept normal login redirects, Artist Dashboard routing, and Ultimate Member profile behavior unchanged.
 
-## 10.4.5 - Public Home Redirect and Owner Menu Cleanup
+## 10.4.3.1 — Direct Public Home Diagnostic Test
 
-- Fixed the remaining Ultimate Member redirect chain that sent an artist from the public homepage to `/user/?redirect_to=...` and then back to the Artist Dashboard.
-- Public browsing intent now recognizes both `/user/` and `/user/{username}/` redirects and prevents the artist-profile bridge from overriding an intentional homepage visit.
-- Renamed the admin menu item from “Artist Dashboard Preview” to “Artist Dashboard.”
-- Reordered the Elev8 OS owner menu so Elev8 OS, CEO Dashboard, Artist Dashboard, and Class Demand appear first.
-- No database changes.
-
-## 10.4.4 — Public Website Browsing Mode Fix
-
-- Fixed linked artists being forced back to the Artist Dashboard after clicking either Elev8 Arts Home or the public-site logo.
-- Added an explicit, short-lived public browsing intent that survives membership plugins stripping query arguments.
-- Rewrites root homepage links for linked artists when themes bypass WordPress home URL filters.
-- Cancels dashboard/profile redirects only during an intentional public homepage visit.
-- Preserves normal post-login and old member-profile redirects into Elev8 OS.
-- No database schema changes.
+- Built directly from the display-stable 10.4.3 release.
+- Removes the `wp_redirect` interception used for the public-home query flag.
+- Sends the artist-page logo directly to the real WordPress homepage URL.
+- Makes no other dashboard, theme, layout, or Ultimate Member changes.
 
 ## 10.4.3 — Public Website Logo Exit Fix
 

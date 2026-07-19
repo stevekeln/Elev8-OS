@@ -1,1 +1,11 @@
-Replace only the included changed files in the local Elev8 OS Git source. Commit to develop, push, run the normal BAT release builder, and install that generated ZIP on Local.
+Elev8 OS 10.4.10 SOURCE UPDATE
+
+1. Replace the listed files in your local Git repository.
+2. Review the diff.
+3. Commit to develop.
+4. Push to GitHub.
+5. Run Build Elev8 OS Release.bat.
+6. Install the generated ZIP on Live for the Ultimate Member redirect test.
+7. After confirmation, install the exact same generated ZIP wherever required.
+
+Do not install the changed-files package directly into WordPress.

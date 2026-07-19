@@ -1,3 +1,15 @@
-Elev8 OS 10.4.8
+Elev8 OS 10.4.10
 
-Fixed public theme rendering by removing an invalid wp_footer callback registration from the Artist Dashboard module. No database changes.
+Changed files:
+- elev8-os.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- CHANGELOG.md
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
+
+Purpose:
+Fix the logged-in artist homepage redirect without changing public theme rendering.
+
+Implementation:
+On the real WordPress front page, for a linked non-admin artist only, Elev8 OS removes Ultimate Member's template_redirect access callback at priority 1000 before it runs. No wp_redirect cancellation, output buffering, cookies, JavaScript rewriting, or broad action removal is used.

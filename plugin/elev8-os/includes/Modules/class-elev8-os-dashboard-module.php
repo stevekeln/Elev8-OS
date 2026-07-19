@@ -26,9 +26,8 @@ final class Elev8_OS_Dashboard_Module {
         add_filter('login_redirect', [__CLASS__, 'login_redirect'], 999, 3);
         add_filter('um_login_redirect_url', [__CLASS__, 'ultimate_member_login_redirect'], 999, 2);
         add_action('um_on_login_before_redirect', [__CLASS__, 'ultimate_member_before_redirect'], 1, 1);
-        add_action('template_redirect', [__CLASS__, 'capture_public_browsing_intent'], -999);
         add_action('template_redirect', [__CLASS__, 'redirect_artist_profile_to_dashboard'], 1);
-        add_filter('home_url', [__CLASS__, 'artist_public_home_url'], 999, 4);
+        add_action('template_redirect', [__CLASS__, 'allow_artist_front_page_before_ultimate_member'], 999);
     }
 
     public static function status(): string {
@@ -76,8 +75,8 @@ final class Elev8_OS_Dashboard_Module {
     public static function register_admin_menu(): void {
         add_submenu_page(
             'elev8-os',
-            __('Artist Dashboard', 'elev8-os'),
-            __('Artist Dashboard', 'elev8-os'),
+            __('Artist Dashboard Preview', 'elev8-os'),
+            __('Artist Dashboard Preview', 'elev8-os'),
             'manage_options',
             self::ADMIN_PAGE_SLUG,
             [__CLASS__, 'render_admin_preview']
@@ -159,45 +158,15 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     /**
-     * Existing bookmarks and older Ultimate Member redirects may still point
-     * to /user/... profile screens. Treat that screen as a bridge into Elev8 OS
-     * for linked artists instead of leaving them on an empty social profile.
+     * Allow linked artists to browse the real public front page.
+     *
+     * Ultimate Member performs its access redirect at template_redirect priority
+     * 1000. Removing only that callback at priority 999 prevents the homepage
+     * request from being redirected to /user/ while leaving the rest of Ultimate
+     * Member, WordPress, and the public theme rendering pipeline untouched.
      */
-    /**
-     * Keep the theme logo pointed at the real public website while a linked
-     * artist is viewing a public artist page. Some membership plugins replace
-     * the site-home destination with the member dashboard for logged-in users.
-     * The explicit query flag lets Elev8 OS distinguish an intentional public
-     * website visit from the normal post-login dashboard redirect.
-     */
-    public static function artist_public_home_url(string $url, string $path, ?string $scheme, ?int $blog_id): string {
-        if (is_admin() || wp_doing_ajax() || !is_user_logged_in()) {
-            return $url;
-        }
-
-        $user = wp_get_current_user();
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
-            return $url;
-        }
-
-        if (!in_array($path, ['', '/'], true)) {
-            return $url;
-        }
-
-        $public_home = trailingslashit((string) get_option('home'));
-        return add_query_arg('elev8_public_home', '1', $public_home);
-    }
-
-    /**
-     * Render the real public homepage for a linked artist without allowing a
-     * membership plugin to replace that request with its member-profile
-     * redirect. Cancelling a redirect through the wp_redirect filter leaves a
-     * blank response when the originating plugin immediately calls exit, so
-     * the public-home request is now handled before those redirect callbacks
-     * run.
-     */
-    public static function capture_public_browsing_intent(): void {
-        if (!is_user_logged_in()) {
+    public static function allow_artist_front_page_before_ultimate_member(): void {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || !is_front_page()) {
             return;
         }
 
@@ -206,82 +175,25 @@ final class Elev8_OS_Dashboard_Module {
             return;
         }
 
-        $starting_public_browse = !empty($_GET['elev8_public_home']);
-        $continuing_public_browse = !empty($_COOKIE['elev8_public_browse']);
-
-        if (!$starting_public_browse && !$continuing_public_browse) {
-            return;
-        }
-
-        if ($starting_public_browse && !headers_sent()) {
-            setcookie(
-                'elev8_public_browse',
-                '1',
-                [
-                    'expires'  => time() + (30 * MINUTE_IN_SECONDS),
-                    'path'     => COOKIEPATH ?: '/',
-                    'domain'   => defined('COOKIE_DOMAIN') ? (string) COOKIE_DOMAIN : '',
-                    'secure'   => is_ssl(),
-                    'httponly' => true,
-                    'samesite' => 'Lax',
-                ]
-            );
-            $_COOKIE['elev8_public_browse'] = '1';
-        }
-
-        // Do not alter the private artist portal itself. The public browsing
-        // flag is only meant to stop Ultimate Member from replacing public
-        // website pages with its profile/login redirect.
-        if (self::is_dashboard_page()) {
-            return;
-        }
-
-        self::disable_ultimate_member_access_redirect();
-
-        if ($starting_public_browse) {
-            add_action('wp_head', [__CLASS__, 'clean_public_home_browser_url'], 1);
-        }
-    }
-
-    /**
-     * Disable only Ultimate Member's global access redirect for the current
-     * request. Never remove every template_redirect callback because themes,
-     * WooCommerce, WordPress canonical handling, and Elev8 OS routes rely on
-     * that hook to render pages correctly.
-     */
-    private static function disable_ultimate_member_access_redirect(): void {
         if (!function_exists('UM')) {
             return;
         }
 
         $um = UM();
-        if (!is_object($um) || !method_exists($um, 'access')) {
+        if (!is_object($um) || !is_callable([$um, 'access'])) {
             return;
         }
 
         $access = $um->access();
-        if (!is_object($access)) {
+        if (!is_object($access) || !is_callable([$access, 'template_redirect'])) {
             return;
         }
 
         remove_action('template_redirect', [$access, 'template_redirect'], 1000);
     }
 
-    public static function clean_public_home_browser_url(): void {
-        $home = trailingslashit((string) get_option('home'));
-        ?>
-        <script>
-        (function () {
-            if (window.history && window.history.replaceState) {
-                window.history.replaceState({}, document.title, <?php echo wp_json_encode($home); ?>);
-            }
-        }());
-        </script>
-        <?php
-    }
-
     public static function redirect_artist_profile_to_dashboard(): void {
-        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page() || !empty($_GET['elev8_public_home']) || !empty($_COOKIE['elev8_public_browse'])) {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page()) {
             return;
         }
 
