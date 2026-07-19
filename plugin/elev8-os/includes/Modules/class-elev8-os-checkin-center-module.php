@@ -146,7 +146,7 @@ final class Elev8_OS_Checkin_Center_Module {
         if ($public) {
             echo '<label class="elev8-checkin-consent"><input type="checkbox" name="invite_consent" value="1"> Email me a thank-you and invitations to future Elev8 events.</label>';
         } else {
-            echo '<label class="elev8-checkin-consent"><input type="checkbox" name="owner_attention" value="1"> This needs the owner’s attention.</label>';
+            echo '<label class="elev8-checkin-consent"><input type="checkbox" name="owner_attention" value="1"> This needs Steve’s attention.</label>';
         }
         echo '<label>Photo or attachment <span>optional</span><input type="file" name="attachments[]" accept="image/*,.pdf"></label>';
         echo '<button class="elev8-checkin-primary" type="submit">Submit check-in</button></form></section>';
@@ -158,7 +158,7 @@ final class Elev8_OS_Checkin_Center_Module {
         echo '<label>' . esc_html((string)$field['label']) . ($required ? ' <b>*</b>' : '') . ' ';
         $name = 'fields[' . esc_attr($key) . ']';
         if (($field['type'] ?? '') === 'textarea') {
-            echo '<textarea name="' . $name . '" rows="4"' . ($required ? ' required' : '') . '></textarea>';
+            echo '<textarea name="' . $name . '" rows="3"' . ($required ? ' required' : '') . '></textarea>';
         } elseif (($field['type'] ?? '') === 'select') {
             echo '<select name="' . $name . '"' . ($required ? ' required' : '') . '><option value="">Select</option>';
             foreach ((array)($field['options'] ?? []) as $option) { echo '<option value="' . esc_attr((string)$option) . '">' . esc_html((string)$option) . '</option>'; }

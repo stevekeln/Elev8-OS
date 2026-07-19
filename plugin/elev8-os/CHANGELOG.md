@@ -1,5 +1,14 @@
 # Elev8 OS Changelog
 
+## 10.6.1 — Manager Operations Log Polish and Steve Alerts
+- Makes the duty-category choices optional and displays them as compact, aligned checkboxes for useful reporting without making the manager feel forced.
+- Keeps the written work summary required as the primary report.
+- Reduces optional text-area height so the manager form is easier to scan and complete.
+- Renames owner-attention language to Steve, including the dedicated “Message for Steve” field.
+- Automatically flags a manager log for attention and emails the WordPress administration email whenever “Message for Steve” contains text.
+- Includes manager, date, location, work period, message, and a direct link to the complete Elev8 OS record in the notification.
+- No database changes.
+
 ## 10.6.0 - Manager Operations Log
 - Rebuilt the manager form around separate completed work periods.
 - Made work location mandatory with no default selection.

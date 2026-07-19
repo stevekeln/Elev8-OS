@@ -3,3 +3,10 @@
 .elev8-ops__checkbox-option{display:flex!important;align-items:flex-start;gap:8px;padding:10px 12px;border:1px solid #dcdcde;border-radius:8px;background:#fff;font-weight:500!important}
 .elev8-ops__checkbox-option input{width:auto!important;margin-top:3px}
 @media(max-width:782px){.elev8-ops__checkbox-grid{grid-template-columns:1fr}}
+
+/* 10.6.1 compact manager controls */
+.elev8-ops__form textarea{min-height:78px;resize:vertical}
+.elev8-ops__checkbox-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:7px;margin-top:8px}
+.elev8-ops__checkbox-option{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:7px!important;padding:7px 9px!important;min-height:0!important;border:1px solid #dcdcde;border-radius:7px;background:#fff;font-weight:500!important;font-size:13px;line-height:1.25}
+.elev8-ops__checkbox-option input[type=checkbox]{width:16px!important;height:16px!important;min-width:16px;margin:0!important}
+.elev8-ops__form .button-hero{min-height:42px;padding:8px 18px;font-size:15px}

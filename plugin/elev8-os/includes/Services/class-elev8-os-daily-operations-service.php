@@ -169,7 +169,9 @@ final class Elev8_OS_Daily_Operations_Service {
         update_post_meta($post_id, self::META_TEMPLATE, $template_key);
         update_post_meta($post_id, self::META_FIELDS, $values);
         update_post_meta($post_id, self::META_STATUS, 'new');
-        update_post_meta($post_id, self::META_ATTENTION, !empty($posted['owner_attention']) ? 1 : 0);
+        $steve_message = trim((string)($values['owner_attention_items'] ?? ''));
+        $needs_attention = !empty($posted['owner_attention']) || $steve_message !== '';
+        update_post_meta($post_id, self::META_ATTENTION, $needs_attention ? 1 : 0);
         update_post_meta($post_id, self::META_LOCATION, $location);
         update_post_meta($post_id, self::META_ENTRY_DATE, $entry_date);
         $attachment_ids = self::handle_attachments($post_id, $files);
@@ -180,8 +182,42 @@ final class Elev8_OS_Daily_Operations_Service {
         if ($is_public && $guest_email !== '' && !empty($posted['invite_consent'])) {
             self::send_thank_you_email($guest_email, $guest_name, $template);
         }
+        if ($template_key === 'manager' && $steve_message !== '') {
+            self::send_steve_attention_email((int)$post_id, $person, $entry_date, $location, $values);
+        }
         do_action('elev8_os_operations_entry_created', $post_id, $template_key, $values);
         return (int)$post_id;
+    }
+
+    private static function send_steve_attention_email(int $post_id, string $person, string $entry_date, string $location, array $values): void {
+        $recipient = sanitize_email((string)apply_filters('elev8_os_steve_attention_email', get_option('admin_email')));
+        if ($recipient === '' || !is_email($recipient)) { return; }
+        $message_for_steve = trim((string)($values['owner_attention_items'] ?? ''));
+        if ($message_for_steve === '') { return; }
+        $start = trim((string)($values['start_time'] ?? ''));
+        $end = trim((string)($values['end_time'] ?? ''));
+        $subject = sprintf(__('Manager message for Steve — %s', 'elev8-os'), $location !== '' ? $location : $entry_date);
+        $body = "A Manager Operations Log includes a message for Steve.
+
+";
+        $body .= "Manager: {$person}
+Date: {$entry_date}
+Location: " . ($location !== '' ? $location : 'Unavailable') . "
+";
+        if ($start !== '' || $end !== '') { $body .= 'Work period: ' . ($start !== '' ? $start : 'Unavailable') . '–' . ($end !== '' ? $end : 'Unavailable') . "
+"; }
+        $body .= "
+Message for Steve:
+{$message_for_steve}
+
+";
+        $body .= "Open the complete log:
+" . add_query_arg(['page'=>'elev8-daily-operations','view'=>'entry','entry_id'=>$post_id], admin_url('admin.php'));
+        if (class_exists('Elev8_OS_Notification_Service')) {
+            Elev8_OS_Notification_Service::send_email($recipient, $subject, $body);
+        } else {
+            wp_mail($recipient, $subject, $body);
+        }
     }
 
     private static function send_thank_you_email(string $email, string $name, array $template): void {
@@ -279,7 +315,7 @@ final class Elev8_OS_Daily_Operations_Service {
             $f('end_time','End time','time',true),
             $f('other_location','Other location or business destination','text'),
             $f('work_summary','What did you personally complete during this work period?','textarea',true),
-            $f('duties_completed','Duties completed','checkbox_group',true,['Opened store','Closed store','Staff supervision or coaching','Customer service','Inventory','Merchandising','Cleaning or organization','Vendor management','Purchasing or supply run','Paperwork or administration','Banking or deposit','Marketing','Event planning','Building maintenance','Business appointment','Remote administrative work','Other']),
+            $f('duties_completed','Duties completed (optional — select any that apply)','checkbox_group',false,['Opened store','Closed store','Staff supervision or coaching','Customer service','Inventory','Merchandising','Cleaning or organization','Vendor management','Purchasing or supply run','Paperwork or administration','Banking or deposit','Marketing','Event planning','Building maintenance','Business appointment','Remote administrative work','Other']),
             $f('staff_worked_with','Staff worked with','text'),
             $f('problems_discovered','Problems found or needing attention','textarea'),
             $f('problems_solved','Problems resolved during this work period','textarea'),
@@ -287,7 +323,7 @@ final class Elev8_OS_Daily_Operations_Service {
             $f('customer_issues','Customer issues handled','textarea'),
             $f('follow_up_needed','What still needs to be completed? Enter None if nothing remains.','textarea',true),
             $f('business_improvements','Did you notice anything that could improve the business?','textarea'),
-            $f('owner_attention_items','Items requiring owner attention','textarea'),
+            $f('owner_attention_items','Message for Steve','textarea'),
             $f('general_notes','Additional notes','textarea')]);
         $t['manager']['location_required'] = true;
         $t['manager']['location_label'] = 'Work location';
