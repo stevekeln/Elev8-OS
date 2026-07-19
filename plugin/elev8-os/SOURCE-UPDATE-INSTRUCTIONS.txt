@@ -1,1 +1,10 @@
-Source base: the user-uploaded Elev8 OS 10.4.4 release ZIP. Replace only the files in the changed-files package, preserving their paths. No database migration is required.
+Replace these files in the Git source:
+
+- elev8-os.php
+- includes/Modules/class-elev8-os-dashboard-module.php
+- CHANGELOG.md
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
+
+Then commit to develop, push, and run Build Elev8 OS Release.bat.

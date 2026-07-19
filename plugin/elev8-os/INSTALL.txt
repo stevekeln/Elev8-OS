@@ -1,1 +1,10 @@
-Replace the listed changed files in the local Git source, commit to develop, push, run Build Elev8 OS Release.bat, and install the BAT-generated ZIP on Local. Test before installing the exact same ZIP on Live.
+Elev8 OS 10.4.6
+
+1. Replace the changed files in your local Git repository.
+2. Commit to develop and push to GitHub.
+3. Run Build Elev8 OS Release.bat.
+4. Install the BAT-generated ZIP on Local.
+5. Test the public homepage flow as a linked artist.
+6. Install the exact same BAT-generated ZIP on Live after Local passes.
+
+No database changes are required.

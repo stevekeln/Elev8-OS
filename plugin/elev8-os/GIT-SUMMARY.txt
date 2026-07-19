@@ -1,1 +1,1 @@
-Elev8 OS 10.4.5: fix the Ultimate Member public-home redirect chain and reorder the owner admin menu around CEO Dashboard, Artist Dashboard, and Class Demand.
+Elev8 OS 10.4.6: render the public homepage directly for an artist’s explicit Home/logo click instead of cancelling a late membership redirect and producing a blank page.

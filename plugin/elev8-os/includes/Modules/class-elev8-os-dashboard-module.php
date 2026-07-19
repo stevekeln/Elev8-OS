@@ -29,8 +29,6 @@ final class Elev8_OS_Dashboard_Module {
         add_action('template_redirect', [__CLASS__, 'capture_public_home_intent'], -999);
         add_action('template_redirect', [__CLASS__, 'redirect_artist_profile_to_dashboard'], 1);
         add_filter('home_url', [__CLASS__, 'artist_public_home_url'], 999, 4);
-        add_filter('redirect_canonical', [__CLASS__, 'disable_public_home_canonical_redirect'], 999, 2);
-        add_filter('wp_redirect', [__CLASS__, 'allow_artist_public_home'], 999, 2);
         add_action('wp_footer', [__CLASS__, 'rewrite_public_home_links'], 999);
     }
 
@@ -192,9 +190,12 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     /**
-     * Remember an artist's explicit choice to browse the public website. The
-     * short-lived cookie survives plugins that strip the query argument before
-     * running their own role-based redirect.
+     * Render the real public homepage for a linked artist without allowing a
+     * membership plugin to replace that request with its member-profile
+     * redirect. Cancelling a redirect through the wp_redirect filter leaves a
+     * blank response when the originating plugin immediately calls exit, so
+     * the public-home request is now handled before those redirect callbacks
+     * run.
      */
     public static function capture_public_home_intent(): void {
         if (empty($_GET['elev8_public_home']) || !is_user_logged_in()) {
@@ -206,98 +207,30 @@ final class Elev8_OS_Dashboard_Module {
             return;
         }
 
-        $secure = is_ssl();
-        setcookie('elev8_public_home', '1', time() + 300, COOKIEPATH ?: '/', COOKIE_DOMAIN, $secure, true);
-        $_COOKIE['elev8_public_home'] = '1';
+        // The current request is already the WordPress front page. Prevent
+        // later template_redirect callbacks (Ultimate Member and similar role
+        // redirects) from replacing it with /user/ or /artist-dashboard/.
+        remove_all_actions('template_redirect');
+
+        // Keep the browser address clean after the front page has rendered.
+        add_action('wp_head', [__CLASS__, 'clean_public_home_browser_url'], 1);
     }
 
-    public static function disable_public_home_canonical_redirect($redirect_url, string $requested_url) {
-        return self::has_public_home_intent() ? false : $redirect_url;
-    }
-
-    /**
-     * Some themes or membership plugins build the logo with site_url() or a
-     * saved custom URL, bypassing the home_url filter. Rewrite only root-home
-     * links for linked artists so the server receives explicit public intent.
-     */
-    public static function rewrite_public_home_links(): void {
-        if (!is_user_logged_in()) {
-            return;
-        }
-
-        $user = wp_get_current_user();
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
-            return;
-        }
-
+    public static function clean_public_home_browser_url(): void {
         $home = trailingslashit((string) get_option('home'));
-        $public_home = add_query_arg('elev8_public_home', '1', $home);
         ?>
         <script>
         (function () {
-            var home = <?php echo wp_json_encode(untrailingslashit($home)); ?>;
-            var publicHome = <?php echo wp_json_encode($public_home); ?>;
-            document.querySelectorAll('a[href]').forEach(function (link) {
-                try {
-                    var url = new URL(link.href, window.location.href);
-                    var normalized = url.origin + url.pathname.replace(/\/$/, '');
-                    if (normalized === home && !url.search && !url.hash) {
-                        link.href = publicHome;
-                    }
-                } catch (e) {}
-            });
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, <?php echo wp_json_encode($home); ?>);
+            }
         }());
         </script>
         <?php
     }
 
-    private static function has_public_home_intent(): bool {
-        return !empty($_GET['elev8_public_home']) || !empty($_COOKIE['elev8_public_home']);
-    }
-
-    /**
-     * Cancel membership-plugin redirects when the artist intentionally clicks
-     * the public-site logo. Normal login and profile redirects still go to the
-     * Elev8 OS dashboard.
-     *
-     * Returning false from the wp_redirect filter tells WordPress not to send
-     * the redirect, allowing the public front page to render normally.
-     *
-     * @param string|false $location
-     * @return string|false
-     */
-    public static function allow_artist_public_home($location, int $status) {
-        if (!self::has_public_home_intent() || !is_user_logged_in()) {
-            return $location;
-        }
-
-        $user = wp_get_current_user();
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
-            return $location;
-        }
-
-        $requested_path = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '';
-        $requested_path = (string) wp_parse_url($requested_path, PHP_URL_PATH);
-        $home_path = (string) wp_parse_url(trailingslashit((string) get_option('home')), PHP_URL_PATH);
-
-        if (untrailingslashit($requested_path) !== untrailingslashit($home_path)) {
-            return $location;
-        }
-
-        $dashboard_path = (string) wp_parse_url(self::dashboard_url(), PHP_URL_PATH);
-        $redirect_path = is_string($location) ? (string) wp_parse_url($location, PHP_URL_PATH) : '';
-        $is_dashboard_redirect = $redirect_path !== '' && untrailingslashit($redirect_path) === untrailingslashit($dashboard_path);
-        $is_member_profile_redirect = (bool) preg_match('#/user(?:/[^/]+)?/?$#i', $redirect_path);
-
-        if ($is_dashboard_redirect || $is_member_profile_redirect) {
-            return false;
-        }
-
-        return $location;
-    }
-
     public static function redirect_artist_profile_to_dashboard(): void {
-        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page() || self::has_public_home_intent()) {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page() || !empty($_GET['elev8_public_home'])) {
             return;
         }
 

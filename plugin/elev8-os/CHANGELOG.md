@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 10.4.6 - Public Homepage Render Fix
+
+- Fixed the blank white page produced when a membership redirect was cancelled after its callback had already called `exit`.
+- The explicit `?elev8_public_home=1` request now renders the real WordPress homepage before Ultimate Member or another role redirect can replace it.
+- Cleans the temporary query argument from the browser address after the homepage loads.
+- Preserves the normal artist login redirect to the Artist Dashboard.
+- No database changes.
+
 ## 10.4.5 - Public Home Redirect and Owner Menu Cleanup
 
 - Fixed the remaining Ultimate Member redirect chain that sent an artist from the public homepage to `/user/?redirect_to=...` and then back to the Artist Dashboard.
