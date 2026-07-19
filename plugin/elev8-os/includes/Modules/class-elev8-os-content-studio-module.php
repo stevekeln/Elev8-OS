@@ -82,7 +82,7 @@ final class Elev8_OS_Content_Studio_Module {
                 <a class="button elev8-content-primary-cta" href="<?php echo esc_url($base_url); ?>#elev8-template-editor"><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span><?php esc_html_e('Create New Template', 'elev8-os'); ?></a>
             </header>
             <?php if (!$admin && class_exists('Elev8_OS_Artist_Print_Center_Module')) { echo Elev8_OS_Artist_Print_Center_Module::render_growth_entry('content_studio'); } ?>
-            <?php self::notice(); self::campaign_wizard($owner_user_id,$admin,$templates); ?>
+            <?php self::notice(); if (!$admin) { self::how_it_works(); } self::campaign_wizard($owner_user_id,$admin,$templates); ?>
             <section class="elev8-content-toolbar">
                 <form method="get" action="<?php echo esc_url($base_url); ?>">
                     <?php if ($admin): ?><input type="hidden" name="page" value="elev8-content-studio"><?php endif; ?>
@@ -106,7 +106,7 @@ final class Elev8_OS_Content_Studio_Module {
                         <div class="elev8-template-meta"><span><?php echo $shared?esc_html__('Shared by Elev8','elev8-os'):esc_html__('My template','elev8-os'); ?></span><span><?php echo esc_html(wp_date(get_option('date_format'),strtotime((string)$template['updated_at']))); ?></span></div>
                         <div class="elev8-template-actions">
                             <?php if(!$shared || $admin): ?><a class="button" href="<?php echo esc_url(add_query_arg('template_id',(int)$template['id'],$base_url).'#elev8-template-editor'); ?>"><?php esc_html_e('Edit', 'elev8-os'); ?></a><?php endif; ?>
-                            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_content_duplicate_template"><input type="hidden" name="template_id" value="<?php echo esc_attr((string)$template['id']); ?>"><input type="hidden" name="context" value="<?php echo $admin?'admin':'artist'; ?>"><?php wp_nonce_field('elev8_os_content_duplicate_template'); ?><button class="button" type="submit"><?php echo $shared&&!$admin?esc_html__('Use Template','elev8-os'):esc_html__('Duplicate','elev8-os'); ?></button></form>
+                            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_content_duplicate_template"><input type="hidden" name="template_id" value="<?php echo esc_attr((string)$template['id']); ?>"><input type="hidden" name="context" value="<?php echo $admin?'admin':'artist'; ?>"><?php wp_nonce_field('elev8_os_content_duplicate_template'); ?><button class="button" type="submit"><?php echo $shared&&!$admin?esc_html__('Add to My Library & Edit','elev8-os'):esc_html__('Duplicate','elev8-os'); ?></button></form>
                             <?php if(!$shared || $admin): ?>
                             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_content_status_template"><input type="hidden" name="template_id" value="<?php echo esc_attr((string)$template['id']); ?>"><input type="hidden" name="status" value="<?php echo $template['status']==='archived'?'active':'archived'; ?>"><input type="hidden" name="context" value="<?php echo $admin?'admin':'artist'; ?>"><?php wp_nonce_field('elev8_os_content_status_template'); ?><button class="button" type="submit"><?php echo $template['status']==='archived'?esc_html__('Restore','elev8-os'):esc_html__('Archive','elev8-os'); ?></button></form>
                             <?php endif; ?>
@@ -115,7 +115,7 @@ final class Elev8_OS_Content_Studio_Module {
                 </div><?php endif; ?>
             </section>
             <section id="elev8-template-editor" class="elev8-template-editor">
-                <div class="elev8-section-heading"><div><p class="elev8-eyebrow"><?php echo $editing?esc_html__('Update reusable content','elev8-os'):esc_html__('Add to your library','elev8-os'); ?></p><h2><?php echo $editing?esc_html__('Edit Template','elev8-os'):esc_html__('Create Template','elev8-os'); ?></h2></div><?php if($editing): ?><a class="button" href="<?php echo esc_url($base_url.'#elev8-template-editor'); ?>"><?php esc_html_e('Create New', 'elev8-os'); ?></a><?php endif; ?></div>
+                <div class="elev8-section-heading"><div><p class="elev8-eyebrow"><?php echo $editing?esc_html__('Update reusable content','elev8-os'):esc_html__('Add to your library','elev8-os'); ?></p><h2><?php echo $editing?esc_html__('Edit Template','elev8-os'):esc_html__('Create Template','elev8-os'); ?></h2><p class="elev8-editor-help"><?php esc_html_e('Templates are reusable starting points. Edit the copy here, then use the Campaign Builder above to turn it into a branded email. Social-ready copy can be copied from the campaign workspace.', 'elev8-os'); ?></p></div><?php if($editing): ?><a class="button" href="<?php echo esc_url($base_url.'#elev8-template-editor'); ?>"><?php esc_html_e('Create New', 'elev8-os'); ?></a><?php endif; ?></div>
                 <?php self::editor_form($owner_user_id,$editing,$categories,$admin); ?>
             </section>
             <?php if($admin): self::brand_form(); self::category_form(); endif; ?>
@@ -144,6 +144,21 @@ final class Elev8_OS_Content_Studio_Module {
         <?php if($template['id']): ?><form id="elev8-delete-template-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_content_delete_template"><input type="hidden" name="template_id" value="<?php echo esc_attr((string)$template['id']); ?>"><input type="hidden" name="context" value="<?php echo $admin?'admin':'artist'; ?>"><?php wp_nonce_field('elev8_os_content_delete_template'); ?></form><?php endif;
     }
 
+    private static function how_it_works(): void { ?>
+        <section class="elev8-content-guide" aria-labelledby="elev8-content-guide-title">
+            <div class="elev8-content-guide-copy">
+                <p class="elev8-eyebrow"><?php esc_html_e('How Content Studio works', 'elev8-os'); ?></p>
+                <h2 id="elev8-content-guide-title"><?php esc_html_e('Choose it. Personalize it. Publish it.', 'elev8-os'); ?></h2>
+                <p><?php esc_html_e('A template is a reusable starting point—not a finished post. Add a shared template to your library, edit it for your voice, then use the Campaign Builder to create the final email or copy the social version.', 'elev8-os'); ?></p>
+            </div>
+            <ol class="elev8-content-steps">
+                <li><strong><?php esc_html_e('1. Choose', 'elev8-os'); ?></strong><span><?php esc_html_e('Pick a shared Elev8 template or start from scratch.', 'elev8-os'); ?></span></li>
+                <li><strong><?php esc_html_e('2. Personalize', 'elev8-os'); ?></strong><span><?php esc_html_e('Change the headline, message, image direction, and call to action.', 'elev8-os'); ?></span></li>
+                <li><strong><?php esc_html_e('3. Publish', 'elev8-os'); ?></strong><span><?php esc_html_e('Preview the email, save a draft, or copy the social-ready text.', 'elev8-os'); ?></span></li>
+            </ol>
+        </section><?php
+    }
+
     private static function category_form(): void { ?>
         <section class="elev8-category-manager"><div class="elev8-section-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Organization', 'elev8-os'); ?></p><h2><?php esc_html_e('Add Shared Category', 'elev8-os'); ?></h2></div></div><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_os_content_save_category"><?php wp_nonce_field('elev8_os_content_save_category'); ?><input type="text" name="name" required placeholder="<?php esc_attr_e('Category name', 'elev8-os'); ?>"><input type="text" name="description" placeholder="<?php esc_attr_e('Optional description', 'elev8-os'); ?>"><button class="button button-primary" type="submit"><?php esc_html_e('Add Category','elev8-os'); ?></button></form></section><?php
     }
@@ -161,7 +176,7 @@ final class Elev8_OS_Content_Studio_Module {
         $drafts=Elev8_OS_Content_Studio_Service::campaigns($owner_user_id,8);
         ?>
         <section class="elev8-campaign-wizard">
-            <div class="elev8-section-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Brand & Campaign Wizard','elev8-os'); ?></p><h2><?php esc_html_e('What are you trying to accomplish today?','elev8-os'); ?></h2></div><span class="elev8-wizard-step"><?php echo $goal?esc_html__('Step 2 of 2','elev8-os'):esc_html__('Step 1 of 2','elev8-os'); ?></span></div>
+            <div class="elev8-section-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Email Campaign Builder','elev8-os'); ?></p><h2><?php esc_html_e('What email are you creating today?','elev8-os'); ?></h2></div><span class="elev8-wizard-step"><?php echo $goal?esc_html__('Step 2 of 2','elev8-os'):esc_html__('Step 1 of 2','elev8-os'); ?></span></div>
             <?php if(!$goal): ?>
                 <div class="elev8-goal-grid"><?php foreach($goals as $key=>$item): ?><a class="elev8-goal-card" href="<?php echo esc_url(add_query_arg('campaign_goal',$key,$admin?admin_url('admin.php?page=elev8-content-studio'):Elev8_OS_Portal_Page_Manager::get_url('content_studio'))); ?>#elev8-campaign-builder"><span class="dashicons dashicons-<?php echo esc_attr(self::goal_icon($key)); ?>"></span><strong><?php echo esc_html($item['label']); ?></strong><small><?php echo esc_html($item['description']); ?></small></a><?php endforeach; ?></div>
             <?php else:
@@ -181,7 +196,7 @@ final class Elev8_OS_Content_Studio_Module {
                         <fieldset class="elev8-smart-sections"><legend><?php esc_html_e('Elev8 OS automatically includes','elev8-os'); ?></legend><?php foreach(['include_artist_profile'=>__('Artist profile','elev8-os'),'include_upcoming_classes'=>__('Upcoming classes','elev8-os'),'include_events'=>__('Suggested Elev8 events','elev8-os'),'include_referral'=>__('Referral tracking when applicable','elev8-os')] as $key=>$label): ?><label><input type="checkbox" name="<?php echo esc_attr($key); ?>" value="1" <?php checked(!empty($values[$key])); ?>> <?php echo esc_html($label); ?></label><?php endforeach; ?></fieldset>
                         <div class="elev8-form-actions"><button class="button button-primary" type="submit"><?php esc_html_e('Save Campaign Draft','elev8-os'); ?></button></div>
                     </form>
-                    <div class="elev8-campaign-preview"><div class="elev8-preview-label"><?php esc_html_e('Universal branded email preview','elev8-os'); ?></div><iframe title="<?php esc_attr_e('Campaign preview','elev8-os'); ?>" srcdoc="<?php echo esc_attr($preview); ?>"></iframe></div>
+                    <div class="elev8-campaign-preview"><div class="elev8-preview-label"><?php esc_html_e('Live branded email preview','elev8-os'); ?></div><iframe title="<?php esc_attr_e('Campaign preview','elev8-os'); ?>" srcdoc="<?php echo esc_attr($preview); ?>"></iframe><div class="elev8-social-copy-panel"><div><strong><?php esc_html_e('Need this for Facebook or Instagram?', 'elev8-os'); ?></strong><p><?php esc_html_e('Use the same message as a starting point. Copy it, add your photo or video in the social app, and publish from your connected account.', 'elev8-os'); ?></p></div><button type="button" class="button elev8-copy-social" data-elev8-copy-social><?php esc_html_e('Copy Social Version', 'elev8-os'); ?></button><p class="elev8-copy-status" data-elev8-copy-status aria-live="polite"></p></div></div>
                 </div>
             <?php endif; ?>
             <?php if($drafts): ?><div class="elev8-recent-campaigns"><h3><?php esc_html_e('Recent Campaign Drafts','elev8-os'); ?></h3><div><?php foreach($drafts as $draft): ?><a href="<?php echo esc_url(add_query_arg(['campaign_goal'=>$draft['goal'],'campaign_id'=>$draft['id']],$admin?admin_url('admin.php?page=elev8-content-studio'):Elev8_OS_Portal_Page_Manager::get_url('content_studio'))); ?>#elev8-campaign-builder"><strong><?php echo esc_html((string)$draft['title']); ?></strong><span><?php echo esc_html(wp_date(get_option('date_format'),strtotime((string)$draft['updated_at']))); ?></span></a><?php endforeach; ?></div></div><?php endif; ?>
@@ -211,7 +226,7 @@ final class Elev8_OS_Content_Studio_Module {
 
     private static function notice(): void {
         $message = sanitize_key(wp_unslash($_GET['content_message'] ?? ''));
-        $messages = ['saved'=>__('Template saved.','elev8-os'),'duplicated'=>__('Template duplicated into your library.','elev8-os'),'status'=>__('Template status updated.','elev8-os'),'deleted'=>__('Template deleted.','elev8-os'),'category'=>__('Category added.','elev8-os'),'campaign'=>__('Campaign draft saved.','elev8-os'),'brand'=>__('Brand settings saved.','elev8-os'),'invalid'=>__('That action could not be completed.','elev8-os')];
+        $messages = ['saved'=>__('Template saved.','elev8-os'),'duplicated'=>__('Template added to your library. Personalize it below, then save your version.','elev8-os'),'status'=>__('Template status updated.','elev8-os'),'deleted'=>__('Template deleted.','elev8-os'),'category'=>__('Category added.','elev8-os'),'campaign'=>__('Campaign draft saved.','elev8-os'),'brand'=>__('Brand settings saved.','elev8-os'),'invalid'=>__('That action could not be completed.','elev8-os')];
         if(isset($messages[$message])) { echo '<div class="elev8-content-notice ' . ($message==='invalid'?'is-error':'is-success') . '"><p>' . esc_html($messages[$message]) . '</p></div>'; }
     }
 
@@ -222,7 +237,7 @@ final class Elev8_OS_Content_Studio_Module {
     }
     public static function duplicate_template(): void {
         self::authorize('elev8_os_content_duplicate_template'); $context=self::context(); $target=self::owner($context); $id=absint($_POST['template_id']??0); $source=Elev8_OS_Content_Studio_Service::get_template($id,$target,true);
-        if(!$source){self::redirect($context,'invalid');} $new=Elev8_OS_Content_Studio_Service::duplicate_template($id,(int)$source['owner_user_id'],$target); self::redirect($context,$new?'duplicated':'invalid');
+        if(!$source){self::redirect($context,'invalid');} $new=Elev8_OS_Content_Studio_Service::duplicate_template($id,(int)$source['owner_user_id'],$target); if($new){self::redirect($context,'duplicated',['template_id'=>$new],'elev8-template-editor');} self::redirect($context,'invalid');
     }
     public static function status_template(): void {
         self::authorize('elev8_os_content_status_template'); $context=self::context(); $owner=self::owner($context); $ok=Elev8_OS_Content_Studio_Service::set_status(absint($_POST['template_id']??0),$owner,sanitize_key(wp_unslash($_POST['status']??''))); self::redirect($context,$ok?'status':'invalid');
@@ -245,5 +260,5 @@ final class Elev8_OS_Content_Studio_Module {
     private static function authorize(string $action): void { if(!is_user_logged_in()){wp_die(esc_html__('Please log in.','elev8-os'));} check_admin_referer($action); }
     private static function context(): string { $context=sanitize_key(wp_unslash($_POST['context']??'artist')); if($context==='admin'&&!current_user_can('manage_options')){wp_die(esc_html__('You do not have permission.','elev8-os'));} return $context==='admin'?'admin':'artist'; }
     private static function owner(string $context): int { return $context==='admin'?0:(int)get_current_user_id(); }
-    private static function redirect(string $context,string $message): void { $url=$context==='admin'?admin_url('admin.php?page=elev8-content-studio'):Elev8_OS_Portal_Page_Manager::get_url('content_studio'); wp_safe_redirect(add_query_arg('content_message',$message,$url)); exit; }
+    private static function redirect(string $context,string $message,array $args=[],string $anchor=''): void { $url=$context==='admin'?admin_url('admin.php?page=elev8-content-studio'):Elev8_OS_Portal_Page_Manager::get_url('content_studio'); $args=array_merge(['content_message'=>$message],$args); $url=add_query_arg($args,$url); if($anchor!==''){$url.='#'.sanitize_title($anchor);} wp_safe_redirect($url); exit; }
 }

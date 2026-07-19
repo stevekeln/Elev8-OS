@@ -119,3 +119,7 @@
 .elev8-score-pill.score-strong{background:var(--elev8-teal-100);color:var(--elev8-teal-700)}
 
 @media(max-width:700px){.elev8-gps-health{width:118px;height:118px}.elev8-gps-heading h2{letter-spacing:.07em}}
+
+/* 10.3.1 opportunity CTA consistency */
+.elev8-growth-opportunity-grid .elev8-opportunity-action{display:inline-flex;align-items:center;justify-content:center;width:auto;min-height:42px;padding:9px 18px;border:1px solid #6d28d9!important;border-radius:999px;background:#6d28d9!important;color:#fff!important;text-decoration:none!important;font-weight:800;line-height:1.2;box-shadow:0 7px 18px rgba(109,40,217,.16)}
+.elev8-growth-opportunity-grid .elev8-opportunity-action:hover,.elev8-growth-opportunity-grid .elev8-opportunity-action:focus{border-color:#4c1d95!important;background:#4c1d95!important;color:#fff!important;transform:translateY(-1px)}

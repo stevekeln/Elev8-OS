@@ -1,3 +1,3 @@
-Elev8 OS 10.3.0 — Elev8 Design System 1.0
+Elev8 OS 10.3.1 — Elev8 Design System 1.0
 
 Dashboard and Business GPS visual unification using purple, lavender, teal, and white. Content Studio primary CTA corrected and standardized. No database changes.

@@ -1,3 +1,23 @@
+## 10.3.1 — Guided Publishing & Preview Polish
+
+### Added
+- Added a three-step Content Studio guide explaining how templates move from shared starting points to personalized campaigns.
+- Added direct editing after an artist adds a shared template to their personal library.
+- Added social-ready copy support with a one-click Copy Social Version action for Facebook and Instagram workflows.
+- Added a live recipient-facing email preview inside Marketing Center.
+- Added live subject, message, and promotion-link updates while composing an email.
+
+### Changed
+- Replaced the visually broken opportunity links with consistent dark-purple pill buttons and white text.
+- Clarified that the Content Studio campaign builder currently creates branded email campaigns.
+- Reworded Use Template to Add to My Library & Edit.
+- Replaced remaining pink/blue growth styling with the approved purple, lavender, teal, and white system.
+- Plugin version increased from 10.3.0 to 10.3.1.
+
+### Notes
+- Direct publishing to Facebook and Instagram still requires each artist to authorize their social account through the platform APIs. This release adds the safe copy-and-paste workflow and prepares the interface for future connected publishing.
+- No database changes.
+
 ## 10.3.0 — Elev8 Design System 1.0
 
 ### Added

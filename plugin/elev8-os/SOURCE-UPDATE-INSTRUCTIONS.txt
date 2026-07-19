@@ -1,1 +1,1 @@
-Replace only the files included in the 10.3.0 changed-files package. Do not install the changed-files ZIP in WordPress. Build the installable plugin with Build Elev8 OS Release.bat after updating the Git source.
+Replace only the files included in the 10.3.1 changed-files package. Do not install the changed-files ZIP in WordPress. Build the installable plugin with Build Elev8 OS Release.bat after updating the Git source.
