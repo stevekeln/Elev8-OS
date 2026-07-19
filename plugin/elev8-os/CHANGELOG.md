@@ -1,3 +1,10 @@
+## 10.5.4
+
+- Fixed CEO Command Center access by routing Business Memory, Class Requests, and Opportunities through the registered CEO Dashboard page.
+- Removed the duplicate CEO workspace tab row; the Command Center cards are now the primary navigation.
+- Registered and initialized the Opportunities module and its required services.
+- Included the Daily Operations module in the source update to ensure Business Memory is available after replacement.
+
 ## 10.5.3 — CEO Navigation Hotfix
 
 - Fixed the CEO Business Memory link by keeping Daily Operations registered and visible in the WordPress sidebar.
