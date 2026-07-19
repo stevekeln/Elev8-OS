@@ -1,3 +1,9 @@
+## 10.5.3 — CEO Navigation Hotfix
+
+- Fixed the CEO Business Memory link by keeping Daily Operations registered and visible in the WordPress sidebar.
+- Fixed the CEO Class Requests link to use the actual registered Class Demand page slug.
+- Kept both tools accessible from the CEO Command Center while preserving direct sidebar access during testing.
+
 ## 10.5.2 — Check-In Center
 
 - Added a public `/checkin/` portal created automatically by Elev8 OS.
