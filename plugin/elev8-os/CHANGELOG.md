@@ -1,3 +1,12 @@
+## 10.4.4 — Public Website Browsing Mode Fix
+
+- Fixed linked artists being forced back to the Artist Dashboard after clicking either Elev8 Arts Home or the public-site logo.
+- Added an explicit, short-lived public browsing intent that survives membership plugins stripping query arguments.
+- Rewrites root homepage links for linked artists when themes bypass WordPress home URL filters.
+- Cancels dashboard/profile redirects only during an intentional public homepage visit.
+- Preserves normal post-login and old member-profile redirects into Elev8 OS.
+- No database schema changes.
+
 ## 10.4.3 — Public Website Logo Exit Fix
 
 - Fixed the public artist-page logo sending logged-in artists back to the Artist Dashboard.
