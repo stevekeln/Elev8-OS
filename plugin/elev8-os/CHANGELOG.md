@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 10.6.2 — Private Elev8 Team Entry
+
+- Kept all public check-in choices visible on the main Check-In Center.
+- Removed manager, employee, artist, maintenance, vendor, and event cards from the public-facing choice grid.
+- Added one centered **Elev8 Team** button at the end of the public choices.
+- Team members sign in before seeing the private operations forms.
+- Added a dedicated team-only choice view with a clear return link to public check-ins.
+
 ## 10.6.1 — Manager Operations Log Polish and Steve Alerts
 - Makes the duty-category choices optional and displays them as compact, aligned checkboxes for useful reporting without making the manager feel forced.
 - Keeps the written work summary required as the primary report.

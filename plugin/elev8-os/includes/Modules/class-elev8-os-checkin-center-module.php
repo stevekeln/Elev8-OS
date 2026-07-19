@@ -78,7 +78,11 @@ final class Elev8_OS_Checkin_Center_Module {
     }
 
     public static function shortcode(array $atts = []): string {
-        $templates = is_user_logged_in() ? Elev8_OS_Daily_Operations_Service::templates_for_user(get_current_user_id(), true) : Elev8_OS_Daily_Operations_Service::public_templates();
+        $team_view = !empty($_GET['team']);
+        $all_allowed = is_user_logged_in() ? Elev8_OS_Daily_Operations_Service::templates_for_user(get_current_user_id(), true) : [];
+        $templates = $team_view && is_user_logged_in()
+            ? array_filter($all_allowed, static function (array $template): bool { return empty($template['public']); })
+            : Elev8_OS_Daily_Operations_Service::public_templates();
         $selected = sanitize_key((string)($_GET['type'] ?? ''));
         $message = sanitize_key((string)($_GET['checkin'] ?? ''));
         ob_start();
@@ -103,22 +107,31 @@ final class Elev8_OS_Checkin_Center_Module {
             }
             echo '<p class="elev8-checkin-back"><a href="' . esc_url(self::page_url()) . '">← View all check-ins</a></p>';
         } else {
-            self::render_choices($templates);
+            self::render_choices($templates, $team_view);
         }
         echo '</div>';
         return (string)ob_get_clean();
     }
 
-    private static function render_choices(array $templates): void {
-        echo '<section class="elev8-checkin-choices"><h2>What are you checking in for?</h2><div class="elev8-checkin-grid">';
+    private static function render_choices(array $templates, bool $team_view = false): void {
+        $heading = $team_view ? __('Elev8 Team', 'elev8-os') : __('What are you checking in for?', 'elev8-os');
+        echo '<section class="elev8-checkin-choices"><h2>' . esc_html($heading) . '</h2><div class="elev8-checkin-grid">';
         foreach ($templates as $key => $template) {
             $url = add_query_arg('type', $key, self::page_url());
             echo '<a class="elev8-checkin-choice" href="' . esc_url($url) . '"><span>' . esc_html(self::icon_for($key)) . '</span><strong>' . esc_html($template['name']) . '</strong><small>' . esc_html($template['description']) . '</small></a>';
         }
         echo '</div></section>';
-        if (!is_user_logged_in()) {
-            echo '<p class="elev8-checkin-team-login">Elev8 team member? <a href="' . esc_url(wp_login_url(self::page_url())) . '">Sign in for staff check-ins</a>.</p>';
+
+        if ($team_view) {
+            echo '<p class="elev8-checkin-team-login"><a class="elev8-team-button is-secondary" href="' . esc_url(self::page_url()) . '">← Back to public check-ins</a></p>';
+            return;
         }
+
+        $team_url = add_query_arg('team', '1', self::page_url());
+        if (!is_user_logged_in()) {
+            $team_url = wp_login_url($team_url);
+        }
+        echo '<div class="elev8-team-entry"><a class="elev8-team-button" href="' . esc_url($team_url) . '">Elev8 Team</a></div>';
     }
 
     private static function render_form(string $key, array $template): void {
