@@ -1,3 +1,13 @@
+## 10.5.2 — Check-In Center
+
+- Added a public `/checkin/` portal created automatically by Elev8 OS.
+- Added public Art Walk, Open Mic, customer, class, and idea check-ins.
+- Added role-protected manager, employee, artist, maintenance, vendor, and event check-ins.
+- Added direct-link and QR management under Elev8 OS → Check-In Center.
+- Added guest contact capture, invitation consent, immediate thank-you email, attachments, spam honeypot, and rate limiting.
+- Routed every submission into the existing Business Memory and CEO operational intelligence system.
+- Preserved existing custom templates while adding new default templates during upgrades.
+
 ## 10.5.1 - CEO Workspace Navigation
 - Added a CEO command center with clear workspace tabs and launch cards.
 - Moved owner access to Daily Operations Intelligence under the CEO experience.

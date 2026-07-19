@@ -1,4 +1,4 @@
-Elev8 OS 10.5.1 Source Update
+Elev8 OS 10.5.2 — Check-In Center
 
 Copy these files into the matching paths in C:\GitHub\Elev8-OS:
 
@@ -7,11 +7,9 @@ plugin/elev8-os/elev8-os.php
 plugin/elev8-os/CHANGELOG.md
 plugin/elev8-os/includes/class-elev8-os-loader.php
 plugin/elev8-os/includes/class-elev8-os.php
-plugin/elev8-os/includes/Modules/class-elev8-os-ceo-dashboard-module.php
-plugin/elev8-os/includes/Modules/class-elev8-os-daily-operations-module.php
+plugin/elev8-os/includes/Modules/class-elev8-os-checkin-center-module.php
 plugin/elev8-os/includes/Services/class-elev8-os-daily-operations-service.php
-plugin/elev8-os/includes/Services/class-elev8-os-operations-intelligence-service.php
-plugin/elev8-os/assets/css/business-intelligence-dashboard.css
-plugin/elev8-os/assets/css/daily-operations.css
+plugin/elev8-os/assets/css/checkin-center.css
+plugin/elev8-os/assets/js/checkin-center.js
 
-Then commit to develop, push, run Build Elev8 OS Release.bat, and install the BAT-generated ZIP into Local.
+Then commit to develop, push, run Build Elev8 OS Release.bat, and install the generated release ZIP into Local.
