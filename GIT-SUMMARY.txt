@@ -1,0 +1,18 @@
+Elev8 OS v10.4.11 - System Information
+
+Summary:
+- Adds release metadata visibility to the CEO Dashboard.
+- Adds a reusable read-only release information service.
+- Reads only the builder-generated release-manifest.json file.
+- Uses Unavailable when metadata cannot be verified.
+- Does not modify the v10.4.10 homepage redirect solution.
+
+Changed source files:
+- elev8-os.php
+- includes/class-elev8-os-loader.php
+- includes/Services/class-elev8-os-release-information-service.php
+- includes/Modules/class-elev8-os-ceo-dashboard-module.php
+- CHANGELOG.md
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt

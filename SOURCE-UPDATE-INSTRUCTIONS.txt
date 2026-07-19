@@ -1,0 +1,13 @@
+Elev8 OS v10.4.11 Source Update
+
+Replace these files in the Git source:
+- plugin/elev8-os/elev8-os.php
+- plugin/elev8-os/includes/class-elev8-os-loader.php
+- plugin/elev8-os/includes/Services/class-elev8-os-release-information-service.php
+- plugin/elev8-os/includes/Modules/class-elev8-os-ceo-dashboard-module.php
+- plugin/elev8-os/CHANGELOG.md
+- plugin/elev8-os/GIT-SUMMARY.txt
+- plugin/elev8-os/INSTALL.txt
+- plugin/elev8-os/SOURCE-UPDATE-INSTRUCTIONS.txt
+
+Then commit to develop, push to GitHub, and use the standard Build Elev8 OS Release.bat for future builds.

@@ -1,0 +1,12 @@
+ELEV8 OS BUILD SYSTEM - LOCAL PHP AUTO-DETECTION FIX
+
+Replace this exact file in C:\GitHub\Elev8-OS:
+
+tools\build-release.ps1
+
+That is the only file changed in this correction.
+
+After replacing it, double-click:
+Build Elev8 OS Release.bat
+
+The builder now automatically finds PHP installed by Local. You do not need to edit Windows PATH.

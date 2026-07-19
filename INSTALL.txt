@@ -1,12 +1,12 @@
-Elev8 OS 6.9.0 — Waitlist Engine Completion
+Elev8 OS v10.4.11 Installation
 
-SOURCE-ONLY UPDATE
+1. In Local WordPress, open Plugins > Add New > Upload Plugin.
+2. Select the v10.4.11 installable ZIP.
+3. Choose Replace current with uploaded when WordPress detects the existing plugin.
+4. Keep Elev8 OS activated.
+5. Open Elev8 OS > CEO Dashboard.
+6. Confirm the new System Information section appears.
+7. Confirm the public homepage still opens while logged in as an artist.
+8. Confirm normal artist login still redirects to the Artist Dashboard.
 
-1. Extract this archive.
-2. Copy plugin/elev8-os into your GitHub repository at plugin/elev8-os.
-3. Replace matching files.
-4. Commit and push to develop.
-5. Run Build Elev8 OS Release.bat.
-6. Install the generated release ZIP on Local.
-7. Test Class Requests as a mapped artist and as an administrator.
-8. Install the exact same generated ZIP on Live only after Local passes.
+Install this ZIP in Local first. After testing, install the exact same ZIP on Live.

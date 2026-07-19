@@ -1,0 +1,129 @@
+.elev8-portal-nav{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 24px;padding:16px 18px;background:#fff;border:1px solid #dcdcde;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.elev8-portal-brand{display:flex;align-items:center;gap:10px;min-width:max-content}.elev8-portal-brand-mark{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:10px;background:#1d2327;color:#fff;font-size:14px;font-weight:700;letter-spacing:.04em}.elev8-portal-brand strong,.elev8-portal-brand small{display:block}.elev8-portal-brand strong{color:#1d2327;font-size:15px;line-height:1.2}.elev8-portal-brand small{margin-top:2px;color:#646970;font-size:12px}.elev8-portal-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.elev8-portal-link{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:8px 11px;border:1px solid #dcdcde;border-radius:8px;background:#fff;color:#2c3338;text-decoration:none;font-size:13px;line-height:1.2}.elev8-portal-link:hover,.elev8-portal-link:focus{border-color:#2271b1;color:#135e96;box-shadow:0 0 0 1px #2271b1;outline:none}.elev8-portal-link.is-active{border-color:#2271b1;background:#2271b1;color:#fff}.elev8-portal-link.is-disabled{cursor:default;opacity:.58}.elev8-portal-link.is-disabled small{margin-left:2px;font-size:10px;white-space:nowrap}.elev8-portal-link .dashicons{width:16px;height:16px;font-size:16px}@media(max-width:900px){.elev8-portal-nav{align-items:flex-start;flex-direction:column}.elev8-portal-links{justify-content:flex-start;width:100%}}@media(max-width:600px){.elev8-portal-link{box-sizing:border-box;flex:1 1 calc(50% - 8px);justify-content:center}}
+
+/* Artist Website — Phase 1 */
+.elev8-artist-website{max-width:1140px;margin:0 auto;padding:28px 18px 60px}.elev8-website-header{margin-top:24px}.elev8-website-toolbar{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:24px 0;padding:20px 24px;background:#fff;border:1px solid #dcdcde;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.04)}.elev8-website-toolbar>div:first-child{display:flex;flex-direction:column;gap:5px;min-width:0}.elev8-website-toolbar span{color:#646970;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.elev8-website-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.elev8-copy-public-link,.elev8-secondary-button,.elev8-primary-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:8px;text-decoration:none;font-weight:600;cursor:pointer}.elev8-copy-public-link,.elev8-secondary-button{background:#fff;color:#135e96;border:1px solid #2271b1}.elev8-primary-button{background:#2271b1;color:#fff;border:1px solid #2271b1}.elev8-website-preview{background:#fff;border:1px solid #dcdcde;border-radius:14px;padding:24px;box-shadow:0 6px 20px rgba(0,0,0,.04)}.elev8-public-preview-frame{margin-top:18px;padding:22px;background:#f6f7f7;border:1px solid #dcdcde;border-radius:12px;overflow:hidden}.elev8-public-preview-frame .elev8-public-profile{max-width:100%;margin:0}.elev8-public-preview-frame .elev8-public-page{padding:0}@media(max-width:782px){.elev8-website-toolbar{align-items:flex-start;flex-direction:column}.elev8-website-actions{justify-content:flex-start;width:100%}.elev8-copy-public-link,.elev8-secondary-button,.elev8-primary-button{flex:1 1 100%}.elev8-public-preview-frame{padding:12px}}
+
+/* Manage My Website — Phase 2 */
+.elev8-edit-website{max-width:1140px;margin:0 auto;padding:28px 18px 60px}.elev8-save-notice{margin:22px 0;padding:14px 18px;border-left:4px solid #00a32a;border-radius:8px;background:#edfaef;color:#135e1f;font-weight:600}.elev8-manage-website-form{display:grid;gap:22px;margin-top:24px}.elev8-editor-section{padding:26px;background:#fff;border:1px solid #dcdcde;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.04)}.elev8-editor-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px}.elev8-editor-heading h2{margin:2px 0 0;font-size:24px}.elev8-editor-heading a{font-weight:600}.elev8-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.elev8-field{display:flex;flex-direction:column;gap:7px}.elev8-field>span{font-weight:600;color:#1d2327}.elev8-field input,.elev8-field textarea{box-sizing:border-box;width:100%;padding:11px 12px;border:1px solid #8c8f94;border-radius:8px;background:#fff;font:inherit}.elev8-field textarea{resize:vertical}.elev8-field input:focus,.elev8-field textarea:focus{border-color:#2271b1;box-shadow:0 0 0 1px #2271b1;outline:none}.elev8-field small,.elev8-section-help{color:#646970}.elev8-field-full{margin-top:18px}.elev8-repeat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}.elev8-link-pair{display:grid;gap:12px;padding:16px;border:1px solid #dcdcde;border-radius:10px;background:#f6f7f7}.elev8-public-toggle{display:flex;align-items:flex-start;gap:12px;margin-top:22px;padding:16px;border:1px solid #c3c4c7;border-radius:10px;background:#f6f7f7}.elev8-public-toggle input{margin-top:4px}.elev8-public-toggle span,.elev8-public-toggle strong,.elev8-public-toggle small{display:block}.elev8-public-toggle small{margin-top:4px;color:#646970}.elev8-editor-actions{display:flex;justify-content:flex-end;gap:12px;position:sticky;bottom:16px;padding:16px 18px;border:1px solid #dcdcde;border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 6px 25px rgba(0,0,0,.12);backdrop-filter:blur(8px)}.elev8-editor-actions button{font:inherit}@media(max-width:782px){.elev8-form-grid,.elev8-repeat-grid{grid-template-columns:1fr}.elev8-editor-section{padding:20px}.elev8-editor-heading{flex-direction:column}.elev8-editor-actions{position:static;flex-direction:column-reverse}.elev8-editor-actions .elev8-secondary-button,.elev8-editor-actions .elev8-primary-button{width:100%;box-sizing:border-box}}
+
+/* Manage My Website — live builder preview */
+.elev8-website-builder{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.85fr);gap:24px;align-items:start;margin-top:24px}.elev8-website-builder .elev8-manage-website-form{margin-top:0}.elev8-live-preview-panel{position:sticky;top:32px;padding:22px;background:#fff;border:1px solid #dcdcde;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.05)}.elev8-live-preview-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}.elev8-live-preview-heading h2{margin:2px 0 6px;font-size:22px}.elev8-live-preview-heading p:last-child{margin:0;color:#646970;font-size:13px}.elev8-preview-status{display:inline-flex;white-space:nowrap;padding:5px 9px;border-radius:999px;background:#f0f6fc;color:#135e96;font-size:11px;font-weight:700}.elev8-live-profile-preview{overflow:hidden;border:1px solid #dcdcde;border-radius:14px;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.08)}.elev8-live-cover{position:relative;min-height:150px;background:linear-gradient(135deg,#e9f3fb,#f7f3ff);background-position:center;background-size:cover}.elev8-live-cover-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.18))}.elev8-live-profile-body{padding:0 22px 24px}.elev8-live-profile-head{display:flex;align-items:flex-end;gap:14px;margin-top:-38px;position:relative}.elev8-live-avatar{display:flex;align-items:center;justify-content:center;width:78px;height:78px;overflow:hidden;border:4px solid #fff;border-radius:50%;background:#1d2327;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.16);font-size:30px;font-weight:700}.elev8-live-avatar img{width:100%;height:100%;object-fit:cover}.elev8-live-profile-head h3{margin:0 0 3px;font-size:24px;line-height:1.1}.elev8-live-profile-head p{margin:0;color:#646970}.elev8-live-bio{margin-top:22px}.elev8-live-bio h4{margin:0 0 7px;font-size:14px;text-transform:uppercase;letter-spacing:.08em}.elev8-live-bio p{margin:0;color:#3c434a;line-height:1.6;white-space:pre-wrap}.elev8-live-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.elev8-live-details>div{padding:12px;border-radius:9px;background:#f6f7f7}.elev8-live-details span,.elev8-live-details strong{display:block}.elev8-live-details span{margin-bottom:4px;color:#646970;font-size:11px;text-transform:uppercase;letter-spacing:.05em}.elev8-live-details strong{font-size:13px}.elev8-live-gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:18px}.elev8-live-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:7px;background:#f0f0f1}.elev8-live-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}.elev8-live-links a{padding:7px 10px;border:1px solid #2271b1;border-radius:999px;color:#135e96;text-decoration:none;font-size:12px;font-weight:600}.elev8-live-book-button{display:flex;justify-content:center;margin-top:20px;padding:11px 14px;border-radius:8px;background:#2271b1;color:#fff;text-decoration:none;font-weight:700}.elev8-live-book-button.is-disabled{background:#a7aaad;opacity:.75}.elev8-preview-note{margin:13px 0 0;color:#646970;font-size:12px;line-height:1.5}@media(max-width:1050px){.elev8-website-builder{grid-template-columns:1fr}.elev8-live-preview-panel{position:static;order:-1}.elev8-live-profile-preview{max-width:620px;margin:0 auto}}@media(max-width:600px){.elev8-live-preview-heading{flex-direction:column}.elev8-live-profile-body{padding:0 16px 18px}.elev8-live-details{grid-template-columns:1fr}.elev8-live-gallery{grid-template-columns:repeat(2,1fr)}}
+
+/* Elev8 OS portal application shell: use one navigation system on teacher pages. */
+body.elev8-os-portal-shell #header-grid,
+body.elev8-os-portal-shell #masthead,
+body.elev8-os-portal-shell .site-header,
+body.elev8-os-portal-shell .hfg_header,
+body.elev8-os-portal-shell header.header,
+body.elev8-os-portal-shell .header-main,
+body.elev8-os-portal-shell .header--row,
+body.elev8-os-portal-shell .nv-navbar,
+body.elev8-os-portal-shell .header-menu-sidebar,
+body.elev8-os-portal-shell .nv-page-title-wrap{display:none!important}
+body.elev8-os-portal-shell .site-main{padding-top:0}
+body.elev8-os-portal-shell .nv-single-page-wrap{margin-top:0}
+body.elev8-os-portal-shell .entry-header{display:none}
+
+/* 7.7.2 artist profile image upload experience */
+.elev8-image-upload-grid { align-items: start; }
+.elev8-image-upload-field { display: flex; flex-direction: column; gap: 10px; }
+.elev8-image-upload-field > span { font-weight: 700; }
+.elev8-current-image { padding: 12px; border: 1px solid #d9dee7; border-radius: 12px; background: #fff; }
+.elev8-current-image img { display: block; width: 100%; max-height: 230px; object-fit: cover; border-radius: 9px; margin-bottom: 10px; }
+.elev8-current-image label { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+.elev8-advanced-image-url { margin-top: 3px; }
+.elev8-advanced-image-url summary { cursor: pointer; font-size: 13px; color: #53606f; }
+.elev8-advanced-image-url input { margin-top: 8px; width: 100%; }
+
+
+/* 8.0.5 Artist Print Center UX polish */
+.elev8-artist-print-center{max-width:1180px;margin:28px auto;padding:0 20px 60px}
+.elev8-artist-print-center .elev8-portal-nav{margin-bottom:22px}
+.elev8-print-hero{display:flex;align-items:center;justify-content:space-between;gap:28px;margin-bottom:22px;padding:30px;border:1px solid #dcdcde;border-radius:16px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+.elev8-print-hero h1{margin:3px 0 8px;color:#1d2327;font-size:clamp(30px,4vw,44px);line-height:1.08}
+.elev8-print-hero p{margin:0;color:#646970;font-size:16px;line-height:1.55}
+.elev8-print-center-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.elev8-print-card{display:flex;min-height:430px;flex-direction:column;padding:28px;border:1px solid #dcdcde;border-radius:16px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+.elev8-print-card-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;margin-bottom:20px;border-radius:12px;background:#f0f6fc;color:#2271b1}
+.elev8-print-card-icon .dashicons{width:26px;height:26px;font-size:26px}
+.elev8-print-card-heading{margin-bottom:22px}
+.elev8-print-card-heading h2{margin:4px 0 9px;color:#1d2327;font-size:25px;line-height:1.2}
+.elev8-print-card-heading p:last-child{margin:0;color:#646970;line-height:1.6}
+.elev8-print-form{display:grid;gap:18px;margin-top:auto}
+.elev8-print-field{display:grid;gap:8px}
+.elev8-print-field>span{color:#1d2327;font-size:14px;font-weight:700}
+.elev8-print-field select{box-sizing:border-box;width:100%;min-height:46px;padding:8px 38px 8px 12px;border:1px solid #8c8f94;border-radius:8px;background:#fff;font:inherit}
+.elev8-print-field select:focus{border-color:#2271b1;box-shadow:0 0 0 1px #2271b1;outline:none}
+.elev8-artist-print-center .elev8-button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;padding:10px 17px;border:1px solid transparent;border-radius:8px;font:inherit;font-weight:700;line-height:1.2;text-decoration:none;cursor:pointer}
+.elev8-artist-print-center .elev8-button-primary{justify-self:start;background:#2271b1;color:#fff;border-color:#2271b1}
+.elev8-artist-print-center .elev8-button-primary:hover,.elev8-artist-print-center .elev8-button-primary:focus{background:#135e96;border-color:#135e96;color:#fff}
+.elev8-artist-print-center .elev8-button-secondary{background:#fff;color:#135e96;border-color:#2271b1}
+.elev8-artist-print-center .elev8-button-secondary:hover,.elev8-artist-print-center .elev8-button-secondary:focus{background:#f0f6fc;color:#0a4b78}
+.elev8-print-empty{display:flex;align-items:flex-start;gap:14px;margin:4px 0 20px;padding:16px;border:1px solid #dcdcde;border-radius:10px;background:#f6f7f7;color:#50575e}
+.elev8-print-empty>.dashicons{flex:0 0 auto;width:26px;height:26px;color:#8c8f94;font-size:26px}
+.elev8-print-empty strong{display:block;color:#1d2327}
+.elev8-print-empty p{margin:5px 0 0;color:#646970;line-height:1.5}
+@media(max-width:960px){.elev8-print-center-grid{grid-template-columns:1fr}.elev8-print-card{min-height:0}.elev8-portal-links{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;padding-bottom:4px}.elev8-portal-link{flex:0 0 auto}}
+@media(max-width:640px){.elev8-artist-print-center{padding-right:14px;padding-left:14px}.elev8-print-hero{align-items:flex-start;flex-direction:column;padding:22px}.elev8-print-hero .elev8-button{width:100%}.elev8-print-card{padding:22px}.elev8-artist-print-center .elev8-button-primary,.elev8-artist-print-center .elev8-button-secondary{width:100%;justify-self:stretch}}
+
+
+/* 10.2.2 — Website navigation bridge */
+.elev8-site-nav {
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border: 1px solid #dfe7ec;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(22, 47, 62, .06);
+}
+.elev8-site-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+.elev8-site-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 9px;
+    color: #263b46;
+    font-weight: 650;
+    line-height: 1.2;
+    text-decoration: none;
+}
+.elev8-site-nav-link:hover,
+.elev8-site-nav-link:focus {
+    background: #eef7fa;
+    color: #137f98;
+}
+.elev8-site-nav-link.is-primary {
+    background: #168da5;
+    color: #fff;
+}
+.elev8-site-nav-link.is-primary:hover,
+.elev8-site-nav-link.is-primary:focus {
+    background: #11758b;
+    color: #fff;
+}
+.elev8-site-nav-link:last-child {
+    margin-left: auto;
+}
+.elev8-dashboard-public-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px !important;
+}
+.elev8-dashboard-public-link a {
+    font-weight: 700;
+}
+@media (max-width: 760px) {
+    .elev8-site-nav-links { display: grid; grid-template-columns: 1fr 1fr; }
+    .elev8-site-nav-link { justify-content: flex-start; }
+    .elev8-site-nav-link.is-primary,
+    .elev8-site-nav-link:last-child { grid-column: 1 / -1; margin-left: 0; }
+}

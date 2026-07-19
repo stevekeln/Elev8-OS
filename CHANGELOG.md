@@ -1,140 +1,300 @@
-# Changelog
+# Elev8 OS Changelog
 
-## 6.0.5 — Service Occurrence Parsing Hotfix
+## 10.4.11 - System Information
 
-- Prevented expired one-time services from inheriting future dates from stale description content.
-- Added service-scoped weekly date-range parsing for schedules such as `June 11 - 25 & July 9 - 30, 2026`.
-- Added date-only upcoming occurrences when Amelia contains a verified date but no verified time.
-- Preserved real appointment and event schedules as higher-priority sources.
-- Kept Heather Skinner and Jessica Wyant schedules isolated to their assigned Amelia services.
+- Added a reusable release information service that reads builder-generated metadata from `release-manifest.json`.
+- Added a System Information section to the CEO Dashboard showing the installed version, build ID, build date, PHP validation, Git branch and commit, source state, and package name.
+- Displays `Unavailable` rather than guessing when release metadata cannot be verified.
+- Preserved the v10.4.10 public homepage and Artist Dashboard redirect solution without modification.
 
+## 10.4.10 - 2026-07-19
 
-## 6.0.4 — Service Schedule Isolation Hotfix
+### Fixed
+- Preserved the display-stable 10.4.3.1 public-site rendering.
+- Allowed linked artists to open the real public homepage while logged in.
+- Prevented Ultimate Member's homepage access callback from redirecting the front page to `/user/?redirect_to=...`.
+- Scoped the compatibility change only to logged-in linked artists on the WordPress front page.
+- Kept normal login redirects, Artist Dashboard routing, and Ultimate Member profile behavior unchanged.
 
-- Stopped treating Amelia assignment-table metadata dates as class schedules.
-- Dates now remain attached to the matching assigned service record.
-- Excluded expired Herbal Mocktails while preserving Heather's Sunbrew dates.
-- Preserved Jessica Wyant's assigned Sound Bowl service and other zero-booking services.
-- Added per-service schedule diagnostics.
+## 10.4.3.1 — Direct Public Home Diagnostic Test
 
-# 6.0.3 — Amelia Service Date Accuracy Hotfix
+- Built directly from the display-stable 10.4.3 release.
+- Removes the `wp_redirect` interception used for the public-home query flag.
+- Sends the artist-page logo directly to the real WordPress homepage URL.
+- Makes no other dashboard, theme, layout, or Ultimate Member changes.
 
-- Keeps parsed dates attached to the Amelia service description they came from.
-- Uses the primary Time & Location date to exclude expired services and stale copied dates.
-- Parses all dates in the WordPress site timezone so 9:00 AM remains 9:00 AM.
-- Restores the primary dated occurrence and removes duplicate service/date rows.
+## 10.4.3 — Public Website Logo Exit Fix
 
-# 6.0.2 — Amelia Assignment Discovery Hotfix
+- Fixed the public artist-page logo sending logged-in artists back to the Artist Dashboard.
+- The logo now points to the real Elev8 Arts homepage with an explicit public-site intent flag.
+- Elev8 OS suppresses dashboard/profile redirects only for that intentional homepage visit.
+- Normal artist login and Ultimate Member profile redirects still lead to the private dashboard.
+- No database schema changes.
 
-- Replaced guessed provider-to-service table names with runtime Amelia schema discovery.
-- Added compatibility for services that store assigned employees directly in JSON or serialized fields.
-- Improved parsing of explicit service dates containing HTML, line breaks, and non-breaking spaces.
-- Expanded administrator diagnostics with discovered assignment sources.
+## 10.4.2 — Teacher Proposal Visibility
+
+- Added a dedicated Artist Submissions section to Class Requests so teacher ideas appear even with zero customer requests.
+- Added Class Idea Pipeline metrics and recent teacher proposals to the CEO Dashboard.
+- Added direct owner links from proposals to the Class Demand detail record.
+- Preserved Artist Growth Center as a verified linked-artist performance view; it remains empty until WordPress users are mapped to Amelia artists.
+- No database schema changes.
+
+## 10.4.1 - Class Idea Center public experience
+- Rebuilt the Teach or Suggest a Class page around the native Elev8 OS Class Idea Center.
+- Removed the Google Form workflow from the public experience.
+- Added a polished purple, lavender, teal, and white landing page with customer and artist paths.
+- Added integrated class categories, process guidance, FAQs, and stronger Elev8 OS opportunity messaging.
+- Preserved customer demand capture, artist proposals, duplicate protection, rate limiting, and Amelia ownership boundaries.
 
 # Elev8 OS Changelog
 
-## 6.0.1 — Upcoming Class Compatibility Hotfix
+## 10.4.0 — Class Idea Center
 
-- Restored upcoming classes on the Artists admin screen when an Amelia service has scheduled dates but no customer bookings yet.
-- Reads verified dated provider-to-service assignment rows when available.
-- Adds a compatibility fallback that reads only explicit future dates written in an assigned Amelia service description.
-- Added an administrator-only upcoming-class diagnostics panel showing detected Amelia sources and counts.
-- Does not invent dates or create bookings.
+- Added a public Class Idea Center at `/teach-or-suggest-a-class/`.
+- Customers can join interest for an existing class idea or suggest a new class.
+- Logged-in Elev8 artists can submit class proposals from the same public page.
+- Public submissions feed the existing Elev8 OS Opportunity and Class Requests systems.
+- Added demand-friendly fields for requested seats, preferred days/times, contact details, class level, duration, price, supplies, and internal notes.
+- Added duplicate protection, a honeypot, basic rate limiting, consent capture, and public success/error messaging.
+- Added a purple, lavender, teal, and white responsive public design.
+- Amelia remains the trusted scheduling and booking system; ideas are not published automatically.
 
-## 6.0.0 — Admin Reorganization
+## 10.3.2 — Class-Led Email Campaigns & Portal Exit Fix
 
-- Renamed the confusing admin **Artist Portal** screen to **Artists**.
-- Reorganized Elev8 OS admin navigation into a clearer daily-use order.
-- Renamed the admin-only Artist Dashboard screen to **Artist Dashboard Preview**.
-- Removed the duplicate legacy System Status menu entry while preserving the full System Inspector.
-- Moved CEO Dashboard and Business Intelligence ahead of system and development tools.
-- Kept the simple `develop` and `main` branch workflow unchanged.
+- Added an upcoming-class picker to Email Marketing using verified Amelia assignments.
+- Reuses each class name, date, flyer image, booking destination, and available-seat data when present.
+- Added a purple/lavender/teal live email preview with the selected class flyer.
+- Sent campaign emails now use the same branded visual layout shown in preview.
+- Added campaign fields for promoted title, class service ID, and featured image.
+- Removed the weak generic Copy Social Version workflow pending proper channel-specific publishing.
+- Growth Studio class promotion now opens the class-led Email Marketing workflow.
+- Elev8 Arts Home now opens in a separate tab so artists can leave the private portal without losing their dashboard.
+- Plugin version increased from 10.3.1 to 10.3.2.
 
-## 5.9.0 — Portal Polish
+## 10.3.1 — Guided Publishing & Preview Polish
 
-- Added secure CSV downloads for artist class rosters.
-- Added print-friendly student rosters.
-- Added live roster search counts and cleaner roster actions.
-- Improved class cards, action hierarchy, mobile layouts, and portal navigation.
-- Preserved artist-scoped permissions and verified-data rules.
+### Added
+- Added a three-step Content Studio guide explaining how templates move from shared starting points to personalized campaigns.
+- Added direct editing after an artist adds a shared template to their personal library.
+- Added social-ready copy support with a one-click Copy Social Version action for Facebook and Instagram workflows.
+- Added a live recipient-facing email preview inside Marketing Center.
+- Added live subject, message, and promotion-link updates while composing an email.
 
+### Changed
+- Replaced the visually broken opportunity links with consistent dark-purple pill buttons and white text.
+- Clarified that the Content Studio campaign builder currently creates branded email campaigns.
+- Reworded Use Template to Add to My Library & Edit.
+- Replaced remaining pink/blue growth styling with the approved purple, lavender, teal, and white system.
+- Plugin version increased from 10.3.0 to 10.3.1.
 
-## 5.8.0
-- Added the Artist Portal Students page and automatic portal-page management.
-- Added class-specific Amelia student rosters with verified names, contact details, seats, booking status, and booking date when available.
-- Added roster search and class selection.
-- Added View Students actions to My Classes.
-- Excludes cancelled and rejected bookings and displays Unavailable instead of guessing missing data.
+### Notes
+- Direct publishing to Facebook and Instagram still requires each artist to authorize their social account through the platform APIs. This release adds the safe copy-and-paste workflow and prepares the interface for future connected publishing.
+- No database changes.
 
-# 5.7.0 — My Classes
+## 10.3.0 — Elev8 Design System 1.0
 
-- Activated My Classes in the Artist Portal.
-- Added verified upcoming and recent past Amelia class dates.
-- Added student counts, detected capacity, available seats, and booked value where supported.
-- Added class booking-link actions and safe Unavailable states.
-- Added the My Classes page to Portal Setup and automatic page repair.
+### Added
+- Introduced shared purple, lavender, teal, white, ink, border, and shadow design tokens for the Artist Dashboard.
+- Added a polished, reusable primary dashboard action style with guaranteed white text on dark purple buttons.
 
-## 5.6.0
+### Changed
+- Redesigned Business GPS from a dark navy panel into a light purple, lavender, and teal business-health experience.
+- Converted the Business Health score into a circular teal-and-purple visual treatment.
+- Unified dashboard cards, borders, shadows, progress indicators, success panels, opportunity cards, and timeline icons.
+- Rebuilt the Content Studio Create Template action as a full-size teal CTA with white text and a plus icon.
+- Updated Content Studio hero styling to match Growth Studio.
+- Plugin version increased from 10.2.6 to 10.3.0.
 
-- Added a two-column Manage My Website builder with an always-visible live preview.
-- Bio, medium, specialties, experience, profile photo, cover image, gallery, social links, and booking button update instantly while the artist types.
-- Preview uses the same saved profile fields as the public artist page and clearly identifies unsaved changes as preview-only.
-- Added responsive behavior so the preview moves above the form on smaller screens.
-
-## 5.5.0
-
-- Added Artist Portal Setup under Elev8 OS.
-- Stores and uses exact WordPress page IDs for Artist Dashboard, My Website, and Edit Website.
-- Automatically discovers existing portal pages by saved ID, canonical slug, or shortcode.
-- Automatically repairs missing shortcodes and creates missing portal pages.
-- Added a one-click Check and Repair Portal Pages tool.
-- Portal navigation now survives page title and permalink changes.
+### Database changes
+- None.
 
 # Changelog
 
-## 5.4.1 — Version Display Hotfix
+## 10.2.5
+- Added the artist-facing Growth Studio as the single navigation destination for content, marketing, print, and QR tools.
+- Added goal-first shortcuts for promoting artwork, classes, events, and artist profiles.
+- Preserved the existing Marketing and Content Studio engines and their legacy page URLs.
+- Replaced the artist growth experience's dark blue styling with a coordinated purple, lavender, and teal palette.
+- Standardized white text on dark purple and teal buttons for readability.
+- Kept owner-facing Artist Growth Center separate from the artist Growth Studio.
 
-- Fixed Elev8 OS admin screens showing the old 5.0.0 version label.
-- Internal version displays and asset cache versions now use the installed plugin version constant.
-- Added backward compatibility for the earlier `[elev8_artist_website_editor]` shortcode.
 
-## 5.4.0 — Manage My Website
+- Added a prominent Print & QR action card inside the artist Marketing Center.
+- Added the same Print & QR action card inside the artist Content Studio.
+- Added direct links to My Print Center and My Artwork from both growth workflows.
+- Centralized the shared Print Center entry card in the existing Artist Print Center module to avoid duplicated UI logic.
+- Preserved the existing dashboard and portal navigation links.
+- Database changes: none.
 
-- Activated **Edit Website** as a working Artist Portal feature.
-- Added a private, artist-scoped form for public bio, specialties, experience, images, gallery, social links, contact links, payment links, and booking button.
-- Artists can save their own public website without entering WordPress administration.
-- Preserves administrator-owned settings such as Amelia mapping, payouts, referral percentage, W-9 status, agreements, and internal announcements.
-- Added nonce, identity mapping, sanitization, cache purging, and success feedback.
-- Automatically creates the `/artist-edit-website/` portal page.
+## 10.2.3 — Artist Identity System Integration
 
-## 5.3.0 — Artist Website Phase 1
+- Merged the Artist Identity System into the 10.2.2 source without removing newer modules.
+- Added lavender, minimal, and ink-safe artist identity themes.
+- Added 5 × 7 artist table displays.
+- Added 3 × 1 artist labels and 16-label letter sheets.
+- Added 3 × 1 artwork labels and 16-label letter sheets.
+- Added a large standalone artist profile QR display.
+- Refined public artist profiles with a clean white-and-lavender portfolio presentation.
+- Preserved all 10.2.2 Artist Website Navigation, Growth Center, Business GPS, Artist Success, marketing, and Content Studio functionality.
+- Database changes: none.
 
-- Added a private **My Website** page to the Artist Portal.
-- Artists can preview their public artist profile from inside the portal.
-- Added Copy Link, Open Public Page, and Edit My Profile actions.
-- The portal resolves the artist through the verified WordPress-to-Amelia mapping, with email fallback.
-- Automatically creates the `/artist-website/` portal page when an administrator loads WordPress.
-- Keeps public profile rendering in the existing Elev8 OS profile engine rather than duplicating profile logic.
+## 10.2.2 — Artist Website Navigation
 
-## 5.1.0 — CEO Dashboard
+- Added a permanent website navigation bar to every Elev8 OS Artist Portal screen.
+- Added direct links to Elev8 Arts Home, the logged-in artist's public page, Book a Class, Events, Shop, and Log Out.
+- Added a prominent public-page link beneath the dashboard welcome message.
+- Artist public-page links are derived from the verified artist mapping, with saved profile links taking priority.
+- WooCommerce remains the source of truth for the Shop URL.
+- Log Out safely returns the artist to the Elev8 Arts home page.
+- Added responsive mobile navigation styling.
+- No database changes.
 
-- Expanded the CEO Dashboard with today-at-a-glance metrics.
-- Added verified owner attention items.
-- Added upcoming class dates and business-health metrics.
-- Added responsive CEO Dashboard styling.
-- Preserved the rule that unavailable data is never displayed as zero.
+## 10.1.0 — Brand Experience
 
-## 5.0.0 — Foundation
+- Rebuilt the universal email renderer into a polished, mobile-friendly branded marketing layout.
+- Added automatic Elev8 Arts logo support with a visual WordPress Media Library picker and theme-logo fallback.
+- Added configurable brand tagline, Book a Class URL, Events URL, Artist Directory URL, mission message, address, and social links.
+- Added permanent Book a Class and Upcoming Events discovery cards using the requested Elev8 Arts URLs.
+- Added campaign-aware secondary calls to action for artwork, class, and event campaigns.
+- Added a nonprofit mission panel and refined branded footer with tasteful Powered by Elev8 OS credit.
+- Preserved campaign-specific primary CTA controls and existing smart-section checkboxes.
+- No database changes. Existing brand settings remain backward compatible.
 
-- Preserved Version 4.99 functionality.
-- Added modular bootstrap and loader.
-- Added integration boundaries for Amelia and WooCommerce.
-- Added module scaffolds for Artist Portal, Waitlist, CRM, and Dashboard.
-- Added System Status admin page.
-- Standardized asset folders.
+## 10.0.0 — Artist Success
 
-## 5.2.0
-- Rebuilt the Artist Dashboard around verified upcoming Amelia appointments.
-- Added upcoming class dates, service names, times, locations, booking records, and student totals when supported by the detected schema.
-- Added clear empty and unavailable states instead of misleading zero values.
-- Added a direct profile action while keeping payouts and tax documents visibly marked as planned.
+- Added the Artist Success welcome experience with time-aware greeting and motivational guidance.
+- Added verified weekly goals based on meaningful business activity.
+- Added Momentum status without inventing unsupported historical comparisons.
+- Added Artist Journey levels from Beginning Artist through Master Artist.
+- Added a prioritized 30-minute action plan using Business GPS opportunities.
+- Added Celebrate Wins cards sourced from the normalized Business Event Engine.
+- Added owner-level Gallery Health with organization-wide score categories and support signals.
+- Reused Business GPS, Opportunity Engine, achievements, Content Studio launcher, Amelia, and WooCommerce data.
+- No database changes.
+
+# Changelog
+
+## 9.4.0 — Business GPS & Intelligence Foundation
+
+- Added Business GPS to the Artist Dashboard with business health, estimated monthly revenue, highest opportunity, biggest risk, and recommended first step.
+- Added a reusable Business Event Service that normalizes verified Amelia, WooCommerce, artwork, QR, and achievement activity without duplicating trusted-system records.
+- Added an explainable Opportunity Engine with conservative revenue estimates only when verified price and capacity data support them.
+- Added a seven-day Content Calendar connected directly to Content Studio campaign goals.
+- Added Predictive Scheduling guidance with explicit confidence and an Unavailable state when class history is insufficient.
+- Added a unified Business Timeline for sales, classes, engagement, QR activity, and achievements.
+- Added reusable service boundaries for future conversational AI coaching and owner intelligence.
+- No database changes.
+
+# Elev8 OS Changelog
+
+## 10.2.6
+- Added a reusable Artist Shortcut Launcher to the Artist Dashboard.
+- Added a compact desktop shortcut bar that appears after the normal navigation scrolls out of view.
+- Added a mobile floating Shortcuts button with an accessible popup panel.
+- Centralized shortcut destinations through the existing Artist Portal navigation data.
+- Added quick access to Growth Studio, Artwork, Classes, Website, Print Center, Students, and Class Requests.
+- Applied the purple, lavender, teal, and white Growth Studio palette to the launcher.
+- No database changes.
+
+## 9.3.2 — Campaign Wizard Centering Fix
+
+- Removed the viewport-based transform that pulled the front-end Campaign Wizard off the left edge.
+- Added a Content Studio page body class so the WordPress theme container can be widened safely.
+- Centered the application shell with a controlled maximum width and normal document flow.
+- Preserved the two-column campaign form and branded preview layout from 9.3.1.
+- Improved tablet and mobile page padding.
+- No database changes.
+
+## 9.3.0 — Artist Growth Center
+- Activated the reusable Artist Business Snapshot, Business Score, Recommendation Engine, Growth Plan, and Achievement services.
+- Added an artist Business Score with transparent component scores.
+- Added Today's Opportunities with one-click Content Studio campaign launching.
+- Added verified-data achievement progress.
+- Added the owner Artist Growth Center summary under Elev8 OS.
+- Preserved the 9.2.2 Class Requests styling fix and all existing dashboard functionality.
+- No database schema changes.
+
+# Elev8 OS Changelog
+
+## 10.2.6
+- Added a reusable Artist Shortcut Launcher to the Artist Dashboard.
+- Added a compact desktop shortcut bar that appears after the normal navigation scrolls out of view.
+- Added a mobile floating Shortcuts button with an accessible popup panel.
+- Centralized shortcut destinations through the existing Artist Portal navigation data.
+- Added quick access to Growth Studio, Artwork, Classes, Website, Print Center, Students, and Class Requests.
+- Applied the purple, lavender, teal, and white Growth Studio palette to the launcher.
+- No database changes.
+
+## 9.3.1 — Campaign Wizard Layout Polish
+
+- Fixed the front-end Content Studio being constrained by the WordPress theme content width.
+- Added a full-width, theme-safe Content Studio application shell.
+- Rebuilt the Campaign Wizard into a clean two-column form and preview workspace.
+- Added consistent field sizing, spacing, focus states, card styling, and mobile responsiveness.
+- Made the branded email preview sticky on desktop and stacked on smaller screens.
+- All Growth Center campaign launch buttons now benefit from the shared wizard layout fix.
+- No database changes.
+
+## 9.2.2 — Class Requests Interface Polish
+
+### Fixed
+- Class Requests admin screen now loads its required portal and waitlist styles.
+- Admin output now uses the same structured Class Requests wrapper as the Artist Portal.
+- Removed the unstyled duplicate admin heading above the application interface.
+
+### Improved
+- Added a cleaner admin header, consistent cards, responsive spacing, and properly sized form controls.
+- Preserved all existing Class Requests, opportunity, filtering, follow-up, and deletion behavior.
+
+### Database changes
+- None.
+
+### Compatibility
+- Backward compatible with the existing 9.2.1 Class Requests data and Content Studio schema.
+- No WordPress, Amelia, or WooCommerce trusted-system data is duplicated.
+
+## 9.2.1 — Brand & Campaign Wizard
+
+### Added
+- Artist-first campaign wizard beginning with “What are you trying to accomplish today?”
+- Campaign goals for filling classes, selling artwork, announcing events, bringing customers back, introducing artists, referrals, and custom campaigns
+- Plain-language audience selection without exposing tags or merge-field mechanics
+- Master Brand Template settings for brand name, logo attachment, colors, website, CTA defaults, and footer text
+- Universal branded HTML email renderer with automatic logo, colors, CTA button, and footer
+- Campaign draft storage separate from reusable template records
+- Automatic-content controls for artist profile, upcoming classes, Elev8 events, and referrals
+- Recent campaign draft list
+- Template revision-history schema and automatic snapshot capture before template updates
+- Template-selection helper that loads reusable content into the campaign wizard
+
+### Changed
+- Content Studio database version increased from 1.0.0 to 1.1.0
+- Plugin version increased from 9.2.0 to 9.2.1
+- Content Studio now loads its lightweight campaign interaction script
+
+### Database changes
+- Added `wp_elev8_os_content_campaigns`
+- Added `wp_elev8_os_content_template_revisions`
+- Existing tables are preserved and upgraded through `dbDelta`
+
+### Compatibility
+- Existing 9.2.0 content categories and templates remain unchanged
+- Shared and personal template workflows remain backward compatible
+- No WordPress, Amelia, or WooCommerce trusted-system data is duplicated
+
+## 10.2.0 — Shared Brand System
+- Clarified that the Universal Email Brand System is the owner-controlled organization brand frame.
+- Added a reusable Artist Brand Service that resolves the linked artist from the existing WordPress-to-Amelia identity mapping.
+- Added artist-managed email identity settings in Manage My Website: optional logo, accent color, featured heading, short introduction, signature, and enable/disable control.
+- Added a combined organization + artist email layout with artist image, story, profile link, website, social links, and signature.
+- Preserved the official organization logo, mission, Book a Class link, Events link, address, social links, and footer as owner-controlled settings.
+- Reused the existing artist profile option and WordPress Media Library; no new database tables were introduced.
+
+## 10.2.1 — Artist Access Fix
+
+- Redirects linked artists from Ultimate Member login directly to the Elev8 OS Artist Dashboard.
+- Supports both WordPress native login redirects and Ultimate Member's own login flow.
+- Converts legacy `/user/...` Ultimate Member profile destinations into a safe bridge to the Artist Dashboard for linked artists.
+- Preserves normal WordPress behavior for administrators and users who are not linked to an Amelia artist/provider.
+- Adds redirect-loop protections and keeps the public Artist Dashboard as the single artist home.
+- No database changes.

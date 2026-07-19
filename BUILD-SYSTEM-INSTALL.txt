@@ -1,0 +1,24 @@
+ELEV8 OS BUILD SYSTEM - CORRECTED SOURCE AUTO-DETECTION
+
+Copy these items into the root of the Elev8 OS Git repository:
+
+1. Build Elev8 OS Release.bat
+2. BUILD_VERSION
+3. tools\build-release.ps1
+
+The corrected build script no longer assumes elev8-os.php is located directly
+in the repository root. It searches the repository for the active elev8-os.php,
+uses that file's folder as the plugin source, validates that source tree, and
+packages only that plugin folder.
+
+Expected repository example:
+
+C:\GitHub\Elev8-OS\
+    Build Elev8 OS Release.bat
+    BUILD_VERSION
+    tools\build-release.ps1
+    [documentation files]
+    [plugin source folder]\elev8-os.php
+
+Replace the previous build-release.ps1 with this corrected version, then run
+the BAT again. You do not need to move the plugin source.

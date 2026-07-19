@@ -1,385 +1,310 @@
+[CmdletBinding()]
 param(
-    [switch]$OpenOutputFolder
+    [switch]$OpenOutputFolder,
+    [switch]$SkipPhpValidation
 )
 
-$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-
-$RepositoryRoot = Split-Path -Parent $PSScriptRoot
-$PluginSource = Join-Path $RepositoryRoot 'plugin\elev8-os'
-$PluginMainFile = Join-Path $PluginSource 'elev8-os.php'
-$OutputDirectory = Join-Path $RepositoryRoot 'releases'
-$StagingRoot = Join-Path $env:TEMP ('elev8-os-release-' + [guid]::NewGuid().ToString('N'))
-$StagedPlugin = Join-Path $StagingRoot 'elev8-os'
+$ErrorActionPreference = 'Stop'
 
 function Write-Step {
     param([string]$Message)
-
-    Write-Host ''
-    Write-Host ('==> ' + $Message) -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "==> $Message" -ForegroundColor Cyan
 }
 
-function Assert-PathExists {
-    param(
-        [string]$Path,
-        [string]$Description,
-        [switch]$Directory
-    )
-
-    if ($Directory) {
-        if (-not (Test-Path -LiteralPath $Path -PathType Container)) {
-            throw "$Description was not found: $Path"
-        }
-
-        return
-    }
-
-    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
-        throw "$Description was not found: $Path"
-    }
+function Stop-Build {
+    param([string]$Message)
+    Write-Host ""
+    Write-Host "BUILD FAILED: $Message" -ForegroundColor Red
+    exit 1
 }
+
 
 function Find-PhpExecutable {
-    $command = Get-Command php -ErrorAction SilentlyContinue
-
-    if ($null -ne $command) {
-        return $command.Source
+    # First use PHP when it is already available from Windows PATH.
+    $pathCommand = Get-Command php.exe -ErrorAction SilentlyContinue
+    if (-not $pathCommand) { $pathCommand = Get-Command php -ErrorAction SilentlyContinue }
+    if ($pathCommand -and $pathCommand.Source) {
+        return $pathCommand.Source
     }
 
-    $searchRoots = @(
-        (Join-Path $env:APPDATA 'Local\lightning-services'),
-        (Join-Path $env:LOCALAPPDATA 'Programs\Local'),
-        (Join-Path $env:LOCALAPPDATA 'Local'),
-        'C:\Program Files\Local',
-        'C:\Program Files (x86)\Local'
-    ) | Where-Object { $_ -and (Test-Path -LiteralPath $_ -PathType Container) }
-
-    foreach ($searchRoot in $searchRoots) {
-        $candidate = Get-ChildItem `
-            -LiteralPath $searchRoot `
-            -Filter 'php.exe' `
-            -File `
-            -Recurse `
-            -ErrorAction SilentlyContinue |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-
-        if ($null -ne $candidate) {
-            return $candidate.FullName
-        }
+    # Local normally stores its PHP services under one of these folders.
+    $searchRoots = New-Object System.Collections.Generic.List[string]
+    if ($env:APPDATA) {
+        $searchRoots.Add((Join-Path $env:APPDATA 'Local\lightning-services'))
+    }
+    if ($env:LOCALAPPDATA) {
+        $searchRoots.Add((Join-Path $env:LOCALAPPDATA 'Programs\Local\resources\extraResources\lightning-services'))
+        $searchRoots.Add((Join-Path $env:LOCALAPPDATA 'Local\lightning-services'))
     }
 
-    throw @"
-PHP could not be located.
-
-Start the Elev8 OS Development site in Local and run the builder again.
-The builder requires PHP to syntax-check every plugin PHP file.
-"@
-}
-
-function Get-PluginVersion {
-    param([string]$MainFile)
-
-    $content = Get-Content -LiteralPath $MainFile -Raw
-    $match = [regex]::Match($content, '(?im)^\s*\*\s*Version:\s*([^\r\n]+)')
-
-    if ($match.Success) {
-        $version = $match.Groups[1].Value.Trim()
-
-        if ($version -match '^[0-9A-Za-z._-]+$') {
-            return $version
-        }
-    }
-
-    return 'dev'
-}
-
-function Test-PhpSyntax {
-    param(
-        [string]$PhpExecutable,
-        [string]$SourceDirectory
-    )
-
-    $phpFiles = @(Get-ChildItem -LiteralPath $SourceDirectory -Filter '*.php' -File -Recurse)
-
-    if ($phpFiles.Count -eq 0) {
-        throw "No PHP files were found in $SourceDirectory"
-    }
-
-    $failures = @()
-
-    foreach ($file in $phpFiles) {
-        Write-Host ('Checking ' + $file.FullName)
-        $output = & $PhpExecutable -l $file.FullName 2>&1
-
-        if ($LASTEXITCODE -ne 0) {
-            $failures += [pscustomobject]@{
-                File = $file.FullName
-                Output = ($output -join [Environment]::NewLine)
+    $localPhpCandidates = New-Object System.Collections.Generic.List[System.IO.FileInfo]
+    foreach ($root in ($searchRoots | Select-Object -Unique)) {
+        if (-not (Test-Path -LiteralPath $root -PathType Container)) { continue }
+        Get-ChildItem -LiteralPath $root -Directory -Filter 'php-*' -ErrorAction SilentlyContinue | ForEach-Object {
+            $win64Php = Join-Path $_.FullName 'bin\win64\php.exe'
+            $binPhp = Join-Path $_.FullName 'bin\php.exe'
+            if (Test-Path -LiteralPath $win64Php -PathType Leaf) {
+                $localPhpCandidates.Add((Get-Item -LiteralPath $win64Php))
+            }
+            if (Test-Path -LiteralPath $binPhp -PathType Leaf) {
+                $localPhpCandidates.Add((Get-Item -LiteralPath $binPhp))
             }
         }
     }
 
-    if ($failures.Count -gt 0) {
-        Write-Host ''
-        Write-Host 'PHP syntax errors were found:' -ForegroundColor Red
-
-        foreach ($failure in $failures) {
-            Write-Host ''
-            Write-Host $failure.File -ForegroundColor Red
-            Write-Host $failure.Output
-        }
-
-        throw 'Release stopped because PHP syntax validation failed.'
+    if ($localPhpCandidates.Count -gt 0) {
+        # Prefer the newest installed Local PHP service.
+        return ($localPhpCandidates | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1).FullName
     }
 
-    Write-Host ("All {0} PHP files passed syntax validation." -f $phpFiles.Count) -ForegroundColor Green
-}
-
-function Test-ExcludedRelativePath {
-    param([string]$RelativePath)
-
-    $normalized = $RelativePath.Replace('\', '/')
-    $parts = $normalized.Split('/')
-
-    $excludedNames = @(
-        '.git',
-        '.github',
-        '.idea',
-        '.vscode',
-        'node_modules',
-        'tests',
-        'releases'
+    # Also support common standalone Windows PHP installations.
+    $directCandidates = @(
+        'C:\xampp\php\php.exe',
+        'C:\php\php.exe'
     )
-
-    foreach ($part in $parts) {
-        if ($excludedNames -contains $part) {
-            return $true
-        }
+    foreach ($candidate in $directCandidates) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) { return $candidate }
     }
 
-    return $false
+    $recursiveRoots = @('C:\laragon\bin\php')
+    foreach ($root in $recursiveRoots) {
+        if (-not (Test-Path -LiteralPath $root -PathType Container)) { continue }
+        $candidate = Get-ChildItem -LiteralPath $root -Recurse -File -Filter 'php.exe' -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+        if ($candidate) { return $candidate.FullName }
+    }
+
+    return $null
 }
 
-function Copy-PluginToStaging {
-    param(
-        [string]$SourceDirectory,
-        [string]$DestinationDirectory
+function Get-RelativePath {
+    param([string]$BasePath, [string]$TargetPath)
+    $baseUri = New-Object System.Uri(($BasePath.TrimEnd('\') + '\'))
+    $targetUri = New-Object System.Uri($TargetPath)
+    [System.Uri]::UnescapeDataString($baseUri.MakeRelativeUri($targetUri).ToString().Replace('/', '\'))
+}
+
+try {
+    $scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $projectRoot = (Resolve-Path (Join-Path $scriptDirectory '..')).Path
+    $versionFile = Join-Path $projectRoot 'BUILD_VERSION'
+    $releaseDirectory = Join-Path $projectRoot 'releases'
+
+    Write-Step 'Checking required build files'
+
+    if (-not (Test-Path -LiteralPath $versionFile -PathType Leaf)) {
+        Stop-Build "BUILD_VERSION was not found: $versionFile"
+    }
+
+    $version = (Get-Content -LiteralPath $versionFile -Raw).Trim()
+    if ($version -notmatch '^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$') {
+        Stop-Build "BUILD_VERSION '$version' is not valid. Example: 10.4.11"
+    }
+
+    $excludedRoots = @(
+        (Join-Path $projectRoot '.git'),
+        (Join-Path $projectRoot 'releases'),
+        (Join-Path $projectRoot 'tools')
     )
 
-    New-Item -ItemType Directory -Path $DestinationDirectory -Force | Out-Null
+    $pluginCandidates = @(Get-ChildItem -LiteralPath $projectRoot -Recurse -File -Filter 'elev8-os.php' | Where-Object {
+        $candidate = $_.FullName
+        -not ($excludedRoots | Where-Object { $candidate.StartsWith($_, [System.StringComparison]::OrdinalIgnoreCase) })
+    })
 
-    $files = @(Get-ChildItem -LiteralPath $SourceDirectory -File -Recurse -Force)
+    if ($pluginCandidates.Count -eq 0) {
+        Stop-Build "Could not find elev8-os.php inside: $projectRoot"
+    }
+    if ($pluginCandidates.Count -gt 1) {
+        Write-Host 'Multiple plugin entry files were found:' -ForegroundColor Yellow
+        $pluginCandidates | ForEach-Object { Write-Host " - $($_.FullName)" -ForegroundColor Yellow }
+        Stop-Build 'Keep only one active Elev8 OS source folder in the repository.'
+    }
 
-    foreach ($file in $files) {
-        $relativePath = $file.FullName.Substring($SourceDirectory.Length).TrimStart('\', '/')
+    $pluginFile = $pluginCandidates[0].FullName
+    $pluginSourceRoot = $pluginCandidates[0].Directory.FullName
+    $buildTimestamp = Get-Date
+    $buildId = $buildTimestamp.ToString('yyyyMMdd-HHmmss')
+    $buildDateIso = $buildTimestamp.ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
+    $temporaryRoot = Join-Path $env:TEMP ("elev8-os-release-" + $buildId)
+    $stagingPluginRoot = Join-Path $temporaryRoot 'elev8-os'
+    $zipName = "elev8-os-$version-$buildId.zip"
+    $zipPath = Join-Path $releaseDirectory $zipName
+    $manifestOutputPath = Join-Path $releaseDirectory ("elev8-os-$version-$buildId-manifest.json")
+    $checksumOutputPath = "$zipPath.sha256"
 
-        if (Test-ExcludedRelativePath -RelativePath $relativePath) {
+    Write-Host "Repository:    $projectRoot"
+    Write-Host "Plugin source: $pluginSourceRoot"
+    Write-Host "Version:       $version"
+    Write-Host "Build:         $buildId"
+
+    Write-Step 'Stamping the plugin version'
+
+    $sourceLines = [System.IO.File]::ReadAllLines($pluginFile)
+    $updatedLines = New-Object System.Collections.Generic.List[string]
+    $headerFound = $false
+    $constantFound = $false
+
+    foreach ($line in $sourceLines) {
+        if ($line -match '^\s*\*\s*Version:\s*') {
+            $prefix = $line.Substring(0, $line.IndexOf('Version:'))
+            $updatedLines.Add($prefix + 'Version: ' + $version)
+            $headerFound = $true
             continue
         }
 
-        $destination = Join-Path $DestinationDirectory $relativePath
-        $destinationParent = Split-Path -Parent $destination
-
-        if (-not (Test-Path -LiteralPath $destinationParent -PathType Container)) {
-            New-Item -ItemType Directory -Path $destinationParent -Force | Out-Null
+        if ($line -match "^\s*define\(\s*'ELEV8_OS_VERSION'\s*,") {
+            $indent = ([regex]::Match($line, '^\s*')).Value
+            $updatedLines.Add($indent + "define('ELEV8_OS_VERSION', '$version');")
+            $constantFound = $true
+            continue
         }
 
-        Copy-Item -LiteralPath $file.FullName -Destination $destination -Force
-    }
-}
-
-function Assert-StagingStructure {
-    param([string]$StagedDirectory)
-
-    $requiredFiles = @(
-        'elev8-os.php',
-        'includes\class-elev8-os-loader.php',
-        'includes\class-elev8-os.php'
-    )
-
-    $requiredDirectories = @(
-        'assets',
-        'includes'
-    )
-
-    foreach ($requiredFile in $requiredFiles) {
-        Assert-PathExists `
-            -Path (Join-Path $StagedDirectory $requiredFile) `
-            -Description ('Required staged file ' + $requiredFile)
+        $updatedLines.Add($line)
     }
 
-    foreach ($requiredDirectory in $requiredDirectories) {
-        Assert-PathExists `
-            -Path (Join-Path $StagedDirectory $requiredDirectory) `
-            -Description ('Required staged directory ' + $requiredDirectory) `
-            -Directory
+    if (-not $headerFound) {
+        Stop-Build 'The WordPress Version header was not found in elev8-os.php.'
     }
-}
-
-function New-WordPressCompatibleZip {
-    param(
-        [string]$StagedDirectory,
-        [string]$DestinationZip
-    )
-
-    Add-Type -AssemblyName System.IO.Compression
-    Add-Type -AssemblyName System.IO.Compression.FileSystem
-
-    if (Test-Path -LiteralPath $DestinationZip) {
-        Remove-Item -LiteralPath $DestinationZip -Force
+    if (-not $constantFound) {
+        Stop-Build 'The ELEV8_OS_VERSION constant was not found in elev8-os.php.'
     }
 
-    $zipStream = [System.IO.File]::Open(
-        $DestinationZip,
-        [System.IO.FileMode]::CreateNew,
-        [System.IO.FileAccess]::ReadWrite,
-        [System.IO.FileShare]::None
-    )
+    $verificationText = $updatedLines -join "`r`n"
+    $escapedVersion = [regex]::Escape($version)
+    if ($verificationText -notmatch "(?m)^\s*\*\s*Version:\s*$escapedVersion\s*$") {
+        Stop-Build 'Plugin header verification failed before writing.'
+    }
+    if ($verificationText -notmatch "define\(\s*'ELEV8_OS_VERSION'\s*,\s*'$escapedVersion'\s*\);") {
+        Stop-Build 'Version constant verification failed before writing.'
+    }
 
-    try {
-        $archive = New-Object System.IO.Compression.ZipArchive(
-            $zipStream,
-            [System.IO.Compression.ZipArchiveMode]::Create,
-            $false
-        )
+    [System.IO.File]::WriteAllText($pluginFile, $verificationText + "`r`n", (New-Object System.Text.UTF8Encoding($false)))
+    Write-Host 'Plugin version stamp verified.' -ForegroundColor Green
 
+    $phpFiles = @(Get-ChildItem -LiteralPath $pluginSourceRoot -Recurse -File -Filter '*.php' | Where-Object {
+        $_.FullName -notmatch '[\\/]vendor[\\/]'
+    })
+    if ($phpFiles.Count -eq 0) {
+        Stop-Build 'No PHP files were found.'
+    }
+
+    $phpValidationStatus = 'SKIPPED'
+    $phpExecutable = 'Unavailable'
+
+    if (-not $SkipPhpValidation) {
+        Write-Step "Validating $($phpFiles.Count) PHP files"
+        $phpExecutable = Find-PhpExecutable
+        if (-not $phpExecutable) {
+            Stop-Build 'PHP CLI could not be found. Open Local once so its PHP service is installed, then run the builder again.'
+        }
+        Write-Host "PHP executable: $phpExecutable"
+        foreach ($file in $phpFiles) {
+            $validationOutput = & $phpExecutable -l $file.FullName 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host ($validationOutput -join "`r`n") -ForegroundColor Red
+                Stop-Build "PHP syntax failed: $($file.FullName)"
+            }
+        }
+        $phpValidationStatus = 'PASS'
+        Write-Host 'PHP syntax validation passed.' -ForegroundColor Green
+    }
+
+    Write-Step 'Reading Git information'
+    $gitBranch = 'Unavailable'
+    $gitCommit = 'Unavailable'
+    $gitDirty = $null
+    $gitCommand = Get-Command git.exe -ErrorAction SilentlyContinue
+    if (-not $gitCommand) { $gitCommand = Get-Command git -ErrorAction SilentlyContinue }
+
+    if ($gitCommand -and (Test-Path -LiteralPath (Join-Path $projectRoot '.git'))) {
+        Push-Location $projectRoot
         try {
-            $files = @(Get-ChildItem -LiteralPath $StagedDirectory -File -Recurse -Force)
-
-            if ($files.Count -eq 0) {
-                throw 'The staging folder contains no files.'
-            }
-
-            foreach ($file in $files) {
-                $relativePath = $file.FullName.Substring($StagedDirectory.Length).TrimStart('\', '/')
-                $entryName = 'elev8-os/' + $relativePath.Replace('\', '/')
-
-                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-                    $archive,
-                    $file.FullName,
-                    $entryName,
-                    [System.IO.Compression.CompressionLevel]::Optimal
-                ) | Out-Null
-            }
+            $value = & $gitCommand.Source rev-parse --abbrev-ref HEAD 2>$null
+            if ($LASTEXITCODE -eq 0 -and $value) { $gitBranch = ($value | Select-Object -First 1).Trim() }
+            $value = & $gitCommand.Source rev-parse HEAD 2>$null
+            if ($LASTEXITCODE -eq 0 -and $value) { $gitCommit = ($value | Select-Object -First 1).Trim() }
+            $value = & $gitCommand.Source status --porcelain 2>$null
+            if ($LASTEXITCODE -eq 0) { $gitDirty = [bool]$value }
         }
-        finally {
-            $archive.Dispose()
+        finally { Pop-Location }
+    }
+
+    Write-Step 'Preparing release package'
+    if (Test-Path -LiteralPath $temporaryRoot) { Remove-Item -LiteralPath $temporaryRoot -Recurse -Force }
+    New-Item -ItemType Directory -Path $stagingPluginRoot -Force | Out-Null
+    New-Item -ItemType Directory -Path $releaseDirectory -Force | Out-Null
+
+    $excludedNames = @('.git', '.github', '.idea', '.vscode', 'node_modules', 'vendor', 'releases', 'tools', 'BUILD_VERSION', 'Build Elev8 OS Release.bat', 'release-manifest.json')
+    Get-ChildItem -LiteralPath $pluginSourceRoot -Force | Where-Object { $excludedNames -notcontains $_.Name } | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination $stagingPluginRoot -Recurse -Force
+    }
+
+    $stagedFiles = @(Get-ChildItem -LiteralPath $stagingPluginRoot -Recurse -File)
+    if ($stagedFiles.Count -eq 0) { Stop-Build 'The release staging folder is empty.' }
+
+    Write-Step 'Generating release manifest'
+    $manifestFiles = foreach ($file in ($stagedFiles | Sort-Object FullName)) {
+        [ordered]@{
+            path = (Get-RelativePath $stagingPluginRoot $file.FullName).Replace('\', '/')
+            bytes = $file.Length
+            sha256 = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
         }
     }
-    finally {
-        $zipStream.Dispose()
+
+    $manifest = [ordered]@{
+        product = 'Elev8 OS'
+        version = $version
+        build = $buildId
+        builtAtUtc = $buildDateIso
+        package = $zipName
+        git = [ordered]@{ branch = $gitBranch; commit = $gitCommit; workingTreeDirty = $gitDirty }
+        validation = [ordered]@{ phpSyntax = $phpValidationStatus; phpFileCount = $phpFiles.Count; phpExecutable = $phpExecutable }
+        packageContents = [ordered]@{ fileCount = $stagedFiles.Count + 1; totalBytesBeforeManifest = ($stagedFiles | Measure-Object Length -Sum).Sum }
+        files = @($manifestFiles)
     }
-}
 
-function Test-ZipArchive {
-    param([string]$ZipPath)
+    $manifestJson = $manifest | ConvertTo-Json -Depth 8
+    [System.IO.File]::WriteAllText((Join-Path $stagingPluginRoot 'release-manifest.json'), $manifestJson, (New-Object System.Text.UTF8Encoding($false)))
+    [System.IO.File]::WriteAllText($manifestOutputPath, $manifestJson, (New-Object System.Text.UTF8Encoding($false)))
 
+    Write-Step 'Packaging release ZIP'
     Add-Type -AssemblyName System.IO.Compression.FileSystem
+    if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath -Force }
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($temporaryRoot, $zipPath, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+    if (-not (Test-Path -LiteralPath $zipPath -PathType Leaf)) { Stop-Build 'ZIP packaging did not create a file.' }
 
-    $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+    Write-Step 'Generating SHA-256 checksum'
+    $zipHash = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    [System.IO.File]::WriteAllText($checksumOutputPath, "$zipHash  $zipName`r`n", (New-Object System.Text.UTF8Encoding($false)))
 
-    try {
-        $entryNames = @($archive.Entries | ForEach-Object { $_.FullName })
-
-        $requiredEntries = @(
-            'elev8-os/elev8-os.php',
-            'elev8-os/includes/class-elev8-os-loader.php',
-            'elev8-os/includes/class-elev8-os.php'
-        )
-
-        foreach ($requiredEntry in $requiredEntries) {
-            if ($entryNames -notcontains $requiredEntry) {
-                throw "ZIP validation failed. Missing: $requiredEntry"
-            }
-        }
-
-        $invalidBackslashEntry = $entryNames |
-            Where-Object { $_.Contains('\') } |
-            Select-Object -First 1
-
-        if ($null -ne $invalidBackslashEntry) {
-            throw "ZIP validation failed. Windows-style path found: $invalidBackslashEntry"
-        }
-
-        $invalidRootEntry = $entryNames |
-            Where-Object { -not $_.StartsWith('elev8-os/') } |
-            Select-Object -First 1
-
-        if ($null -ne $invalidRootEntry) {
-            throw "ZIP validation failed. File outside elev8-os/: $invalidRootEntry"
-        }
-
-        $directoryEntry = $archive.Entries |
-            Where-Object { $_.FullName.EndsWith('/') -or $_.FullName.EndsWith('\') } |
-            Select-Object -First 1
-
-        if ($null -ne $directoryEntry) {
-            throw "ZIP validation failed. Explicit directory entry found: $($directoryEntry.FullName)"
-        }
-
-        if ($archive.Entries.Count -lt 3) {
-            throw 'ZIP validation failed. The archive appears incomplete.'
-        }
-    }
-    finally {
-        $archive.Dispose()
-    }
-}
-
-Write-Host ''
-Write-Host 'Elev8 OS Release Builder' -ForegroundColor Green
-Write-Host ('Repository: ' + $RepositoryRoot)
-
-try {
-    Assert-PathExists -Path $PluginSource -Description 'Plugin source directory' -Directory
-    Assert-PathExists -Path $PluginMainFile -Description 'Plugin main file'
-
-    Write-Step 'Locating PHP'
-    $phpExecutable = Find-PhpExecutable
-    Write-Host ('Using PHP: ' + $phpExecutable)
-
-    Write-Step 'Checking PHP syntax'
-    Test-PhpSyntax -PhpExecutable $phpExecutable -SourceDirectory $PluginSource
-
-    Write-Step 'Creating clean staging folder'
-    New-Item -ItemType Directory -Path $StagingRoot -Force | Out-Null
-    Copy-PluginToStaging -SourceDirectory $PluginSource -DestinationDirectory $StagedPlugin
-    Assert-StagingStructure -StagedDirectory $StagedPlugin
-
-    $version = Get-PluginVersion -MainFile $PluginMainFile
-    $timestamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-    $zipName = "elev8-os-$version-$timestamp.zip"
-    $zipPath = Join-Path $OutputDirectory $zipName
-
-    Write-Step 'Creating WordPress-compatible ZIP'
-    New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
-    New-WordPressCompatibleZip -StagedDirectory $StagedPlugin -DestinationZip $zipPath
-
-    Assert-PathExists -Path $zipPath -Description 'Release ZIP'
-
-    Write-Step 'Validating ZIP structure'
-    Test-ZipArchive -ZipPath $zipPath
-
-    $hash = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
-
-    Write-Host ''
+    Write-Host ""
     Write-Host '============================================' -ForegroundColor Green
-    Write-Host 'Release built successfully!' -ForegroundColor Green
-    Write-Host ''
-    Write-Host 'ZIP:'
-    Write-Host $zipPath -ForegroundColor Yellow
-    Write-Host ''
-    Write-Host 'SHA-256:'
-    Write-Host $hash
+    Write-Host 'Elev8 OS Release Built' -ForegroundColor Green
+    Write-Host '============================================' -ForegroundColor Green
+    Write-Host "Version:        $version"
+    Write-Host "Build:          $buildId"
+    Write-Host "Git branch:     $gitBranch"
+    Write-Host "Git commit:     $gitCommit"
+    Write-Host "PHP validation: $phpValidationStatus ($($phpFiles.Count) files)"
+    Write-Host "ZIP:            $zipPath"
+    Write-Host "Manifest:       $manifestOutputPath"
+    Write-Host "Checksum:       $checksumOutputPath"
+    Write-Host "SHA-256:        $zipHash"
+    Write-Host 'Ready for Local testing.' -ForegroundColor Green
     Write-Host '============================================' -ForegroundColor Green
 
-    if ($OpenOutputFolder) {
-        Start-Process explorer.exe -ArgumentList "/select,`"$zipPath`""
-    }
+    if ($OpenOutputFolder) { Start-Process explorer.exe -ArgumentList ('"' + $releaseDirectory + '"') }
+    if (Test-Path -LiteralPath $temporaryRoot) { Remove-Item -LiteralPath $temporaryRoot -Recurse -Force }
+    exit 0
 }
-finally {
-    if (Test-Path -LiteralPath $StagingRoot) {
-        Remove-Item -LiteralPath $StagingRoot -Recurse -Force -ErrorAction SilentlyContinue
-    }
+catch {
+    Write-Host ""
+    Write-Host 'UNEXPECTED BUILD ERROR' -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    if ($_.InvocationInfo -and $_.InvocationInfo.PositionMessage) { Write-Host $_.InvocationInfo.PositionMessage -ForegroundColor DarkRed }
+    exit 1
 }
