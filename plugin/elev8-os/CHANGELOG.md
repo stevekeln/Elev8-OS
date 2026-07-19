@@ -1,3 +1,26 @@
+## 10.4.3 — Public Website Logo Exit Fix
+
+- Fixed the public artist-page logo sending logged-in artists back to the Artist Dashboard.
+- The logo now points to the real Elev8 Arts homepage with an explicit public-site intent flag.
+- Elev8 OS suppresses dashboard/profile redirects only for that intentional homepage visit.
+- Normal artist login and Ultimate Member profile redirects still lead to the private dashboard.
+- No database schema changes.
+
+## 10.4.2 — Teacher Proposal Visibility
+
+- Added a dedicated Artist Submissions section to Class Requests so teacher ideas appear even with zero customer requests.
+- Added Class Idea Pipeline metrics and recent teacher proposals to the CEO Dashboard.
+- Added direct owner links from proposals to the Class Demand detail record.
+- Preserved Artist Growth Center as a verified linked-artist performance view; it remains empty until WordPress users are mapped to Amelia artists.
+- No database schema changes.
+
+## 10.4.1 - Class Idea Center public experience
+- Rebuilt the Teach or Suggest a Class page around the native Elev8 OS Class Idea Center.
+- Removed the Google Form workflow from the public experience.
+- Added a polished purple, lavender, teal, and white landing page with customer and artist paths.
+- Added integrated class categories, process guidance, FAQs, and stronger Elev8 OS opportunity messaging.
+- Preserved customer demand capture, artist proposals, duplicate protection, rate limiting, and Amelia ownership boundaries.
+
 # Elev8 OS Changelog
 
 ## 10.4.0 — Class Idea Center

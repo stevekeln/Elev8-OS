@@ -27,6 +27,8 @@ final class Elev8_OS_Dashboard_Module {
         add_filter('um_login_redirect_url', [__CLASS__, 'ultimate_member_login_redirect'], 999, 2);
         add_action('um_on_login_before_redirect', [__CLASS__, 'ultimate_member_before_redirect'], 1, 1);
         add_action('template_redirect', [__CLASS__, 'redirect_artist_profile_to_dashboard'], 1);
+        add_filter('home_url', [__CLASS__, 'artist_public_home_url'], 999, 4);
+        add_filter('wp_redirect', [__CLASS__, 'allow_artist_public_home'], 1, 2);
     }
 
     public static function status(): string {
@@ -161,6 +163,76 @@ final class Elev8_OS_Dashboard_Module {
      * to /user/... profile screens. Treat that screen as a bridge into Elev8 OS
      * for linked artists instead of leaving them on an empty social profile.
      */
+    /**
+     * Keep the theme logo pointed at the real public website while a linked
+     * artist is viewing a public artist page. Some membership plugins replace
+     * the site-home destination with the member dashboard for logged-in users.
+     * The explicit query flag lets Elev8 OS distinguish an intentional public
+     * website visit from the normal post-login dashboard redirect.
+     */
+    public static function artist_public_home_url(string $url, string $path, ?string $scheme, ?int $blog_id): string {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in()) {
+            return $url;
+        }
+
+        $user = wp_get_current_user();
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+            return $url;
+        }
+
+        $request_path = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '';
+        $request_path = (string) wp_parse_url($request_path, PHP_URL_PATH);
+        $is_public_artist_page = (bool) preg_match('#/artists/[^/]+/?$#i', $request_path);
+
+        if (!$is_public_artist_page || !in_array($path, ['', '/'], true)) {
+            return $url;
+        }
+
+        $public_home = trailingslashit((string) get_option('home'));
+        return add_query_arg('elev8_public_home', '1', $public_home);
+    }
+
+    /**
+     * Cancel membership-plugin redirects when the artist intentionally clicks
+     * the public-site logo. Normal login and profile redirects still go to the
+     * Elev8 OS dashboard.
+     *
+     * Returning false from the wp_redirect filter tells WordPress not to send
+     * the redirect, allowing the public front page to render normally.
+     *
+     * @param string|false $location
+     * @return string|false
+     */
+    public static function allow_artist_public_home($location, int $status) {
+        if (empty($_GET['elev8_public_home']) || !is_user_logged_in()) {
+            return $location;
+        }
+
+        $user = wp_get_current_user();
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+            return $location;
+        }
+
+        $requested_path = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '';
+        $requested_path = (string) wp_parse_url($requested_path, PHP_URL_PATH);
+        $home_path = (string) wp_parse_url(trailingslashit((string) get_option('home')), PHP_URL_PATH);
+
+        if (untrailingslashit($requested_path) !== untrailingslashit($home_path)) {
+            return $location;
+        }
+
+        $dashboard_path = (string) wp_parse_url(self::dashboard_url(), PHP_URL_PATH);
+        $redirect_path = is_string($location) ? (string) wp_parse_url($location, PHP_URL_PATH) : '';
+        $is_dashboard_redirect = $redirect_path !== '' && untrailingslashit($redirect_path) === untrailingslashit($dashboard_path);
+        $is_member_profile_redirect = (bool) preg_match('#/user/[^/]+/?$#i', $redirect_path);
+
+        if ($is_dashboard_redirect || $is_member_profile_redirect) {
+            return false;
+        }
+
+        return $location;
+    }
+
     public static function redirect_artist_profile_to_dashboard(): void {
         if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page()) {
             return;
