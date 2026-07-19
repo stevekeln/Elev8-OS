@@ -1,1 +1,14 @@
-Replace only the files included in the 10.3.1 changed-files package. Do not install the changed-files ZIP in WordPress. Build the installable plugin with Build Elev8 OS Release.bat after updating the Git source.
+Elev8 OS 10.4.0 Source Update
+
+Replace these paths in the Git source:
+- elev8-os.php
+- includes/class-elev8-os-loader.php
+- includes/Modules/class-elev8-os-class-idea-center-module.php
+- assets/css/class-idea-center.css
+- CHANGELOG.md
+- README.txt
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
+
+Then commit to develop, push, and run Build Elev8 OS Release.bat.

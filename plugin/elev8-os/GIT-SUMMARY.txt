@@ -1,3 +1,16 @@
-Elev8 OS 10.3.1 — Elev8 Design System 1.0
+Elev8 OS 10.4.0
 
-Dashboard and Business GPS visual unification using purple, lavender, teal, and white. Content Studio primary CTA corrected and standardized. No database changes.
+Class Idea Center release.
+
+Changed files:
+- elev8-os.php
+- includes/class-elev8-os-loader.php
+- includes/Modules/class-elev8-os-class-idea-center-module.php (new)
+- assets/css/class-idea-center.css (new)
+- CHANGELOG.md
+- README.txt
+- GIT-SUMMARY.txt
+- INSTALL.txt
+- SOURCE-UPDATE-INSTRUCTIONS.txt
+
+Database schema changes: none. Existing Opportunity Engine tables are reused.

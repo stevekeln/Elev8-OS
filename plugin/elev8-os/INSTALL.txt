@@ -1,10 +1,12 @@
-Elev8 OS 10.3.1
+Elev8 OS 10.4.0 Installation
 
-1. Replace the changed files in the local Git repository.
+1. Replace the listed changed files in the local Git repository.
 2. Commit to develop and push to GitHub.
 3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP into Local.
-5. Test the Artist Dashboard, Business GPS, Content Studio CTA, responsive layouts, and existing shortcut launcher.
-6. Install the exact tested BAT-generated ZIP on Live.
+4. Install the generated ZIP in Local.
+5. Visit https://elev8arts.com/teach-or-suggest-a-class/ on Local.
+6. Test a logged-out customer request and a logged-in artist proposal.
+7. Confirm submissions appear in Elev8 OS > Class Requests / Opportunity management.
+8. Install the exact same BAT-generated ZIP on Live after Local testing.
 
-No database changes.
+Do not install the changed-files ZIP directly into WordPress.

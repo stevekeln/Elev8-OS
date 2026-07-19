@@ -20,6 +20,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-content-studio-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-idea-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-print-center-module.php';
@@ -79,6 +80,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Marketing_Module::init();
         Elev8_OS_Content_Studio_Module::init();
         Elev8_OS_Waitlist_Module::init();
+        Elev8_OS_Class_Idea_Center_Module::init();
         Elev8_OS_Class_Demand_Manager_Module::init();
         Elev8_OS_System_Inspector_Module::init();
         Elev8_OS_Employee_Mapping_Module::init();

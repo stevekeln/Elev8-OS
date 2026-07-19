@@ -39,3 +39,8 @@ Architecture
 10.3.1 adds a reusable Artist Shortcut Launcher to the Artist Dashboard. Desktop users receive a compact sticky navigation bar after scrolling past the standard portal navigation. Mobile users receive a floating Shortcuts button that opens an accessible destination panel. The launcher reuses the central Artist Portal navigation data and follows the purple, lavender, teal, and white Growth Studio palette.
 
 10.3.1 introduces Elev8 Design System 1.0 for the Artist Dashboard, Business GPS, and Content Studio primary actions.
+
+10.3.2 adds a class-led Email Marketing workflow that reuses verified Amelia class details, including service imagery when available, and provides a matching branded email preview and sent-email layout.
+
+
+10.4.0 adds the Class Idea Center. The existing WordPress page with slug `teach-or-suggest-a-class` is automatically rendered as a public Elev8 OS intake experience. Customers can request classes, and logged-in mapped artists can propose classes. Submissions enter the Elev8 OS Opportunity Engine and remain separate from Amelia until approved and scheduled.

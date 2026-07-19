@@ -1,3 +1,28 @@
+# Elev8 OS Changelog
+
+## 10.4.0 — Class Idea Center
+
+- Added a public Class Idea Center at `/teach-or-suggest-a-class/`.
+- Customers can join interest for an existing class idea or suggest a new class.
+- Logged-in Elev8 artists can submit class proposals from the same public page.
+- Public submissions feed the existing Elev8 OS Opportunity and Class Requests systems.
+- Added demand-friendly fields for requested seats, preferred days/times, contact details, class level, duration, price, supplies, and internal notes.
+- Added duplicate protection, a honeypot, basic rate limiting, consent capture, and public success/error messaging.
+- Added a purple, lavender, teal, and white responsive public design.
+- Amelia remains the trusted scheduling and booking system; ideas are not published automatically.
+
+## 10.3.2 — Class-Led Email Campaigns & Portal Exit Fix
+
+- Added an upcoming-class picker to Email Marketing using verified Amelia assignments.
+- Reuses each class name, date, flyer image, booking destination, and available-seat data when present.
+- Added a purple/lavender/teal live email preview with the selected class flyer.
+- Sent campaign emails now use the same branded visual layout shown in preview.
+- Added campaign fields for promoted title, class service ID, and featured image.
+- Removed the weak generic Copy Social Version workflow pending proper channel-specific publishing.
+- Growth Studio class promotion now opens the class-led Email Marketing workflow.
+- Elev8 Arts Home now opens in a separate tab so artists can leave the private portal without losing their dashboard.
+- Plugin version increased from 10.3.1 to 10.3.2.
+
 ## 10.3.1 — Guided Publishing & Preview Polish
 
 ### Added
