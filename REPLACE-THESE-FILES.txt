@@ -1,15 +1,12 @@
-Elev8 OS 10.5.4 source update
+Elev8 OS 10.5.5 source update
 
-Replace these files in C:\GitHub\Elev8-OS:
+Replace these files in your Git repository:
 
 BUILD_VERSION
 plugin/elev8-os/elev8-os.php
 plugin/elev8-os/CHANGELOG.md
-plugin/elev8-os/includes/class-elev8-os-loader.php
-plugin/elev8-os/includes/Modules/class-elev8-os-ceo-dashboard-module.php
-plugin/elev8-os/includes/Modules/class-elev8-os-daily-operations-module.php
-plugin/elev8-os/includes/Modules/class-elev8-os-opportunity-module.php
-plugin/elev8-os/includes/Services/class-elev8-os-opportunity-participation-service.php
-plugin/elev8-os/includes/Services/class-elev8-os-notification-service.php
+plugin/elev8-os/assets/css/checkin-center.css
+plugin/elev8-os/includes/Modules/class-elev8-os-checkin-center-module.php
+plugin/elev8-os/includes/Services/class-elev8-os-daily-operations-service.php
 
-Then commit to develop, push, run Build Elev8 OS Release.bat, and install the generated ZIP into Local.
+Then commit to develop, push to GitHub, run Build Elev8 OS Release.bat, install the generated ZIP into Local, and test before Live.

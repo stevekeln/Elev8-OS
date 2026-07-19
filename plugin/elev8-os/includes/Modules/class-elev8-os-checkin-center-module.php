@@ -83,7 +83,7 @@ final class Elev8_OS_Checkin_Center_Module {
         $message = sanitize_key((string)($_GET['checkin'] ?? ''));
         ob_start();
         echo '<div class="elev8-checkin">';
-        echo '<header class="elev8-checkin-hero"><div><p class="elev8-checkin-eyebrow">ELEV8 ARTS</p><h1>Elev8 Check-In</h1><p>Tell us what happened today. Your feedback helps us improve every event and experience.</p></div></header>';
+        echo '<div class="elev8-checkin-intro"><p>Choose the check-in or form that fits what you are here to share.</p></div>';
         if ($message === 'thanks') {
             echo '<div class="elev8-checkin-notice is-success"><h2>Thank you!</h2><p>Your check-in was received and added to Elev8’s business memory.</p></div>';
         } elseif ($message === 'error') {
@@ -188,7 +188,7 @@ final class Elev8_OS_Checkin_Center_Module {
     }
 
     private static function icon_for(string $key): string {
-        $icons = ['art_walk'=>'🎨','open_mic'=>'🎤','customer_feedback'=>'💬','class_feedback'=>'🧑‍🎨','suggest_idea'=>'💡','manager'=>'📋','retail'=>'🏪','artist'=>'🖌️','maintenance'=>'🛠️','vendor'=>'📦','event'=>'📅'];
+        $icons = ['art_walk'=>'🎨','open_mic'=>'🎤','customer_feedback'=>'💬','class_feedback'=>'🧑‍🎨','suggest_idea'=>'💡','class_request'=>'🎓','volunteer'=>'🤝','manager'=>'📋','retail'=>'🏪','artist'=>'🖌️','maintenance'=>'🛠️','vendor'=>'📦','event'=>'📅'];
         return $icons[$key] ?? '✓';
     }
 

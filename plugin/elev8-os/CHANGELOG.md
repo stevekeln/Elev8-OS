@@ -1,3 +1,10 @@
+## 10.5.5
+
+- Added a complete public Volunteer or Get Involved form that saves directly into Elev8 OS Business Memory.
+- Added a dedicated Suggest a Class form with class topic, schedule, interest level, and potential teacher information.
+- Removed the duplicate Elev8 Check-In heading from the shortcode output so the WordPress page title appears only once.
+- Added the new forms to the public Check-In Center and QR/link manager.
+
 ## 10.5.4
 
 - Fixed CEO Command Center access by routing Business Memory, Class Requests, and Opportunities through the registered CEO Dashboard page.
