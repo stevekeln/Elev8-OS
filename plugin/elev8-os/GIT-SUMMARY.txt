@@ -1,1 +1,1 @@
-Elev8 OS 10.4.4 fixes the public artist-page logo so logged-in artists can return to the Elev8 Arts homepage without being forced back into their dashboard.
+Elev8 OS 10.4.5: fix the Ultimate Member public-home redirect chain and reorder the owner admin menu around CEO Dashboard, Artist Dashboard, and Class Demand.

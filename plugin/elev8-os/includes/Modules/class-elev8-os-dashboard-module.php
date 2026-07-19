@@ -79,8 +79,8 @@ final class Elev8_OS_Dashboard_Module {
     public static function register_admin_menu(): void {
         add_submenu_page(
             'elev8-os',
-            __('Artist Dashboard Preview', 'elev8-os'),
-            __('Artist Dashboard Preview', 'elev8-os'),
+            __('Artist Dashboard', 'elev8-os'),
+            __('Artist Dashboard', 'elev8-os'),
             'manage_options',
             self::ADMIN_PAGE_SLUG,
             [__CLASS__, 'render_admin_preview']
@@ -287,7 +287,7 @@ final class Elev8_OS_Dashboard_Module {
         $dashboard_path = (string) wp_parse_url(self::dashboard_url(), PHP_URL_PATH);
         $redirect_path = is_string($location) ? (string) wp_parse_url($location, PHP_URL_PATH) : '';
         $is_dashboard_redirect = $redirect_path !== '' && untrailingslashit($redirect_path) === untrailingslashit($dashboard_path);
-        $is_member_profile_redirect = (bool) preg_match('#/user/[^/]+/?$#i', $redirect_path);
+        $is_member_profile_redirect = (bool) preg_match('#/user(?:/[^/]+)?/?$#i', $redirect_path);
 
         if ($is_dashboard_redirect || $is_member_profile_redirect) {
             return false;
@@ -297,7 +297,7 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     public static function redirect_artist_profile_to_dashboard(): void {
-        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page()) {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in() || self::is_dashboard_page() || self::has_public_home_intent()) {
             return;
         }
 

@@ -1,1 +1,1 @@
-Replace only the included files in the matching paths of your Elev8 OS Git source. Do not install this changed-files package directly into WordPress.
+Source base: the user-uploaded Elev8 OS 10.4.4 release ZIP. Replace only the files in the changed-files package, preserving their paths. No database migration is required.

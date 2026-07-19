@@ -1,3 +1,13 @@
+# Elev8 OS Changelog
+
+## 10.4.5 - Public Home Redirect and Owner Menu Cleanup
+
+- Fixed the remaining Ultimate Member redirect chain that sent an artist from the public homepage to `/user/?redirect_to=...` and then back to the Artist Dashboard.
+- Public browsing intent now recognizes both `/user/` and `/user/{username}/` redirects and prevents the artist-profile bridge from overriding an intentional homepage visit.
+- Renamed the admin menu item from “Artist Dashboard Preview” to “Artist Dashboard.”
+- Reordered the Elev8 OS owner menu so Elev8 OS, CEO Dashboard, Artist Dashboard, and Class Demand appear first.
+- No database changes.
+
 ## 10.4.4 — Public Website Browsing Mode Fix
 
 - Fixed linked artists being forced back to the Artist Dashboard after clicking either Elev8 Arts Home or the public-site logo.

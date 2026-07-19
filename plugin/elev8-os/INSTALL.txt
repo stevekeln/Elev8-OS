@@ -1,1 +1,1 @@
-Replace the changed files in your Git source, commit to develop, push, run Build Elev8 OS Release.bat, install the generated ZIP in Local, and test the public artist-page logo while logged in as Heather.
+Replace the listed changed files in the local Git source, commit to develop, push, run Build Elev8 OS Release.bat, and install the BAT-generated ZIP on Local. Test before installing the exact same ZIP on Live.

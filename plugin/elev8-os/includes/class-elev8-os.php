@@ -16,6 +16,7 @@ final class Elev8_OS {
     public static function init(): void {
         add_action('admin_menu', [__CLASS__, 'admin_menu'], 10);
         add_action('admin_menu', [__CLASS__, 'register_development_menu'], 90);
+        add_action('admin_menu', [__CLASS__, 'reorder_admin_submenu'], 999);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
         add_action('admin_post_elev8_os_save_rule', [__CLASS__, 'save_rule']);
         add_action('admin_post_elev8_os_delete_rule', [__CLASS__, 'delete_rule']);
@@ -125,6 +126,56 @@ final class Elev8_OS {
             'elev8-development',
             [__CLASS__, 'render_development']
         );
+    }
+
+
+    /**
+     * Keep the Elev8 OS owner menu focused on the pages used most often.
+     * WordPress builds submenu items across several modules, so ordering is
+     * applied once after every module has registered its page.
+     */
+    public static function reorder_admin_submenu(): void {
+        global $submenu;
+
+        if (empty($submenu['elev8-os']) || !is_array($submenu['elev8-os'])) {
+            return;
+        }
+
+        $priority = [
+            'elev8-os'               => 10,
+            'elev8-ceo-dashboard'    => 20,
+            'elev8-artist-dashboard' => 30,
+            'elev8-class-demand'     => 40,
+            'elev8-class-requests'   => 50,
+            'elev8-artist-portal'    => 60,
+            'elev8-growth-center'    => 70,
+            'elev8-gallery-operations' => 80,
+            'elev8-business-intelligence' => 90,
+            'elev8-content-studio'   => 100,
+            'elev8-print-center'     => 110,
+            'elev8-print-identity'   => 120,
+            'elev8-employee-mapping' => 200,
+            'elev8-portal-setup'     => 210,
+            'elev8-growth-settings'  => 220,
+            'elev8-system-status'    => 230,
+            'elev8-development'      => 240,
+        ];
+
+        $original_order = [];
+        foreach ($submenu['elev8-os'] as $index => $item) {
+            $slug = isset($item[2]) ? (string) $item[2] : '';
+            if (!isset($original_order[$slug])) {
+                $original_order[$slug] = (int) $index;
+            }
+        }
+
+        usort($submenu['elev8-os'], static function (array $left, array $right) use ($priority, $original_order): int {
+            $left_slug = isset($left[2]) ? (string) $left[2] : '';
+            $right_slug = isset($right[2]) ? (string) $right[2] : '';
+            $left_priority = $priority[$left_slug] ?? (500 + ($original_order[$left_slug] ?? 0));
+            $right_priority = $priority[$right_slug] ?? (500 + ($original_order[$right_slug] ?? 0));
+            return $left_priority <=> $right_priority;
+        });
     }
 
     public static function enqueue_assets(string $hook): void {
