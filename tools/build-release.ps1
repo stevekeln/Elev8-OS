@@ -271,11 +271,66 @@ try {
     [System.IO.File]::WriteAllText((Join-Path $stagingPluginRoot 'release-manifest.json'), $manifestJson, (New-Object System.Text.UTF8Encoding($false)))
     [System.IO.File]::WriteAllText($manifestOutputPath, $manifestJson, (New-Object System.Text.UTF8Encoding($false)))
 
-    Write-Step 'Packaging release ZIP'
+    Write-Step 'Packaging WordPress-compatible release ZIP'
+    Add-Type -AssemblyName System.IO.Compression
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath -Force }
-    [System.IO.Compression.ZipFile]::CreateFromDirectory($temporaryRoot, $zipPath, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+
+    # Add files individually instead of using CreateFromDirectory. On Windows,
+    # CreateFromDirectory can emit directory entries with backslashes such as
+    # elev8-os\languages\. WordPress may then try to copy that entry as a file.
+    # File-only entries with forward slashes install consistently on WordPress.
+    $zipStream = [System.IO.File]::Open($zipPath, [System.IO.FileMode]::CreateNew)
+    try {
+        $archive = New-Object System.IO.Compression.ZipArchive(
+            $zipStream,
+            [System.IO.Compression.ZipArchiveMode]::Create,
+            $false
+        )
+        try {
+            $packageFiles = @(Get-ChildItem -LiteralPath $stagingPluginRoot -Recurse -File | Sort-Object FullName)
+            foreach ($file in $packageFiles) {
+                $relativeFilePath = (Get-RelativePath $stagingPluginRoot $file.FullName).Replace('\', '/')
+                $entryName = 'elev8-os/' + $relativeFilePath
+                [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                    $archive,
+                    $file.FullName,
+                    $entryName,
+                    [System.IO.Compression.CompressionLevel]::Optimal
+                ) | Out-Null
+            }
+        }
+        finally {
+            if ($archive) { $archive.Dispose() }
+        }
+    }
+    finally {
+        $zipStream.Dispose()
+    }
+
     if (-not (Test-Path -LiteralPath $zipPath -PathType Leaf)) { Stop-Build 'ZIP packaging did not create a file.' }
+
+    # Verify every ZIP entry uses a forward-slash path and that no directory-only
+    # entries were created. This catches the exact packaging issue before Local.
+    $verificationArchive = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+    try {
+        $badEntries = @($verificationArchive.Entries | Where-Object {
+            $_.FullName.Contains('\') -or
+            $_.FullName.EndsWith('/') -or
+            -not $_.FullName.StartsWith('elev8-os/')
+        })
+        if ($badEntries.Count -gt 0) {
+            $badEntries | ForEach-Object { Write-Host "Invalid ZIP entry: $($_.FullName)" -ForegroundColor Red }
+            Stop-Build 'ZIP entry verification failed. The package was not released.'
+        }
+        if ($verificationArchive.Entries.Count -ne $packageFiles.Count) {
+            Stop-Build "ZIP verification expected $($packageFiles.Count) files but found $($verificationArchive.Entries.Count)."
+        }
+    }
+    finally {
+        $verificationArchive.Dispose()
+    }
+    Write-Host "WordPress ZIP verification passed ($($packageFiles.Count) files)." -ForegroundColor Green
 
     Write-Step 'Generating SHA-256 checksum'
     $zipHash = (Get-FileHash -LiteralPath $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()

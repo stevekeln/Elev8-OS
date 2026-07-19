@@ -1,3 +1,9 @@
+## 10.5.0 - Daily Operations Intelligence
+- Added role-based operating log templates and structured submissions.
+- Added searchable operational memory, attachments, owner attention flags, and workflow statuses.
+- Added Daily Executive Brief, rule-based recommendations, and 30-day signal radar.
+- Added custom template creation for future business roles.
+
 # Elev8 OS Changelog
 
 ## 10.4.10 - 2026-07-19

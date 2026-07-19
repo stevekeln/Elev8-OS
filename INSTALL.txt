@@ -1,12 +1,15 @@
-Elev8 OS v10.4.11 Installation
+ELEV8 OS STANDARD RELEASE BUILDER v1.2
 
-1. In Local WordPress, open Plugins > Add New > Upload Plugin.
-2. Select the v10.4.11 installable ZIP.
-3. Choose Replace current with uploaded when WordPress detects the existing plugin.
-4. Keep Elev8 OS activated.
-5. Open Elev8 OS > CEO Dashboard.
-6. Confirm the new System Information section appears.
-7. Confirm the public homepage still opens while logged in as an artist.
-8. Confirm normal artist login still redirects to the Artist Dashboard.
+Replace these items in C:\GitHub\Elev8-OS:
 
-Install this ZIP in Local first. After testing, install the exact same ZIP on Live.
+1. Build Elev8 OS Release.bat
+2. BUILD_VERSION
+3. tools\build-release.ps1
+
+You may replace the entire tools folder from this package.
+
+Then double-click Build Elev8 OS Release.bat.
+Install ONLY the newly generated main elev8-os-...zip from the releases folder into Local WordPress.
+Do not install this builder ZIP into WordPress.
+
+v1.2 packages files individually with forward-slash ZIP paths and verifies that no directory-only or backslash entries exist before declaring the release ready.
