@@ -29,7 +29,6 @@ final class Elev8_OS_Dashboard_Module {
         add_action('template_redirect', [__CLASS__, 'capture_public_browsing_intent'], -999);
         add_action('template_redirect', [__CLASS__, 'redirect_artist_profile_to_dashboard'], 1);
         add_filter('home_url', [__CLASS__, 'artist_public_home_url'], 999, 4);
-        add_action('wp_footer', [__CLASS__, 'rewrite_public_home_links'], 999);
     }
 
     public static function status(): string {

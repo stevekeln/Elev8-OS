@@ -1,12 +1,1 @@
-ELEV8 OS 10.4.7 SOURCE UPDATE
-
-Replace these files in the Git source:
-- elev8-os.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- CHANGELOG.md
-- README.txt
-- GIT-SUMMARY.txt
-- INSTALL.txt
-- SOURCE-UPDATE-INSTRUCTIONS.txt
-
-Then commit to develop, push, run the standard BAT release build, and test on Local.
+Replace only the included changed files in the local Elev8 OS Git source. Commit to develop, push, run the normal BAT release builder, and install that generated ZIP on Local.

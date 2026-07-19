@@ -1,3 +1,14 @@
+## 10.4.8 — Public Theme Rendering Fix
+
+### Fixed
+- Removed the invalid `rewrite_public_home_links` footer callback registration.
+- Restored normal WordPress theme footer execution and completed public page wrappers.
+- Fixed the globally shifted public-site layout that appeared whenever Elev8 OS was active.
+- Preserved the working artist public-home navigation and Ultimate Member redirect bypass from 10.4.7.
+
+### Database changes
+- None.
+
 ## 10.4.7 - Public Website Navigation and Layout Fix
 
 - Replaced the broad `remove_all_actions('template_redirect')` workaround with a targeted Ultimate Member access-redirect bypass.

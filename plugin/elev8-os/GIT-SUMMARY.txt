@@ -1,14 +1,3 @@
-Elev8 OS 10.4.7
+Elev8 OS 10.4.8
 
-Fixes public website navigation and layout for logged-in artists.
-
-Changed files:
-- elev8-os.php
-- includes/Modules/class-elev8-os-dashboard-module.php
-- CHANGELOG.md
-- README.txt
-- GIT-SUMMARY.txt
-- INSTALL.txt
-- SOURCE-UPDATE-INSTRUCTIONS.txt
-
-Database changes: None.
+Fixed public theme rendering by removing an invalid wp_footer callback registration from the Artist Dashboard module. No database changes.
