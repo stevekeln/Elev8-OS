@@ -130,7 +130,18 @@ final class Elev8_OS_Checkin_Center_Module {
         if ($public) {
             echo '<div class="elev8-checkin-two"><label>Your name<input type="text" name="guest_name" autocomplete="name"></label><label>Email <span>optional</span><input type="email" name="guest_email" autocomplete="email"></label></div>';
         }
-        echo '<div class="elev8-checkin-two"><label>Date<input type="date" name="entry_date" value="' . esc_attr(current_time('Y-m-d')) . '" required></label><label>Location <span>optional</span><input type="text" name="location"></label></div>';
+        $location_required = !empty($template['location_required']);
+        $location_label = (string)($template['location_label'] ?? __('Location', 'elev8-os'));
+        $location_options = (array)($template['location_options'] ?? []);
+        echo '<div class="elev8-checkin-two"><label>Date<input type="date" name="entry_date" value="' . esc_attr(current_time('Y-m-d')) . '" required></label><label>' . esc_html($location_label) . ($location_required ? ' <b>*</b>' : ' <span>optional</span>');
+        if ($location_options) {
+            echo '<select name="location"' . ($location_required ? ' required' : '') . '><option value="">Select location</option>';
+            foreach ($location_options as $option) { echo '<option value="' . esc_attr((string)$option) . '">' . esc_html((string)$option) . '</option>'; }
+            echo '</select>';
+        } else {
+            echo '<input type="text" name="location"' . ($location_required ? ' required' : '') . '>';
+        }
+        echo '</label></div>';
         foreach ((array)$template['fields'] as $field) { self::render_field($field); }
         if ($public) {
             echo '<label class="elev8-checkin-consent"><input type="checkbox" name="invite_consent" value="1"> Email me a thank-you and invitations to future Elev8 events.</label>';
@@ -154,8 +165,14 @@ final class Elev8_OS_Checkin_Center_Module {
             echo '</select>';
         } elseif (($field['type'] ?? '') === 'checkbox') {
             echo '<input type="checkbox" name="' . $name . '" value="1">';
+        } elseif (($field['type'] ?? '') === 'checkbox_group') {
+            echo '<span class="elev8-checkin-checkbox-grid">';
+            foreach ((array)($field['options'] ?? []) as $option) {
+                echo '<label class="elev8-checkin-checkbox-option"><input type="checkbox" name="fields[' . esc_attr($key) . '][]" value="' . esc_attr((string)$option) . '"> ' . esc_html((string)$option) . '</label>';
+            }
+            echo '</span>';
         } else {
-            $type = in_array(($field['type'] ?? ''), ['number','date','email'], true) ? $field['type'] : 'text';
+            $type = in_array(($field['type'] ?? ''), ['number','date','email','time'], true) ? $field['type'] : 'text';
             echo '<input type="' . esc_attr($type) . '" name="' . $name . '"' . ($required ? ' required' : '') . '>';
         }
         echo '</label>';
@@ -172,6 +189,9 @@ final class Elev8_OS_Checkin_Center_Module {
         if (empty($template['public']) && !is_user_logged_in()) { auth_redirect(); }
         if (!self::rate_limit()) { wp_safe_redirect(add_query_arg('checkin', 'error', $redirect)); exit; }
 
+        if (!empty($template['location_required']) && trim(sanitize_text_field((string)($_POST['location'] ?? ''))) === '') {
+            wp_safe_redirect(add_query_arg('checkin', 'error', $redirect)); exit;
+        }
         $user_id = is_user_logged_in() ? get_current_user_id() : 0;
         $result = Elev8_OS_Daily_Operations_Service::save_entry(wp_unslash($_POST), $_FILES, $user_id, !empty($template['public']));
         if (is_wp_error($result)) { wp_safe_redirect(add_query_arg('checkin', 'error', $redirect)); exit; }

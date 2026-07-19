@@ -1,3 +1,14 @@
+# Elev8 OS Changelog
+
+## 10.6.0 - Manager Operations Log
+- Rebuilt the manager form around separate completed work periods.
+- Made work location mandatory with no default selection.
+- Added Elev8 Glass Gallery, HEMP, Elev8 Arts, errands, appointments, remote work, and other-location choices.
+- Added required start and end times, concrete work summary, duties completed, and follow-up status.
+- Added staff coaching, problems, customer issues, business improvements, and owner-attention fields.
+- Added checkbox-group support for structured duties and improved mobile styling.
+- Updated built-in operation templates automatically while preserving custom templates.
+
 ## 10.5.5
 
 - Added a complete public Volunteer or Get Involved form that saves directly into Elev8 OS Business Memory.

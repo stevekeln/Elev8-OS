@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Daily_Operations_Service {
-    const OPTION_TEMPLATES = 'elev8_os_operations_templates_v1';
+    const OPTION_TEMPLATES = 'elev8_os_operations_templates_v2';
     const POST_TYPE = 'elev8_ops_log';
     const META_TEMPLATE = '_elev8_ops_template';
     const META_FIELDS = '_elev8_ops_fields';
@@ -42,7 +42,7 @@ final class Elev8_OS_Daily_Operations_Service {
         if (!is_array($templates)) { $templates = []; }
         $merged = $templates;
         foreach (self::default_templates() as $key => $template) {
-            if (!isset($merged[$key])) { $merged[$key] = $template; }
+            if (empty($merged[$key]['custom'])) { $merged[$key] = $template; }
         }
         if ($merged !== $templates) { update_option(self::OPTION_TEMPLATES, $merged, false); }
     }
@@ -68,7 +68,7 @@ final class Elev8_OS_Daily_Operations_Service {
             if ($label === '') { continue; }
             $field_key = sanitize_key((string)($field['key'] ?? $label));
             $type = sanitize_key((string)($field['type'] ?? 'textarea'));
-            if (!in_array($type, ['text','textarea','number','select','checkbox','date'], true)) { $type = 'textarea'; }
+            if (!in_array($type, ['text','textarea','number','select','checkbox','checkbox_group','date','time'], true)) { $type = 'textarea'; }
             $fields[] = [
                 'key' => $field_key,
                 'label' => $label,
@@ -134,6 +134,11 @@ final class Elev8_OS_Daily_Operations_Service {
             $key = (string)$field['key'];
             $raw = $posted['fields'][$key] ?? '';
             if (($field['type'] ?? '') === 'checkbox') { $value = !empty($raw) ? 'Yes' : 'No'; }
+            elseif (($field['type'] ?? '') === 'checkbox_group') {
+                $selected = array_values(array_filter(array_map('sanitize_text_field', (array)$raw)));
+                $allowed = array_map('strval', (array)($field['options'] ?? []));
+                $value = implode(', ', array_values(array_intersect($selected, $allowed)));
+            }
             elseif (($field['type'] ?? '') === 'textarea') { $value = sanitize_textarea_field((string)$raw); }
             elseif (($field['type'] ?? '') === 'number') { $value = is_numeric($raw) ? (string)(float)$raw : ''; }
             else { $value = sanitize_text_field((string)$raw); }
@@ -269,8 +274,24 @@ final class Elev8_OS_Daily_Operations_Service {
             $f('class_topic','What class would you like to take?','text',true),$f('class_description','Tell us more about what you would like to learn or make','textarea',true),$f('experience_level','Your experience level','select',false,['Brand new','Beginner','Intermediate','Advanced','Not sure']),$f('preferred_schedule','Best days or times','text'),$f('group_interest','How many people may be interested?','select',false,['Just me','2–3 people','4–6 people','7 or more','Not sure']),$f('suggested_artist','Is there an artist or teacher you would like?','text'),$f('teach_or_connect','Could you teach this class or connect us with someone who can?','select',false,['Yes, I could teach it','I know someone','Maybe','No']),$f('extra_notes','Anything else we should know?')], true);
         $make('volunteer','Volunteer or Get Involved','Tell us how you would like to help Elev8 Arts and our community.', [], [
             $f('phone','Phone number','text'),$f('preferred_contact','Preferred way to contact you','select',true,['Email','Phone call','Text message']),$f('help_area','How would you like to help?','select',true,['Art Walk and events','Setup and cleanup','Greeting guests','Classes and workshops','Youth or senior programs','Community outreach','Promotions and social media','Fundraising','Administrative help','Maintenance or building projects','Other']),$f('availability','Availability','select',true,['One-time opportunity','Occasionally','Monthly','Weekly','Not sure yet']),$f('days_times','Best days and times','text'),$f('skills','Skills, interests, or experience','textarea'),$f('why_volunteer','Why would you like to get involved?','textarea'),$f('other_notes','Anything else we should know?')], true);
-        $make('manager','Manager Operating Log','Record what happened across the business and what needs owner attention.', ['administrator','editor','shop_manager'], [
-            $f('locations_worked','Locations worked','text',true),$f('hours_worked','Hours worked','number'),$f('accomplishments','Accomplishments'),$f('problems_discovered','Problems discovered'),$f('problems_solved','Problems solved'),$f('employee_coaching','Employee coaching'),$f('customer_issues','Customer issues'),$f('maintenance_issues','Maintenance issues'),$f('business_improvements','Business improvements'),$f('owner_attention_items','Items requiring owner attention'),$f('general_notes','General notes')]);
+        $make('manager','Manager Operations Log','Complete one log after each separate work period or location visit. Record where management attention went and what was accomplished.', ['administrator','editor','shop_manager'], [
+            $f('start_time','Start time','time',true),
+            $f('end_time','End time','time',true),
+            $f('other_location','Other location or business destination','text'),
+            $f('work_summary','What did you personally complete during this work period?','textarea',true),
+            $f('duties_completed','Duties completed','checkbox_group',true,['Opened store','Closed store','Staff supervision or coaching','Customer service','Inventory','Merchandising','Cleaning or organization','Vendor management','Purchasing or supply run','Paperwork or administration','Banking or deposit','Marketing','Event planning','Building maintenance','Business appointment','Remote administrative work','Other']),
+            $f('staff_worked_with','Staff worked with','text'),
+            $f('problems_discovered','Problems found or needing attention','textarea'),
+            $f('problems_solved','Problems resolved during this work period','textarea'),
+            $f('employee_coaching','Employee coaching or tasks assigned','textarea'),
+            $f('customer_issues','Customer issues handled','textarea'),
+            $f('follow_up_needed','What still needs to be completed? Enter None if nothing remains.','textarea',true),
+            $f('business_improvements','Did you notice anything that could improve the business?','textarea'),
+            $f('owner_attention_items','Items requiring owner attention','textarea'),
+            $f('general_notes','Additional notes','textarea')]);
+        $t['manager']['location_required'] = true;
+        $t['manager']['location_label'] = 'Work location';
+        $t['manager']['location_options'] = ['Elev8 Glass Gallery','HEMP','Elev8 Arts','Supply run or business errand','Business appointment','Remote administrative work','Other business location'];
         $make('retail','Retail Employee Log','Capture shift activity, customer demand, inventory signals, and store needs.', ['administrator','editor','shop_manager','author','contributor','subscriber'], [
             $f('store_worked','Store worked','text',true),$f('shift','Shift','text'),$f('cleaning_completed','Cleaning completed'),$f('displays_updated','Displays updated'),$f('customer_requests','Customer requests'),$f('inventory_low','Inventory running low'),$f('products_requested','Products customers asked for'),$f('sales_wins','Sales wins'),$f('returns','Returns'),$f('compliments','Customer compliments'),$f('complaints','Customer complaints'),$f('ideas','Ideas'),$f('manager_assistance','Need manager assistance')]);
         $make('artist','Artist Operating Log','Preserve class results, student feedback, supply needs, and future ideas.', ['administrator','editor','author','contributor','subscriber'], [

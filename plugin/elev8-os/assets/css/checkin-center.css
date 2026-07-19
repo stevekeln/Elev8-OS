@@ -6,3 +6,8 @@
 @media(max-width:640px){.elev8-checkin-two{grid-template-columns:1fr}.elev8-checkin-hero{align-items:flex-start;flex-direction:column}.elev8-checkin-hero h1{font-size:29px}}
 
 .elev8-checkin-intro{margin:0 0 22px;padding:0 2px;color:#5f6870}.elev8-checkin-intro p{margin:0;font-size:17px;line-height:1.55}
+
+.elev8-checkin-checkbox-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.elev8-checkin-checkbox-option{display:flex!important;align-items:flex-start;gap:8px;padding:10px 12px;border:1px solid #dedede;border-radius:10px;font-weight:500!important;background:#fff}
+.elev8-checkin-checkbox-option input{width:auto!important;margin-top:3px}
+@media(max-width:700px){.elev8-checkin-checkbox-grid{grid-template-columns:1fr}}
