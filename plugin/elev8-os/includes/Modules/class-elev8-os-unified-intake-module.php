@@ -8,6 +8,7 @@ final class Elev8_OS_Unified_Intake_Module {
         add_action('admin_menu', [__CLASS__, 'admin_menu'], 18);
         add_action('admin_enqueue_scripts', [__CLASS__, 'assets']);
         add_action('admin_post_elev8_os_update_intake', [__CLASS__, 'update_item']);
+        add_action('admin_post_elev8_os_backfill_intake', [__CLASS__, 'backfill']);
     }
 
     public static function admin_menu(): void {
@@ -27,6 +28,10 @@ final class Elev8_OS_Unified_Intake_Module {
         $status = sanitize_key((string) ($_POST['status'] ?? 'new'));
         if (!array_key_exists($status, Elev8_OS_Unified_Intake_Service::statuses())) { $status = 'new'; }
         $assigned = absint($_POST['assigned_user'] ?? 0);
+        if ($assigned > 0) {
+            $assigned_user = get_userdata($assigned);
+            if (!$assigned_user || !Elev8_OS_Access_Service::can_receive_assignments($assigned_user)) { $assigned = 0; }
+        }
         $follow_up = sanitize_text_field(wp_unslash($_POST['follow_up'] ?? ''));
         $notes = sanitize_textarea_field(wp_unslash($_POST['internal_notes'] ?? ''));
         $previous_status = (string) get_post_meta($id, '_elev8_intake_status', true);
@@ -70,6 +75,16 @@ final class Elev8_OS_Unified_Intake_Module {
         exit;
     }
 
+
+    public static function backfill(): void {
+        if (!current_user_can('manage_options')) { wp_die(__('You do not have permission.', 'elev8-os')); }
+        check_admin_referer('elev8_os_backfill_intake');
+        $result = Elev8_OS_Unified_Intake_Service::backfill_existing();
+        $args = ['page' => self::ADMIN_SLUG, 'backfilled' => (int) ($result['created'] ?? 0), 'skipped' => (int) ($result['skipped'] ?? 0), 'failed' => (int) ($result['failed'] ?? 0)];
+        wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
+        exit;
+    }
+
     public static function render(): void {
         if (!current_user_can('manage_options')) { wp_die(__('You do not have permission.', 'elev8-os')); }
         $type_filter = sanitize_key((string) ($_GET['type'] ?? ''));
@@ -94,10 +109,13 @@ final class Elev8_OS_Unified_Intake_Module {
             if ($type !== '') { $types[$type] = self::type_label($type); }
         }
         asort($types);
-        $users = get_users(['orderby' => 'display_name', 'order' => 'ASC']);
+        $users = Elev8_OS_Access_Service::assignment_users_grouped();
+        $diagnostics = Elev8_OS_Unified_Intake_Service::diagnostics();
         echo '<div class="wrap elev8-intake-admin">';
         echo '<header class="elev8-intake-hero"><div><p class="elev8-intake-eyebrow">ELEV8 OS ' . esc_html(ELEV8_OS_VERSION) . '</p><h1>Owner Intake Dashboard</h1><p>One place for reservations, volunteers, class requests, feedback, sponsors, ideas, and future communication.</p></div></header>';
         if (!empty($_GET['updated'])) { echo '<div class="notice notice-success is-dismissible"><p>Intake item updated.</p></div>'; }
+        if (isset($_GET['backfilled'])) { echo '<div class="notice notice-success is-dismissible"><p>Historical intake scan complete: ' . absint($_GET['backfilled']) . ' created, ' . absint($_GET['skipped'] ?? 0) . ' already connected, ' . absint($_GET['failed'] ?? 0) . ' failed.</p></div>'; }
+        self::render_diagnostics($diagnostics);
         echo '<form class="elev8-intake-filter" method="get"><input type="hidden" name="page" value="' . esc_attr(self::ADMIN_SLUG) . '"><label>Submission type<select name="type"><option value="">All types</option>';
         foreach ($types as $key => $label) { echo '<option value="' . esc_attr($key) . '" ' . selected($type_filter, $key, false) . '>' . esc_html($label) . '</option>'; }
         echo '</select></label><button class="button button-primary">Filter</button></form>';
@@ -109,6 +127,15 @@ final class Elev8_OS_Unified_Intake_Module {
             echo '</div></section>';
         }
         echo '</div></div>';
+    }
+
+
+    private static function render_diagnostics(array $diagnostics): void {
+        echo '<section class="elev8-intake-diagnostics"><div><h2>Intake Connections</h2><p>Trusted source records stay unchanged. This tool creates only missing workflow cards and can be run more than once safely.</p></div><div class="elev8-intake-diagnostic-stats">';
+        foreach ([['Source records', $diagnostics['source_records'] ?? 0], ['Connected', $diagnostics['connected'] ?? 0], ['Ready to import', $diagnostics['ready'] ?? 0]] as $stat) { echo '<span><strong>' . absint($stat[1]) . '</strong>' . esc_html($stat[0]) . '</span>'; }
+        echo '</div><form method="post" action="' . esc_url(admin_url('admin-post.php')) . '"><input type="hidden" name="action" value="elev8_os_backfill_intake">';
+        wp_nonce_field('elev8_os_backfill_intake');
+        echo '<button class="button button-secondary" type="submit">Import Existing Submissions</button></form></section>';
     }
 
     private static function render_card(WP_Post $item, array $users): void {
@@ -136,7 +163,12 @@ final class Elev8_OS_Unified_Intake_Module {
         echo '<label>Status<select name="status">';
         foreach (Elev8_OS_Unified_Intake_Service::statuses() as $key => $label) { echo '<option value="' . esc_attr($key) . '" ' . selected($status ?: 'new', $key, false) . '>' . esc_html($label) . '</option>'; }
         echo '</select></label><label>Assigned to<select name="assigned_user"><option value="0">Unassigned</option>';
-        foreach ($users as $user) { echo '<option value="' . (int) $user->ID . '" ' . selected($assigned, (int) $user->ID, false) . '>' . esc_html($user->display_name) . '</option>'; }
+        $group_labels = Elev8_OS_Access_Service::assignment_group_labels();
+        foreach ($users as $group_key => $group_users) {
+            echo '<optgroup label="' . esc_attr($group_labels[$group_key] ?? ucwords(str_replace('_', ' ', $group_key))) . '">';
+            foreach ($group_users as $user) { echo '<option value="' . (int) $user->ID . '" ' . selected($assigned, (int) $user->ID, false) . '>' . esc_html($user->display_name) . '</option>'; }
+            echo '</optgroup>';
+        }
         echo '</select></label><label>Follow-up date<input type="date" name="follow_up" value="' . esc_attr($follow_up) . '"></label><label>Internal notes<textarea name="internal_notes" rows="3">' . esc_textarea($notes) . '</textarea></label><button class="button button-primary" type="submit">Save</button></form></article>';
     }
 

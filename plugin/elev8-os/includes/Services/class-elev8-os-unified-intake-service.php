@@ -143,6 +143,83 @@ final class Elev8_OS_Unified_Intake_Service {
         self::notify($intake_id, __('Bingo reservation', 'elev8-os'), $name, $summary);
     }
 
+    public static function diagnostics(): array {
+        $sources = self::source_records();
+        $connected = 0;
+        foreach ($sources as $source) {
+            if (self::find_by_origin((int) $source['id'], (string) $source['post_type']) > 0) { $connected++; }
+        }
+        return [
+            'source_records' => count($sources),
+            'connected' => $connected,
+            'ready' => max(0, count($sources) - $connected),
+        ];
+    }
+
+    public static function backfill_existing(): array {
+        $result = ['created' => 0, 'skipped' => 0, 'failed' => 0];
+        foreach (self::source_records() as $source) {
+            $id = (int) $source['id'];
+            $post_type = (string) $source['post_type'];
+            if (self::find_by_origin($id, $post_type) > 0) { $result['skipped']++; continue; }
+            $before = self::find_by_origin($id, $post_type);
+            if ($post_type === 'elev8_bingo_res') {
+                $meta = [];
+                foreach (['_elev8_bingo_name','_elev8_bingo_email','_elev8_bingo_phone','_elev8_bingo_guest_count','_elev8_bingo_event_date','_elev8_bingo_notes'] as $key) { $meta[$key] = get_post_meta($id, $key, true); }
+                self::capture_bingo_reservation($id, $meta);
+            } elseif ($post_type === Elev8_OS_Daily_Operations_Service::POST_TYPE) {
+                $template_key = (string) get_post_meta($id, Elev8_OS_Daily_Operations_Service::META_TEMPLATE, true);
+                $values = get_post_meta($id, Elev8_OS_Daily_Operations_Service::META_FIELDS, true);
+                self::capture_operations_entry($id, $template_key, is_array($values) ? $values : []);
+            }
+            $after = self::find_by_origin($id, $post_type);
+            if ($after > 0 && $before < 1) {
+                $result['created']++;
+                if (class_exists('Elev8_OS_Activity_Service')) {
+                    Elev8_OS_Activity_Service::record([
+                        'type' => 'intake_backfilled',
+                        'label' => __('Historical submission imported', 'elev8-os'),
+                        'details' => __('Created from an existing trusted source record.', 'elev8-os'),
+                        'person_id' => (int) get_post_meta($after, '_elev8_intake_person_id', true),
+                        'object_id' => $after,
+                        'object_type' => self::POST_TYPE,
+                        'source' => 'intake-backfill',
+                        'actor_user_id' => get_current_user_id(),
+                    ]);
+                }
+            } else { $result['failed']++; }
+        }
+        return $result;
+    }
+
+    private static function source_records(): array {
+        $records = [];
+        $bingo = get_posts(['post_type' => 'elev8_bingo_res', 'post_status' => 'publish', 'posts_per_page' => -1, 'fields' => 'ids']);
+        foreach ($bingo as $id) { $records[] = ['id' => (int) $id, 'post_type' => 'elev8_bingo_res']; }
+        $operations = get_posts(['post_type' => Elev8_OS_Daily_Operations_Service::POST_TYPE, 'post_status' => 'publish', 'posts_per_page' => -1, 'fields' => 'ids']);
+        foreach ($operations as $id) {
+            $template_key = (string) get_post_meta($id, Elev8_OS_Daily_Operations_Service::META_TEMPLATE, true);
+            $template = Elev8_OS_Daily_Operations_Service::template($template_key);
+            if ($template && !empty($template['public'])) { $records[] = ['id' => (int) $id, 'post_type' => Elev8_OS_Daily_Operations_Service::POST_TYPE]; }
+        }
+        return $records;
+    }
+
+    private static function find_by_origin(int $origin_post_id, string $origin_post_type): int {
+        if ($origin_post_id < 1 || $origin_post_type === '') { return 0; }
+        $existing = get_posts([
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'publish',
+            'posts_per_page' => 1,
+            'fields' => 'ids',
+            'meta_query' => [
+                ['key' => '_elev8_intake_origin_post_id', 'value' => $origin_post_id, 'compare' => '=', 'type' => 'NUMERIC'],
+                ['key' => '_elev8_intake_origin_post_type', 'value' => sanitize_key($origin_post_type), 'compare' => '='],
+            ],
+        ]);
+        return $existing ? (int) $existing[0] : 0;
+    }
+
     private static function summarize_values(array $template, array $values): string {
         $parts = [];
         foreach ((array) ($template['fields'] ?? []) as $field) {

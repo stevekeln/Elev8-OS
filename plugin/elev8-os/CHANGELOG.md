@@ -1,3 +1,21 @@
+
+## 10.12.1 — Intake Connections and Operational Assignments
+
+### Added
+- Elev8 Event Staff role for Bingo, Open Mic, and future event workers.
+- Shared assignment eligibility capability and grouped assignment lists.
+- Elev8 OS Operational Access controls on WordPress user profiles.
+- User-list columns and filtering for assignment eligibility and department.
+- Intake diagnostics and safe historical import for Bingo reservations and public check-ins.
+
+### Improved
+- Intake assignment fields now exclude customers, subscribers, test accounts, and unrelated WordPress users.
+- Assignment options are grouped as Management, Event Staff, Teachers, Artists, Shop Employees, and Glass Team.
+- Historical imports use source IDs for duplicate protection and preserve original records.
+
+### Database changes
+- No new database tables. Uses WordPress roles, capabilities, user metadata, post metadata, and existing activity records.
+
 # 10.12.0 — Unified Intake Platform Foundation
 
 - Expanded the shared Activity Service into an immutable cross-module timeline for people, intake records, CRM, Business Memory, and future intelligence.
