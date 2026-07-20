@@ -52,11 +52,11 @@ final class Elev8_OS_Checkin_Center_Module {
     }
 
     public static function admin_menu(): void {
-        add_submenu_page('elev8-os', __('Check-In Center', 'elev8-os'), __('Check-In Center', 'elev8-os'), 'manage_options', self::ADMIN_SLUG, [__CLASS__, 'render_admin']);
+        add_submenu_page('elev8-os', __('Check-In Center', 'elev8-os'), __('Check-In Center', 'elev8-os'), Elev8_OS_Access_Service::capability('manage_checkins'), self::ADMIN_SLUG, [__CLASS__, 'render_admin']);
     }
 
     public static function render_admin(): void {
-        if (!current_user_can('manage_options')) { wp_die(__('You do not have permission to view this page.', 'elev8-os')); }
+        if (!Elev8_OS_Access_Service::user_can('manage_checkins')) { wp_die(__('You do not have permission to view this page.', 'elev8-os')); }
         $base = self::page_url();
         $templates = Elev8_OS_Daily_Operations_Service::templates();
         echo '<div class="wrap elev8-checkin-admin">';
@@ -100,7 +100,7 @@ final class Elev8_OS_Checkin_Center_Module {
             } elseif (empty($template['public']) && !is_user_logged_in()) {
                 $login = wp_login_url(add_query_arg('type', $selected, self::page_url()));
                 echo '<section class="elev8-checkin-login"><h2>Sign in required</h2><p>This check-in is for authorized Elev8 team members.</p><a class="elev8-checkin-primary" href="' . esc_url($login) . '">Sign in to continue</a></section>';
-            } elseif (!isset($templates[$selected])) {
+            } elseif (empty($template['public']) && (!class_exists('Elev8_OS_Access_Service') || !Elev8_OS_Access_Service::can_use_operations_template($selected))) {
                 echo '<div class="elev8-checkin-notice is-error"><p>You do not have permission to use this check-in.</p></div>';
             } else {
                 self::render_form($selected, $template);

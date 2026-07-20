@@ -1,20 +1,12 @@
+## 10.12.2 — Centralized Permissions & Access Foundation
 
-## 10.12.1 — Intake Connections and Operational Assignments
-
-### Added
-- Elev8 Event Staff role for Bingo, Open Mic, and future event workers.
-- Shared assignment eligibility capability and grouped assignment lists.
-- Elev8 OS Operational Access controls on WordPress user profiles.
-- User-list columns and filtering for assignment eligibility and department.
-- Intake diagnostics and safe historical import for Bingo reservations and public check-ins.
-
-### Improved
-- Intake assignment fields now exclude customers, subscribers, test accounts, and unrelated WordPress users.
-- Assignment options are grouped as Management, Event Staff, Teachers, Artists, Shop Employees, and Glass Team.
-- Historical imports use source IDs for duplicate protection and preserve original records.
-
-### Database changes
-- No new database tables. Uses WordPress roles, capabilities, user metadata, post metadata, and existing activity records.
+- Added one capability-driven Elev8 OS Access Service as the source of truth for business access.
+- Fixed Shop Manager access to the Manager Operations Log so card visibility, form access, and submission permission use the same capability.
+- Added Elev8 Event Staff, Elev8 Owner, Elev8 Artist, and Elev8 Volunteer role foundations.
+- Added reusable role-to-capability mapping, per-user allow/deny overrides, inactive-user support, and assignment eligibility.
+- Migrated Mobile Home, Check-In Center, Daily Operations, Bingo, Unified Intake, Artist Portal administration, and Glass Operations to the centralized service.
+- Replaced the Unified Intake assignment list with grouped operational users only.
+- Preserved legacy manager, Open Mic DJ, editor, author, and contributor access while capabilities are migrated.
 
 # 10.12.0 — Unified Intake Platform Foundation
 

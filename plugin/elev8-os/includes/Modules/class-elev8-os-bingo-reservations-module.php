@@ -78,7 +78,7 @@ final class Elev8_OS_Bingo_Reservations_Module {
             'elev8-os',
             __('Bingo Reservations', 'elev8-os'),
             __('Bingo Reservations', 'elev8-os'),
-            'manage_options',
+            Elev8_OS_Access_Service::capability('manage_bingo'),
             self::ADMIN_SLUG,
             [__CLASS__, 'render_admin']
         );
@@ -231,7 +231,7 @@ final class Elev8_OS_Bingo_Reservations_Module {
     }
 
     public static function render_admin(): void {
-        if (!current_user_can('manage_options')) {
+        if (!Elev8_OS_Access_Service::user_can('manage_bingo')) {
             wp_die(esc_html__('You do not have permission to view this page.', 'elev8-os'));
         }
 
@@ -351,7 +351,7 @@ final class Elev8_OS_Bingo_Reservations_Module {
     }
 
     public static function update_status(): void {
-        if (!current_user_can('manage_options')) {
+        if (!Elev8_OS_Access_Service::user_can('manage_bingo')) {
             wp_die(esc_html__('You do not have permission to update reservations.', 'elev8-os'));
         }
 

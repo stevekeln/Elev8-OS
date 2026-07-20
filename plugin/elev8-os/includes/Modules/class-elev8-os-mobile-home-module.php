@@ -18,7 +18,7 @@ final class Elev8_OS_Mobile_Home_Module {
     }
 
     public static function ensure_page_for_admin(): void {
-        if (current_user_can('manage_options')) {
+        if (Elev8_OS_Access_Service::user_can('platform_admin')) {
             self::ensure_page(true);
         }
     }
@@ -40,7 +40,7 @@ final class Elev8_OS_Mobile_Home_Module {
             return (int) $page->ID;
         }
 
-        if (!$allow_create || !current_user_can('manage_options')) {
+        if (!$allow_create || !Elev8_OS_Access_Service::user_can('platform_admin')) {
             return 0;
         }
 
@@ -136,43 +136,44 @@ final class Elev8_OS_Mobile_Home_Module {
     /** @return array<int,array<string,string|bool>> */
     private static function cards_for_user(WP_User $user): array {
         $cards = [];
-        $is_owner = class_exists('Elev8_OS_Access_Service') ? Elev8_OS_Access_Service::is_owner($user) : user_can($user, 'manage_options');
-        $is_manager = class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_manager($user);
-        $is_retail = class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_retail_employee($user);
-        $is_artist = class_exists('Elev8_OS_Access_Service') ? Elev8_OS_Access_Service::is_artist($user) : false;
-        $is_teacher = class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_teacher($user);
-        $is_dj = class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_dj($user);
+        $can = static fn(string $permission): bool => Elev8_OS_Access_Service::user_can($permission, $user);
 
-        if ($is_owner) {
+        if ($can('view_ceo_dashboard')) {
             $cards[] = self::card(__('CEO Dashboard', 'elev8-os'), __('See the owner view, priorities, and business intelligence.', 'elev8-os'), admin_url('admin.php?page=elev8-ceo-dashboard'), 'chart-area', true);
             $cards[] = self::card(__('Record Business Memory', 'elev8-os'), __('Quickly document a conversation, event, decision, or incident.', 'elev8-os'), admin_url('admin.php?page=elev8-business-memory&view=new'), 'edit-page', true);
+        }
+        if ($can('submit_manager_log')) {
+            $cards[] = self::card(__('Manager Operations Log', 'elev8-os'), __('Record each management work period or location visit.', 'elev8-os'), add_query_arg(['type'=>'manager','team'=>'1'], Elev8_OS_Checkin_Center_Module::page_url()), 'clipboard', true);
+        } elseif ($can('submit_retail_log')) {
+            $cards[] = self::card(__('Retail Employee Log', 'elev8-os'), __('Record shift activity, customer requests, inventory signals, and store needs.', 'elev8-os'), add_query_arg(['type'=>'retail','team'=>'1'], Elev8_OS_Checkin_Center_Module::page_url()), 'store', true);
+        }
+        if ($can('manage_daily_operations')) {
             $cards[] = self::card(__('Daily Operations', 'elev8-os'), __('Review submitted work logs and operational signals.', 'elev8-os'), admin_url('admin.php?page=elev8-daily-operations&view=brief'), 'clipboard');
-        } elseif ($is_manager) {
-            $cards[] = self::card(__('Manager Operations Log', 'elev8-os'), __('Record each management work period or location visit.', 'elev8-os'), add_query_arg('type', 'manager', Elev8_OS_Checkin_Center_Module::page_url()), 'clipboard', true);
-        } elseif ($is_retail) {
-            $cards[] = self::card(__('Retail Employee Log', 'elev8-os'), __('Record shift activity, customer requests, inventory signals, and store needs.', 'elev8-os'), add_query_arg('type', 'retail', Elev8_OS_Checkin_Center_Module::page_url()), 'store', true);
         }
-
-        if ($is_artist || $is_teacher) {
+        if ($can('view_artist_dashboard')) {
             $cards[] = self::card(__('Artist Dashboard', 'elev8-os'), __('View your profile, classes, business tools, and opportunities.', 'elev8-os'), Elev8_OS_Portal_Page_Manager::get_url('dashboard'), 'art', true);
+        }
+        if ($can('view_artist_classes')) {
             $cards[] = self::card(__('My Classes', 'elev8-os'), __('See scheduled classes, bookings, and teaching details.', 'elev8-os'), Elev8_OS_Portal_Page_Manager::get_url('classes'), 'calendar-alt');
-            $cards[] = self::card(__('Artist Operating Log', 'elev8-os'), __('Preserve class results, student feedback, supply needs, and ideas.', 'elev8-os'), add_query_arg('type', 'artist', Elev8_OS_Checkin_Center_Module::page_url()), 'welcome-write-blog');
         }
-
-        if ($is_dj) {
-            $cards[] = self::card(__('Open Mic Event Log', 'elev8-os'), __('Record attendance, performers, sound needs, problems, and lessons learned.', 'elev8-os'), add_query_arg('type', 'event', Elev8_OS_Checkin_Center_Module::page_url()), 'microphone', true);
+        if ($can('submit_artist_log')) {
+            $cards[] = self::card(__('Artist Operating Log', 'elev8-os'), __('Preserve class results, student feedback, supply needs, and ideas.', 'elev8-os'), add_query_arg(['type'=>'artist','team'=>'1'], Elev8_OS_Checkin_Center_Module::page_url()), 'welcome-write-blog');
         }
-
-        if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::can_distribute_flyers($user)) {
+        if ($can('submit_event_log')) {
+            $cards[] = self::card(__('Event Operations Log', 'elev8-os'), __('Record attendance, performers, event needs, problems, and lessons learned.', 'elev8-os'), add_query_arg(['type'=>'event','team'=>'1'], Elev8_OS_Checkin_Center_Module::page_url()), 'microphone', true);
+        }
+        if ($can('view_glass_dashboard')) {
+            $cards[] = self::card(__('Glass Manager Dashboard', 'elev8-os'), __('Manage production, cremation orders, blower work, and payouts.', 'elev8-os'), admin_url('admin.php?page=elev8-glass-operations'), 'hammer', true);
+        }
+        if ($can('manage_relationships')) {
             $cards[] = self::card(__('Relationships & Outreach', 'elev8-os'), __('Build community relationships, run flyer campaigns, and record visits.', 'elev8-os'), admin_url('admin.php?page=elev8-community-outreach'), 'location-alt');
         }
-
-        if ($is_owner) {
+        if ($can('view_business_memory')) {
             $cards[] = self::card(__('Business Memory', 'elev8-os'), __('Search records, follow-ups, risks, and recurring patterns.', 'elev8-os'), admin_url('admin.php?page=elev8-business-memory'), 'database-view');
-            $cards[] = self::card(__('Gallery Operations', 'elev8-os'), __('Manage artwork locations, display zones, and gallery operations.', 'elev8-os'), admin_url('admin.php?page=elev8-gallery-operations'), 'store');
+        }
+        if ($can('manage_checkins')) {
             $cards[] = self::card(__('Check-In Center', 'elev8-os'), __('Open public and internal check-ins, links, and QR tools.', 'elev8-os'), home_url('/checkin/?team=1'), 'forms');
         }
-
         return apply_filters('elev8_os_mobile_home_cards', $cards, $user);
     }
 

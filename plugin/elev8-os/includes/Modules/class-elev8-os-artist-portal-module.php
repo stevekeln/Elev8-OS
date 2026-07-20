@@ -224,7 +224,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        if (!current_user_can('manage_options')) {
+        if (!Elev8_OS_Access_Service::user_can('platform_admin')) {
             return;
         }
 
@@ -254,7 +254,7 @@ final class Elev8_OS_Artist_Portal_Module {
             return;
         }
 
-        if (!current_user_can('manage_options')) {
+        if (!Elev8_OS_Access_Service::user_can('platform_admin')) {
             return;
         }
 
@@ -1092,7 +1092,7 @@ final class Elev8_OS_Artist_Portal_Module {
     }
 
     public static function render_profile_fields(WP_User $user): void {
-        if (!current_user_can('edit_user', $user->ID)) {
+        if (!Elev8_OS_Access_Service::can_edit_user((int) $user->ID)) {
             return;
         }
 
@@ -1113,7 +1113,7 @@ final class Elev8_OS_Artist_Portal_Module {
     }
 
     public static function save_profile_fields(int $user_id): void {
-        if (!current_user_can('edit_user', $user_id)) {
+        if (!Elev8_OS_Access_Service::can_edit_user((int) $user_id)) {
             return;
         }
 

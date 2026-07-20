@@ -102,7 +102,6 @@ final class Elev8_OS_Daily_Operations_Service {
     }
 
     public static function templates_for_user(int $user_id, bool $include_public = false): array {
-        if (user_can($user_id, 'manage_options')) { return self::templates(); }
         $user = get_userdata($user_id);
         if (!$user) { return []; }
         $available = [];
@@ -126,7 +125,7 @@ final class Elev8_OS_Daily_Operations_Service {
         $is_public = !empty($template['public']);
         if ($is_public) {
             if (!$allow_public) { return new WP_Error('forbidden_template', __('This public check-in must be submitted through the Check-In Center.', 'elev8-os')); }
-        } elseif (!isset(self::templates_for_user($user_id)[$template_key])) {
+        } elseif (!class_exists('Elev8_OS_Access_Service') || !Elev8_OS_Access_Service::can_use_operations_template($template_key, get_userdata($user_id) ?: null)) {
             return new WP_Error('forbidden_template', __('You cannot submit this report type.', 'elev8-os'));
         }
 
