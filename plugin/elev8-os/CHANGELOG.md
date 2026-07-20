@@ -1,3 +1,8 @@
+## 10.11.2 — Bingo Reminder Opt-In
+
+- Bingo reservation email updates are selected by default while remaining optional.
+- Updated the consent wording to clearly cover upcoming Bingo Nights and other Elev8 Arts events.
+
 ## 10.11.1 — Bingo Reservations
 
 - Added the `[elev8_bingo_reservation_form]` public shortcode.

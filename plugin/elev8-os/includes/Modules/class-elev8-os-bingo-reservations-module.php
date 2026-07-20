@@ -151,8 +151,8 @@ final class Elev8_OS_Bingo_Reservations_Module {
                 </label>
 
                 <label class="elev8-bingo-consent">
-                    <input type="checkbox" name="reminder_consent" value="1">
-                    <?php esc_html_e('Email me Bingo reminders and future Elev8 Arts event invitations.', 'elev8-os'); ?>
+                    <input type="checkbox" name="reminder_consent" value="1" checked>
+                    <?php esc_html_e('Keep me updated about upcoming Bingo Nights and other Elev8 Arts events.', 'elev8-os'); ?>
                 </label>
 
                 <button class="elev8-bingo-submit" type="submit"><?php esc_html_e('Reserve My Seats', 'elev8-os'); ?></button>
