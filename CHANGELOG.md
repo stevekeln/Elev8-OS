@@ -1,11 +1,108 @@
 # Elev8 OS Changelog
 
-## 10.4.11 - System Information
+## 10.9.0 — Role-Aware App Portals and Community Outreach
 
-- Added a reusable release information service that reads builder-generated metadata from `release-manifest.json`.
-- Added a System Information section to the CEO Dashboard showing the installed version, build ID, build date, PHP validation, Git branch and commit, source state, and package name.
-- Displays `Unavailable` rather than guessing when release metadata cannot be verified.
-- Preserved the v10.4.10 public homepage and Artist Dashboard redirect solution without modification.
+- Added a centralized access service so Mobile Home and team check-ins use the same role rules.
+- Shop managers now see the Manager Operations Log without the Retail Employee Log.
+- Retail employees now see the Retail Employee Log without the Manager Operations Log.
+- Added Elev8 Teacher, Elev8 Open Mic DJ, and Elev8 Retail Employee WordPress roles.
+- Added artist/teacher app cards for Artist Dashboard, My Classes, and Artist Operating Log.
+- Added an Open Mic Event Log app card for users assigned the Open Mic DJ role.
+- Added Community Outreach, a CRM-backed flyer delivery system with reusable business locations, flyer permission details, campaigns, stops, delivery status, quantities, contacts, notes, and last-delivery history.
+- Added a Community Outreach Mobile Home card for owners, managers, retail employees, and Open Mic DJs.
+- Preserved the original operations records and existing integrations.
+
+## 10.8.0 — Mobile Role-Aware Home
+
+- Added an automatically managed `/elev8-app/` page with a mobile-first Elev8 OS home screen.
+- Added permission-aware launch cards so owners, managers/employees, and mapped artists see only relevant tools.
+- Added one-tap access to CEO Dashboard, quick Business Memory capture, Business Memory search, Daily Operations, Artist Dashboard, classes, Gallery Operations, and Check-In Center where permitted.
+- Added mobile app metadata and an Add to Home Screen prompt so the page can be launched from a phone like an app.
+- Preserved WordPress authentication and existing Elev8 OS permissions as the source of truth.
+
+## 10.7.0 — Business Memory Foundation
+- Added structured Business Memory records for conversations, events, decisions, incidents, and observations.
+- Added participants, location, objective summary, decisions, action items and owners, follow-up dates, attachments, priority, tags, and record status.
+- Added searchable Memory Feed, detailed record timeline, Open Follow-Ups, overdue action tracking, recurring-signal detection, risk highlighting, and rule-based next-step recommendations.
+- Integrated Business Memory into Daily Operations Intelligence as a first-class CEO workspace.
+
+## 10.6.3
+- Made the selected CRM relationship unmistakable with a purple background, strong left border, selected badge, and matching avatar.
+- Updated the relationship detail panel to visually connect with the selected customer.
+- Renamed Relationship Profile to Customer Profile.
+- Rebuilt quick actions with polished Send Email, Call, and Add Note buttons.
+
+# Elev8 OS Changelog
+
+## 10.6.2 — Private Elev8 Team Entry
+
+- Kept all public check-in choices visible on the main Check-In Center.
+- Removed manager, employee, artist, maintenance, vendor, and event cards from the public-facing choice grid.
+- Added one centered **Elev8 Team** button at the end of the public choices.
+- Team members sign in before seeing the private operations forms.
+- Added a dedicated team-only choice view with a clear return link to public check-ins.
+
+## 10.6.1 — Manager Operations Log Polish and Steve Alerts
+- Makes the duty-category choices optional and displays them as compact, aligned checkboxes for useful reporting without making the manager feel forced.
+- Keeps the written work summary required as the primary report.
+- Reduces optional text-area height so the manager form is easier to scan and complete.
+- Renames owner-attention language to Steve, including the dedicated “Message for Steve” field.
+- Automatically flags a manager log for attention and emails the WordPress administration email whenever “Message for Steve” contains text.
+- Includes manager, date, location, work period, message, and a direct link to the complete Elev8 OS record in the notification.
+- No database changes.
+
+## 10.6.0 - Manager Operations Log
+- Rebuilt the manager form around separate completed work periods.
+- Made work location mandatory with no default selection.
+- Added Elev8 Glass Gallery, HEMP, Elev8 Arts, errands, appointments, remote work, and other-location choices.
+- Added required start and end times, concrete work summary, duties completed, and follow-up status.
+- Added staff coaching, problems, customer issues, business improvements, and owner-attention fields.
+- Added checkbox-group support for structured duties and improved mobile styling.
+- Updated built-in operation templates automatically while preserving custom templates.
+
+## 10.5.5
+
+- Added a complete public Volunteer or Get Involved form that saves directly into Elev8 OS Business Memory.
+- Added a dedicated Suggest a Class form with class topic, schedule, interest level, and potential teacher information.
+- Removed the duplicate Elev8 Check-In heading from the shortcode output so the WordPress page title appears only once.
+- Added the new forms to the public Check-In Center and QR/link manager.
+
+## 10.5.4
+
+- Fixed CEO Command Center access by routing Business Memory, Class Requests, and Opportunities through the registered CEO Dashboard page.
+- Removed the duplicate CEO workspace tab row; the Command Center cards are now the primary navigation.
+- Registered and initialized the Opportunities module and its required services.
+- Included the Daily Operations module in the source update to ensure Business Memory is available after replacement.
+
+## 10.5.3 — CEO Navigation Hotfix
+
+- Fixed the CEO Business Memory link by keeping Daily Operations registered and visible in the WordPress sidebar.
+- Fixed the CEO Class Requests link to use the actual registered Class Demand page slug.
+- Kept both tools accessible from the CEO Command Center while preserving direct sidebar access during testing.
+
+## 10.5.2 — Check-In Center
+
+- Added a public `/checkin/` portal created automatically by Elev8 OS.
+- Added public Art Walk, Open Mic, customer, class, and idea check-ins.
+- Added role-protected manager, employee, artist, maintenance, vendor, and event check-ins.
+- Added direct-link and QR management under Elev8 OS → Check-In Center.
+- Added guest contact capture, invitation consent, immediate thank-you email, attachments, spam honeypot, and rate limiting.
+- Routed every submission into the existing Business Memory and CEO operational intelligence system.
+- Preserved existing custom templates while adding new default templates during upgrades.
+
+## 10.5.1 - CEO Workspace Navigation
+- Added a CEO command center with clear workspace tabs and launch cards.
+- Moved owner access to Daily Operations Intelligence under the CEO experience.
+- Kept the Daily Operations menu available to employees while removing duplicate sidebar clutter for administrators.
+- Preserved all existing direct page URLs and functionality for backward compatibility.
+
+## 10.5.0 - Daily Operations Intelligence
+- Added role-based operating log templates and structured submissions.
+- Added searchable operational memory, attachments, owner attention flags, and workflow statuses.
+- Added Daily Executive Brief, rule-based recommendations, and 30-day signal radar.
+- Added custom template creation for future business roles.
+
+# Elev8 OS Changelog
 
 ## 10.4.10 - 2026-07-19
 

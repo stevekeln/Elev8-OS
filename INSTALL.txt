@@ -1,15 +1,12 @@
-ELEV8 OS STANDARD RELEASE BUILDER v1.2
+ELEV8 OS 10.9.0 INSTALLATION
 
-Replace these items in C:\GitHub\Elev8-OS:
+1. Replace the changed files in your local Git repository.
+2. Commit to develop and push to GitHub.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated ZIP into Local.
+5. Test with separate manager, retail employee, artist/teacher, and Open Mic DJ accounts.
+6. Create a few CRM flyer locations and one outreach campaign.
+7. Mark a stop delivered and confirm its last-delivery date updates.
+8. After Local passes, install the exact same generated ZIP into Live.
 
-1. Build Elev8 OS Release.bat
-2. BUILD_VERSION
-3. tools\build-release.ps1
-
-You may replace the entire tools folder from this package.
-
-Then double-click Build Elev8 OS Release.bat.
-Install ONLY the newly generated main elev8-os-...zip from the releases folder into Local WordPress.
-Do not install this builder ZIP into WordPress.
-
-v1.2 packages files individually with forward-slash ZIP paths and verifies that no directory-only or backslash entries exist before declaring the release ready.
+Role note: Elev8 Teacher, Elev8 Open Mic DJ, and Elev8 Retail Employee roles are created automatically when the updated plugin loads.

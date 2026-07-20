@@ -1,13 +1,11 @@
-Elev8 OS v10.4.11 Source Update
+Elev8 OS 10.4.10 SOURCE UPDATE
 
-Replace these files in the Git source:
-- plugin/elev8-os/elev8-os.php
-- plugin/elev8-os/includes/class-elev8-os-loader.php
-- plugin/elev8-os/includes/Services/class-elev8-os-release-information-service.php
-- plugin/elev8-os/includes/Modules/class-elev8-os-ceo-dashboard-module.php
-- plugin/elev8-os/CHANGELOG.md
-- plugin/elev8-os/GIT-SUMMARY.txt
-- plugin/elev8-os/INSTALL.txt
-- plugin/elev8-os/SOURCE-UPDATE-INSTRUCTIONS.txt
+1. Replace the listed files in your local Git repository.
+2. Review the diff.
+3. Commit to develop.
+4. Push to GitHub.
+5. Run Build Elev8 OS Release.bat.
+6. Install the generated ZIP on Live for the Ultimate Member redirect test.
+7. After confirmation, install the exact same generated ZIP wherever required.
 
-Then commit to develop, push to GitHub, and use the standard Build Elev8 OS Release.bat for future builds.
+Do not install the changed-files package directly into WordPress.
