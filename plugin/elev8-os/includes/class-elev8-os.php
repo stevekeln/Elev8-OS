@@ -70,8 +70,12 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Access_Service')) {
             Elev8_OS_Access_Service::activate();
-        Elev8_OS_Glass_Operations_Service::activate();
         }
+        if (class_exists('Elev8_OS_Glass_Operations_Service')) {
+            Elev8_OS_Glass_Operations_Service::activate();
+        }
+        if (class_exists('Elev8_OS_Person_Service')) { Elev8_OS_Person_Service::activate(); }
+        if (class_exists('Elev8_OS_Unified_Intake_Service')) { Elev8_OS_Unified_Intake_Service::activate(); }
         if (class_exists('Elev8_OS_Community_Outreach_Module')) {
             Elev8_OS_Community_Outreach_Module::activate();
         }
@@ -157,6 +161,7 @@ final class Elev8_OS {
         $priority = [
             'elev8-os'               => 10,
             'elev8-ceo-dashboard'    => 20,
+            'elev8-unified-intake'   => 22,
             'elev8-daily-operations' => 25,
             'elev8-artist-dashboard' => 30,
             'elev8-class-demand'     => 40,

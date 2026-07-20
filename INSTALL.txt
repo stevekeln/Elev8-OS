@@ -1,12 +1,8 @@
-ELEV8 OS 10.9.0 INSTALLATION
-
-1. Replace the changed files in your local Git repository.
+Elev8 OS 10.10.2 installation
+1. Replace the repository files with this updated repository.
 2. Commit to develop and push to GitHub.
 3. Run Build Elev8 OS Release.bat.
-4. Install the generated ZIP into Local.
-5. Test with separate manager, retail employee, artist/teacher, and Open Mic DJ accounts.
-6. Create a few CRM flyer locations and one outreach campaign.
-7. Mark a stop delivered and confirm its last-delivery date updates.
-8. After Local passes, install the exact same generated ZIP into Live.
-
-Role note: Elev8 Teacher, Elev8 Open Mic DJ, and Elev8 Retail Employee roles are created automatically when the updated plugin loads.
+4. Install the generated 10.10.2 ZIP into Local.
+5. Open Elev8 OS > Relationships as an administrator once to run the vendor seed.
+6. Verify Vendor and Food Vendor counts and test adding a logo.
+7. Install the exact tested ZIP into Live.

@@ -1,3 +1,12 @@
+# 10.12.0 — Stabilization and Unified Intake
+
+- Added an Owner Intake Dashboard with Trello-style workflow columns: New, Reviewed, Contacted, In Progress, Completed, and Archived.
+- Unified public Bingo reservations and Check-In Center submissions into one actionable queue.
+- Added assignments, follow-up dates, internal notes, source tracking, and contact links.
+- Added shared Person records keyed by email with cross-module activity history.
+- Added owner email notifications linking directly to new intake records.
+- Preserved existing Glass Operations work while pausing its expansion.
+
 ## 10.11.2 — Bingo Reminder Opt-In
 
 - Bingo reservation email updates are selected by default while remaining optional.
