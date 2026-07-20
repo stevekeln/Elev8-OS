@@ -1,3 +1,11 @@
+
+## 10.12.6 — Workflow & Tasks Foundation
+- Added reusable Work Service and role-aware My Work / Team Work interfaces.
+- Added task ownership, due dates, priorities, statuses, notes, source links, duplicate protection, and activity history.
+- Added an Elev8 Takeover workflow template and application workspace with automatic work generation when approved or scheduled.
+- Added CEO and Mobile Home work ticklers for overdue, due-today, active, and unassigned work.
+- Added centralized work capabilities through the Access Service.
+
 ## 10.12.5 — Event Applications & Elev8 Takeover Intake
 - Added reusable Event Applications workflow and public Elev8 Takeover form.
 - Creates/updates CRM relationship and person records, Unified Intake items, activity history, and owner notifications.

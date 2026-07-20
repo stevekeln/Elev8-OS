@@ -177,7 +177,25 @@ final class Elev8_OS_Event_Applications_Module {
         echo '</select></label><label>' . esc_html__('Assigned to', 'elev8-os') . '<select name="assigned_user"><option value="0">' . esc_html__('Unassigned', 'elev8-os') . '</option>';
         $assigned = absint(get_post_meta($app->ID, '_elev8_event_app_assigned_user', true));
         foreach (Elev8_OS_Access_Service::assignment_users_grouped() as $group => $users) { echo '<optgroup label="' . esc_attr($group) . '">'; foreach ($users as $user) { echo '<option value="' . (int) $user->ID . '"' . selected($assigned, $user->ID, false) . '>' . esc_html($user->display_name) . '</option>'; } echo '</optgroup>'; }
-        echo '</select></label><label>' . esc_html__('Follow-up date', 'elev8-os') . '<input type="date" name="follow_up" value="' . esc_attr((string) get_post_meta($app->ID, '_elev8_event_app_follow_up', true)) . '"></label><label class="elev8-event-notes">' . esc_html__('Internal notes', 'elev8-os') . '<textarea name="internal_notes" rows="3">' . esc_textarea((string) get_post_meta($app->ID, '_elev8_event_app_internal_notes', true)) . '</textarea></label><button class="button button-primary">' . esc_html__('Save Application', 'elev8-os') . '</button></form></article>';
+        echo '</select></label><label>' . esc_html__('Follow-up date', 'elev8-os') . '<input type="date" name="follow_up" value="' . esc_attr((string) get_post_meta($app->ID, '_elev8_event_app_follow_up', true)) . '"></label><label class="elev8-event-notes">' . esc_html__('Internal notes', 'elev8-os') . '<textarea name="internal_notes" rows="3">' . esc_textarea((string) get_post_meta($app->ID, '_elev8_event_app_internal_notes', true)) . '</textarea></label><button class="button button-primary">' . esc_html__('Save Application', 'elev8-os') . '</button></form>';
+        if (class_exists('Elev8_OS_Work_Service') && class_exists('Elev8_OS_Work_Module')) {
+            $work = Elev8_OS_Work_Service::source_items('event_application', $app->ID);
+            echo '<section class="elev8-event-workspace"><h3>' . esc_html__('Application Workspace', 'elev8-os') . '</h3><p>' . esc_html(sprintf(__('%d linked work items', 'elev8-os'), count($work))) . '</p>';
+            if ($work) {
+                echo '<ul>';
+                foreach ($work as $item) {
+                    $work_status = (string) get_post_meta($item->ID, '_elev8_work_status', true) ?: 'new';
+                    echo '<li><strong>' . esc_html(get_the_title($item)) . '</strong> — ' . esc_html(Elev8_OS_Work_Service::statuses()[$work_status] ?? ucfirst($work_status)) . '</li>';
+                }
+                echo '</ul><a class="button" href="' . esc_url(Elev8_OS_Work_Module::team_url()) . '">' . esc_html__('Open Team Work', 'elev8-os') . '</a>';
+            } else if (Elev8_OS_Access_Service::user_can('manage_work')) {
+                echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+                wp_nonce_field('elev8_generate_takeover_workflow_' . $app->ID);
+                echo '<input type="hidden" name="action" value="elev8_os_generate_takeover_workflow"><input type="hidden" name="application_id" value="' . (int) $app->ID . '"><button class="button button-secondary">' . esc_html__('Generate Takeover Workflow', 'elev8-os') . '</button></form>';
+            }
+            echo '</section>';
+        }
+        echo '</article>';
     }
 
     public static function update(): void {
@@ -192,6 +210,9 @@ final class Elev8_OS_Event_Applications_Module {
         update_post_meta($id, '_elev8_event_app_assigned_user', absint($_POST['assigned_user'] ?? 0));
         update_post_meta($id, '_elev8_event_app_follow_up', sanitize_text_field(wp_unslash($_POST['follow_up'] ?? '')));
         update_post_meta($id, '_elev8_event_app_internal_notes', sanitize_textarea_field(wp_unslash($_POST['internal_notes'] ?? '')));
+        if (class_exists('Elev8_OS_Work_Service') && in_array($status, ['approved', 'planning', 'scheduled'], true)) {
+            Elev8_OS_Work_Service::generate_takeover_workflow($id);
+        }
         if (class_exists('Elev8_OS_Activity_Service')) { Elev8_OS_Activity_Service::record(['type' => 'event_application_updated', 'label' => __('Event application updated', 'elev8-os'), 'details' => sprintf(__('Status changed from %1$s to %2$s.', 'elev8-os'), $old ?: 'new', $status), 'object_id' => $id, 'object_type' => self::POST_TYPE, 'source' => 'event-applications', 'actor_user_id' => get_current_user_id()]); }
         wp_safe_redirect(admin_url('admin.php?page=' . self::PAGE_SLUG . '&updated=1')); exit;
     }

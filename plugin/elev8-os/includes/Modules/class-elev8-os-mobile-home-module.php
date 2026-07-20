@@ -183,6 +183,26 @@ final class Elev8_OS_Mobile_Home_Module {
                 $attention > 0
             );
         }
+        if ($can('view_work') && class_exists('Elev8_OS_Work_Service') && class_exists('Elev8_OS_Work_Module')) {
+            $work_counts = Elev8_OS_Work_Service::counts((int) $user->ID);
+            $cards[] = self::card(
+                __('My Work', 'elev8-os'),
+                sprintf(__('%1$d overdue · %2$d due today · %3$d active.', 'elev8-os'), $work_counts['overdue'], $work_counts['due_today'], $work_counts['active']),
+                Elev8_OS_Work_Module::my_url(),
+                'list-view',
+                $work_counts['overdue'] > 0 || $work_counts['due_today'] > 0
+            );
+        }
+        if ($can('manage_work') && class_exists('Elev8_OS_Work_Service') && class_exists('Elev8_OS_Work_Module')) {
+            $team_counts = Elev8_OS_Work_Service::counts();
+            $cards[] = self::card(
+                __('Team Work', 'elev8-os'),
+                sprintf(__('%1$d unassigned · %2$d overdue across the team.', 'elev8-os'), $team_counts['unassigned'], $team_counts['overdue']),
+                Elev8_OS_Work_Module::team_url(),
+                'groups',
+                $team_counts['unassigned'] > 0 || $team_counts['overdue'] > 0
+            );
+        }
         if ($can('manage_checkins')) {
             $cards[] = self::card(__('Check-In Center', 'elev8-os'), __('Open public and internal check-ins, links, and QR tools.', 'elev8-os'), home_url('/checkin/?team=1'), 'forms');
         }

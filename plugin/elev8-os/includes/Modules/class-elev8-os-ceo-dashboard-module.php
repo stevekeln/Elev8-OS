@@ -184,6 +184,9 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     <?php if (class_exists('Elev8_OS_Event_Applications_Module')) : ?>
                     <a href="<?php echo esc_url(Elev8_OS_Event_Applications_Module::admin_url()); ?>"><span class="dashicons dashicons-forms"></span><strong><?php esc_html_e('Event Applications', 'elev8-os'); ?></strong><small><?php echo esc_html(sprintf(__('%1$d need attention · %2$d awaiting agreement', 'elev8-os'), Elev8_OS_Event_Applications_Module::attention_count(), Elev8_OS_Event_Applications_Module::awaiting_agreement_count())); ?></small></a>
                     <?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Work_Service') && class_exists('Elev8_OS_Work_Module')) : $work_counts = Elev8_OS_Work_Service::counts(); ?>
+                    <a href="<?php echo esc_url(Elev8_OS_Work_Module::team_url()); ?>"><span class="dashicons dashicons-list-view"></span><strong><?php esc_html_e('Work', 'elev8-os'); ?></strong><small><?php echo esc_html(sprintf(__('%1$d overdue · %2$d due today · %3$d active', 'elev8-os'), $work_counts['overdue'], $work_counts['due_today'], $work_counts['active'])); ?></small></a>
+                    <?php endif; ?>
                 </div>
             </section>
 

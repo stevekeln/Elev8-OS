@@ -75,7 +75,9 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-notification-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-person-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-intake-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-work-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-unified-intake-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-work-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-demand-manager-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-opportunity-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php';
@@ -89,7 +91,9 @@ final class Elev8_OS_Loader {
         Elev8_OS_Activity_Service::init();
         Elev8_OS_Person_Service::init();
         Elev8_OS_Unified_Intake_Service::init();
+        Elev8_OS_Work_Service::init();
         Elev8_OS_Unified_Intake_Module::init();
+        Elev8_OS_Work_Module::init();
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Recommendation_State_Service::init();
         Elev8_OS_Gallery_Operations_Service::init();
