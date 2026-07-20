@@ -1,3 +1,10 @@
+## 10.12.4 — Unified Reservations & Dashboard Ticklers
+- Renamed the Bingo Reservations administration experience to Reservations while preserving existing URLs and data.
+- Added reusable reservation types for Bingo, Open Mic, classes/workshops, and other events.
+- Added simplified reservation statuses, comment attention badges, assignment support, and role-aware reservation visibility.
+- Added reservation attention and upcoming-event ticklers to the CEO Dashboard and role-aware Mobile Home cards.
+- Added centralized reservation capabilities while keeping legacy Bingo capability compatibility.
+
 # 10.12.3 — Manager Sales Fields and Optional Follow-Up
 
 - Added optional structured sales fields for HEMP and Elev8 Glass Gallery to the Manager Operations Log.

@@ -93,7 +93,7 @@ final class Elev8_OS_CEO_Dashboard_Module {
      * Render the CEO Dashboard.
      */
     public static function render_page(): void {
-        if (!current_user_can('manage_options')) {
+        if (!Elev8_OS_Access_Service::user_can('view_ceo_dashboard')) {
             wp_die(esc_html__('You do not have permission to view this dashboard.', 'elev8-os'));
         }
 
@@ -178,6 +178,9 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-business-intelligence')); ?>"><span class="dashicons dashicons-chart-area"></span><strong><?php esc_html_e('Business Intelligence', 'elev8-os'); ?></strong><small><?php esc_html_e('Verified KPIs and decision support.', 'elev8-os'); ?></small></a>
                     <a href="<?php echo esc_url(admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests')); ?>"><span class="dashicons dashicons-lightbulb"></span><strong><?php esc_html_e('Class Requests', 'elev8-os'); ?></strong><small><?php esc_html_e('Customer demand and class opportunities.', 'elev8-os'); ?></small></a>
                     <a href="<?php echo esc_url(admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities')); ?>"><span class="dashicons dashicons-megaphone"></span><strong><?php esc_html_e('Opportunities', 'elev8-os'); ?></strong><small><?php esc_html_e('Actions that can help artists and the business grow.', 'elev8-os'); ?></small></a>
+                    <?php if (class_exists('Elev8_OS_Bingo_Reservations_Module')) : ?>
+                    <a href="<?php echo esc_url(Elev8_OS_Bingo_Reservations_Module::admin_url()); ?>"><span class="dashicons dashicons-tickets-alt"></span><strong><?php esc_html_e('Reservations', 'elev8-os'); ?></strong><small><?php echo esc_html(sprintf(__('%1$d need attention · %2$d upcoming this week', 'elev8-os'), Elev8_OS_Bingo_Reservations_Module::attention_count(), Elev8_OS_Bingo_Reservations_Module::upcoming_count())); ?></small></a>
+                    <?php endif; ?>
                 </div>
             </section>
 

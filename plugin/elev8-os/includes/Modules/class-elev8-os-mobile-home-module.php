@@ -171,6 +171,18 @@ final class Elev8_OS_Mobile_Home_Module {
         if ($can('view_business_memory')) {
             $cards[] = self::card(__('Business Memory', 'elev8-os'), __('Search records, follow-ups, risks, and recurring patterns.', 'elev8-os'), admin_url('admin.php?page=elev8-business-memory'), 'database-view');
         }
+        if (($can('manage_reservations') || $can('manage_bingo') || $can('view_assigned_reservations')) && class_exists('Elev8_OS_Bingo_Reservations_Module')) {
+            $assigned_user_id = ($can('manage_reservations') || $can('manage_bingo')) ? 0 : (int) $user->ID;
+            $attention = Elev8_OS_Bingo_Reservations_Module::attention_count($assigned_user_id);
+            $upcoming = Elev8_OS_Bingo_Reservations_Module::upcoming_count(7, $assigned_user_id);
+            $cards[] = self::card(
+                __('Reservations', 'elev8-os'),
+                sprintf(__('%1$d need attention · %2$d upcoming this week.', 'elev8-os'), $attention, $upcoming),
+                Elev8_OS_Bingo_Reservations_Module::admin_url(),
+                'tickets-alt',
+                $attention > 0
+            );
+        }
         if ($can('manage_checkins')) {
             $cards[] = self::card(__('Check-In Center', 'elev8-os'), __('Open public and internal check-ins, links, and QR tools.', 'elev8-os'), home_url('/checkin/?team=1'), 'forms');
         }
