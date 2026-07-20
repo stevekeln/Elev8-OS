@@ -105,15 +105,16 @@ final class Elev8_OS_Daily_Operations_Service {
         if (user_can($user_id, 'manage_options')) { return self::templates(); }
         $user = get_userdata($user_id);
         if (!$user) { return []; }
-        $roles = (array)$user->roles;
         $available = [];
+        $keys = class_exists('Elev8_OS_Access_Service')
+            ? Elev8_OS_Access_Service::allowed_operations_templates($user)
+            : [];
         foreach (self::templates() as $key => $template) {
             if (!empty($template['public'])) {
                 if ($include_public) { $available[$key] = $template; }
                 continue;
             }
-            $allowed = (array)($template['roles'] ?? []);
-            if (!$allowed || array_intersect($roles, $allowed)) { $available[$key] = $template; }
+            if (in_array($key, $keys, true)) { $available[$key] = $template; }
         }
         return $available;
     }

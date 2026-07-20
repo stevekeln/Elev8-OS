@@ -1,0 +1,11 @@
+Elev8 OS repository recovery package
+Recovered from: Elev8-OS backup.zip
+Branch found in backup: develop
+Local commit found: eb42f9f (10.10.0)
+Remote develop recorded in backup: 8e711db (10.9.0)
+Plugin version verified: 10.10.0
+BUILD_VERSION normalized: 10.10.0
+
+This package intentionally does NOT contain the old .git folder or local toolkit backups.
+Copy these files over the freshly cloned repository root, then review Changes in GitHub Desktop, commit to develop, and push.
+Do not copy RECOVERY-NOTE.txt into the repository unless you want to keep it; it is informational only.

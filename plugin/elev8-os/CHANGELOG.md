@@ -1,5 +1,15 @@
 # Elev8 OS Changelog
 
+## 10.10.0 — Relationships & Community Outreach
+- Added a CRM-backed Relationships directory seeded with 123 cleaned dispensary records.
+- Added relationship profiles, flyer permission, contact fields, notes, follow-up state, map directions, and visit history.
+- Added outreach campaigns with assigned locations, delivery status, flyer quantities, and field notes.
+- Added role-aware Mobile Home cards for managers, retail employees, artists/teachers, and open-mic DJs.
+- Added Elev8 Teacher, Elev8 Open Mic DJ, and Elev8 Retail Employee roles.
+- Preserved original spreadsheet notes and removed duplicate seed records.
+
+# Elev8 OS Changelog
+
 ## 10.8.0 — Mobile Role-Aware Home
 
 - Added an automatically managed `/elev8-app/` page with a mobile-first Elev8 OS home screen.

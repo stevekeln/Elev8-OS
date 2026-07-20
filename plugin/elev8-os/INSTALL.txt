@@ -1,16 +1,3 @@
-Elev8 OS 10.4.10 INSTALL
+Elev8 OS 10.10.0
 
-MAIN INSTALL ZIP
-Install the BAT-generated Elev8 OS release ZIP through WordPress Plugins > Add New > Upload Plugin, or replace the existing plugin using your normal workflow.
-
-TEST ON LIVE
-1. Confirm the homepage displays normally while logged out.
-2. Log in as Heather.
-3. Confirm login still opens the Artist Dashboard.
-4. Click Elev8 Arts Home.
-5. Confirm https://elev8arts.com/ displays normally and remains on the homepage.
-6. Click the site logo from the public artist page and confirm the same result.
-7. Confirm /user/ bookmarks still bridge to the Artist Dashboard.
-
-ROLLBACK
-Reinstall 10.4.3.1 if the homepage does not render correctly.
+Replace the changed source files, commit to develop, push, run Build Elev8 OS Release.bat, install the generated ZIP in Local, and test before installing the exact same ZIP on Live. The 123 outreach relationships seed automatically once and will not overwrite later edits.

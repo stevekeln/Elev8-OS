@@ -19,12 +19,14 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-template-renderer.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-content-studio-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-access-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-idea-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-crm-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-community-outreach-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-print-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-gallery-operations-module.php';
@@ -73,6 +75,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
 
         Elev8_OS::init();
+        Elev8_OS_Access_Service::init();
         Elev8_OS_WooCommerce::init();
         Elev8_OS_Asset_Sale_Notification_Service::init();
         Elev8_OS_Portal_Page_Manager::init();
@@ -91,6 +94,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Marketing_Module::init();
         Elev8_OS_Content_Studio_Module::init();
         Elev8_OS_Daily_Operations_Module::init();
+        Elev8_OS_Community_Outreach_Module::init();
         Elev8_OS_Business_Memory_Module::init();
         Elev8_OS_Mobile_Home_Module::init();
         Elev8_OS_Checkin_Center_Module::init();

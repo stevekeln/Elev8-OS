@@ -68,6 +68,12 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Daily_Operations_Service')) {
             Elev8_OS_Daily_Operations_Service::activate();
         }
+        if (class_exists('Elev8_OS_Access_Service')) {
+            Elev8_OS_Access_Service::activate();
+        }
+        if (class_exists('Elev8_OS_Community_Outreach_Module')) {
+            Elev8_OS_Community_Outreach_Module::activate();
+        }
         if (class_exists('Elev8_OS_Checkin_Center_Module')) {
             Elev8_OS_Checkin_Center_Module::activate();
         }
