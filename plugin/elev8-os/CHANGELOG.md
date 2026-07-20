@@ -1,3 +1,10 @@
+## 10.11.1 — Bingo Reservations
+
+- Added the `[elev8_bingo_reservation_form]` public shortcode.
+- Stores reservations in the WordPress database with guest, date, accessibility, notes, and consent details.
+- Added an Elev8 OS Bingo Reservations dashboard with filtering, guest totals, contact links, and check-in statuses.
+- Added spam protection, nonce validation, input validation, and automatic upcoming first/third Friday date choices.
+
 ## 10.11.0 — Glass Operations Foundation
 - Added role-aware Glass Manager Dashboard for Elev8 Premier.
 - Added production and cremation job queues, assignment, status, due dates and customer details.

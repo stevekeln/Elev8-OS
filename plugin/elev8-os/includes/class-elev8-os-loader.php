@@ -58,6 +58,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-memory-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-mobile-home-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-bingo-reservations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-release-information-service.php';
@@ -102,6 +103,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Business_Memory_Module::init();
         Elev8_OS_Mobile_Home_Module::init();
         Elev8_OS_Checkin_Center_Module::init();
+        Elev8_OS_Bingo_Reservations_Module::init();
         Elev8_OS_Waitlist_Module::init();
         Elev8_OS_Class_Idea_Center_Module::init();
         Elev8_OS_Class_Demand_Manager_Module::init();
