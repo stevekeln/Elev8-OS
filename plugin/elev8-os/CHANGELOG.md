@@ -1,3 +1,9 @@
+## 10.12.5 — Event Applications & Elev8 Takeover Intake
+- Added reusable Event Applications workflow and public Elev8 Takeover form.
+- Creates/updates CRM relationship and person records, Unified Intake items, activity history, and owner notifications.
+- Added role-capability protected admin review, assignment, follow-up, and status workflow.
+- Added CEO Dashboard tickler for event applications.
+
 ## 10.12.4 — Unified Reservations & Dashboard Ticklers
 - Renamed the Bingo Reservations administration experience to Reservations while preserving existing URLs and data.
 - Added reusable reservation types for Bingo, Open Mic, classes/workshops, and other events.

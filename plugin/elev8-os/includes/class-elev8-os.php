@@ -163,6 +163,7 @@ final class Elev8_OS {
             'elev8-os'               => 10,
             'elev8-ceo-dashboard'    => 20,
             'elev8-unified-intake'   => 22,
+            'elev8-event-applications' => 23,
             'elev8-daily-operations' => 25,
             'elev8-artist-dashboard' => 30,
             'elev8-class-demand'     => 40,

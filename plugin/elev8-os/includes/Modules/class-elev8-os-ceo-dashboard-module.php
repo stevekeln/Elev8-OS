@@ -181,6 +181,9 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     <?php if (class_exists('Elev8_OS_Bingo_Reservations_Module')) : ?>
                     <a href="<?php echo esc_url(Elev8_OS_Bingo_Reservations_Module::admin_url()); ?>"><span class="dashicons dashicons-tickets-alt"></span><strong><?php esc_html_e('Reservations', 'elev8-os'); ?></strong><small><?php echo esc_html(sprintf(__('%1$d need attention · %2$d upcoming this week', 'elev8-os'), Elev8_OS_Bingo_Reservations_Module::attention_count(), Elev8_OS_Bingo_Reservations_Module::upcoming_count())); ?></small></a>
                     <?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Event_Applications_Module')) : ?>
+                    <a href="<?php echo esc_url(Elev8_OS_Event_Applications_Module::admin_url()); ?>"><span class="dashicons dashicons-forms"></span><strong><?php esc_html_e('Event Applications', 'elev8-os'); ?></strong><small><?php echo esc_html(sprintf(__('%1$d need attention · %2$d awaiting agreement', 'elev8-os'), Elev8_OS_Event_Applications_Module::attention_count(), Elev8_OS_Event_Applications_Module::awaiting_agreement_count())); ?></small></a>
+                    <?php endif; ?>
                 </div>
             </section>
 
