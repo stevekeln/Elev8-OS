@@ -1,3 +1,9 @@
+## 10.6.3
+- Made the selected CRM relationship unmistakable with a purple background, strong left border, selected badge, and matching avatar.
+- Updated the relationship detail panel to visually connect with the selected customer.
+- Renamed Relationship Profile to Customer Profile.
+- Rebuilt quick actions with polished Send Email, Call, and Add Note buttons.
+
 # Elev8 OS Changelog
 
 ## 10.6.2 — Private Elev8 Team Entry
