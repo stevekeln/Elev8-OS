@@ -314,6 +314,8 @@ Message for Steve:
             $f('start_time','Start time','time',true),
             $f('end_time','End time','time',true),
             $f('other_location','Other location or business destination','text'),
+            $f('hemp_sales','HEMP sales ($)','number'),
+            $f('elev8_glass_gallery_sales','Elev8 Glass Gallery sales ($)','number'),
             $f('work_summary','What did you personally complete during this work period?','textarea',true),
             $f('duties_completed','Duties completed (optional — select any that apply)','checkbox_group',false,['Opened store','Closed store','Staff supervision or coaching','Customer service','Inventory','Merchandising','Cleaning or organization','Vendor management','Purchasing or supply run','Paperwork or administration','Banking or deposit','Marketing','Event planning','Building maintenance','Business appointment','Remote administrative work','Other']),
             $f('staff_worked_with','Staff worked with','text'),
@@ -321,7 +323,7 @@ Message for Steve:
             $f('problems_solved','Problems resolved during this work period','textarea'),
             $f('employee_coaching','Employee coaching or tasks assigned','textarea'),
             $f('customer_issues','Customer issues handled','textarea'),
-            $f('follow_up_needed','What still needs to be completed? Enter None if nothing remains.','textarea',true),
+            $f('follow_up_needed','What still needs to be completed?','textarea'),
             $f('business_improvements','Did you notice anything that could improve the business?','textarea'),
             $f('owner_attention_items','Message for Steve','textarea'),
             $f('general_notes','Additional notes','textarea')]);

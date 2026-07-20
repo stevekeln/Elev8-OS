@@ -1,3 +1,9 @@
+# 10.12.3 — Manager Sales Fields and Optional Follow-Up
+
+- Added optional structured sales fields for HEMP and Elev8 Glass Gallery to the Manager Operations Log.
+- Made “What still needs to be completed?” optional and removed the instruction to enter “None.”
+- Preserved existing Manager Operations Log submissions and field data.
+
 ## 10.12.2 — Centralized Permissions & Access Foundation
 
 - Added one capability-driven Elev8 OS Access Service as the source of truth for business access.
