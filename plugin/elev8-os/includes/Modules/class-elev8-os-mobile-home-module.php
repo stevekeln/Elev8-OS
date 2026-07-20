@@ -104,6 +104,12 @@ final class Elev8_OS_Mobile_Home_Module {
         $first = trim((string) $user->first_name);
         $name = $first !== '' ? $first : ($user->display_name ?: __('Team Member', 'elev8-os'));
         $cards = self::cards_for_user($user);
+        $operational_summary = class_exists('Elev8_OS_Dashboard_Service')
+            ? Elev8_OS_Dashboard_Service::summary($user)
+            : [];
+        $operational_priorities = class_exists('Elev8_OS_Dashboard_Service')
+            ? Elev8_OS_Dashboard_Service::priorities($operational_summary)
+            : [];
 
         ob_start();
         ?>
@@ -113,6 +119,27 @@ final class Elev8_OS_Mobile_Home_Module {
                 <h1><?php echo esc_html(sprintf(__('Hello, %s', 'elev8-os'), $name)); ?></h1>
                 <p><?php esc_html_e('Your most-used business tools in one place. You only see tools available to your account.', 'elev8-os'); ?></p>
             </header>
+
+            <?php if ($operational_summary) : ?>
+                <section class="elev8-mobile-operational" aria-label="<?php esc_attr_e('What needs attention', 'elev8-os'); ?>">
+                    <div class="elev8-mobile-operational__summary">
+                        <strong><?php echo (int) ($operational_summary['needs_attention'] ?? 0); ?></strong>
+                        <span><?php esc_html_e('items need attention', 'elev8-os'); ?></span>
+                    </div>
+                    <?php if ($operational_priorities) : ?>
+                        <div class="elev8-mobile-priorities">
+                            <?php foreach (array_slice($operational_priorities, 0, 3) as $priority) : ?>
+                                <a href="<?php echo esc_url((string) $priority['url']); ?>">
+                                    <b><?php echo (int) $priority['count']; ?></b>
+                                    <span><?php echo esc_html((string) $priority['label']); ?></span>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else : ?>
+                        <small><?php esc_html_e('No verified urgent items are waiting right now.', 'elev8-os'); ?></small>
+                    <?php endif; ?>
+                </section>
+            <?php endif; ?>
 
             <section class="elev8-mobile-grid" aria-label="<?php esc_attr_e('Elev8 OS tools', 'elev8-os'); ?>">
                 <?php foreach ($cards as $card) : ?>

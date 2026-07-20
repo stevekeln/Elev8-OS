@@ -175,6 +175,7 @@ final class Elev8_OS_Work_Service {
         $active_statuses = ['new','assigned','in_progress','waiting'];
         $count = static function(array $meta) use ($base): int { $q = new WP_Query(array_merge($base, ['meta_query' => $meta])); return (int) $q->found_posts; };
         return [
+            'available' => true,
             'active' => $count(array_merge($owner_query, [['key'=>'_elev8_work_status','value'=>$active_statuses,'compare'=>'IN']])),
             'overdue' => $count(array_merge($owner_query, [['key'=>'_elev8_work_status','value'=>$active_statuses,'compare'=>'IN'], ['key'=>'_elev8_work_due_date','value'=>$today,'compare'=>'<','type'=>'DATE']])),
             'due_today' => $count(array_merge($owner_query, [['key'=>'_elev8_work_status','value'=>$active_statuses,'compare'=>'IN'], ['key'=>'_elev8_work_due_date','value'=>$today,'compare'=>'=','type'=>'DATE']])),

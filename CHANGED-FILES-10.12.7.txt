@@ -1,0 +1,11 @@
+BUILD_VERSION
+CHANGELOG.md
+plugin/elev8-os/CHANGELOG.md
+plugin/elev8-os/elev8-os.php
+plugin/elev8-os/assets/css/business-intelligence-dashboard.css
+plugin/elev8-os/assets/css/mobile-home.css
+plugin/elev8-os/includes/class-elev8-os-loader.php
+plugin/elev8-os/includes/Modules/class-elev8-os-ceo-dashboard-module.php
+plugin/elev8-os/includes/Modules/class-elev8-os-mobile-home-module.php
+plugin/elev8-os/includes/Services/class-elev8-os-work-service.php
+plugin/elev8-os/includes/Services/class-elev8-os-dashboard-service.php

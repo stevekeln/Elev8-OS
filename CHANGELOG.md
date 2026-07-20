@@ -1,3 +1,10 @@
+## 10.12.7 — Operational Home
+- Added a shared Dashboard Service as the single source for verified role-aware operational counts.
+- Added CEO Operational Home sections for Needs Attention, My Work, Team Work, Reservations, and Event Applications.
+- Added role-aware Mobile Home priority summaries so users immediately see what requires action.
+- Added explicit Unavailable states for sales, upcoming events, and notifications until trusted shared services are connected.
+- Preserved existing dashboard navigation and work, reservation, and application records.
+
 
 ## 10.12.6 — Workflow & Tasks Foundation
 - Added reusable Work Service and role-aware My Work / Team Work interfaces.

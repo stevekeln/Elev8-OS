@@ -76,6 +76,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-person-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-intake-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-work-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-unified-intake-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-work-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-demand-manager-module.php';
