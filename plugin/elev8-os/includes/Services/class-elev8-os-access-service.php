@@ -10,6 +10,8 @@ final class Elev8_OS_Access_Service {
     public const ROLE_TEACHER = 'elev8_teacher';
     public const ROLE_DJ = 'elev8_open_mic_dj';
     public const ROLE_RETAIL = 'elev8_retail_employee';
+    public const ROLE_GLASS_MANAGER = 'elev8_glass_manager';
+    public const ROLE_GLASS_BLOWER = 'elev8_glass_blower';
 
     public static function init(): void {
         add_action('init', [__CLASS__, 'ensure_roles'], 5);
@@ -23,6 +25,19 @@ final class Elev8_OS_Access_Service {
         add_role(self::ROLE_TEACHER, __('Elev8 Teacher', 'elev8-os'), ['read' => true]);
         add_role(self::ROLE_DJ, __('Elev8 Open Mic DJ', 'elev8-os'), ['read' => true]);
         add_role(self::ROLE_RETAIL, __('Elev8 Retail Employee', 'elev8-os'), ['read' => true]);
+        add_role(self::ROLE_GLASS_MANAGER, __('Elev8 Glass Manager', 'elev8-os'), ['read'=>true,'elev8_manage_glass'=>true,'elev8_glass_work'=>true]);
+        add_role(self::ROLE_GLASS_BLOWER, __('Elev8 Glass Blower', 'elev8-os'), ['read'=>true,'elev8_glass_work'=>true]);
+        $admin=get_role('administrator'); if($admin){$admin->add_cap('elev8_manage_glass');$admin->add_cap('elev8_glass_work');}
+        self::assign_foundation_glass_manager();
+    }
+
+
+
+    private static function assign_foundation_glass_manager(): void {
+        $email = (string) apply_filters('elev8_os_foundation_glass_manager_email', 'glass@elev8premier.com');
+        $user = $email ? get_user_by('email', $email) : false;
+        if (!$user instanceof WP_User || user_can($user, 'elev8_manage_glass')) { return; }
+        $user->add_role(self::ROLE_GLASS_MANAGER);
     }
 
     public static function is_owner(WP_User $user): bool {

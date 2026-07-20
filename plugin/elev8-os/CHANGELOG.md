@@ -1,3 +1,10 @@
+## 10.11.0 — Glass Operations Foundation
+- Added role-aware Glass Manager Dashboard for Elev8 Premier.
+- Added production and cremation job queues, assignment, status, due dates and customer details.
+- Added blower work recording and manager payout approval.
+- Added WooCommerce cremation-order discovery/import.
+- Added reusable Glass Manager and Glass Blower WordPress roles/capabilities.
+
 ## 10.10.2 — Art Walk Vendors & Relationship Logos
 
 ### Added

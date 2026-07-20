@@ -70,6 +70,7 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Access_Service')) {
             Elev8_OS_Access_Service::activate();
+        Elev8_OS_Glass_Operations_Service::activate();
         }
         if (class_exists('Elev8_OS_Community_Outreach_Module')) {
             Elev8_OS_Community_Outreach_Module::activate();

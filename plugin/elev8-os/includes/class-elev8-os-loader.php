@@ -13,6 +13,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-user-search-component.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-print-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-gallery-operations-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-glass-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-student-relationship-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-marketing-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-brand-service.php';
@@ -30,6 +31,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-print-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-gallery-operations-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-classes-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-artwork-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-identity-service.php';
@@ -81,6 +83,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Recommendation_State_Service::init();
         Elev8_OS_Gallery_Operations_Service::init();
+        Elev8_OS_Glass_Operations_Service::init();
         Elev8_OS_Student_Relationship_Service::init();
         Elev8_OS_Marketing_Service::init();
         Elev8_OS_Content_Studio_Service::init();
@@ -88,6 +91,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Dashboard_Module::init();
         Elev8_OS_Artist_Print_Center_Module::init();
         Elev8_OS_Gallery_Operations_Module::init();
+        Elev8_OS_Glass_Operations_Module::init();
         Elev8_OS_My_Classes_Module::init();
         Elev8_OS_My_Artwork_Module::init();
         Elev8_OS_Students_Module::init();
