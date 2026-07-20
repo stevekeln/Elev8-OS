@@ -1,3 +1,13 @@
+# 10.12.0 — Unified Intake Platform Foundation
+
+- Expanded the shared Activity Service into an immutable cross-module timeline for people, intake records, CRM, Business Memory, and future intelligence.
+- Added a reusable `elev8_os_unified_intake_submit` integration boundary so future forms can create workflow items without duplicating intake business logic.
+- Added idempotent origin-record matching to prevent duplicate intake cards when source hooks run more than once.
+- Added automatic activity records when intake items are created or workflow fields change.
+- Added an activity timeline directly to every Owner Intake Dashboard card.
+- Preserved the existing compact Person activity history for backward compatibility while writing new activity records through the shared service.
+- No existing source records are modified; Bingo and Daily Operations remain authoritative for their own details.
+
 # 10.12.0 — Stabilization and Unified Intake
 
 - Added an Owner Intake Dashboard with Trello-style workflow columns: New, Reviewed, Contacted, In Progress, Completed, and Archived.

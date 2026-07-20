@@ -74,6 +74,7 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Glass_Operations_Service')) {
             Elev8_OS_Glass_Operations_Service::activate();
         }
+        if (class_exists('Elev8_OS_Activity_Service')) { Elev8_OS_Activity_Service::activate(); }
         if (class_exists('Elev8_OS_Person_Service')) { Elev8_OS_Person_Service::activate(); }
         if (class_exists('Elev8_OS_Unified_Intake_Service')) { Elev8_OS_Unified_Intake_Service::activate(); }
         if (class_exists('Elev8_OS_Community_Outreach_Module')) {

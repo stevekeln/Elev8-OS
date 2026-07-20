@@ -70,6 +70,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-opportunity-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-opportunity-activity-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-opportunity-participation-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-activity-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-notification-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-person-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-intake-service.php';
@@ -84,6 +85,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Access_Service::init();
         Elev8_OS_WooCommerce::init();
         Elev8_OS_Asset_Sale_Notification_Service::init();
+        Elev8_OS_Activity_Service::init();
         Elev8_OS_Person_Service::init();
         Elev8_OS_Unified_Intake_Service::init();
         Elev8_OS_Unified_Intake_Module::init();

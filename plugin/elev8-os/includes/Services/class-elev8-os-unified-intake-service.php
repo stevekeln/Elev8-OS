@@ -8,6 +8,7 @@ final class Elev8_OS_Unified_Intake_Service {
         add_action('init', [__CLASS__, 'register_post_type']);
         add_action('elev8_os_operations_entry_created', [__CLASS__, 'capture_operations_entry'], 10, 3);
         add_action('elev8_os_bingo_reservation_created', [__CLASS__, 'capture_bingo_reservation'], 10, 2);
+        add_action('elev8_os_unified_intake_submit', [__CLASS__, 'capture_submission'], 10, 1);
     }
 
     public static function activate(): void {
@@ -35,6 +36,59 @@ final class Elev8_OS_Unified_Intake_Service {
             'completed' => __('Completed', 'elev8-os'),
             'archived' => __('Archived', 'elev8-os'),
         ];
+    }
+
+
+    /**
+     * Reusable intake boundary for future public forms and integrations.
+     *
+     * Required data is intentionally small. The originating feature keeps its
+     * own authoritative record and passes origin_post_id/origin_post_type when
+     * available so workflow cards can be linked without duplicating logic.
+     */
+    public static function capture_submission(array $data): int {
+        $name = sanitize_text_field((string) ($data['name'] ?? ''));
+        $email = sanitize_email((string) ($data['email'] ?? ''));
+        $phone = sanitize_text_field((string) ($data['phone'] ?? ''));
+        $person_id = absint($data['person_id'] ?? 0);
+        if ($person_id < 1 && $email !== '') {
+            $person_id = Elev8_OS_Person_Service::find_or_create($email, $name, $phone);
+        }
+
+        $intake_id = self::create([
+            'title' => (string) ($data['title'] ?? __('New intake item', 'elev8-os')),
+            'type' => (string) ($data['type'] ?? 'general'),
+            'source' => (string) ($data['source'] ?? 'unknown'),
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'summary' => (string) ($data['summary'] ?? ''),
+            'origin_post_id' => absint($data['origin_post_id'] ?? 0),
+            'origin_post_type' => (string) ($data['origin_post_type'] ?? ''),
+            'person_id' => $person_id,
+        ]);
+
+        if ($intake_id > 0 && $person_id > 0) {
+            Elev8_OS_Person_Service::add_activity(
+                $person_id,
+                (string) ($data['type'] ?? 'general'),
+                $intake_id,
+                (string) ($data['activity_label'] ?? $data['title'] ?? __('Intake submitted', 'elev8-os')),
+                (string) ($data['source'] ?? 'unknown'),
+                (string) ($data['summary'] ?? '')
+            );
+        }
+
+        if ($intake_id > 0 && !empty($data['notify'])) {
+            self::notify(
+                $intake_id,
+                (string) ($data['type_label'] ?? $data['type'] ?? __('submission', 'elev8-os')),
+                $name,
+                (string) ($data['summary'] ?? '')
+            );
+        }
+
+        return $intake_id;
     }
 
     public static function capture_operations_entry(int $entry_id, string $template_key, array $values): void {
@@ -100,6 +154,22 @@ final class Elev8_OS_Unified_Intake_Service {
     }
 
     public static function create(array $data): int {
+        $origin_post_id = absint($data['origin_post_id'] ?? 0);
+        $origin_post_type = sanitize_key((string) ($data['origin_post_type'] ?? ''));
+        if ($origin_post_id > 0 && $origin_post_type !== '') {
+            $existing = get_posts([
+                'post_type' => self::POST_TYPE,
+                'post_status' => 'publish',
+                'posts_per_page' => 1,
+                'fields' => 'ids',
+                'meta_query' => [
+                    ['key' => '_elev8_intake_origin_post_id', 'value' => $origin_post_id, 'compare' => '=', 'type' => 'NUMERIC'],
+                    ['key' => '_elev8_intake_origin_post_type', 'value' => $origin_post_type, 'compare' => '='],
+                ],
+            ]);
+            if ($existing) { return (int) $existing[0]; }
+        }
+
         $id = wp_insert_post([
             'post_type' => self::POST_TYPE,
             'post_status' => 'publish',
@@ -117,11 +187,23 @@ final class Elev8_OS_Unified_Intake_Service {
             '_elev8_intake_assigned_user' => 0,
             '_elev8_intake_follow_up' => '',
             '_elev8_intake_notes' => '',
-            '_elev8_intake_origin_post_id' => absint($data['origin_post_id'] ?? 0),
-            '_elev8_intake_origin_post_type' => sanitize_key((string) ($data['origin_post_type'] ?? '')),
+            '_elev8_intake_origin_post_id' => $origin_post_id,
+            '_elev8_intake_origin_post_type' => $origin_post_type,
             '_elev8_intake_person_id' => absint($data['person_id'] ?? 0),
         ];
         foreach ($meta as $key => $value) { update_post_meta((int) $id, $key, $value); }
+        if (class_exists('Elev8_OS_Activity_Service')) {
+            Elev8_OS_Activity_Service::record([
+                'type' => 'intake_created',
+                'label' => __('Intake item created', 'elev8-os'),
+                'details' => (string) ($data['summary'] ?? ''),
+                'person_id' => absint($data['person_id'] ?? 0),
+                'object_id' => (int) $id,
+                'object_type' => self::POST_TYPE,
+                'source' => (string) ($data['source'] ?? ''),
+            ]);
+        }
+        do_action('elev8_os_intake_created', (int) $id, $data);
         return (int) $id;
     }
 

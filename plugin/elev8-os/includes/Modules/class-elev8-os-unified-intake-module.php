@@ -26,10 +26,46 @@ final class Elev8_OS_Unified_Intake_Module {
         if (get_post_type($id) !== Elev8_OS_Unified_Intake_Service::POST_TYPE) { wp_die(__('Invalid intake item.', 'elev8-os')); }
         $status = sanitize_key((string) ($_POST['status'] ?? 'new'));
         if (!array_key_exists($status, Elev8_OS_Unified_Intake_Service::statuses())) { $status = 'new'; }
+        $assigned = absint($_POST['assigned_user'] ?? 0);
+        $follow_up = sanitize_text_field(wp_unslash($_POST['follow_up'] ?? ''));
+        $notes = sanitize_textarea_field(wp_unslash($_POST['internal_notes'] ?? ''));
+        $previous_status = (string) get_post_meta($id, '_elev8_intake_status', true);
+        $previous_assigned = (int) get_post_meta($id, '_elev8_intake_assigned_user', true);
+        $previous_follow_up = (string) get_post_meta($id, '_elev8_intake_follow_up', true);
+        $previous_notes = (string) get_post_meta($id, '_elev8_intake_notes', true);
+
         update_post_meta($id, '_elev8_intake_status', $status);
-        update_post_meta($id, '_elev8_intake_assigned_user', absint($_POST['assigned_user'] ?? 0));
-        update_post_meta($id, '_elev8_intake_follow_up', sanitize_text_field(wp_unslash($_POST['follow_up'] ?? '')));
-        update_post_meta($id, '_elev8_intake_notes', sanitize_textarea_field(wp_unslash($_POST['internal_notes'] ?? '')));
+        update_post_meta($id, '_elev8_intake_assigned_user', $assigned);
+        update_post_meta($id, '_elev8_intake_follow_up', $follow_up);
+        update_post_meta($id, '_elev8_intake_notes', $notes);
+
+        if (class_exists('Elev8_OS_Activity_Service')) {
+            $changes = [];
+            if ($previous_status !== $status) {
+                $labels = Elev8_OS_Unified_Intake_Service::statuses();
+                $changes[] = sprintf('Status: %s → %s', $labels[$previous_status] ?? 'Unavailable', $labels[$status] ?? 'Unavailable');
+            }
+            if ($previous_assigned !== $assigned) {
+                $old_user = $previous_assigned > 0 ? get_userdata($previous_assigned) : null;
+                $new_user = $assigned > 0 ? get_userdata($assigned) : null;
+                $changes[] = sprintf('Assigned: %s → %s', $old_user ? $old_user->display_name : 'Unassigned', $new_user ? $new_user->display_name : 'Unassigned');
+            }
+            if ($previous_follow_up !== $follow_up) { $changes[] = 'Follow-up: ' . ($follow_up !== '' ? $follow_up : 'Removed'); }
+            if ($previous_notes !== $notes) { $changes[] = 'Internal notes updated'; }
+            if ($changes) {
+                Elev8_OS_Activity_Service::record([
+                    'type' => 'intake_updated',
+                    'label' => __('Intake workflow updated', 'elev8-os'),
+                    'details' => implode("
+", $changes),
+                    'person_id' => (int) get_post_meta($id, '_elev8_intake_person_id', true),
+                    'object_id' => $id,
+                    'object_type' => Elev8_OS_Unified_Intake_Service::POST_TYPE,
+                    'source' => 'owner-intake-dashboard',
+                    'actor_user_id' => get_current_user_id(),
+                ]);
+            }
+        }
         wp_safe_redirect(admin_url('admin.php?page=' . self::ADMIN_SLUG . '&updated=1#intake-' . $id));
         exit;
     }
@@ -93,6 +129,7 @@ final class Elev8_OS_Unified_Intake_Module {
         if ($name !== '' || $email !== '' || $phone !== '') { echo '<p class="elev8-intake-contact">' . esc_html($name) . ($email !== '' ? '<br><a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>' : '') . ($phone !== '' ? '<br><a href="tel:' . esc_attr(preg_replace('/[^0-9+]/', '', $phone)) . '">' . esc_html($phone) . '</a>' : '') . '</p>'; }
         if (trim((string) $item->post_content) !== '') { echo '<details><summary>Submission details</summary><div class="elev8-intake-details">' . nl2br(esc_html($item->post_content)) . '</div></details>'; }
         echo '<p class="elev8-intake-source">Source: ' . esc_html($source !== '' ? $source : 'Unavailable') . ($person_id > 0 ? ' · Person #' . $person_id : '') . '</p>';
+        self::render_timeline($id);
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         wp_nonce_field('elev8_intake_update_' . $id, 'elev8_intake_nonce');
         echo '<input type="hidden" name="action" value="elev8_os_update_intake"><input type="hidden" name="intake_id" value="' . $id . '">';
@@ -101,6 +138,22 @@ final class Elev8_OS_Unified_Intake_Module {
         echo '</select></label><label>Assigned to<select name="assigned_user"><option value="0">Unassigned</option>';
         foreach ($users as $user) { echo '<option value="' . (int) $user->ID . '" ' . selected($assigned, (int) $user->ID, false) . '>' . esc_html($user->display_name) . '</option>'; }
         echo '</select></label><label>Follow-up date<input type="date" name="follow_up" value="' . esc_attr($follow_up) . '"></label><label>Internal notes<textarea name="internal_notes" rows="3">' . esc_textarea($notes) . '</textarea></label><button class="button button-primary" type="submit">Save</button></form></article>';
+    }
+
+    private static function render_timeline(int $intake_id): void {
+        if (!class_exists('Elev8_OS_Activity_Service')) { return; }
+        $activities = Elev8_OS_Activity_Service::for_object($intake_id, Elev8_OS_Unified_Intake_Service::POST_TYPE, 20);
+        if (!$activities) { return; }
+        echo '<details class="elev8-intake-timeline"><summary>Activity timeline (' . count($activities) . ')</summary><ol>';
+        foreach ($activities as $activity) {
+            $actor_id = (int) get_post_meta($activity->ID, '_elev8_activity_actor_user_id', true);
+            $actor = $actor_id > 0 ? get_userdata($actor_id) : null;
+            echo '<li><strong>' . esc_html($activity->post_title) . '</strong><time>' . esc_html(get_the_date('M j, Y g:i a', $activity->ID)) . '</time>';
+            if ($actor) { echo '<span>By ' . esc_html($actor->display_name) . '</span>'; }
+            if (trim((string) $activity->post_content) !== '') { echo '<p>' . nl2br(esc_html($activity->post_content)) . '</p>'; }
+            echo '</li>';
+        }
+        echo '</ol></details>';
     }
 
     private static function type_label(string $type): string {

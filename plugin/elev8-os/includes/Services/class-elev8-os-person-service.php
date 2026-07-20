@@ -61,8 +61,22 @@ final class Elev8_OS_Person_Service {
         return (int) $id;
     }
 
-    public static function add_activity(int $person_id, string $type, int $record_id, string $label, string $source = ''): void {
+    public static function add_activity(int $person_id, string $type, int $record_id, string $label, string $source = '', string $details = ''): void {
         if ($person_id < 1) { return; }
+
+        if (class_exists('Elev8_OS_Activity_Service')) {
+            Elev8_OS_Activity_Service::record([
+                'type' => $type,
+                'label' => $label,
+                'details' => $details,
+                'person_id' => $person_id,
+                'object_id' => $record_id,
+                'object_type' => get_post_type($record_id) ?: '',
+                'source' => $source,
+            ]);
+        }
+
+        // Preserve the established compact person history for backward compatibility.
         $activity = get_post_meta($person_id, '_elev8_person_activity', true);
         if (!is_array($activity)) { $activity = []; }
         $activity[] = [
