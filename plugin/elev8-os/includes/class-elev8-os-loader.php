@@ -20,6 +20,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-content-studio-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-idea-center-module.php';
@@ -50,6 +51,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-marketing-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-content-studio-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-daily-operations-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-memory-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
@@ -88,6 +90,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Marketing_Module::init();
         Elev8_OS_Content_Studio_Module::init();
         Elev8_OS_Daily_Operations_Module::init();
+        Elev8_OS_Business_Memory_Module::init();
         Elev8_OS_Checkin_Center_Module::init();
         Elev8_OS_Waitlist_Module::init();
         Elev8_OS_Class_Idea_Center_Module::init();
