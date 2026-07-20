@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 10.8.0 — Mobile Role-Aware Home
+
+- Added an automatically managed `/elev8-app/` page with a mobile-first Elev8 OS home screen.
+- Added permission-aware launch cards so owners, managers/employees, and mapped artists see only relevant tools.
+- Added one-tap access to CEO Dashboard, quick Business Memory capture, Business Memory search, Daily Operations, Artist Dashboard, classes, Gallery Operations, and Check-In Center where permitted.
+- Added mobile app metadata and an Add to Home Screen prompt so the page can be launched from a phone like an app.
+- Preserved WordPress authentication and existing Elev8 OS permissions as the source of truth.
+
 ## 10.7.0 — Business Memory Foundation
 - Added structured Business Memory records for conversations, events, decisions, incidents, and observations.
 - Added participants, location, objective summary, decisions, action items and owners, follow-up dates, attachments, priority, tags, and record status.
