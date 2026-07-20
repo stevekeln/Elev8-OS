@@ -1,22 +1,22 @@
 {
     "product":  "Elev8 OS",
-    "version":  "10.10.2",
-    "build":  "20260720-101154",
-    "builtAtUtc":  "2026-07-20T16:11:54Z",
-    "package":  "elev8-os-10.10.2-20260720-101154.zip",
+    "version":  "10.10.0",
+    "build":  "20260720-121951",
+    "builtAtUtc":  "2026-07-20T18:19:51Z",
+    "package":  "elev8-os-10.10.0-20260720-121951.zip",
     "git":  {
-                "branch":  "Unavailable",
-                "commit":  "Unavailable",
-                "workingTreeDirty":  null
+                "branch":  "develop",
+                "commit":  "82a75ac3ba78b5f2a10ea60f3e7eacb4d40c1366",
+                "workingTreeDirty":  true
             },
     "validation":  {
                        "phpSyntax":  "PASS",
-                       "phpFileCount":  80,
+                       "phpFileCount":  79,
                        "phpExecutable":  "C:\\Users\\skeln\\AppData\\Local\\Programs\\Local\\resources\\extraResources\\lightning-services\\php-8.2.29+0\\bin\\win64\\php.exe"
                    },
     "packageContents":  {
-                            "fileCount":  120,
-                            "totalBytesBeforeManifest":  1391825
+                            "fileCount":  119,
+                            "totalBytesBeforeManifest":  1328009
                         },
     "files":  [
                   {
@@ -106,8 +106,8 @@
                   },
                   {
                       "path":  "assets/css/community-outreach.css",
-                      "bytes":  2885,
-                      "sha256":  "0b5099bf0cc99b80ca75e6629469a8e4ef51918cf3f812cc77ccd3d13b00a382"
+                      "bytes":  1772,
+                      "sha256":  "8788497637fb9576637fea1fe32614b7e889dd25b9af6b74fde66bb189de2693"
                   },
                   {
                       "path":  "assets/css/content-studio.css",
@@ -191,18 +191,18 @@
                   },
                   {
                       "path":  "CHANGELOG.md",
-                      "bytes":  25202,
-                      "sha256":  "c5d417b34ed0c16de36de174c048ccbc52d1d9afff4e4353782ea66139741ed9"
+                      "bytes":  24265,
+                      "sha256":  "e6638fab3ff9ba4dc757ac4d681553ad501985c04698e80905cd8b62e5e7ad63"
                   },
                   {
                       "path":  "elev8-os.php",
                       "bytes":  642,
-                      "sha256":  "1140e829267a6f12fe4ea0d7b15dd12b143913146f5b5a11a41a9f6d6ea898c9"
+                      "sha256":  "c7d1f75a20df551f18ff39e1bf754beb39b86c9e1d1ba048fa1a7fb2b6be1da9"
                   },
                   {
                       "path":  "GIT-SUMMARY.txt",
-                      "bytes":  286,
-                      "sha256":  "460dd1c2b0a15cbec25c5b9d8da94111decf213977300b5298f762a136d047e9"
+                      "bytes":  108,
+                      "sha256":  "658275cb2c907b31a84efa4752948b9b91d8d80b32b8839779dd568d900a8d91"
                   },
                   {
                       "path":  "includes/class-elev8-os.php",
@@ -218,11 +218,6 @@
                       "path":  "includes/Data/community-outreach-seed.php",
                       "bytes":  12298,
                       "sha256":  "cc351cb383a8cc8bb5cea7aebbb2942d0e4d3dd3c61d0222f2aec8fe1b674344"
-                  },
-                  {
-                      "path":  "includes/Data/community-vendor-seed.php",
-                      "bytes":  51651,
-                      "sha256":  "4e573b609059018066099468c4d8e879873f35d743d4864aba3d5561c8e4fe03"
                   },
                   {
                       "path":  "includes/Integrations/class-elev8-os-amelia.php",
@@ -296,8 +291,8 @@
                   },
                   {
                       "path":  "includes/Modules/class-elev8-os-community-outreach-module.php",
-                      "bytes":  25950,
-                      "sha256":  "ed548aedccde68a132b109e5a07a84859c72f83b8df73b40153a0cb0b55dea63"
+                      "bytes":  16128,
+                      "sha256":  "fe03844d59f570b033e442fe7ed3ae5f7dd3926b6567829d4bacf9158e078b54"
                   },
                   {
                       "path":  "includes/Modules/class-elev8-os-content-studio-module.php",
@@ -591,8 +586,8 @@
                   },
                   {
                       "path":  "INSTALL.txt",
-                      "bytes":  406,
-                      "sha256":  "94e809795af24f54161f8e6a3fa218ebcc75eb7b27424530dc91117bd7d0f40b"
+                      "bytes":  291,
+                      "sha256":  "2cacc229dbac6e524022e777c5e2e742b2c4132b69d58cd0a1ae0fad7b7ac59c"
                   },
                   {
                       "path":  "README.txt",

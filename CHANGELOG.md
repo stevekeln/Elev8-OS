@@ -1,16 +1,29 @@
+## 10.10.2 — Art Walk Vendors & Relationship Logos
+
+### Added
+- Imported 117 unique records from the Art Walk Vendors worksheet.
+- Classified records with a food email as Food Vendor and all other imported records as Vendor.
+- Added reusable logo storage to every Relationships CRM record using the WordPress Media Library.
+- Added editable social media, product/service description, consignment interest, contact, phone, and email fields.
+- Added relationship editing and type filtering from the Relationships screen.
+- Added vendor and food-vendor dashboard counts.
+
+### Data handling
+- Duplicate vendor submissions are merged by matching email, phone, or normalized relationship name before seed creation.
+- Vendor imports use a separate one-time seed marker, so existing dispensary records remain intact.
+- Existing CRM records are updated only where fields are missing; Food Vendor classification takes priority when applicable.
+
 # Elev8 OS Changelog
 
-## 10.9.0 — Role-Aware App Portals and Community Outreach
+## 10.10.0 — Relationships & Community Outreach
+- Added a CRM-backed Relationships directory seeded with 123 cleaned dispensary records.
+- Added relationship profiles, flyer permission, contact fields, notes, follow-up state, map directions, and visit history.
+- Added outreach campaigns with assigned locations, delivery status, flyer quantities, and field notes.
+- Added role-aware Mobile Home cards for managers, retail employees, artists/teachers, and open-mic DJs.
+- Added Elev8 Teacher, Elev8 Open Mic DJ, and Elev8 Retail Employee roles.
+- Preserved original spreadsheet notes and removed duplicate seed records.
 
-- Added a centralized access service so Mobile Home and team check-ins use the same role rules.
-- Shop managers now see the Manager Operations Log without the Retail Employee Log.
-- Retail employees now see the Retail Employee Log without the Manager Operations Log.
-- Added Elev8 Teacher, Elev8 Open Mic DJ, and Elev8 Retail Employee WordPress roles.
-- Added artist/teacher app cards for Artist Dashboard, My Classes, and Artist Operating Log.
-- Added an Open Mic Event Log app card for users assigned the Open Mic DJ role.
-- Added Community Outreach, a CRM-backed flyer delivery system with reusable business locations, flyer permission details, campaigns, stops, delivery status, quantities, contacts, notes, and last-delivery history.
-- Added a Community Outreach Mobile Home card for owners, managers, retail employees, and Open Mic DJs.
-- Preserved the original operations records and existing integrations.
+# Elev8 OS Changelog
 
 ## 10.8.0 — Mobile Role-Aware Home
 

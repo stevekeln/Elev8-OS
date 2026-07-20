@@ -1,1 +1,5 @@
-feat: add relationships CRM, seeded outreach directory, campaigns, visit history, and role-aware app access
+Elev8 OS 10.10.2
+- Import 117 deduplicated Art Walk vendor relationships.
+- Classify 4 food vendors separately from standard vendors.
+- Add reusable relationship logo upload/storage through WordPress Media Library.
+- Add editable vendor profile details and relationship type filtering.

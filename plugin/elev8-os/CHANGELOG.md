@@ -1,3 +1,18 @@
+## 10.10.2 — Art Walk Vendors & Relationship Logos
+
+### Added
+- Imported 117 unique records from the Art Walk Vendors worksheet.
+- Classified records with a food email as Food Vendor and all other imported records as Vendor.
+- Added reusable logo storage to every Relationships CRM record using the WordPress Media Library.
+- Added editable social media, product/service description, consignment interest, contact, phone, and email fields.
+- Added relationship editing and type filtering from the Relationships screen.
+- Added vendor and food-vendor dashboard counts.
+
+### Data handling
+- Duplicate vendor submissions are merged by matching email, phone, or normalized relationship name before seed creation.
+- Vendor imports use a separate one-time seed marker, so existing dispensary records remain intact.
+- Existing CRM records are updated only where fields are missing; Food Vendor classification takes priority when applicable.
+
 # Elev8 OS Changelog
 
 ## 10.10.0 — Relationships & Community Outreach

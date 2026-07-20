@@ -1,3 +1,8 @@
-Elev8 OS 10.10.0
-
-Replace the changed source files, commit to develop, push, run Build Elev8 OS Release.bat, install the generated ZIP in Local, and test before installing the exact same ZIP on Live. The 123 outreach relationships seed automatically once and will not overwrite later edits.
+Elev8 OS 10.10.2 installation
+1. Replace the repository files with this updated repository.
+2. Commit to develop and push to GitHub.
+3. Run Build Elev8 OS Release.bat.
+4. Install the generated 10.10.2 ZIP into Local.
+5. Open Elev8 OS > Relationships as an administrator once to run the vendor seed.
+6. Verify Vendor and Food Vendor counts and test adding a logo.
+7. Install the exact tested ZIP into Live.

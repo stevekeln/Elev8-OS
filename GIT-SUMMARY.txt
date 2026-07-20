@@ -1,11 +1,5 @@
-Elev8 OS 10.9.0
-
-Suggested commit message:
-feat: add role-aware app portals and community outreach
-
-Summary:
-- Centralize role-to-tool access decisions.
-- Separate manager and retail employee app/check-in experiences.
-- Add teacher, Open Mic DJ, and retail employee roles.
-- Add artist/teacher and event-host Mobile Home tools.
-- Add CRM-backed community outreach campaigns and flyer delivery tracking.
+Elev8 OS 10.10.2
+- Import 117 deduplicated Art Walk vendor relationships.
+- Classify 4 food vendors separately from standard vendors.
+- Add reusable relationship logo upload/storage through WordPress Media Library.
+- Add editable vendor profile details and relationship type filtering.
