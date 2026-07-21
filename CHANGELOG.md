@@ -1,3 +1,22 @@
+## 11.3.1 — Public Profile Eligibility Hotfix
+
+### Added
+- Added explicit public-profile eligibility states: Eligible, Customer, Bot / Spam, Archived, and Not Yet Classified.
+- Added eligibility controls to the CEO Public Profile editor without changing the user’s WordPress role or customer history.
+- Added Public Profiles filters for eligible team members, excluded accounts, individual exclusion types, and all WordPress users.
+- Added weighted profile completeness based on public name, profile type, headline, biography, and profile photo.
+
+### Changed
+- Removed the automatic Staff fallback for unknown WordPress users.
+- Customers, bots, archived users, and unclassified accounts are excluded from the normal Public Profiles workspace and CEO profile-attention section.
+- Excluding an account clears public profile types, prevents publication, and unpublishes any connected legacy artist page.
+- Public profile publishing now requires at least one profile type and a biography.
+
+### Compatibility
+- Existing explicitly assigned public profile types remain eligible.
+- Existing legacy artist profiles remain eligible and continue to synchronize publication state.
+- WordPress roles, customer records, orders, and account history are not modified.
+
 ## 11.3.0 — Identity Media Uploads
 
 - Replaced public-profile image URL fields with direct WordPress Media Library upload controls.
