@@ -1,4 +1,25 @@
+# Changelog
+
+## 10.17.0 - CEO Workspace Summaries
+
+- Replaced navigation-only CEO cards with verified workspace summaries.
+- Removed the loose CEO tool-link row from the dashboard.
+- Added readable Business Memory, Business Intelligence, Reservations, Event Applications, Work, and Growth cards.
+- Each workspace now answers a question before presenting an action.
+- Preserved the Executive Brief, Decision Queue, Money at a Glance, and existing access controls.
+
 # Elev8 OS Changelog
+
+## 10.16.0 — Executive Intelligence Center
+
+- Added a reusable rule-based Executive Intelligence Service that converts verified Attention, Dashboard, and Business Intelligence data into a concise CEO briefing without guessing.
+- Added an Executive Brief with daypart greeting, current operating headline, verified changes, upcoming reservations, event application status, and booked-value context.
+- Upgraded the shared Attention queue into a CEO Decision Queue with context-aware actions for manager notes, event applications, reservations, and work.
+- Added Recent Wins based only on verified conditions such as no critical issues, positive booked-value movement, and upcoming reservation activity.
+- Added a rule-based Opportunities panel that surfaces verified next moves and links directly into the relevant workspace.
+- Added an Executive Timeline using timestamped activity already represented by the shared Attention Center.
+- Added responsive Executive Intelligence widgets designed for desktop and phone use.
+- Preserved existing KPI calculations, Access Service checks, Attention Service inputs, CEO tools, Event Application notifications, and System Information.
 
 ## 10.15.0 — CEO Attention Center
 
