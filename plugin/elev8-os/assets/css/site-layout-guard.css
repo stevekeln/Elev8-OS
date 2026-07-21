@@ -1,0 +1,160 @@
+/**
+ * Elev8 OS Site Layout Guard
+ *
+ * Keeps the public Elev8 Arts site and Elev8 OS workspaces inside the device
+ * viewport without depending on theme-specific desktop offsets.
+ */
+html.elev8-layout-guard,
+body.elev8-layout-guard {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+    html.elev8-layout-guard,
+    body.elev8-layout-guard {
+        overflow-x: clip;
+    }
+}
+
+body.elev8-layout-guard,
+body.elev8-layout-guard *,
+body.elev8-layout-guard *::before,
+body.elev8-layout-guard *::after {
+    box-sizing: border-box;
+}
+
+body.elev8-layout-guard :where(img, picture, video, canvas, svg, iframe) {
+    max-width: 100%;
+}
+
+body.elev8-layout-guard :where(img, video) {
+    height: auto;
+}
+
+/* Neve and common WordPress layout containers must be allowed to shrink. */
+body.elev8-layout-guard :where(
+    #page,
+    .site,
+    .wrapper,
+    .neve-main,
+    .nv-content-wrap,
+    .nv-single-page-wrap,
+    .container,
+    .container-fluid,
+    .row,
+    main,
+    .site-main,
+    .site-content,
+    .entry-content,
+    .elev8-app-shell,
+    .elev8-app-shell__inner
+) {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* The theme footer was a recurring source of horizontal page drift. */
+body.elev8-layout-guard :where(
+    footer,
+    #site-footer,
+    .site-footer,
+    .footer--row,
+    .footer--row-inner,
+    .footer-bottom,
+    .nv-footer-content
+) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-left: 0;
+    margin-right: 0;
+    left: auto;
+    right: auto;
+}
+
+body.elev8-layout-guard :where(
+    #site-footer,
+    .site-footer,
+    .footer--row,
+    .footer--row-inner
+) {
+    overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+    body.elev8-layout-guard :where(
+        #site-footer,
+        .site-footer,
+        .footer--row,
+        .footer--row-inner
+    ) {
+        overflow-x: clip;
+    }
+}
+
+/* Long user-entered content must wrap instead of widening the page. */
+body.elev8-layout-guard :where(
+    p,
+    li,
+    dd,
+    td,
+    th,
+    a,
+    code,
+    pre,
+    .elev8-card,
+    .elev8-panel
+) {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* Preserve intentional horizontal scrolling inside boards, tables and calendars. */
+body.elev8-layout-guard :where(
+    .elev8-intake-board,
+    .elev8-production-board,
+    .elev8-teaching-calendar,
+    .elev8-calendar-month,
+    .elev8-calendar-week,
+    .elev8-table-scroll,
+    .elev8-horizontal-scroll,
+    .widefat-wrapper
+) {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 782px) {
+    body.elev8-layout-guard {
+        width: 100%;
+        min-width: 0;
+    }
+
+    body.elev8-layout-guard :where(
+        #page,
+        .site,
+        .wrapper,
+        .neve-main,
+        .nv-content-wrap,
+        .container,
+        .container-fluid,
+        main,
+        footer,
+        #site-footer,
+        .site-footer
+    ) {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    body.elev8-layout-guard .elev8-app-shell__inner {
+        width: 100%;
+        padding-left: max(12px, env(safe-area-inset-left, 0px));
+        padding-right: max(12px, env(safe-area-inset-right, 0px));
+    }
+}

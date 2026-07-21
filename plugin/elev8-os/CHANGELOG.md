@@ -1,3 +1,19 @@
+## 15.0.3 - Site-Wide Mobile Layout Guard
+
+### Fixed
+- Prevented the Elev8 Arts site, theme footer, and Elev8 OS workspaces from drifting horizontally or creating an off-screen mobile canvas.
+- Added safe width constraints for Neve and common WordPress page, content, container, row, and footer elements.
+- Added safe-area-aware mobile padding for the universal Elev8 OS header.
+- Ensured long links, notes, table cells, and user-entered content wrap instead of widening the page.
+
+### Preserved
+- Intentional horizontal scrolling remains available inside production boards, intake boards, teaching calendars, and wide data tables.
+- Existing theme styling, bottom navigation, role routing, class notifications, and Employee Guides remain unchanged.
+
+### Architecture
+- Added one reusable Site Layout Guard module loaded across the public Elev8 Arts frontend and all Elev8 OS frontend workspaces.
+- No theme-file edits and no database changes.
+
 ## 15.0.2 - Simplified Staff Access & Knowledge Base Foundation
 
 ### Changed

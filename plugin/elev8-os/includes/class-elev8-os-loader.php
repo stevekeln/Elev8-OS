@@ -73,6 +73,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-command-palette-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-conversation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-conversations-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-site-layout-guard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-application-shell-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-experience-engine-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-role-preview-module.php';
@@ -171,6 +172,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Command_Palette_Service::init();
         Elev8_OS_Conversation_Service::init();
         Elev8_OS_Conversations_Module::init();
+        Elev8_OS_Site_Layout_Guard_Module::init();
         Elev8_OS_Application_Shell_Module::init();
         Elev8_OS_Experience_Engine_Module::init();
         Elev8_OS_Role_Preview_Module::init();
