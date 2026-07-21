@@ -239,46 +239,17 @@ final class Elev8_OS_Application_Shell_Module {
     }
 
     private static function dashboard_url(WP_User $user): string {
-        if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::is_active()) {
-            return Elev8_OS_Preview_Service::dashboard_url($user);
-        }
-        if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
-            return admin_url('admin.php?page=elev8-ceo-dashboard');
-        }
-        if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : admin_url('admin.php?page=elev8-glass-operations');
-        }
-        if (class_exists('Elev8_OS_Portal_Page_Manager')) {
-            return Elev8_OS_Portal_Page_Manager::get_url('dashboard');
+        if (class_exists('Elev8_OS_Workspace_Resolver_Service')) {
+            return Elev8_OS_Workspace_Resolver_Service::destination($user);
         }
         return home_url('/artist-dashboard/');
     }
 
     private static function role_label(WP_User $user): string {
-        if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
-            return __('Owner', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return __('Glass Manager', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::user_can('view_manager_dashboard', $user)) {
-            return __('Shop Manager', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::user_can('glass_work', $user) && !Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return __('Glassblower', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::is_dj($user) && !Elev8_OS_Access_Service::user_can('view_manager_dashboard', $user)) {
-            return __('Event Host', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::user_can('view_volunteer_portal', $user)) {
-            return __('Volunteer', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::is_teacher($user)) {
-            return __('Teacher', 'elev8-os');
-        }
-        if (Elev8_OS_Access_Service::user_can('view_artist_dashboard', $user)) {
-            return __('Artist', 'elev8-os');
+        if (class_exists('Elev8_OS_Workspace_Resolver_Service')) {
+            return Elev8_OS_Workspace_Resolver_Service::role_label($user);
         }
         return __('Elev8 Team', 'elev8-os');
     }
+
 }

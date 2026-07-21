@@ -104,14 +104,8 @@ final class Elev8_OS_Preview_Service {
     }
 
     public static function dashboard_url(WP_User $user): string {
-        if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
-            return self::clean_url(admin_url('admin.php?page=elev8-ceo-dashboard'));
-        }
-        if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return self::clean_url(class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : (class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : admin_url('admin.php?page=elev8-glass-operations')));
-        }
-        if (class_exists('Elev8_OS_Portal_Page_Manager')) {
-            return self::clean_url(Elev8_OS_Portal_Page_Manager::get_url('dashboard'));
+        if (class_exists('Elev8_OS_Workspace_Resolver_Service')) {
+            return self::clean_url(Elev8_OS_Workspace_Resolver_Service::destination($user));
         }
         return self::clean_url(home_url('/artist-dashboard/'));
     }

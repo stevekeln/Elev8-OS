@@ -188,11 +188,8 @@ final class Elev8_OS_Command_Palette_Service {
     }
 
     private static function dashboard_url(WP_User $user): string {
-        if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
-            return admin_url('admin.php?page=elev8-ceo-dashboard');
-        }
-        if (class_exists('Elev8_OS_Portal_Page_Manager')) {
-            return Elev8_OS_Portal_Page_Manager::get_url('dashboard');
+        if (class_exists('Elev8_OS_Workspace_Resolver_Service')) {
+            return Elev8_OS_Workspace_Resolver_Service::destination($user);
         }
         return home_url('/artist-dashboard/');
     }

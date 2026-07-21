@@ -117,7 +117,7 @@ final class Elev8_OS_Dashboard_Module {
             return $redirect_to;
         }
 
-        return self::dashboard_url();
+        return class_exists('Elev8_OS_Workspace_Resolver_Service') ? Elev8_OS_Workspace_Resolver_Service::destination($user) : self::dashboard_url();
     }
 
 
@@ -132,7 +132,7 @@ final class Elev8_OS_Dashboard_Module {
             return $redirect_url;
         }
 
-        return self::dashboard_url();
+        return class_exists('Elev8_OS_Workspace_Resolver_Service') ? Elev8_OS_Workspace_Resolver_Service::destination($user) : self::dashboard_url();
     }
 
     /**
@@ -147,7 +147,7 @@ final class Elev8_OS_Dashboard_Module {
             return;
         }
 
-        wp_safe_redirect(self::dashboard_url());
+        wp_safe_redirect(class_exists('Elev8_OS_Workspace_Resolver_Service') ? Elev8_OS_Workspace_Resolver_Service::destination($user) : self::dashboard_url());
         exit;
     }
 
@@ -208,7 +208,7 @@ final class Elev8_OS_Dashboard_Module {
             return;
         }
 
-        wp_safe_redirect(self::dashboard_url());
+        wp_safe_redirect(class_exists('Elev8_OS_Workspace_Resolver_Service') ? Elev8_OS_Workspace_Resolver_Service::destination($user) : self::dashboard_url());
         exit;
     }
 

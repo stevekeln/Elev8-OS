@@ -1,3 +1,9 @@
+## 14.3.1 - Universal Role Landing & Workspace Routing
+
+- Added one centralized Workspace Resolver for login, Universal Header, Preview Mode, command palette, and legacy dashboard routes.
+- Glass Managers now land in the frontend Glass Manager Suite instead of the Artist Dashboard.
+- Added CEO-only Workspace Diagnostics and automatic routing-memory reset when operational roles change.
+
 ## 14.3.0 — Class Approval & Teacher Notification Center
 - Added frontend Class Approval Center for pending Amelia glass-class bookings.
 - Added approve, move-date, and cancel actions with immutable Activity history.
