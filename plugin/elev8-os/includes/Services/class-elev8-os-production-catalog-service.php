@@ -481,6 +481,34 @@ final class Elev8_OS_Production_Catalog_Service {
         return $summary;
     }
 
+
+    public static function import_wizard_item(array $record, bool $update_existing = false) {
+        global $wpdb; $t=self::tables();
+        $code=sanitize_text_field($record['product_code']??'');
+        $normalized=strtoupper(sanitize_key(str_replace(' ','-',$code)));
+        $existing_id=$normalized?absint($wpdb->get_var($wpdb->prepare("SELECT id FROM {$t['products']} WHERE product_code=%s",$normalized))):0;
+        if($existing_id && !$update_existing)return 'skipped';
+        $payload=[
+            'product_id'=>$existing_id,'product_name'=>$record['catalog_name']??'','product_code'=>$code,
+            'category'=>$record['family']??'','department'=>'Glass Operations','description'=>$record['instructions']??'',
+            'search_aliases'=>$record['search_aliases']??'','source_family'=>$record['family']??'',
+            'source_subtype'=>$record['subtype']??'','source_variant'=>$record['variant']??'',
+            'compensation_method'=>$record['compensation_method']??'piecework','piecework_rate'=>$record['blower_pay']??0,
+            'piecework_unit'=>$record['piecework_unit']??'piece','estimated_minutes'=>$record['estimated_minutes']??0,
+            'actual_retail'=>$record['actual_retail']??0,'dist_profit_at_retail'=>$record['dist_profit_at_retail']??0,
+            'dist_additional_cost'=>$record['dist_additional_cost']??0,'suggested_retail'=>$record['suggested_retail']??0,
+            'dist_profit_wholesale'=>$record['dist_profit_wholesale']??0,'premier_profit'=>$record['premier_profit']??0,
+            'actual_wholesale'=>$record['actual_wholesale']??0,'suggested_wholesale'=>$record['suggested_wholesale']??0,
+            'sold_to_distributor_at'=>$record['sold_to_distributor_at']??0,'source_material_cost'=>$record['material_cost']??0,
+            'source_total_cost'=>$record['total_cost']??0,'instructions'=>$record['instructions']??'',
+            'source_sheet'=>$record['source_sheet']??'Production Information','source_column'=>$record['source_column']??'',
+            'effective_date'=>current_time('Y-m-d'),'manager_approval_required'=>1,'costing_hourly_rate'=>18,'active'=>1,
+        ];
+        $result=self::save_product($payload);
+        if(is_wp_error($result))return $result;
+        return $existing_id?'updated':'created';
+    }
+
     private static function date_or_null($value): ?string {
         $value=sanitize_text_field((string)$value); if($value==='')return null;
         $dt=DateTime::createFromFormat('Y-m-d',$value); return $dt&&$dt->format('Y-m-d')===$value?$value:null;

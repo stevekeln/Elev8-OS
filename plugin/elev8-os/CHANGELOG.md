@@ -1,3 +1,12 @@
+## 14.0.0 — Glass Catalog Import Wizard
+
+- Added a workbook-first Glass Catalog Import Wizard that reads the original Production Information sheet without modifying it.
+- Detects product families from merged spreadsheet headings and presents one family at a time for review.
+- Preserves blower pay, production time, retail, wholesale, distributor, Premier, material and total-cost values.
+- Allows managers to edit catalog names, aliases, pay method and blower pay before import.
+- Adds duplicate-safe create/update behavior using workbook source codes and preserves source sheet/column traceability.
+- Replaces the difficult 205-row cleanup workflow with family-based review aligned to how the glass team understands production.
+
 ## 13.9.1 — Production Catalog Migration & Financial Model
 - Added a normalized Step 1 migration workbook generated from the legacy Production Information sheet, with one reviewable row per production item and source-column traceability.
 - Added a built-in Production Catalog Migration workspace with preview, selective import, duplicate-safe import codes, and update-existing controls.
