@@ -78,6 +78,7 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Person_Service')) { Elev8_OS_Person_Service::activate(); }
         if (class_exists('Elev8_OS_Unified_Intake_Service')) { Elev8_OS_Unified_Intake_Service::activate(); }
         if (class_exists('Elev8_OS_Work_Service')) { Elev8_OS_Work_Service::activate(); }
+        if (class_exists('Elev8_OS_Workflow_Service')) { Elev8_OS_Workflow_Service::activate(); }
         if (class_exists('Elev8_OS_Community_Outreach_Module')) {
             Elev8_OS_Community_Outreach_Module::activate();
         }

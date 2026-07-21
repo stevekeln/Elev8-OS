@@ -1,14 +1,15 @@
-# Changelog
-
-## 10.17.0 - CEO Workspace Summaries
-
-- Replaced navigation-only CEO cards with verified workspace summaries.
-- Removed the loose CEO tool-link row from the dashboard.
-- Added readable Business Memory, Business Intelligence, Reservations, Event Applications, Work, and Growth cards.
-- Each workspace now answers a question before presenting an action.
-- Preserved the Executive Brief, Decision Queue, Money at a Glance, and existing access controls.
-
 # Elev8 OS Changelog
+
+## 10.18.0 — Workflow Engine Foundation & Explain Why
+
+- Added a reusable Workflow Engine that listens for trusted Elev8 OS events, evaluates configurable definitions, executes registered actions, and preserves an auditable run history.
+- Added initial workflow triggers for Manager Operations entries, Unified Intake submissions, and Bingo reservations.
+- Added extensible workflow-definition and workflow-action filters so future business modules can participate without duplicating routing logic.
+- Added idempotent workflow execution to prevent the same source record from running the same workflow twice.
+- Added registered actions for immutable Activity records and shared Work Management items.
+- Added Workflow Health to the CEO Dashboard with active workflows, recent runs, completed runs, failed runs, and a plain-language Why explanation.
+- Added a reusable Explain Why service and Why controls to CEO financial KPI cards so users can understand source, diagnostic, and confidence information.
+- Preserved current Attention, Event Application, Manager Note, reservation, Work, Business Intelligence, and Executive Intelligence behavior.
 
 ## 10.16.0 — Executive Intelligence Center
 

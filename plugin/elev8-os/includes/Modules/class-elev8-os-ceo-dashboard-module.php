@@ -138,6 +138,10 @@ final class Elev8_OS_CEO_Dashboard_Module {
         $operational_summary = class_exists('Elev8_OS_Dashboard_Service')
             ? Elev8_OS_Dashboard_Service::summary(wp_get_current_user())
             : [];
+
+        $workflow_summary = class_exists('Elev8_OS_Workflow_Service')
+            ? Elev8_OS_Workflow_Service::summary(7)
+            : ['available' => false];
         $operational_priorities = class_exists('Elev8_OS_Dashboard_Service')
             ? Elev8_OS_Dashboard_Service::priorities($operational_summary)
             : [];
@@ -184,7 +188,31 @@ final class Elev8_OS_CEO_Dashboard_Module {
 
             <?php self::render_operational_home($operational_summary, $operational_priorities, $executive_intelligence); ?>
 
-            <?php self::render_workspace_summary($operational_summary, $metrics); ?>
+
+            <?php self::render_workflow_health($workflow_summary); ?>
+
+            <section class="elev8-ceo-launchpad elev8-bi-section" aria-labelledby="elev8-ceo-launchpad-heading">
+                <div class="elev8-bi-section__heading">
+                    <div>
+                        <p class="elev8-bi-eyebrow"><?php esc_html_e('CEO Tools', 'elev8-os'); ?></p>
+                        <h2 id="elev8-ceo-launchpad-heading"><?php esc_html_e('Open a Workspace', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Use these when you need to go deeper. The Attention Center above should be your first stop.', 'elev8-os'); ?></p>
+                    </div>
+                </div>
+                <div class="elev8-ceo-launchpad__grid">
+                    <?php self::render_command_card('clipboard', __('Business Memory', 'elev8-os'), __('Operating logs, owner notes, issues, and follow-up.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=memory')); ?>
+                    <?php self::render_command_card('chart-area', __('Business Intelligence', 'elev8-os'), __('Verified KPIs, confidence, trends, and decision support.', 'elev8-os'), admin_url('admin.php?page=elev8-business-intelligence')); ?>
+                    <?php self::render_command_card('lightbulb', __('Class Requests', 'elev8-os'), __('Customer demand and potential class opportunities.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests')); ?>
+                    <?php self::render_command_card('megaphone', __('Opportunities', 'elev8-os'), __('Actions that can help artists and the business grow.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities')); ?>
+                </div>
+                <div class="elev8-ceo-tool-row" aria-label="<?php esc_attr_e('Additional CEO tools', 'elev8-os'); ?>">
+                    <?php if (class_exists('Elev8_OS_Bingo_Reservations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Bingo_Reservations_Module::admin_url()); ?>"><span class="dashicons dashicons-tickets-alt"></span><?php esc_html_e('Reservations', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Event_Applications_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Event_Applications_Module::admin_url()); ?>"><span class="dashicons dashicons-forms"></span><?php esc_html_e('Event Applications', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Work_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Work_Module::team_url()); ?>"><span class="dashicons dashicons-list-view"></span><?php esc_html_e('Work', 'elev8-os'); ?></a><?php endif; ?>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-growth-center')); ?>"><span class="dashicons dashicons-chart-line"></span><?php esc_html_e('Growth', 'elev8-os'); ?></a>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-system-inspector')); ?>"><span class="dashicons dashicons-admin-tools"></span><?php esc_html_e('System Health', 'elev8-os'); ?></a>
+                </div>
+            </section>
 
             <section class="elev8-bi-section" aria-labelledby="elev8-ceo-money-heading">
                 <div class="elev8-bi-section__heading">
@@ -322,6 +350,38 @@ final class Elev8_OS_CEO_Dashboard_Module {
     }
 
     /** @param array<int,array<string,mixed>> $items */
+    /** Render the first visible Workflow Engine health card. */
+    private static function render_workflow_health(array $summary): void {
+        $available = !empty($summary['available']);
+        $failed = (int)($summary['failed'] ?? 0);
+        $status = !$available ? __('Unavailable', 'elev8-os') : ($failed > 0 ? __('Needs Attention', 'elev8-os') : __('Healthy', 'elev8-os'));
+        $explanation = class_exists('Elev8_OS_Explanation_Service')
+            ? Elev8_OS_Explanation_Service::workflow_health($summary)
+            : ['title'=>__('Why?', 'elev8-os'),'body'=>(string)($summary['why'] ?? '')];
+        ?>
+        <section class="elev8-bi-section elev8-workflow-health" aria-labelledby="elev8-workflow-health-heading">
+            <div class="elev8-bi-section__heading">
+                <div>
+                    <p class="elev8-bi-eyebrow"><?php esc_html_e('Workflow Engine', 'elev8-os'); ?></p>
+                    <h2 id="elev8-workflow-health-heading"><?php esc_html_e('Business Coordination', 'elev8-os'); ?></h2>
+                    <p><?php esc_html_e('Verified system events are beginning to route themselves into the next operational action.', 'elev8-os'); ?></p>
+                </div>
+                <span class="elev8-workflow-health__status <?php echo $failed > 0 ? 'is-warning' : 'is-healthy'; ?>"><?php echo esc_html($status); ?></span>
+            </div>
+            <div class="elev8-workflow-health__grid">
+                <div><strong><?php echo $available ? esc_html((string)($summary['active_workflows'] ?? 0)) : esc_html__('Unavailable', 'elev8-os'); ?></strong><span><?php esc_html_e('Active workflows', 'elev8-os'); ?></span></div>
+                <div><strong><?php echo $available ? esc_html((string)($summary['runs'] ?? 0)) : esc_html__('Unavailable', 'elev8-os'); ?></strong><span><?php esc_html_e('Runs in 7 days', 'elev8-os'); ?></span></div>
+                <div><strong><?php echo $available ? esc_html((string)($summary['completed'] ?? 0)) : esc_html__('Unavailable', 'elev8-os'); ?></strong><span><?php esc_html_e('Completed', 'elev8-os'); ?></span></div>
+                <div><strong><?php echo $available ? esc_html((string)$failed) : esc_html__('Unavailable', 'elev8-os'); ?></strong><span><?php esc_html_e('Failed', 'elev8-os'); ?></span></div>
+            </div>
+            <details class="elev8-why">
+                <summary><?php esc_html_e('Why?', 'elev8-os'); ?></summary>
+                <div><strong><?php echo esc_html((string)$explanation['title']); ?></strong><p><?php echo esc_html((string)$explanation['body']); ?></p></div>
+            </details>
+        </section>
+        <?php
+    }
+
     private static function render_intelligence_panel(string $title, string $description, array $items, string $icon): void {
         ?>
         <section class="elev8-intelligence-panel">
@@ -335,166 +395,6 @@ final class Elev8_OS_CEO_Dashboard_Module {
             </div><?php else : ?><p class="elev8-bi-metric__diagnostic"><?php esc_html_e('Unavailable', 'elev8-os'); ?></p><?php endif; ?>
         </section>
         <?php
-    }
-
-    /**
-     * Render useful workspace summaries before inviting the CEO deeper.
-     *
-     * @param array<string,mixed> $summary
-     * @param array<string,mixed> $metrics
-     */
-    private static function render_workspace_summary(array $summary, array $metrics): void {
-        $attention = is_array($summary['attention'] ?? null) ? $summary['attention'] : [];
-        $attention_items = is_array($attention['items'] ?? null) ? $attention['items'] : [];
-        $owner_notes = 0;
-        foreach ($attention_items as $item) {
-            if (!is_array($item)) {
-                continue;
-            }
-            $source = strtolower((string) ($item['source'] ?? ''));
-            $title = strtolower((string) ($item['title'] ?? ''));
-            if (str_contains($source, 'manager') || str_contains($title, 'owner note') || str_contains($title, 'steve')) {
-                $owner_notes += max(1, (int) ($item['count'] ?? 1));
-            }
-        }
-
-        $reservations = is_array($summary['reservations'] ?? null) ? $summary['reservations'] : [];
-        $applications = is_array($summary['applications'] ?? null) ? $summary['applications'] : [];
-        $work = is_array($summary['team_work'] ?? null) ? $summary['team_work'] : [];
-        $booked_value = is_array($metrics['booked_value_month'] ?? null)
-            ? $metrics['booked_value_month']
-            : (is_array($metrics['booked_value'] ?? null) ? $metrics['booked_value'] : []);
-
-        $cards = [
-            [
-                'icon' => 'clipboard',
-                'title' => __('Business Memory', 'elev8-os'),
-                'headline' => $owner_notes > 0
-                    ? sprintf(_n('%d owner note needs you.', '%d owner notes need you.', $owner_notes, 'elev8-os'), $owner_notes)
-                    : __('No owner notes are waiting.', 'elev8-os'),
-                'facts' => [
-                    [__('Owner notes', 'elev8-os'), (string) $owner_notes],
-                    [__('Attention items', 'elev8-os'), (string) ((int) ($attention['total'] ?? 0))],
-                ],
-                'action' => __('Open Business Memory', 'elev8-os'),
-                'url' => admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=memory'),
-            ],
-            [
-                'icon' => 'chart-area',
-                'title' => __('Business Intelligence', 'elev8-os'),
-                'headline' => !empty($booked_value['available'])
-                    ? __('Verified business metrics are available.', 'elev8-os')
-                    : __('Verified KPI summary is unavailable.', 'elev8-os'),
-                'facts' => [
-                    [__('Booked value', 'elev8-os'), (string) ($booked_value['formatted_value'] ?? $booked_value['display_value'] ?? __('Unavailable', 'elev8-os'))],
-                    [__('Confidence', 'elev8-os'), ucfirst((string) ($booked_value['confidence'] ?? __('Unavailable', 'elev8-os')))],
-                ],
-                'action' => __('View Analytics', 'elev8-os'),
-                'url' => admin_url('admin.php?page=elev8-business-intelligence'),
-            ],
-            [
-                'icon' => 'tickets-alt',
-                'title' => __('Reservations', 'elev8-os'),
-                'headline' => !empty($reservations['available'])
-                    ? sprintf(_n('%d reservation needs attention.', '%d reservations need attention.', (int) ($reservations['attention'] ?? 0), 'elev8-os'), (int) ($reservations['attention'] ?? 0))
-                    : __('Reservation data is unavailable.', 'elev8-os'),
-                'facts' => [
-                    [__('Upcoming', 'elev8-os'), self::verified_value($reservations, 'upcoming')],
-                    [__('Needs attention', 'elev8-os'), self::verified_value($reservations, 'attention')],
-                ],
-                'action' => __('Review Reservations', 'elev8-os'),
-                'url' => class_exists('Elev8_OS_Bingo_Reservations_Module') ? Elev8_OS_Bingo_Reservations_Module::admin_url() : '',
-            ],
-            [
-                'icon' => 'forms',
-                'title' => __('Event Applications', 'elev8-os'),
-                'headline' => !empty($applications['available'])
-                    ? sprintf(_n('%d application is waiting.', '%d applications are waiting.', (int) ($applications['attention'] ?? 0), 'elev8-os'), (int) ($applications['attention'] ?? 0))
-                    : __('Application data is unavailable.', 'elev8-os'),
-                'facts' => [
-                    [__('Needs review', 'elev8-os'), self::verified_value($applications, 'attention')],
-                    [__('Awaiting agreement', 'elev8-os'), self::verified_value($applications, 'awaiting_agreement')],
-                ],
-                'action' => __('Review Applications', 'elev8-os'),
-                'url' => class_exists('Elev8_OS_Event_Applications_Module') ? Elev8_OS_Event_Applications_Module::admin_url() : '',
-            ],
-            [
-                'icon' => 'list-view',
-                'title' => __('Work', 'elev8-os'),
-                'headline' => !empty($work['available'])
-                    ? sprintf(_n('%d work item is overdue.', '%d work items are overdue.', (int) ($work['overdue'] ?? 0), 'elev8-os'), (int) ($work['overdue'] ?? 0))
-                    : __('Team work data is unavailable.', 'elev8-os'),
-                'facts' => [
-                    [__('Active', 'elev8-os'), self::verified_value($work, 'active')],
-                    [__('Due today', 'elev8-os'), self::verified_value($work, 'due_today')],
-                    [__('Overdue', 'elev8-os'), self::verified_value($work, 'overdue')],
-                ],
-                'action' => __('Open Work', 'elev8-os'),
-                'url' => class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::team_url() : '',
-            ],
-            [
-                'icon' => 'lightbulb',
-                'title' => __('Growth Opportunities', 'elev8-os'),
-                'headline' => __('Review current class demand and growth opportunities.', 'elev8-os'),
-                'facts' => [
-                    [__('Class request summary', 'elev8-os'), __('Unavailable', 'elev8-os')],
-                    [__('Opportunity summary', 'elev8-os'), __('Open workspace', 'elev8-os')],
-                ],
-                'action' => __('Review Opportunities', 'elev8-os'),
-                'url' => admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities'),
-            ],
-        ];
-        ?>
-        <section class="elev8-ceo-workspaces" aria-labelledby="elev8-ceo-workspaces-heading">
-            <div class="elev8-bi-section__heading">
-                <div>
-                    <p class="elev8-bi-eyebrow"><?php esc_html_e('CEO Workspaces', 'elev8-os'); ?></p>
-                    <h2 id="elev8-ceo-workspaces-heading"><?php esc_html_e('Know Before You Open', 'elev8-os'); ?></h2>
-                    <p><?php esc_html_e('Each workspace answers a question before asking you to click.', 'elev8-os'); ?></p>
-                </div>
-            </div>
-            <div class="elev8-ceo-workspace-grid">
-                <?php foreach ($cards as $card) : self::render_workspace_card($card); endforeach; ?>
-            </div>
-        </section>
-        <?php
-    }
-
-    /** @param array<string,mixed> $card */
-    private static function render_workspace_card(array $card): void {
-        $url = (string) ($card['url'] ?? '');
-        ?>
-        <article class="elev8-ceo-workspace-card">
-            <div class="elev8-ceo-workspace-card__heading">
-                <span class="dashicons dashicons-<?php echo esc_attr((string) ($card['icon'] ?? 'admin-generic')); ?>" aria-hidden="true"></span>
-                <div>
-                    <h3><?php echo esc_html((string) ($card['title'] ?? __('Workspace', 'elev8-os'))); ?></h3>
-                    <p><?php echo esc_html((string) ($card['headline'] ?? __('Unavailable', 'elev8-os'))); ?></p>
-                </div>
-            </div>
-            <dl class="elev8-ceo-workspace-card__facts">
-                <?php foreach ((array) ($card['facts'] ?? []) as $fact) : ?>
-                    <div><dt><?php echo esc_html((string) ($fact[0] ?? '')); ?></dt><dd><?php echo esc_html((string) ($fact[1] ?? __('Unavailable', 'elev8-os'))); ?></dd></div>
-                <?php endforeach; ?>
-            </dl>
-            <?php if ($url !== '') : ?>
-                <a class="elev8-ceo-workspace-card__action" href="<?php echo esc_url($url); ?>">
-                    <?php echo esc_html((string) ($card['action'] ?? __('Open Workspace', 'elev8-os'))); ?>
-                    <span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span>
-                </a>
-            <?php else : ?>
-                <span class="elev8-ceo-workspace-card__action is-disabled"><?php esc_html_e('Unavailable', 'elev8-os'); ?></span>
-            <?php endif; ?>
-        </article>
-        <?php
-    }
-
-    /** @param array<string,mixed> $data */
-    private static function verified_value(array $data, string $key): string {
-        if (empty($data['available']) || !array_key_exists($key, $data) || $data[$key] === null) {
-            return __('Unavailable', 'elev8-os');
-        }
-        return (string) ((int) $data[$key]);
     }
 
     private static function render_command_card(string $icon, string $title, string $description, string $url): void {
@@ -622,6 +522,11 @@ final class Elev8_OS_CEO_Dashboard_Module {
             </strong>
 
             <p class="elev8-bi-metric__diagnostic"><?php echo esc_html($diagnostic); ?></p>
+            <?php $why = class_exists('Elev8_OS_Explanation_Service') ? Elev8_OS_Explanation_Service::metric($label, $metric) : ['title'=>__('Why?', 'elev8-os'),'body'=>$diagnostic]; ?>
+            <details class="elev8-why elev8-why--metric">
+                <summary><?php esc_html_e('Why?', 'elev8-os'); ?></summary>
+                <div><strong><?php echo esc_html((string)$why['title']); ?></strong><p><?php echo esc_html((string)$why['body']); ?></p></div>
+            </details>
         </article>
         <?php
     }
