@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 10.21.0 — Role-Aware Coaching Foundation
+
+- Added a shared, deterministic Coaching Service for CEO, Manager, and Event Host Operational Homes.
+- Added recommendation cards with verified reasons, confidence, one-tap actions, and “Why am I seeing this?” explanations.
+- Distinguished recommendations from raw information and attention items.
+- Preserved user control: recommendations never perform autonomous changes and do not call an external AI provider.
+- Added extension hooks so future Artist, Teacher, Retail, Maintenance, and LLM coaching providers can reuse the same contract.
+
 ## 10.20.0 — Executive Brief Engine
 
 - Added a reusable, rule-based Daily Brief Service built from verified Elev8 OS sources.

@@ -192,6 +192,8 @@ final class Elev8_OS_CEO_Dashboard_Module {
 
             <?php self::render_daily_brief($daily_brief); ?>
 
+            <?php if (class_exists('Elev8_OS_Coaching_Service')) { Elev8_OS_Coaching_Service::render(wp_get_current_user(), __('CEO Recommended Next Actions', 'elev8-os')); } ?>
+
             <?php self::render_operational_home($operational_summary, $operational_priorities, $executive_intelligence); ?>
 
 

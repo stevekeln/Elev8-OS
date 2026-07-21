@@ -561,6 +561,8 @@ final class Elev8_OS_Dashboard_Module {
                 </div>
             </section>
 
+            <?php if (class_exists('Elev8_OS_Coaching_Service')) { Elev8_OS_Coaching_Service::render($user, __('Your Next Best Actions', 'elev8-os')); } ?>
+
             <section class="elev8-host-metrics" aria-label="<?php esc_attr_e('Event metrics', 'elev8-os'); ?>">
                 <?php self::render_event_metric('microphone', __('Open Mic Check-Ins', 'elev8-os'), $open_mic['total'] ?? null, __('Verified submissions received', 'elev8-os')); ?>
                 <?php self::render_event_metric('visibility', __('New Open Mic Entries', 'elev8-os'), $open_mic['new'] ?? null, __('Waiting for event-team review', 'elev8-os')); ?>
@@ -649,6 +651,8 @@ final class Elev8_OS_Dashboard_Module {
                 <div><p class="elev8-eyebrow"><?php esc_html_e("Today's Mission", 'elev8-os'); ?></p><h2><?php esc_html_e('Build a stronger team, take care of customers, and keep operations moving.', 'elev8-os'); ?></h2></div>
                 <div class="elev8-manager-pulse is-<?php echo esc_attr((string)$pulse['status']); ?>"><span></span><div><small><?php esc_html_e('Business Pulse', 'elev8-os'); ?></small><strong><?php echo esc_html((string)$pulse['label']); ?></strong><p><?php echo esc_html((string)$pulse['message']); ?></p></div></div>
             </section>
+
+            <?php if (class_exists('Elev8_OS_Coaching_Service')) { Elev8_OS_Coaching_Service::render($user, __('Manager Recommended Next Actions', 'elev8-os')); } ?>
 
             <section class="elev8-manager-metrics" aria-label="<?php esc_attr_e('Manager summary', 'elev8-os'); ?>">
                 <?php self::render_manager_metric(__('Needs Attention','elev8-os'), $attention['total'] ?? null, __('Verified items waiting on you','elev8-os'), 'bell'); ?>
