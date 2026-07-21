@@ -41,8 +41,8 @@ final class Elev8_OS_Public_Profile_Service {
 
         $legacy = self::legacy_artist_profile($user_id);
         $stored_types = get_user_meta($user_id, self::META_PREFIX . 'types', true);
-        $has_stored_types = is_array($stored_types) && !empty($stored_types);
-        $types = $has_stored_types ? $stored_types : self::inferred_types($user, $legacy);
+        $has_stored_types = metadata_exists('user', $user_id, self::META_PREFIX . 'types');
+        $types = $has_stored_types && is_array($stored_types) ? $stored_types : self::inferred_types($user, $legacy);
         $types = array_values(array_intersect(array_keys(self::available_types()), array_map('sanitize_key', (array) $types)));
 
         $eligibility = sanitize_key((string) get_user_meta($user_id, self::META_PREFIX . 'eligibility', true));
@@ -70,7 +70,7 @@ final class Elev8_OS_Public_Profile_Service {
             if ($photo === '') $photo = (string) ($legacy['profile_photo'] ?? '');
             if ($website === '') $website = (string) ($legacy['website'] ?? '');
             if (get_user_meta($user_id, self::META_PREFIX . 'status', true) === '') $published = !empty($legacy['public_enabled']);
-            if (!in_array('artist', $types, true)) $types[] = 'artist';
+            if (!$has_stored_types && !in_array('artist', $types, true)) $types[] = 'artist';
         }
 
         $name = $display_name !== '' ? $display_name : (string) $user->display_name;
@@ -145,8 +145,6 @@ final class Elev8_OS_Public_Profile_Service {
         if($eligibility!=='eligible') {
             $types=[];
             $publish=false;
-        } elseif(!$types) {
-            $types=self::inferred_types($user,self::legacy_artist_profile($user_id));
         }
         if($display_name==='') $display_name=(string)$user->display_name;
         if($slug==='') $slug=self::default_slug($user);
@@ -162,7 +160,7 @@ final class Elev8_OS_Public_Profile_Service {
         update_user_meta($user_id,self::META_PREFIX.'status',$publish?'published':'draft');
         update_user_meta($user_id,self::META_PREFIX.'updated_at',current_time('mysql'));
         update_user_meta($user_id,'_elev8_public_host_profile_status',$publish?'published':'draft');
-        self::sync_legacy_artist_publication($user_id,$publish,$bio,$photo_url,$website_url);
+        self::sync_legacy_artist_publication($user_id,$publish && in_array('artist',$types,true),$bio,$photo_url,$website_url);
 
         if(class_exists('Elev8_OS_Activity_Service')) {
             $activity_type=$eligibility==='eligible'?($publish?'public_profile_published':'public_profile_updated'):'public_profile_excluded';

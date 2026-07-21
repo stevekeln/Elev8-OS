@@ -1,3 +1,16 @@
+## 11.3.2 — Public Profile Type Save Hotfix
+
+### Fixed
+- Fixed public profile type checkboxes so unchecked types are removed when the profile is saved.
+- Preserved an explicitly saved empty profile-type selection instead of re-inferring types from WordPress roles or legacy artist data.
+- Prevented legacy artist compatibility logic from silently adding Artist back after it was intentionally unchecked.
+- Synchronized the legacy public artist webpage only when Artist remains selected and the shared public profile is published.
+
+### Compatibility
+- Existing profiles that have never saved shared profile types still receive the original one-time type inference.
+- Artist and Teacher combinations can now be changed safely to Teacher only, Artist only, multiple types, or no selected type.
+- Publishing still requires at least one selected public profile type.
+
 ## 11.3.1 — Public Profile Eligibility Hotfix
 
 ### Added
