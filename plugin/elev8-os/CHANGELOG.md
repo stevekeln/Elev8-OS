@@ -1,3 +1,12 @@
+
+## 14.1.0 — Production Catalog Manager
+- Added Active, Draft, and Archived lifecycle states so obsolete production products can be removed from new work without deleting historical job, pay, and costing records.
+- Added bulk lifecycle and family/category controls to the Production Catalog.
+- Added a Catalog Manager workspace with family navigation, ignored workbook-row visibility, duplicate detection, and safe duplicate merging.
+- Added Import Wizard decisions for Import, Skip This Time, Ignore Forever, and Restore.
+- Added revision-history visibility on production product records.
+- Preserved historical versions, job snapshots, pay records, and original workbook source references.
+
 ## 14.0.1 — Smart Workbook Parser Hotfix
 
 - Replaced silent workbook-analysis failures with explicit upload, workbook, sheet, and parser diagnostics.

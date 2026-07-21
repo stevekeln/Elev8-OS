@@ -2,7 +2,8 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Production_Catalog_Service {
-    const DB_VERSION = '1.1.0';
+    const DB_VERSION = '1.2.0';
+    const OPTION_IGNORED_SOURCES = 'elev8_os_glass_catalog_ignored_sources';
     const OPTION_DB_VERSION = 'elev8_os_production_catalog_db_version';
 
     public static function init(): void {
@@ -66,6 +67,8 @@ final class Elev8_OS_Production_Catalog_Service {
             alternate_source_columns text NOT NULL,
             alternate_pay_tiers_json longtext NOT NULL,
             active tinyint(1) NOT NULL DEFAULT 1,
+            lifecycle_status varchar(20) NOT NULL DEFAULT 'active',
+            merged_into_product_id bigint(20) unsigned NOT NULL DEFAULT 0,
             skill_level varchar(40) NOT NULL DEFAULT 'standard',
             department varchar(100) NOT NULL DEFAULT '',
             compensation_method varchar(30) NOT NULL DEFAULT 'hourly',
@@ -87,6 +90,8 @@ final class Elev8_OS_Production_Catalog_Service {
             PRIMARY KEY (id),
             UNIQUE KEY product_code (product_code),
             KEY active_category (active,category),
+            KEY lifecycle_status (lifecycle_status),
+            KEY merged_into_product_id (merged_into_product_id),
             KEY compensation_method (compensation_method)
         ) {$c};");
 
@@ -152,6 +157,8 @@ final class Elev8_OS_Production_Catalog_Service {
             KEY product_id (product_id)
         ) {$c};");
 
+        // Preserve legacy inactive records as archived when the lifecycle column is first introduced.
+        $wpdb->query("UPDATE {$t['products']} SET lifecycle_status='archived' WHERE active=0 AND lifecycle_status='active'");
         update_option(self::OPTION_DB_VERSION, self::DB_VERSION, false);
     }
 
@@ -161,13 +168,14 @@ final class Elev8_OS_Production_Catalog_Service {
         $where = ['1=1'];
         $params = [];
         if (isset($args['active']) && $args['active'] !== '') { $where[] = 'active=%d'; $params[] = absint($args['active']); }
+        if (!empty($args['lifecycle_status'])) { $where[] = 'lifecycle_status=%s'; $params[] = sanitize_key($args['lifecycle_status']); }
         if (!empty($args['category'])) { $where[] = 'category=%s'; $params[] = sanitize_text_field($args['category']); }
         if (!empty($args['search'])) {
             $like = '%' . $wpdb->esc_like((string)$args['search']) . '%';
             $where[] = '(product_name LIKE %s OR product_code LIKE %s OR category LIKE %s OR search_aliases LIKE %s OR source_family LIKE %s OR source_subtype LIKE %s OR source_variant LIKE %s)';
             array_push($params, $like, $like, $like, $like, $like, $like, $like);
         }
-        $sql = "SELECT * FROM {$t['products']} WHERE " . implode(' AND ', $where) . ' ORDER BY active DESC, category ASC, product_name ASC';
+        $sql = "SELECT * FROM {$t['products']} WHERE " . implode(' AND ', $where) . " ORDER BY FIELD(lifecycle_status,'active','draft','archived') ASC, category ASC, product_name ASC";
         if ($params) { $sql = $wpdb->prepare($sql, $params); }
         return $wpdb->get_results($sql, ARRAY_A) ?: [];
     }
@@ -226,6 +234,11 @@ final class Elev8_OS_Production_Catalog_Service {
         $name = sanitize_text_field($data['product_name'] ?? '');
         if ($name === '') { return new WP_Error('production_product_name', 'Enter a production product name.'); }
         if ($code === '') { $code = strtoupper(sanitize_key(wp_unique_id('PROD-'))); }
+        $status = sanitize_key($data['lifecycle_status'] ?? '');
+        if ($status === '') {
+            $status = empty($data['active']) ? 'archived' : 'active';
+        }
+        if (!in_array($status, ['active','draft','archived'], true)) { $status = 'draft'; }
         $row = [
             'product_code' => $code,
             'product_name' => $name,
@@ -252,7 +265,9 @@ final class Elev8_OS_Production_Catalog_Service {
             'source_column' => sanitize_text_field($data['source_column'] ?? ''),
             'alternate_source_columns' => sanitize_text_field($data['alternate_source_columns'] ?? ''),
             'alternate_pay_tiers_json' => wp_json_encode(json_decode((string)($data['alternate_pay_tiers_json'] ?? '[]'), true) ?: []),
-            'active' => empty($data['active']) ? 0 : 1,
+            'active' => $status === 'active' ? 1 : 0,
+            'lifecycle_status' => $status,
+            'merged_into_product_id' => absint($data['merged_into_product_id'] ?? 0),
             'skill_level' => sanitize_key($data['skill_level'] ?? 'standard'),
             'department' => sanitize_text_field($data['department'] ?? ''),
             'compensation_method' => $method,
@@ -507,6 +522,80 @@ final class Elev8_OS_Production_Catalog_Service {
         $result=self::save_product($payload);
         if(is_wp_error($result))return $result;
         return $existing_id?'updated':'created';
+    }
+
+
+    public static function lifecycle_statuses(): array {
+        return ['active'=>'Active','draft'=>'Draft','archived'=>'Archived'];
+    }
+
+    public static function ignored_sources(): array {
+        $value = get_option(self::OPTION_IGNORED_SOURCES, []);
+        return is_array($value) ? array_values(array_unique(array_filter(array_map('sanitize_text_field', $value)))) : [];
+    }
+
+    public static function is_source_ignored(string $source_code): bool {
+        return in_array(sanitize_text_field($source_code), self::ignored_sources(), true);
+    }
+
+    public static function set_source_ignored(string $source_code, bool $ignored = true): void {
+        $source_code = sanitize_text_field($source_code);
+        if ($source_code === '') { return; }
+        $items = self::ignored_sources();
+        if ($ignored && !in_array($source_code, $items, true)) { $items[] = $source_code; }
+        if (!$ignored) { $items = array_values(array_diff($items, [$source_code])); }
+        update_option(self::OPTION_IGNORED_SOURCES, $items, false);
+    }
+
+    public static function bulk_update_products(array $ids, string $action, string $value = ''): array|WP_Error {
+        global $wpdb; $t=self::tables();
+        $ids=array_values(array_unique(array_filter(array_map('absint',$ids))));
+        if(!$ids){return new WP_Error('production_bulk_empty','Select at least one production product.');}
+        $placeholders=implode(',',array_fill(0,count($ids),'%d'));
+        $now=current_time('mysql'); $user=get_current_user_id();
+        if($action==='status'){
+            $status=sanitize_key($value);
+            if(!in_array($status,['active','draft','archived'],true)){return new WP_Error('production_bulk_status','Choose a valid lifecycle status.');}
+            $sql=$wpdb->prepare("UPDATE {$t['products']} SET lifecycle_status=%s,active=%d,updated_by=%d,updated_at=%s WHERE id IN ($placeholders)",array_merge([$status,$status==='active'?1:0,$user,$now],$ids));
+        }elseif($action==='category'){
+            $category=sanitize_text_field($value);
+            if($category===''){return new WP_Error('production_bulk_category','Enter a destination family/category.');}
+            $sql=$wpdb->prepare("UPDATE {$t['products']} SET category=%s,source_family=%s,updated_by=%d,updated_at=%s WHERE id IN ($placeholders)",array_merge([$category,$category,$user,$now],$ids));
+        }else{return new WP_Error('production_bulk_action','Choose a valid bulk action.');}
+        $result=$wpdb->query($sql);
+        if($result===false){return new WP_Error('production_bulk_save','The selected production products could not be updated.');}
+        foreach($ids as $id){self::record_version($id);}
+        return ['updated'=>(int)$result];
+    }
+
+    public static function merge_products(int $target_id, array $source_ids): array|WP_Error {
+        global $wpdb; $t=self::tables();
+        $target=self::product($target_id);
+        if(!$target){return new WP_Error('production_merge_target','Choose a valid target product.');}
+        $source_ids=array_values(array_unique(array_filter(array_map('absint',$source_ids))));
+        $source_ids=array_values(array_diff($source_ids,[$target_id]));
+        if(!$source_ids){return new WP_Error('production_merge_sources','Choose at least one duplicate product to merge.');}
+        $now=current_time('mysql');$user=get_current_user_id();$updated=0;
+        foreach($source_ids as $id){
+            if(!self::product($id)){continue;}
+            $ok=$wpdb->update($t['products'],[
+                'lifecycle_status'=>'archived','active'=>0,'merged_into_product_id'=>$target_id,
+                'updated_by'=>$user,'updated_at'=>$now
+            ],['id'=>$id]);
+            if($ok!==false){$updated++;self::record_version($id);}
+        }
+        return ['merged'=>$updated,'target_id'=>$target_id];
+    }
+
+    public static function version_history(int $product_id): array {
+        global $wpdb; $t=self::tables();
+        return $wpdb->get_results($wpdb->prepare("SELECT version_number,effective_from,created_by,created_at FROM {$t['versions']} WHERE product_id=%d ORDER BY version_number DESC",$product_id),ARRAY_A) ?: [];
+    }
+
+    public static function duplicate_candidates(): array {
+        global $wpdb; $t=self::tables();
+        $rows=$wpdb->get_results("SELECT LOWER(TRIM(product_name)) normalized_name,COUNT(*) duplicate_count,GROUP_CONCAT(id ORDER BY id) product_ids,MIN(product_name) product_name FROM {$t['products']} WHERE lifecycle_status<>'archived' GROUP BY LOWER(TRIM(product_name)) HAVING COUNT(*)>1 ORDER BY duplicate_count DESC,product_name ASC",ARRAY_A);
+        return $rows ?: [];
     }
 
     private static function date_or_null($value): ?string {

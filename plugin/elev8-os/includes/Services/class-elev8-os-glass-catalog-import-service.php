@@ -949,15 +949,27 @@ final class Elev8_OS_Glass_Catalog_Import_Service {
         $summary = ['created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => []];
 
         foreach ($columns as $column) {
-            if (empty($posted[$column]['selected'])) {
-                $summary['skipped']++;
-                continue;
-            }
             $base = $session['items'][$column] ?? null;
             if (!$base) {
                 $summary['skipped']++;
                 continue;
             }
+            $source_code = sanitize_text_field($base['product_code'] ?? ('WB-' . $column));
+            $decision = sanitize_key($posted[$column]['decision'] ?? (!empty($posted[$column]['selected']) ? 'import' : 'skip'));
+            if ($decision === 'ignore') {
+                Elev8_OS_Production_Catalog_Service::set_source_ignored($source_code, true);
+                $summary['skipped']++;
+                continue;
+            }
+            if ($decision === 'restore') {
+                Elev8_OS_Production_Catalog_Service::set_source_ignored($source_code, false);
+                $decision = 'import';
+            }
+            if ($decision !== 'import' || Elev8_OS_Production_Catalog_Service::is_source_ignored($source_code)) {
+                $summary['skipped']++;
+                continue;
+            }
+
             $row = array_merge($base, [
                 'catalog_name' => sanitize_text_field($posted[$column]['catalog_name'] ?? $base['catalog_name']),
                 'search_aliases' => sanitize_textarea_field($posted[$column]['search_aliases'] ?? $base['search_aliases']),
