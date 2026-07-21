@@ -16,6 +16,7 @@ final class Elev8_OS_Glass_Operations_Module {
         add_action('admin_post_elev8_os_approve_glass_entry', [__CLASS__, 'approve_entry']);
         add_action('admin_post_elev8_os_save_glassblower_profile', [__CLASS__, 'save_glassblower_profile']);
         add_action('admin_post_elev8_os_import_cremation_orders', [__CLASS__, 'import_orders']);
+        add_action('wp_ajax_elev8_os_move_glass_job', [__CLASS__, 'ajax_move_job']);
     }
 
     public static function menu(): void {
@@ -25,6 +26,14 @@ final class Elev8_OS_Glass_Operations_Module {
     public static function assets(string $hook): void {
         if (strpos($hook, self::SLUG) === false) { return; }
         wp_enqueue_style('elev8-glass-operations', ELEV8_OS_URL . 'assets/css/glass-operations.css', [], ELEV8_OS_VERSION);
+        if (sanitize_key($_GET['view'] ?? '') === 'board') {
+            wp_enqueue_script('elev8-glass-production-board', ELEV8_OS_URL . 'assets/js/glass-production-board.js', [], ELEV8_OS_VERSION, true);
+            wp_localize_script('elev8-glass-production-board', 'Elev8GlassBoard', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('elev8_glass_board'),
+                'errorMessage' => 'The production job could not be updated.',
+            ]);
+        }
     }
 
     private static function can_manage(): bool { return Elev8_OS_Access_Service::user_can('view_glass_dashboard'); }
@@ -42,6 +51,7 @@ final class Elev8_OS_Glass_Operations_Module {
             <header class="elev8-glass__hero"><div><p class="eyebrow">Elev8 Premier</p><h1>Glass Manager Dashboard</h1><p>Production jobs, blower assignments, QC and automatic payout review in one operating view.</p></div>
                 <nav>
                     <a class="button <?php echo $view === 'dashboard' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url()); ?>">Dashboard</a>
+                    <a class="button <?php echo $view === 'board' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'board'])); ?>">Production board</a>
                     <a class="button <?php echo $view === 'new-job' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'new-job'])); ?>">New job</a>
                     <a class="button <?php echo $view === 'payouts' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'payouts'])); ?>">Pay sheets</a>
                     <a class="button <?php echo $view === 'team' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'team'])); ?>">Glassblower Team</a>
@@ -49,7 +59,8 @@ final class Elev8_OS_Glass_Operations_Module {
             </header>
             <?php if (!empty($_GET['notice'])) : ?><div class="notice notice-success is-dismissible"><p><?php echo esc_html(wp_unslash($_GET['notice'])); ?></p></div><?php endif; ?>
             <?php
-            if ($view === 'new-job') { self::job_form($workers, $products); }
+            if ($view === 'board') { self::production_board($workers); }
+            elseif ($view === 'new-job') { self::job_form($workers, $products); }
             elseif ($view === 'payouts') { self::payouts($workers); }
             elseif ($view === 'team') { self::team($workers); }
             elseif ($view === 'job') { self::job_detail(absint($_GET['job_id'] ?? 0), $workers, $products); }
@@ -69,6 +80,66 @@ final class Elev8_OS_Glass_Operations_Module {
     private static function jobs_table(array $jobs): void {
         if (!$jobs) { echo '<div class="empty">No jobs yet. Add the first production or cremation job.</div>'; return; }
         ?><div class="table-wrap"><table><thead><tr><th>Priority</th><th>Job</th><th>Source</th><th>Customer</th><th>Assigned</th><th>Due</th><th>Status</th><th></th></tr></thead><tbody><?php foreach ($jobs as $j) : $u = $j['assigned_user_id'] ? get_userdata((int)$j['assigned_user_id']) : null; ?><tr><td><span class="pill priority-<?php echo esc_attr($j['priority']); ?>"><?php echo esc_html(ucfirst($j['priority'])); ?></span></td><td><strong><?php echo esc_html($j['product_name'] ?: 'Untitled job'); ?></strong><small><?php echo esc_html(ucfirst($j['job_type']) . ($j['order_number'] ? ' · #' . $j['order_number'] : '')); ?></small></td><td><?php echo esc_html(ucwords(str_replace('_', ' ', $j['source']))); ?></td><td><?php echo esc_html($j['customer_name'] ?: 'Internal production'); ?></td><td><?php echo esc_html($u ? $u->display_name : 'Unassigned'); ?></td><td><?php echo esc_html($j['due_date'] ?: 'Unavailable'); ?></td><td><span class="pill status-<?php echo esc_attr($j['status']); ?>"><?php echo esc_html(ucwords(str_replace('_', ' ', $j['status']))); ?></span></td><td><a class="button button-small" href="<?php echo esc_url(self::url(['view' => 'job', 'job_id' => $j['id']])); ?>">Open</a></td></tr><?php endforeach; ?></tbody></table></div><?php
+    }
+
+    private static function production_board(array $workers): void {
+        $filters = [
+            'search' => sanitize_text_field(wp_unslash($_GET['s'] ?? '')),
+            'assigned_user_id' => absint($_GET['blower'] ?? 0),
+            'source' => sanitize_key($_GET['source'] ?? ''),
+            'priority' => sanitize_key($_GET['priority'] ?? ''),
+            'overdue' => empty($_GET['overdue']) ? 0 : 1,
+        ];
+        $jobs = Elev8_OS_Glass_Operations_Service::board_jobs($filters);
+        $statuses = Elev8_OS_Glass_Operations_Service::workflow_statuses();
+        $workload = Elev8_OS_Glass_Operations_Service::board_workload($jobs, $workers);
+        $sources = ['shipping'=>'Shipping','head_shop'=>'Head Shop','cremation'=>'Cremation','website'=>'Website','wholesale'=>'Wholesale','repair'=>'Repair','internal_inventory'=>'Internal Inventory','custom'=>'Custom','manual'=>'Manual'];
+        ?>
+        <section class="panel elev8-production-board-controls">
+            <div class="panel-head"><div><h2>Production Board</h2><p>Move work through the studio, balance blower assignments and surface late jobs.</p></div><a class="button button-primary" href="<?php echo esc_url(self::url(['view'=>'new-job'])); ?>">Create job</a></div>
+            <form method="get" class="elev8-board-filters">
+                <input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG); ?>"><input type="hidden" name="view" value="board">
+                <label>Search<input type="search" name="s" value="<?php echo esc_attr($filters['search']); ?>" placeholder="Job, customer, order..."></label>
+                <label>Glassblower<select name="blower"><option value="0">All blowers</option><?php foreach ($workers as $u) : ?><option value="<?php echo absint($u->ID); ?>" <?php selected($filters['assigned_user_id'],$u->ID); ?>><?php echo esc_html($u->display_name); ?></option><?php endforeach; ?></select></label>
+                <label>Source<select name="source"><option value="">All sources</option><?php foreach ($sources as $key=>$label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($filters['source'],$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
+                <label>Priority<select name="priority"><option value="">All priorities</option><?php foreach (['urgent','high','normal','low'] as $priority) : ?><option value="<?php echo esc_attr($priority); ?>" <?php selected($filters['priority'],$priority); ?>><?php echo esc_html(ucfirst($priority)); ?></option><?php endforeach; ?></select></label>
+                <label class="elev8-board-check"><input type="checkbox" name="overdue" value="1" <?php checked($filters['overdue'],1); ?>> Overdue only</label>
+                <button class="button button-primary">Apply</button><a class="button" href="<?php echo esc_url(self::url(['view'=>'board'])); ?>">Clear</a>
+            </form>
+        </section>
+        <section class="elev8-board-workload" aria-label="Glassblower workload">
+            <?php foreach ($workload as $row) : ?><article><strong><?php echo esc_html($row['label']); ?></strong><span><?php echo absint($row['open']); ?> open</span><?php if ($row['overdue']) : ?><em><?php echo absint($row['overdue']); ?> overdue</em><?php elseif ($row['due_today']) : ?><em><?php echo absint($row['due_today']); ?> due today</em><?php else : ?><small>On track</small><?php endif; ?></article><?php endforeach; ?>
+        </section>
+        <div class="elev8-production-board" data-board>
+            <?php foreach ($statuses as $status => $label) : $column_jobs = array_values(array_filter($jobs, static fn(array $j): bool => $j['status'] === $status)); ?>
+                <section class="elev8-board-column" data-status="<?php echo esc_attr($status); ?>">
+                    <header><div><h3><?php echo esc_html($label); ?></h3><span><?php echo count($column_jobs); ?></span></div></header>
+                    <div class="elev8-board-dropzone" data-dropzone>
+                        <?php if (!$column_jobs) : ?><p class="elev8-board-empty">No jobs</p><?php endif; ?>
+                        <?php foreach ($column_jobs as $job) : self::production_board_card($job, $workers, $statuses); endforeach; ?>
+                    </div>
+                </section>
+            <?php endforeach; ?>
+        </div>
+        <?php
+    }
+
+    private static function production_board_card(array $job, array $workers, array $statuses): void {
+        $user = $job['assigned_user_id'] ? get_userdata((int)$job['assigned_user_id']) : null;
+        $today = current_time('Y-m-d');
+        $is_overdue = !empty($job['due_date']) && $job['due_date'] < $today && !in_array($job['status'], ['completed','cancelled'], true);
+        $is_today = !empty($job['due_date']) && $job['due_date'] === $today;
+        ?>
+        <article class="elev8-board-card priority-<?php echo esc_attr($job['priority']); ?><?php echo $is_overdue ? ' is-overdue' : ''; ?>" draggable="true" data-job-id="<?php echo absint($job['id']); ?>">
+            <div class="elev8-board-card-top"><span class="pill priority-<?php echo esc_attr($job['priority']); ?>"><?php echo esc_html(ucfirst($job['priority'])); ?></span><small>#<?php echo absint($job['id']); ?></small></div>
+            <h4><a href="<?php echo esc_url(self::url(['view'=>'job','job_id'=>$job['id']])); ?>"><?php echo esc_html($job['product_name'] ?: 'Untitled production job'); ?></a></h4>
+            <p><?php echo esc_html($job['customer_name'] ?: 'Internal production'); ?></p>
+            <dl><div><dt>Source</dt><dd><?php echo esc_html(ucwords(str_replace('_',' ',$job['source']))); ?></dd></div><div><dt>Lines</dt><dd><?php echo absint($job['line_count']); ?></dd></div><div><dt>Due</dt><dd class="<?php echo $is_overdue ? 'danger' : ($is_today ? 'warning' : ''); ?>"><?php echo esc_html($job['due_date'] ?: 'Unavailable'); ?></dd></div></dl>
+            <label>Glassblower<select data-assignee><?php ?><option value="0">Unassigned</option><?php foreach ($workers as $worker) : ?><option value="<?php echo absint($worker->ID); ?>" <?php selected((int)$job['assigned_user_id'],$worker->ID); ?>><?php echo esc_html($worker->display_name); ?></option><?php endforeach; ?></select></label>
+            <label>Status<select data-status-select><?php foreach ($statuses as $key=>$label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($job['status'],$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
+            <div class="elev8-board-card-actions"><button type="button" class="button button-small" data-save-card>Save</button><a class="button button-small" href="<?php echo esc_url(self::url(['view'=>'job','job_id'=>$job['id']])); ?>">Open</a><span data-card-status aria-live="polite"></span></div>
+        </article>
+        <?php
     }
 
     private static function job_form(array $workers, array $products): void {
@@ -115,5 +186,16 @@ final class Elev8_OS_Glass_Operations_Module {
     public static function save_entry(): void { self::guard(); check_admin_referer('elev8_save_glass_entry'); $data = wp_unslash($_POST); $r = Elev8_OS_Glass_Operations_Service::save_entry($data); $job = absint($data['job_id'] ?? 0); wp_safe_redirect(self::url(['view' => $job ? 'job' : 'payouts', 'job_id' => $job, 'notice' => is_wp_error($r) ? $r->get_error_message() : 'Blower work added for review.'])); exit; }
     public static function approve_entry(): void { self::guard(); $id = absint($_POST['entry_id'] ?? 0); check_admin_referer('elev8_approve_glass_entry_' . $id); Elev8_OS_Glass_Operations_Service::approve_entry($id, sanitize_key($_POST['status'] ?? 'pending')); wp_safe_redirect(self::url(['view' => 'payouts', 'notice' => 'Payout entry updated.'])); exit; }
     public static function save_glassblower_profile(): void { self::guard(); check_admin_referer('elev8_save_glassblower_profile'); $data = wp_unslash($_POST); $user = get_userdata(absint($data['user_id'] ?? 0)); if ($user instanceof WP_User) { $user->add_role(Elev8_OS_Access_Service::ROLE_GLASS_BLOWER); Elev8_OS_Production_Catalog_Service::save_compensation_profile($data); $notice = 'Glassblower roster updated.'; } else { $notice = 'User not found.'; } wp_safe_redirect(self::url(['view' => 'team', 'notice' => $notice])); exit; }
+    public static function ajax_move_job(): void {
+        self::guard();
+        check_ajax_referer('elev8_glass_board', 'nonce');
+        $job_id = absint($_POST['job_id'] ?? 0);
+        $status = sanitize_key($_POST['status'] ?? '');
+        $assigned = absint($_POST['assigned_user_id'] ?? 0);
+        $result = Elev8_OS_Glass_Operations_Service::move_board_job($job_id, $status, $assigned);
+        if (is_wp_error($result)) { wp_send_json_error(['message' => $result->get_error_message()], 400); }
+        wp_send_json_success(['message' => 'Production job updated.']);
+    }
+
     public static function import_orders(): void { self::guard(); check_admin_referer('elev8_import_cremation_orders'); $n = Elev8_OS_Glass_Operations_Service::import_woocommerce_cremation_orders(); wp_safe_redirect(self::url(['notice' => sprintf('%d new cremation order(s) imported.', $n)])); exit; }
 }

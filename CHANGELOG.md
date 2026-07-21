@@ -1,5 +1,25 @@
 # Elev8 OS Changelog
 
+## 13.3.0 — QR Label Sheet Composer
+
+- Added batch artwork QR label selection for artists and administrators.
+- Added Select All, Clear All, live selection totals, and copies-per-label controls.
+- Added full letter-sheet layouts for six 3 × 3 labels or sixteen 3 × 1 labels per page.
+- Added multi-page printing for larger selections while preserving one tracked QR code per artwork.
+- Added ownership and artist validation so labels cannot be mixed across unauthorized profiles.
+- Preserved all existing single-label, artist-card, Production Board, Production Jobs, and pay-sheet workflows.
+
+## 13.2.0 — Glass Production Board
+
+- Added a visual production board that groups active glass jobs by workflow status.
+- Added drag-and-drop status movement with server-side permission, nonce and status validation.
+- Added quick blower assignment directly on production cards.
+- Added filters for search, blower, source, priority and overdue work.
+- Added live workload summaries for each active glassblower and unassigned work.
+- Added overdue and due-today indicators without changing the underlying job source of truth.
+- Added accessible non-drag status controls so the board remains usable on phones and by keyboard.
+- Preserved Production Catalog snapshots, automatic pay sheets, QC controls and Glassblower Operational Homes.
+
 ## 13.1.0 — Production Jobs, Glassblower Team & Pay Sheets
 
 - Added catalog-backed production job lines with compensation, material-cost and product-version snapshots.

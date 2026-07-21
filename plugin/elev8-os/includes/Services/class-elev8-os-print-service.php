@@ -83,4 +83,44 @@ final class Elev8_OS_Print_Service {
 *{box-sizing:border-box}body{margin:0;background:#ececf1;color:#1d1930;font-family:Arial,Helvetica,sans-serif}.toolbar{position:sticky;top:0;z-index:5;display:flex;justify-content:center;gap:10px;padding:12px;background:#21172f}.toolbar button,.toolbar a{border:1px solid #fff;border-radius:999px;background:#fff;color:#21172f;padding:10px 15px;font:700 14px Arial;text-decoration:none}.toolbar a{background:transparent;color:#fff}.sheet{width:8.5in;min-height:11in;margin:24px auto;padding:.5in;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:.3in;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.16)}.label{position:relative;width:3in;height:3in;overflow:hidden;border:1px solid #c8bfd6;background:linear-gradient(145deg,#fff,#f2ebfb);page-break-inside:avoid}.inner{height:100%;display:grid;grid-template-columns:1fr 1.08in;gap:.12in;padding:.2in}.copy{display:flex;flex-direction:column;min-width:0}.eyebrow{margin:0 0 .06in;color:#68439a;font-size:7.5pt;font-weight:800;letter-spacing:.11em;text-transform:uppercase}.title{margin:0;font-size:15pt;line-height:1.04;overflow-wrap:anywhere}.artist{margin:.07in 0 0;font-size:9pt}.price{margin:.1in 0 0;font-size:13pt;font-weight:800}.qr{align-self:center;text-align:center;padding:.06in;border-radius:.1in;background:#68439a;color:#fff}.qr img{display:block;width:.92in;height:.92in;padding:3px;background:#fff}.scan{margin:4px 0 0;font-size:6.5pt;font-weight:800}.label.small{width:3in;height:1in}.small .inner{grid-template-columns:1fr .7in;padding:.09in .11in;gap:.06in}.small .eyebrow{font-size:5.5pt;margin:0 0 .02in}.small .title{font-size:9.5pt}.small .artist{font-size:6.3pt;margin:.02in 0 0}.small .price{font-size:8pt;margin:.025in 0 0}.small .qr{padding:.025in}.small .qr img{width:.55in;height:.55in;padding:2px}.small .scan{font-size:4.7pt;margin:1px 0 0}@page{size:letter portrait;margin:0}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:#fff}.toolbar{display:none}.sheet{margin:0;box-shadow:none}.label{break-inside:avoid}}@media(max-width:900px){.sheet{transform-origin:top left;transform:scale(calc((100vw - 20px)/816));margin:10px}}
 </style></head><body><div class="toolbar"><button onclick="window.print()">Print</button><button onclick="window.print()">Download / Save PDF</button><a href="<?php echo esc_url($back_url); ?>">Back to Print Center</a></div><div class="sheet"><?php for($i=0;$i<$copies;$i++): ?><section class="label<?php echo $small?' small':''; ?>"><div class="inner"><div class="copy"><p class="eyebrow">Elev8 Arts</p><h1 class="title"><?php echo esc_html($title); ?></h1><p class="artist">by <strong><?php echo esc_html($artist_name); ?></strong></p><?php if($price!==''): ?><p class="price"><?php echo esc_html($price); ?></p><?php endif; ?></div><div class="qr"><img src="<?php echo esc_url($qr); ?>" alt="QR code"><p class="scan">Scan for story</p></div></div></section><?php endfor; ?></div></body></html><?php exit;
     }
+
+    /**
+     * Render a full letter-size sheet containing one or more selected artwork labels.
+     * The supplied array may contain repeated assets when multiple copies are requested.
+     */
+    public static function render_artwork_sheet(array $assets, string $artist_name, string $format, string $back_url): void {
+        $format = in_array($format, ['artwork-sheet-3x3', 'artwork-sheet-3x1'], true) ? $format : 'artwork-sheet-3x3';
+        $small = $format === 'artwork-sheet-3x1';
+        $per_page = $small ? 16 : 6;
+        $assets = array_values(array_filter($assets, static fn($asset): bool => is_array($asset) && absint($asset['id'] ?? 0) > 0));
+        if (!$assets) {
+            wp_die(esc_html__('Choose at least one artwork label to print.', 'elev8-os'));
+        }
+
+        status_header(200);
+        nocache_headers();
+        header('X-Robots-Tag: noindex, nofollow', true);
+        ?><!doctype html><html <?php language_attributes(); ?>><head>
+<meta charset="<?php bloginfo('charset'); ?>"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title><?php echo esc_html__('Artwork Label Sheet', 'elev8-os'); ?></title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#ececf1;color:#1d1930;font-family:Arial,Helvetica,sans-serif}.toolbar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;padding:12px;background:#21172f;color:#fff}.toolbar button,.toolbar a{border:1px solid #fff;border-radius:999px;background:#fff;color:#21172f;padding:10px 15px;font:700 14px Arial;text-decoration:none;cursor:pointer}.toolbar a{background:transparent;color:#fff}.toolbar span{font-size:12px;opacity:.82}.sheet{width:8.5in;height:11in;margin:24px auto;padding:.7in 1.1in;display:grid;grid-template-columns:repeat(2,3in);grid-auto-rows:3in;align-content:start;justify-content:center;gap:.25in;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.16);page-break-after:always}.sheet:last-child{page-break-after:auto}.label{position:relative;width:3in;height:3in;overflow:hidden;border:1px solid #c8bfd6;background:linear-gradient(145deg,#fff,#f2ebfb);page-break-inside:avoid}.inner{height:100%;display:grid;grid-template-columns:1fr 1.08in;gap:.12in;padding:.2in}.copy{display:flex;flex-direction:column;min-width:0}.eyebrow{margin:0 0 .06in;color:#68439a;font-size:7.5pt;font-weight:800;letter-spacing:.11em;text-transform:uppercase}.title{margin:0;font-size:15pt;line-height:1.04;overflow-wrap:anywhere}.artist{margin:.07in 0 0;font-size:9pt}.price{margin:.1in 0 0;font-size:13pt;font-weight:800}.qr{align-self:center;text-align:center;padding:.06in;border-radius:.1in;background:#68439a;color:#fff}.qr img{display:block;width:.92in;height:.92in;padding:3px;background:#fff}.scan{margin:4px 0 0;font-size:6.5pt;font-weight:800}.sheet.small-sheet{padding:.5in .65in;grid-template-columns:repeat(2,3in);grid-auto-rows:1in;gap:.22in .25in}.label.small{width:3in;height:1in}.small .inner{grid-template-columns:1fr .7in;padding:.09in .11in;gap:.06in}.small .eyebrow{font-size:5.5pt;margin:0 0 .02in}.small .title{font-size:9.5pt}.small .artist{font-size:6.3pt;margin:.02in 0 0}.small .price{font-size:8pt;margin:.025in 0 0}.small .qr{padding:.025in}.small .qr img{width:.55in;height:.55in;padding:2px}.small .scan{font-size:4.7pt;margin:1px 0 0}.empty-slot{width:3in;height:3in}.small-sheet .empty-slot{height:1in}@page{size:letter portrait;margin:0}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}body{background:#fff}.toolbar{display:none}.sheet{margin:0;box-shadow:none}.label{break-inside:avoid}}@media(max-width:900px){.sheet{transform-origin:top left;transform:scale(calc((100vw - 20px)/816));margin:10px 10px calc(-11in + (11in * ((100vw - 20px)/816)))}}
+</style></head><body>
+<div class="toolbar"><button onclick="window.print()">Print Full Sheet</button><button onclick="window.print()">Download / Save PDF</button><a href="<?php echo esc_url($back_url); ?>">Back to Print Center</a><span><?php echo esc_html(sprintf(_n('%d label selected', '%d labels selected', count($assets), 'elev8-os'), count($assets))); ?></span></div>
+<?php foreach (array_chunk($assets, $per_page) as $page_assets): ?>
+<div class="sheet<?php echo $small ? ' small-sheet' : ''; ?>">
+<?php foreach ($page_assets as $asset):
+    $target = Elev8_OS_Asset_Service::get_public_url($asset, true);
+    $qr = self::qr_image_url($target, $small ? 420 : 700);
+    $title = trim((string)($asset['title'] ?? __('Artwork', 'elev8-os')));
+    $price = ($asset['price'] ?? null) === null ? '' : ('$' . number_format_i18n((float)$asset['price'], 2));
+?>
+<section class="label<?php echo $small ? ' small' : ''; ?>"><div class="inner"><div class="copy"><p class="eyebrow">Elev8 Arts</p><h1 class="title"><?php echo esc_html($title); ?></h1><p class="artist">by <strong><?php echo esc_html($artist_name); ?></strong></p><?php if ($price !== ''): ?><p class="price"><?php echo esc_html($price); ?></p><?php endif; ?></div><div class="qr"><img src="<?php echo esc_url($qr); ?>" alt="<?php echo esc_attr(sprintf(__('QR code for %s', 'elev8-os'), $title)); ?>"><p class="scan">Scan for story</p></div></div></section>
+<?php endforeach; ?>
+</div>
+<?php endforeach; ?>
+</body></html><?php
+        exit;
+    }
+
 }

@@ -161,6 +161,90 @@ final class Elev8_OS_Glass_Operations_Service {
         return $ok ? (int)$wpdb->insert_id : new WP_Error('glass_job_save','The glass job could not be saved.');
     }
 
+    public static function workflow_statuses(): array {
+        return [
+            'new' => 'New',
+            'waiting_customer_info' => 'Waiting on Customer',
+            'waiting_ashes' => 'Waiting on Ashes',
+            'ready_for_production' => 'Ready',
+            'assigned' => 'Assigned',
+            'in_production' => 'In Production',
+            'waiting' => 'Waiting',
+            'quality_control' => 'QC',
+            'ready_for_pickup' => 'Ready for Pickup',
+            'ready_to_ship' => 'Ready to Ship',
+            'completed' => 'Complete',
+        ];
+    }
+
+    public static function board_jobs(array $args = []): array {
+        global $wpdb;
+        $t = self::tables();
+        $where = ["j.status <> 'cancelled'"];
+        $params = [];
+        if (!empty($args['assigned_user_id'])) { $where[] = 'j.assigned_user_id=%d'; $params[] = absint($args['assigned_user_id']); }
+        if (!empty($args['source'])) { $where[] = 'j.source=%s'; $params[] = sanitize_key($args['source']); }
+        if (!empty($args['priority'])) { $where[] = 'j.priority=%s'; $params[] = sanitize_key($args['priority']); }
+        if (!empty($args['overdue'])) { $where[] = "j.status NOT IN ('completed','cancelled') AND j.due_date IS NOT NULL AND j.due_date < %s"; $params[] = current_time('Y-m-d'); }
+        if (!empty($args['search'])) {
+            $like = '%' . $wpdb->esc_like(sanitize_text_field($args['search'])) . '%';
+            $where[] = '(j.product_name LIKE %s OR j.customer_name LIKE %s OR j.order_number LIKE %s OR j.special_notes LIKE %s)';
+            array_push($params, $like, $like, $like, $like);
+        }
+        $sql = "SELECT j.*, COUNT(l.id) AS line_count, COALESCE(SUM(l.quantity),0) AS planned_units, COALESCE(SUM(l.quantity_completed),0) AS completed_units
+                FROM {$t['jobs']} j
+                LEFT JOIN {$t['job_lines']} l ON l.job_id=j.id
+                WHERE " . implode(' AND ', $where) . "
+                GROUP BY j.id
+                ORDER BY FIELD(j.priority,'urgent','high','normal','low'), j.due_date IS NULL, j.due_date ASC, j.id DESC";
+        if ($params) { $sql = $wpdb->prepare($sql, $params); }
+        return $wpdb->get_results($sql, ARRAY_A) ?: [];
+    }
+
+    public static function board_workload(array $jobs, array $workers): array {
+        $out = [0 => ['label' => 'Unassigned', 'open' => 0, 'overdue' => 0, 'due_today' => 0]];
+        foreach ($workers as $worker) {
+            $out[(int) $worker->ID] = ['label' => $worker->display_name, 'open' => 0, 'overdue' => 0, 'due_today' => 0];
+        }
+        $today = current_time('Y-m-d');
+        foreach ($jobs as $job) {
+            if (in_array($job['status'], ['completed','cancelled'], true)) { continue; }
+            $uid = (int) $job['assigned_user_id'];
+            if (!isset($out[$uid])) { $out[$uid] = ['label' => 'Other user', 'open' => 0, 'overdue' => 0, 'due_today' => 0]; }
+            $out[$uid]['open']++;
+            if (!empty($job['due_date']) && $job['due_date'] < $today) { $out[$uid]['overdue']++; }
+            if (!empty($job['due_date']) && $job['due_date'] === $today) { $out[$uid]['due_today']++; }
+        }
+        return $out;
+    }
+
+    public static function move_board_job(int $job_id, string $status, int $assigned_user_id): bool|WP_Error {
+        $allowed = array_keys(self::workflow_statuses());
+        if (!in_array($status, $allowed, true)) { return new WP_Error('glass_board_status', 'Invalid production status.'); }
+        if ($assigned_user_id > 0) {
+            $valid = false;
+            foreach (self::glass_workers() as $worker) { if ((int) $worker->ID === $assigned_user_id) { $valid = true; break; } }
+            if (!$valid) { return new WP_Error('glass_board_blower', 'Choose an active glassblower.'); }
+        }
+        $ok = self::update_job($job_id, ['status' => $status, 'assigned_user_id' => $assigned_user_id]);
+        if (!$ok) { return new WP_Error('glass_board_update', 'The production job could not be updated.'); }
+        if (class_exists('Elev8_OS_Activity_Service')) {
+            Elev8_OS_Activity_Service::record([
+                'type' => 'glass_job_board_updated',
+                'label' => 'Production job moved on board',
+                'details' => 'Status changed to ' . ucwords(str_replace('_', ' ', $status)) . '.',
+                'object_id' => $job_id,
+                'object_type' => 'glass_job',
+                'source' => 'glass_production_board',
+                'metadata' => [
+                    'status' => $status,
+                    'assigned_user_id' => $assigned_user_id,
+                ],
+            ]);
+        }
+        return true;
+    }
+
     public static function update_job(int $id,array $data): bool {
         global $wpdb; $t=self::tables(); $allowed=[];
         foreach(['status','priority','ashes_status'] as $k) if(isset($data[$k])) $allowed[$k]=sanitize_key($data[$k]);

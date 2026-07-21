@@ -102,48 +102,41 @@ final class Elev8_OS_Artist_Print_Center_Module {
                     </form>
                 </section>
 
-                <section class="elev8-print-card">
-                    <div class="elev8-print-card-icon"><span class="dashicons dashicons-format-image" aria-hidden="true"></span></div>
+                <section class="elev8-print-card elev8-print-card-wide">
+                    <div class="elev8-print-card-icon"><span class="dashicons dashicons-grid-view" aria-hidden="true"></span></div>
                     <div class="elev8-print-card-heading">
-                        <p class="elev8-eyebrow"><?php esc_html_e('Artwork labels', 'elev8-os'); ?></p>
-                        <h2><?php esc_html_e('My Artwork Labels', 'elev8-os'); ?></h2>
-                        <p><?php esc_html_e('Choose one of your artwork records and preview its approved 3 × 3 QR label.', 'elev8-os'); ?></p>
+                        <p class="elev8-eyebrow"><?php esc_html_e('Artwork label sheets', 'elev8-os'); ?></p>
+                        <h2><?php esc_html_e('Choose Some or Print Them All', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Select any combination of artwork QR labels. Elev8 OS lays them out on full letter-size sheets so one 3 × 3 label no longer wastes an entire page.', 'elev8-os'); ?></p>
                     </div>
                     <?php if (!$assets): ?>
-                        <div class="elev8-print-empty">
-                            <span class="dashicons dashicons-art" aria-hidden="true"></span>
-                            <div>
-                                <strong><?php esc_html_e('No artwork is currently available to print.', 'elev8-os'); ?></strong>
-                                <p><?php esc_html_e('Add artwork from My Artwork, then return here to print its gallery label.', 'elev8-os'); ?></p>
-                            </div>
-                        </div>
+                        <div class="elev8-print-empty"><span class="dashicons dashicons-art" aria-hidden="true"></span><div><strong><?php esc_html_e('No artwork is currently available to print.', 'elev8-os'); ?></strong><p><?php esc_html_e('Add artwork from My Artwork, then return here to build a label sheet.', 'elev8-os'); ?></p></div></div>
                         <a class="elev8-button elev8-button-secondary" href="<?php echo esc_url($artwork_url); ?>"><?php esc_html_e('Go to My Artwork', 'elev8-os'); ?></a>
                     <?php else: ?>
-                        <form class="elev8-print-form" method="get" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
+                        <form class="elev8-print-form elev8-label-sheet-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank" data-elev8-label-sheet>
                             <input type="hidden" name="action" value="elev8_os_artist_print_artwork">
-                            <?php wp_nonce_field('elev8_os_artist_print_artwork', '_wpnonce', false); ?>
-                            <label class="elev8-print-field">
-                                <span><?php esc_html_e('Choose artwork', 'elev8-os'); ?></span>
-                                <select name="asset_id" required>
-                                    <option value=""><?php esc_html_e('Select artwork…', 'elev8-os'); ?></option>
-                                    <?php foreach ($assets as $asset): ?>
-                                        <option value="<?php echo esc_attr((string)absint($asset['id'] ?? 0)); ?>">
-                                            <?php echo esc_html((string)($asset['title'] ?? __('Untitled', 'elev8-os')) . ' — ' . ucfirst((string)($asset['status'] ?? 'available'))); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </label>
-                            <label class="elev8-print-field">
-                                <span><?php esc_html_e('Print format', 'elev8-os'); ?></span>
-                                <select name="print_format">
-                                    <option value="artwork-label"><?php esc_html_e('Artwork story label — 3 × 3', 'elev8-os'); ?></option>
-                                    <option value="artwork-label-two"><?php esc_html_e('Two artwork story labels — letter sheet', 'elev8-os'); ?></option>
-                                    <option value="artwork-label-small"><?php esc_html_e('Small artwork label — 3 × 1', 'elev8-os'); ?></option>
-                                    <option value="artwork-label-small-sheet"><?php esc_html_e('Small artwork labels — 16 per sheet', 'elev8-os'); ?></option>
-                                </select>
-                            </label>
-                            <button class="elev8-button elev8-button-primary" type="submit"><?php esc_html_e('Preview Artwork Label', 'elev8-os'); ?></button>
+                            <?php wp_nonce_field('elev8_os_artist_print_artwork'); ?>
+                            <div class="elev8-label-selection-toolbar">
+                                <button class="elev8-button elev8-button-secondary" type="button" data-elev8-select-all><?php esc_html_e('Select All', 'elev8-os'); ?></button>
+                                <button class="elev8-button elev8-button-secondary" type="button" data-elev8-clear-all><?php esc_html_e('Clear All', 'elev8-os'); ?></button>
+                                <strong data-elev8-selection-count><?php esc_html_e('0 selected', 'elev8-os'); ?></strong>
+                            </div>
+                            <div class="elev8-artwork-selection-grid">
+                                <?php foreach ($assets as $asset): $asset_id = absint($asset['id'] ?? 0); ?>
+                                    <label class="elev8-artwork-selection-item">
+                                        <input type="checkbox" name="asset_ids[]" value="<?php echo esc_attr((string)$asset_id); ?>">
+                                        <span><strong><?php echo esc_html((string)($asset['title'] ?? __('Untitled', 'elev8-os'))); ?></strong><small><?php echo esc_html(ucfirst((string)($asset['status'] ?? 'available'))); ?></small></span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="elev8-label-sheet-options">
+                                <label class="elev8-print-field"><span><?php esc_html_e('Sheet format', 'elev8-os'); ?></span><select name="print_format"><option value="artwork-sheet-3x3"><?php esc_html_e('3 × 3 artwork labels — 6 per letter sheet', 'elev8-os'); ?></option><option value="artwork-sheet-3x1"><?php esc_html_e('3 × 1 compact labels — 16 per letter sheet', 'elev8-os'); ?></option></select></label>
+                                <label class="elev8-print-field"><span><?php esc_html_e('Copies of each selected label', 'elev8-os'); ?></span><input type="number" name="copies_each" min="1" max="24" value="1"></label>
+                            </div>
+                            <p class="elev8-print-help"><?php esc_html_e('Example: select one artwork and choose 6 copies to fill a complete 3 × 3 sheet, or select six different artworks and leave copies at 1.', 'elev8-os'); ?></p>
+                            <button class="elev8-button elev8-button-primary" type="submit" disabled data-elev8-print-selected><?php esc_html_e('Preview Selected Label Sheet', 'elev8-os'); ?></button>
                         </form>
+                        <script>(function(){var form=document.querySelector('[data-elev8-label-sheet]');if(!form)return;var boxes=[].slice.call(form.querySelectorAll('input[name="asset_ids[]"]'));var count=form.querySelector('[data-elev8-selection-count]');var submit=form.querySelector('[data-elev8-print-selected]');function sync(){var n=boxes.filter(function(b){return b.checked;}).length;count.textContent=n+' selected';submit.disabled=n===0;}form.querySelector('[data-elev8-select-all]').addEventListener('click',function(){boxes.forEach(function(b){b.checked=true;});sync();});form.querySelector('[data-elev8-clear-all]').addEventListener('click',function(){boxes.forEach(function(b){b.checked=false;});sync();});boxes.forEach(function(b){b.addEventListener('change',sync);});sync();})();</script>
                     <?php endif; ?>
                 </section>
             </div>
@@ -179,15 +172,32 @@ final class Elev8_OS_Artist_Print_Center_Module {
     public static function print_artwork(): void {
         self::require_artist();
         check_admin_referer('elev8_os_artist_print_artwork');
-        $asset = Elev8_OS_Asset_Service::get(absint($_GET['asset_id'] ?? 0));
-        if (!$asset || absint($asset['owner_user_id'] ?? 0) !== get_current_user_id()) {
-            wp_die(esc_html__('You may only print labels for your own artwork.', 'elev8-os'), 403);
+        $requested_ids = isset($_REQUEST['asset_ids']) ? (array)wp_unslash($_REQUEST['asset_ids']) : [];
+        $asset_ids = array_values(array_unique(array_filter(array_map('absint', $requested_ids))));
+        if (!$asset_ids) {
+            $single_id = absint($_REQUEST['asset_id'] ?? 0);
+            if ($single_id > 0) { $asset_ids[] = $single_id; }
         }
+        $assets = [];
+        foreach ($asset_ids as $asset_id) {
+            $asset = Elev8_OS_Asset_Service::get($asset_id);
+            if (!$asset || absint($asset['owner_user_id'] ?? 0) !== get_current_user_id()) {
+                wp_die(esc_html__('You may only print labels for your own artwork.', 'elev8-os'), 403);
+            }
+            $assets[] = $asset;
+        }
+        if (!$assets) { wp_die(esc_html__('Choose at least one artwork label to print.', 'elev8-os')); }
         $artist = Elev8_OS_Identity_Service::current_artist();
         $name = trim((string)($artist['firstName'] ?? '') . ' ' . (string)($artist['lastName'] ?? ''));
         if ($name === '') { $name = wp_get_current_user()->display_name; }
-        $format = sanitize_key((string)($_GET['print_format'] ?? 'artwork-label'));
-        Elev8_OS_Print_Service::render_artwork($asset, $name, $format, Elev8_OS_Portal_Page_Manager::get_url('print_center'));
+        $format = sanitize_key((string)($_REQUEST['print_format'] ?? 'artwork-sheet-3x3'));
+        if (in_array($format, ['artwork-sheet-3x3', 'artwork-sheet-3x1'], true) || count($assets) > 1) {
+            $copies_each = max(1, min(24, absint($_REQUEST['copies_each'] ?? 1)));
+            $print_assets = [];
+            foreach ($assets as $asset) { for ($i = 0; $i < $copies_each; $i++) { $print_assets[] = $asset; } }
+            Elev8_OS_Print_Service::render_artwork_sheet($print_assets, $name, $format, Elev8_OS_Portal_Page_Manager::get_url('print_center'));
+        }
+        Elev8_OS_Print_Service::render_artwork($assets[0], $name, $format, Elev8_OS_Portal_Page_Manager::get_url('print_center'));
     }
 
     private static function require_artist(): void {

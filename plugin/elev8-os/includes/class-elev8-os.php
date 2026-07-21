@@ -1182,9 +1182,25 @@ final class Elev8_OS {
                 <button class="button button-primary" type="submit" data-elev8-print-artwork-submit disabled>Preview Artwork Print</button>
               </form>
             </section>
+            <section class="elev8-panel elev8-batch-print-panel">
+              <h2>Batch Artwork Label Sheets</h2>
+              <p>Select an artist, then choose all or only some of their artwork. Print six different 3 × 3 labels per letter sheet, or repeat one label enough times to fill the page.</p>
+              <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank" data-elev8-admin-label-sheet>
+                <input type="hidden" name="action" value="elev8_os_print_artwork">
+                <?php wp_nonce_field('elev8_os_print_artwork'); ?>
+                <label><strong>Choose artist</strong><select name="artist_id" required data-elev8-batch-artist><option value="">Select an artist…</option><?php foreach($artists as $artist): ?><option value="<?php echo esc_attr((string)$artist['id']); ?>"><?php echo esc_html($artist['name'] . ($artist['medium'] !== '' ? ' — '.$artist['medium'] : '')); ?></option><?php endforeach; ?></select></label>
+                <div class="elev8-label-selection-toolbar"><button class="button" type="button" data-elev8-select-all>Select All</button><button class="button" type="button" data-elev8-clear-all>Clear All</button><strong data-elev8-selection-count>0 selected</strong></div>
+                <div class="elev8-admin-artwork-selection" data-elev8-batch-list>
+                  <?php foreach($print_assets as $item): $asset=$item['asset']; ?><label data-artist-id="<?php echo esc_attr((string)$item['artist_id']); ?>" hidden><input type="checkbox" name="asset_ids[]" value="<?php echo esc_attr((string)$asset['id']); ?>" disabled><span><strong><?php echo esc_html((string)$asset['title']); ?></strong><small><?php echo esc_html(ucfirst((string)$asset['status'])); ?></small></span></label><?php endforeach; ?>
+                </div>
+                <div class="elev8-batch-options"><label><strong>Sheet format</strong><select name="print_format"><option value="artwork-sheet-3x3">3 × 3 artwork labels — 6 per letter sheet</option><option value="artwork-sheet-3x1">3 × 1 compact labels — 16 per letter sheet</option></select></label><label><strong>Copies of each selected label</strong><input type="number" name="copies_each" min="1" max="24" value="1"></label></div>
+                <p class="description">To fill a 3 × 3 sheet with one QR code, select one artwork and set copies to 6.</p>
+                <button class="button button-primary" type="submit" disabled data-elev8-print-selected>Preview Selected Label Sheet</button>
+              </form>
+            </section>
           </div>
           <div class="elev8-panel"><h2>Consistent Gallery Workflow</h2><p><strong>Artist:</strong> completes the profile, biography, artwork title, story, materials, dimensions, price, and image.</p><p><strong>Owner:</strong> reviews the information, opens Print Center, previews the branded result, and prints it.</p><p>Templates are controlled by Elev8 OS so every label and artist card has the same Elev8 Arts identity.</p></div>
-          <script>(function(){var form=document.querySelector('[data-elev8-artwork-print-form]');if(!form)return;var artist=form.querySelector('[data-elev8-print-artist]');var artwork=form.querySelector('[data-elev8-print-artwork]');var message=form.querySelector('[data-elev8-print-artwork-message]');var submit=form.querySelector('[data-elev8-print-artwork-submit]');var options=Array.prototype.slice.call(artwork.querySelectorAll('option[data-artist-id]'));function refresh(){var artistId=artist.value;var count=0;artwork.value='';options.forEach(function(option){var match=artistId!==''&&option.getAttribute('data-artist-id')===artistId;option.hidden=!match;option.disabled=!match;if(match)count++;});if(artistId===''){artwork.options[0].text='Select an artist first…';artwork.disabled=true;submit.disabled=true;message.textContent='Select an artist to see only their artwork.';return;}if(count===0){artwork.options[0].text='No artwork found for this artist';artwork.disabled=true;submit.disabled=true;message.textContent='This artist has no artwork available to print yet.';return;}artwork.options[0].text='Select artwork…';artwork.disabled=false;submit.disabled=true;message.textContent=count+' artwork '+(count===1?'item':'items')+' found for this artist.';}artist.addEventListener('change',refresh);artwork.addEventListener('change',function(){submit.disabled=this.value==='';});refresh();})();</script>
+          <script>(function(){var form=document.querySelector('[data-elev8-artwork-print-form]');if(!form)return;var artist=form.querySelector('[data-elev8-print-artist]');var artwork=form.querySelector('[data-elev8-print-artwork]');var message=form.querySelector('[data-elev8-print-artwork-message]');var submit=form.querySelector('[data-elev8-print-artwork-submit]');var options=Array.prototype.slice.call(artwork.querySelectorAll('option[data-artist-id]'));function refresh(){var artistId=artist.value;var count=0;artwork.value='';options.forEach(function(option){var match=artistId!==''&&option.getAttribute('data-artist-id')===artistId;option.hidden=!match;option.disabled=!match;if(match)count++;});if(artistId===''){artwork.options[0].text='Select an artist first…';artwork.disabled=true;submit.disabled=true;message.textContent='Select an artist to see only their artwork.';return;}if(count===0){artwork.options[0].text='No artwork found for this artist';artwork.disabled=true;submit.disabled=true;message.textContent='This artist has no artwork available to print yet.';return;}artwork.options[0].text='Select artwork…';artwork.disabled=false;submit.disabled=true;message.textContent=count+' artwork '+(count===1?'item':'items')+' found for this artist.';}artist.addEventListener('change',refresh);artwork.addEventListener('change',function(){submit.disabled=this.value==='';});refresh();})();(function(){var form=document.querySelector('[data-elev8-admin-label-sheet]');if(!form)return;var artist=form.querySelector('[data-elev8-batch-artist]');var rows=[].slice.call(form.querySelectorAll('[data-elev8-batch-list] label[data-artist-id]'));var count=form.querySelector('[data-elev8-selection-count]');var submit=form.querySelector('[data-elev8-print-selected]');function visibleBoxes(){return rows.filter(function(r){return !r.hidden;}).map(function(r){return r.querySelector('input');});}function sync(){var n=visibleBoxes().filter(function(b){return b.checked;}).length;count.textContent=n+' selected';submit.disabled=n===0;}function refresh(){var id=artist.value;rows.forEach(function(r){var show=id!==''&&r.getAttribute('data-artist-id')===id;r.hidden=!show;var b=r.querySelector('input');b.disabled=!show;if(!show)b.checked=false;});sync();}artist.addEventListener('change',refresh);form.querySelector('[data-elev8-select-all]').addEventListener('click',function(){visibleBoxes().forEach(function(b){b.checked=true;});sync();});form.querySelector('[data-elev8-clear-all]').addEventListener('click',function(){visibleBoxes().forEach(function(b){b.checked=false;});sync();});rows.forEach(function(r){r.querySelector('input').addEventListener('change',sync);});refresh();})();</script>
         </div><?php
     }
 
@@ -1215,16 +1231,33 @@ final class Elev8_OS {
     public static function print_artwork_action(): void {
         if (!current_user_can('manage_options')) { wp_die(esc_html__('Only an Elev8 OS administrator can print artwork materials.', 'elev8-os')); }
         check_admin_referer('elev8_os_print_artwork');
-        $selected_artist_id = absint($_GET['artist_id'] ?? 0);
-        $asset = Elev8_OS_Asset_Service::get(absint($_GET['asset_id'] ?? 0));
-        if (!$asset) { wp_die(esc_html__('Artwork could not be found.', 'elev8-os')); }
-        $artist_id = Elev8_OS_Identity_Service::artist_id_for_user_id(absint($asset['owner_user_id'] ?? 0));
-        if ($selected_artist_id <= 0 || $artist_id !== $selected_artist_id) {
-            wp_die(esc_html__('The selected artwork does not belong to the selected artist. Return to Print Center and choose the artist again.', 'elev8-os'));
+        $selected_artist_id = absint($_REQUEST['artist_id'] ?? 0);
+        $requested_ids = isset($_REQUEST['asset_ids']) ? (array)wp_unslash($_REQUEST['asset_ids']) : [];
+        $asset_ids = array_values(array_unique(array_filter(array_map('absint', $requested_ids))));
+        if (!$asset_ids) {
+            $single_id = absint($_REQUEST['asset_id'] ?? 0);
+            if ($single_id > 0) { $asset_ids[] = $single_id; }
         }
-        $artist_name = self::employee_name($artist_id);
-        $format = sanitize_key((string)($_GET['print_format'] ?? 'artwork-label'));
-        Elev8_OS_Print_Service::render_artwork($asset, $artist_name, $format, admin_url('admin.php?page=elev8-print-center'));
+        if ($selected_artist_id <= 0 || !$asset_ids) { wp_die(esc_html__('Choose an artist and at least one artwork label.', 'elev8-os')); }
+        $assets = [];
+        foreach ($asset_ids as $asset_id) {
+            $asset = Elev8_OS_Asset_Service::get($asset_id);
+            if (!$asset) { wp_die(esc_html__('Artwork could not be found.', 'elev8-os')); }
+            $artist_id = Elev8_OS_Identity_Service::artist_id_for_user_id(absint($asset['owner_user_id'] ?? 0));
+            if ($artist_id !== $selected_artist_id) {
+                wp_die(esc_html__('One of the selected artworks does not belong to the selected artist.', 'elev8-os'));
+            }
+            $assets[] = $asset;
+        }
+        $artist_name = self::employee_name($selected_artist_id);
+        $format = sanitize_key((string)($_REQUEST['print_format'] ?? 'artwork-label'));
+        if (in_array($format, ['artwork-sheet-3x3', 'artwork-sheet-3x1'], true) || count($assets) > 1) {
+            $copies_each = max(1, min(24, absint($_REQUEST['copies_each'] ?? 1)));
+            $print_assets = [];
+            foreach ($assets as $asset) { for ($i = 0; $i < $copies_each; $i++) { $print_assets[] = $asset; } }
+            Elev8_OS_Print_Service::render_artwork_sheet($print_assets, $artist_name, $format, admin_url('admin.php?page=elev8-print-center'));
+        }
+        Elev8_OS_Print_Service::render_artwork($assets[0], $artist_name, $format, admin_url('admin.php?page=elev8-print-center'));
     }
 
     public static function render_print_route(): void {

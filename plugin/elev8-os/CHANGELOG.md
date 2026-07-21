@@ -1,3 +1,13 @@
+# Changelog
+
+## 13.3.0 — QR Label Sheet Composer
+
+- Added batch selection for all or selected artwork QR labels.
+- Added full letter-sheet layouts for six 3 × 3 labels or sixteen 3 × 1 labels.
+- Added Select All, Clear All, selection totals, copies-per-label, and multi-page output.
+- Added the same sheet composer to the artist Print Center and the administrator Gallery Print Center.
+- Preserved tracked artwork URLs, ownership validation, single-label printing, Production Board, Production Jobs, and pay sheets.
+
 ## 10.12.7 — Operational Home
 - Added a shared Dashboard Service as the single source for verified role-aware operational counts.
 - Added CEO Operational Home sections for Needs Attention, My Work, Team Work, Reservations, and Event Applications.
