@@ -18,3 +18,26 @@
 .elev8-workspace__automation-card details{margin:10px 0 14px}
 .elev8-workspace__automation-card summary{cursor:pointer;font-weight:700}
 .elev8-workspace__automation-card button{width:100%;padding:11px 14px;border:0;border-radius:9px;background:#5f3aa5;color:#fff;font-weight:800;cursor:pointer}
+
+/* 12.3.0 Workspace Executive Intelligence */
+.elev8-workspace__intelligence{border:1px solid #d9dfe8;background:linear-gradient(135deg,#fff 0%,#f7f9fc 100%)}
+.elev8-workspace__intelligence>header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
+.elev8-workspace__health-score{display:flex;align-items:baseline;gap:4px;min-width:105px;justify-content:flex-end}
+.elev8-workspace__health-score strong{font-size:44px;line-height:1;font-weight:800}
+.elev8-workspace__health-score span{font-size:14px;color:#64748b}
+.elev8-workspace__health-label{display:inline-flex;padding:6px 11px;border-radius:999px;font-size:13px;font-weight:800;background:#e2e8f0;color:#334155}
+.elev8-workspace__intelligence--healthy .elev8-workspace__health-label{background:#dcfce7;color:#166534}
+.elev8-workspace__intelligence--attention .elev8-workspace__health-label{background:#fef3c7;color:#92400e}
+.elev8-workspace__intelligence--action_required .elev8-workspace__health-label{background:#fee2e2;color:#991b1b}
+.elev8-workspace__intelligence-summary>p{font-size:18px;font-weight:650;margin:12px 0 6px}
+.elev8-workspace__intelligence-summary small{color:#64748b}
+.elev8-workspace__intelligence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}
+.elev8-workspace__intelligence-grid article{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px}
+.elev8-workspace__intelligence-grid h3{font-size:14px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;color:#475569}
+.elev8-workspace__intelligence-grid strong{display:block;font-size:17px;margin-bottom:7px}
+.elev8-workspace__intelligence-grid p,.elev8-workspace__intelligence-grid ul{margin:0;color:#475569}
+.elev8-workspace__intelligence-grid ul{padding-left:19px}
+.elev8-workspace__why{margin-top:16px;border-top:1px solid #e2e8f0;padding-top:14px}
+.elev8-workspace__why summary{cursor:pointer;font-weight:800}
+.elev8-workspace__why ul{margin:12px 0 0;padding-left:20px;color:#475569}
+@media (max-width:800px){.elev8-workspace__intelligence-grid{grid-template-columns:1fr}.elev8-workspace__health-score strong{font-size:36px}}

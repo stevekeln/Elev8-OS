@@ -41,6 +41,7 @@ final class Elev8_OS_Workspace_Module {
         $impact = Elev8_OS_Workspace_Service::relationship_impact($type, $id);
         $can_manage_relationships = class_exists('Elev8_OS_Relationship_Service') && Elev8_OS_Relationship_Service::can_manage($user);
         $automations = class_exists('Elev8_OS_Automation_Service') ? Elev8_OS_Automation_Service::suggestions($type, $id, $user) : [];
+        $intelligence = class_exists('Elev8_OS_Workspace_Intelligence_Service') ? Elev8_OS_Workspace_Intelligence_Service::analyze($type, $id, $user) : [];
 
         ob_start(); ?>
         <main class="elev8-workspace">
@@ -74,6 +75,8 @@ final class Elev8_OS_Workspace_Module {
                 <p class="elev8-workspace__impact-note"><?php esc_html_e('Explicit relationships supplement inferred links. Source records remain owned by their original Elev8 OS engines.', 'elev8-os'); ?></p>
             </section>
 
+            <?php self::render_intelligence($intelligence); ?>
+
             <?php self::render_automations($automations, $type, $id); ?>
 
             <?php if ($details !== '') : ?><section class="elev8-workspace__panel elev8-workspace__source-details"><header><h2><?php esc_html_e('Source Details', 'elev8-os'); ?></h2></header><div><?php echo wp_kses_post(wpautop($details)); ?></div></section><?php endif; ?>
@@ -95,6 +98,32 @@ final class Elev8_OS_Workspace_Module {
             </div>
         </main>
         <?php return (string) ob_get_clean();
+    }
+
+
+    private static function render_intelligence(array $data): void {
+        if (!$data) { return; }
+        $confidence = is_array($data['confidence'] ?? null) ? $data['confidence'] : [];
+        $next = is_array($data['next_step'] ?? null) ? $data['next_step'] : [];
+        ?>
+        <section class="elev8-workspace__panel elev8-workspace__intelligence elev8-workspace__intelligence--<?php echo esc_attr(sanitize_html_class((string) ($data['status'] ?? 'healthy'))); ?>">
+            <header>
+                <div><p><?php esc_html_e('EXECUTIVE INTELLIGENCE', 'elev8-os'); ?></p><h2><?php esc_html_e('Workspace health', 'elev8-os'); ?></h2></div>
+                <div class="elev8-workspace__health-score"><strong><?php echo esc_html((string) ($data['score'] ?? 0)); ?></strong><span>/ 100</span></div>
+            </header>
+            <div class="elev8-workspace__intelligence-summary">
+                <span class="elev8-workspace__health-label"><?php echo esc_html((string) ($data['label'] ?? __('Unavailable', 'elev8-os'))); ?></span>
+                <p><?php echo esc_html((string) ($data['headline'] ?? __('Unavailable', 'elev8-os'))); ?></p>
+                <small><?php echo esc_html(sprintf(__('Confidence: %1$s (%2$d trusted sources)', 'elev8-os'), (string) ($confidence['label'] ?? __('Unavailable', 'elev8-os')), (int) ($confidence['sources'] ?? 0))); ?></small>
+            </div>
+            <div class="elev8-workspace__intelligence-grid">
+                <article><h3><?php esc_html_e('Recommended Next Step', 'elev8-os'); ?></h3><strong><?php echo esc_html((string) ($next['title'] ?? __('Unavailable', 'elev8-os'))); ?></strong><p><?php echo esc_html((string) ($next['reason'] ?? '')); ?></p></article>
+                <article><h3><?php esc_html_e('Verified Risks', 'elev8-os'); ?></h3><?php if (empty($data['risks'])) : ?><p><?php esc_html_e('No verified risks are currently detected.', 'elev8-os'); ?></p><?php else : ?><ul><?php foreach ((array) $data['risks'] as $risk) : ?><li><?php echo esc_html((string) $risk); ?></li><?php endforeach; ?></ul><?php endif; ?></article>
+                <article><h3><?php esc_html_e('Opportunities', 'elev8-os'); ?></h3><ul><?php foreach ((array) ($data['opportunities'] ?? []) as $opportunity) : ?><li><?php echo esc_html((string) $opportunity); ?></li><?php endforeach; ?></ul></article>
+            </div>
+            <details class="elev8-workspace__why"><summary><?php esc_html_e('Why?', 'elev8-os'); ?></summary><ul><?php foreach ((array) ($data['why'] ?? []) as $line) : ?><li><?php echo esc_html((string) $line); ?></li><?php endforeach; ?></ul></details>
+        </section>
+        <?php
     }
 
     private static function render_automations(array $items, string $type, int $id): void {

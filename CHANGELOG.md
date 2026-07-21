@@ -1,3 +1,27 @@
+## 13.0.0 — Glass Production Catalog & Compensation Engine
+
+- Added a new Elev8 OS Production Catalog designed for manual entry rather than importing the legacy spreadsheet as a database.
+- Added production-product definitions with codes, categories, descriptions, skill level, department, active status, and estimated production time.
+- Added product-controlled compensation methods: Hourly, Piecework, Either (manager chooses on the future job), and Included in another production item.
+- Added piecework payout rates and payout units for piece, pair, set, batch, or job.
+- Added reusable material records with units and unit costs, plus product bills of materials, waste allowance, and cost snapshots.
+- Added direct consumable, packaging, and other production-cost fields with estimated labor costing.
+- Added glassblower compensation profiles that support hourly pay and product-specific piecework at the same time.
+- Added configurable initial $18/hour compensation-profile setup for uniquely matched Nick and Adam users, without hardcoded user IDs.
+- Added immutable production-product version snapshots so future jobs can preserve the rates and costs in effect when they were created.
+- Added a dedicated Production Catalog administration workspace for Products, Materials, and Compensation Profiles.
+- Preserved the existing Glass Operations jobs and payout tools; 13.0.0 establishes the trusted definitions that future Production Jobs and Pay Sheets will consume.
+
+## 12.3.0 — Workspace Executive Intelligence
+
+- Added an explainable Workspace Intelligence Service for every supported Universal Workspace.
+- Added a verified 0–100 workspace health score using actions, overdue work, blockers, dependencies, conversations, relationships, and timeline activity.
+- Added rule-based health states: Healthy, Needs Attention, and Action Required.
+- Added verified risks, opportunities, confidence, and a recommended next step inside each workspace.
+- Added a Why? explanation that shows the exact verified signals behind every health conclusion.
+- Preserved confirmation-first automation; no autonomous actions or generative-AI guessing were introduced.
+- Kept source records owned by their existing engines and used the Workspace and Relationship Engines as read-only context.
+
 ## 12.2.0 — Workspace Automation Engine
 
 - Added rule-based suggested actions inside Universal Workspaces.

@@ -74,6 +74,9 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Glass_Operations_Service')) {
             Elev8_OS_Glass_Operations_Service::activate();
         }
+        if (class_exists('Elev8_OS_Production_Catalog_Service')) {
+            Elev8_OS_Production_Catalog_Service::activate();
+        }
         if (class_exists('Elev8_OS_Activity_Service')) { Elev8_OS_Activity_Service::activate(); }
         if (class_exists('Elev8_OS_Person_Service')) { Elev8_OS_Person_Service::activate(); }
         if (class_exists('Elev8_OS_Unified_Intake_Service')) { Elev8_OS_Unified_Intake_Service::activate(); }
@@ -177,6 +180,8 @@ final class Elev8_OS {
             'elev8-artist-portal'    => 60,
             'elev8-growth-center'    => 70,
             'elev8-gallery-operations' => 80,
+            'elev8-production-catalog' => 82,
+            'elev8-glass-operations' => 84,
             'elev8-business-intelligence' => 90,
             'elev8-content-studio'   => 100,
             'elev8-print-center'     => 110,
