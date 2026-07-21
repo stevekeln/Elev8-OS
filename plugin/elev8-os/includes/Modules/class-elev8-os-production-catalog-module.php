@@ -36,7 +36,7 @@ final class Elev8_OS_Production_Catalog_Module {
         self::guard();
         $view=sanitize_key($_GET['view']??'products');
         ?><div class="wrap elev8-production"><header class="elev8-production__hero"><div><p class="eyebrow">Production Engine</p><h1>Glass Production Catalog</h1><p>Define what can be made, what it costs, and whether each operation is hourly, piecework, either, or included.</p></div><nav><a class="button <?php echo $view==='products'?'button-primary':'';?>" href="<?php echo esc_url(self::url());?>">Products</a><a class="button <?php echo $view==='new-product'?'button-primary':'';?>" href="<?php echo esc_url(self::url(['view'=>'new-product']));?>">New product</a><a class="button <?php echo $view==='materials'?'button-primary':'';?>" href="<?php echo esc_url(self::url(['view'=>'materials']));?>">Materials</a><a class="button <?php echo $view==='compensation'?'button-primary':'';?>" href="<?php echo esc_url(self::url(['view'=>'compensation']));?>">Compensation profiles</a><a class="button <?php echo $view==='wizard'?'button-primary':'';?>" href="<?php echo esc_url(self::url(['view'=>'wizard']));?>">Import Wizard</a><a class="button <?php echo $view==='migration'?'button-primary':'';?>" href="<?php echo esc_url(self::url(['view'=>'migration']));?>">Legacy Migration</a></nav></header><?php
-        if(!empty($_GET['notice']))echo '<div class="notice notice-success is-dismissible"><p>'.esc_html(wp_unslash($_GET['notice'])).'</p></div>';
+        if(!empty($_GET['notice'])){$notice_type=sanitize_key($_GET['notice_type']??'success');$notice_class=$notice_type==='error'?'notice-error':'notice-success';echo '<div class="notice '.esc_attr($notice_class).' is-dismissible"><p>'.esc_html(wp_unslash($_GET['notice'])).'</p></div>';}
         if($view==='new-product'||$view==='edit-product')self::product_form(absint($_GET['product_id']??0));
         elseif($view==='materials')self::materials();
         elseif($view==='compensation')self::compensation();
@@ -74,18 +74,229 @@ final class Elev8_OS_Production_Catalog_Module {
 
 
     private static function wizard(): void {
-        $session=Elev8_OS_Glass_Catalog_Import_Service::session();
-        $family=sanitize_text_field($_GET['family']??'');
-        ?><section class="panel elev8-wizard"><div class="panel-head"><div><h2>Glass Catalog Import Wizard</h2><p>Upload the original workbook, review one production family at a time, then import approved items into the Production Catalog.</p></div><?php if($session):?><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_wizard_clear');?><input type="hidden" name="action" value="elev8_os_glass_catalog_wizard_clear"><button class="button">Start over</button></form><?php endif;?></div>
-        <?php if(!$session):?><div class="wizard-step"><span class="step-number">1</span><div><h3>Upload the production workbook</h3><p>Elev8 OS reads the <strong>Production Information</strong> sheet and never modifies the uploaded file.</p><form method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_wizard_upload');?><input type="hidden" name="action" value="elev8_os_glass_catalog_wizard_upload"><input type="file" name="workbook" accept=".xlsx,.xlsm" required><button class="button button-primary">Analyze workbook</button></form></div></div><?php return;endif;
-        $families=$session['families']??[];$items=$session['items']??[];?><div class="wizard-summary"><div><strong><?php echo absint($session['family_count']??count($families));?></strong><span>Product families</span></div><div><strong><?php echo absint($session['item_count']??count($items));?></strong><span>Detected items</span></div><div><strong><?php echo esc_html($session['file_name']??'Workbook');?></strong><span>Uploaded source</span></div></div>
-        <?php if(!$family||empty($families[$family])):?><div class="wizard-step"><span class="step-number">2</span><div class="grow"><h3>Choose a product family</h3><p>Review the workbook in the same groups the glass team already understands.</p><div class="family-grid"><?php foreach($families as $name=>$cols):?><a class="family-card" href="<?php echo esc_url(self::url(['view'=>'wizard','family'=>$name]));?>"><strong><?php echo esc_html($name);?></strong><span><?php echo count($cols);?> detected item<?php echo count($cols)===1?'':'s';?></span><em>Review family →</em></a><?php endforeach;?></div></div></div><?php return;endif;
-        $cols=$families[$family];?><p><a href="<?php echo esc_url(self::url(['view'=>'wizard']));?>">← All product families</a></p><form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_wizard_import');?><input type="hidden" name="action" value="elev8_os_glass_catalog_wizard_import"><input type="hidden" name="family" value="<?php echo esc_attr($family);?>"><section class="wizard-family"><div class="panel-head"><div><p class="eyebrow">Product family</p><h3><?php echo esc_html($family);?></h3><p>Edit the names and aliases into exactly what the Glass Manager should see while typing in Fast Glass Pay.</p></div><label class="check"><input type="checkbox" name="update_existing" value="1"> Update matching workbook items already imported</label></div><div class="wizard-items"><?php foreach($cols as $col):$r=$items[$col]??[];?><article class="wizard-item"><div class="wizard-item__select"><input type="checkbox" name="items[<?php echo esc_attr($col);?>][selected]" value="1" checked><span><?php echo esc_html($col);?></span></div><div class="wizard-item__fields"><label>Catalog name<input name="items[<?php echo esc_attr($col);?>][catalog_name]" value="<?php echo esc_attr($r['catalog_name']??'');?>"></label><label>Search aliases<textarea name="items[<?php echo esc_attr($col);?>][search_aliases]" rows="2"><?php echo esc_textarea($r['search_aliases']??'');?></textarea></label><div class="wizard-item__row"><label>Pay method<select name="items[<?php echo esc_attr($col);?>][compensation_method]"><?php foreach(['piecework'=>'Piecework','hourly'=>'Hourly','either'=>'Either'] as $v=>$l):?><option value="<?php echo esc_attr($v);?>" <?php selected($r['compensation_method']??'piecework',$v);?>><?php echo esc_html($l);?></option><?php endforeach;?></select></label><label>Blower pay<input type="number" step="0.0001" min="0" name="items[<?php echo esc_attr($col);?>][blower_pay]" value="<?php echo esc_attr($r['blower_pay']??0);?>"</label></div><div class="financial-strip"><span>Retail <strong>$<?php echo number_format_i18n((float)($r['actual_retail']??0),2);?></strong></span><span>Wholesale <strong>$<?php echo number_format_i18n((float)($r['actual_wholesale']??0),2);?></strong></span><span>Material <strong>$<?php echo number_format_i18n((float)($r['material_cost']??0),2);?></strong></span><span>Total cost <strong>$<?php echo number_format_i18n((float)($r['total_cost']??0),2);?></strong></span><span>Time <strong><?php echo number_format_i18n((float)($r['estimated_minutes']??0),2);?> min</strong></span></div></div></article><?php endforeach;?></div><div class="wizard-actions"><button type="button" class="button" onclick="this.closest('form').querySelectorAll('.wizard-item input[type=checkbox]').forEach(function(x){x.checked=true})">Select all</button><button type="button" class="button" onclick="this.closest('form').querySelectorAll('.wizard-item input[type=checkbox]').forEach(function(x){x.checked=false})">Clear</button><button class="button button-primary">Import selected family</button></div></section></form></section><?php
+        $session = Elev8_OS_Glass_Catalog_Import_Service::session();
+        $family = sanitize_text_field($_GET['family'] ?? '');
+        ?>
+        <section class="panel elev8-wizard">
+            <div class="panel-head">
+                <div>
+                    <h2>Glass Catalog Import Wizard</h2>
+                    <p>Upload the original workbook, review one production family at a time, then import approved items into the Production Catalog.</p>
+                </div>
+                <?php if ($session): ?>
+                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                        <?php wp_nonce_field('elev8_wizard_clear'); ?>
+                        <input type="hidden" name="action" value="elev8_os_glass_catalog_wizard_clear">
+                        <button class="button">Start over</button>
+                    </form>
+                <?php endif; ?>
+            </div>
+
+            <?php if (!$session): ?>
+                <div class="wizard-step">
+                    <span class="step-number">1</span>
+                    <div class="grow">
+                        <h3>Upload the production workbook</h3>
+                        <p>Elev8 OS reads the <strong>Production Information</strong> sheet and never modifies the uploaded file.</p>
+                        <form class="wizard-upload-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                            <?php wp_nonce_field('elev8_wizard_upload'); ?>
+                            <input type="hidden" name="action" value="elev8_os_glass_catalog_wizard_upload">
+                            <label>Production workbook
+                                <input type="file" name="workbook" accept=".xlsx,.xlsm" required>
+                            </label>
+                            <p class="description">Accepted: .xlsx or .xlsm. Current site upload limit: <strong><?php echo esc_html(Elev8_OS_Glass_Catalog_Import_Service::max_upload_label()); ?></strong>.</p>
+                            <button class="button button-primary">Analyze workbook</button>
+                        </form>
+                        <div class="wizard-help">
+                            <strong>What should happen next?</strong>
+                            <span>After analysis, this page will show the number of product families and detected items. If the server cannot read the file, Elev8 OS will display the exact reason here.</span>
+                        </div>
+                    </div>
+                </div>
+                <?php return; ?>
+            <?php endif;
+
+            $families = $session['families'] ?? [];
+            $items = $session['items'] ?? [];
+            $diagnostics = $session['diagnostics'] ?? [];
+            ?>
+            <div class="wizard-success">
+                <strong>Workbook analyzed successfully.</strong>
+                <span><?php echo esc_html($session['file_name'] ?? 'Workbook'); ?> is ready for family-by-family review.</span>
+            </div>
+            <div class="wizard-summary">
+                <div><strong><?php echo absint($session['family_count'] ?? count($families)); ?></strong><span>Product families</span></div>
+                <div><strong><?php echo absint($session['item_count'] ?? count($items)); ?></strong><span>Detected items</span></div>
+                <div><strong><?php echo esc_html($session['file_name'] ?? 'Workbook'); ?></strong><span>Uploaded source</span></div>
+            </div>
+
+            <?php if ($diagnostics): ?>
+                <details class="wizard-diagnostics">
+                    <summary>Workbook diagnostics</summary>
+                    <div class="diagnostic-grid">
+                        <div><strong><?php echo esc_html($diagnostics['sheet_path'] ?? 'Unavailable'); ?></strong><span>Detected worksheet file</span></div>
+                        <div><strong><?php echo absint($diagnostics['direct_cells'] ?? 0); ?></strong><span>Direct cells read</span></div>
+                        <div><strong><?php echo absint($diagnostics['merged_ranges'] ?? 0); ?></strong><span>Merged ranges found</span></div>
+                        <div><strong><?php echo esc_html($diagnostics['max_column'] ?? 'Unavailable'); ?></strong><span>Last used column</span></div>
+                        <div><strong><?php echo absint($diagnostics['family_blocks'] ?? 0); ?></strong><span>Family blocks detected</span></div>
+                        <div><strong><?php echo absint($diagnostics['skipped_columns'] ?? 0); ?></strong><span>Empty columns skipped</span></div>
+                    </div>
+                    <?php if (!empty($diagnostics['detected_rows'])): ?>
+                        <p><strong>Detected source rows:</strong>
+                            <?php
+                            $row_labels = [];
+                            foreach ($diagnostics['detected_rows'] as $key => $row) {
+                                $row_labels[] = ucwords(str_replace('_', ' ', $key)) . ': ' . absint($row);
+                            }
+                            echo esc_html(implode(' · ', $row_labels));
+                            ?>
+                        </p>
+                    <?php endif; ?>
+                    <?php if (!empty($diagnostics['warnings'])): ?>
+                        <ul><?php foreach ($diagnostics['warnings'] as $warning): ?><li><?php echo esc_html($warning); ?></li><?php endforeach; ?></ul>
+                    <?php endif; ?>
+                </details>
+            <?php endif; ?>
+
+            <?php if (!$family || empty($families[$family])): ?>
+                <div class="wizard-step">
+                    <span class="step-number">2</span>
+                    <div class="grow">
+                        <h3>Choose a product family</h3>
+                        <p>Review the workbook in the same groups the glass team already understands.</p>
+                        <div class="family-grid">
+                            <?php foreach ($families as $name => $cols): ?>
+                                <a class="family-card" href="<?php echo esc_url(self::url(['view' => 'wizard', 'family' => $name])); ?>">
+                                    <strong><?php echo esc_html($name); ?></strong>
+                                    <span><?php echo count($cols); ?> detected item<?php echo count($cols) === 1 ? '' : 's'; ?></span>
+                                    <em>Review family →</em>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php return; ?>
+            <?php endif;
+
+            $cols = $families[$family];
+            ?>
+            <p><a href="<?php echo esc_url(self::url(['view' => 'wizard'])); ?>">← All product families</a></p>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <?php wp_nonce_field('elev8_wizard_import'); ?>
+                <input type="hidden" name="action" value="elev8_os_glass_catalog_wizard_import">
+                <input type="hidden" name="family" value="<?php echo esc_attr($family); ?>">
+                <section class="wizard-family">
+                    <div class="panel-head">
+                        <div>
+                            <p class="eyebrow">Product family</p>
+                            <h3><?php echo esc_html($family); ?></h3>
+                            <p>Edit names and aliases into exactly what the Glass Manager should see while typing in Fast Glass Pay.</p>
+                        </div>
+                        <label class="check"><input type="checkbox" name="update_existing" value="1"> Update matching workbook items already imported</label>
+                    </div>
+                    <div class="wizard-items">
+                        <?php foreach ($cols as $col): $r = $items[$col] ?? []; ?>
+                            <article class="wizard-item">
+                                <div class="wizard-item__select">
+                                    <input type="checkbox" name="items[<?php echo esc_attr($col); ?>][selected]" value="1" checked>
+                                    <span><?php echo esc_html($col); ?></span>
+                                </div>
+                                <div class="wizard-item__fields">
+                                    <label>Catalog name
+                                        <input name="items[<?php echo esc_attr($col); ?>][catalog_name]" value="<?php echo esc_attr($r['catalog_name'] ?? ''); ?>">
+                                    </label>
+                                    <label>Search aliases
+                                        <textarea name="items[<?php echo esc_attr($col); ?>][search_aliases]" rows="2"><?php echo esc_textarea($r['search_aliases'] ?? ''); ?></textarea>
+                                    </label>
+                                    <div class="wizard-item__row">
+                                        <label>Pay method
+                                            <select name="items[<?php echo esc_attr($col); ?>][compensation_method]">
+                                                <?php foreach (['piecework' => 'Piecework', 'hourly' => 'Hourly', 'either' => 'Either'] as $value => $label): ?>
+                                                    <option value="<?php echo esc_attr($value); ?>" <?php selected($r['compensation_method'] ?? 'piecework', $value); ?>><?php echo esc_html($label); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </label>
+                                        <label>Blower pay
+                                            <input type="number" step="0.0001" min="0" name="items[<?php echo esc_attr($col); ?>][blower_pay]" value="<?php echo esc_attr($r['blower_pay'] ?? 0); ?>">
+                                        </label>
+                                    </div>
+                                    <div class="financial-strip">
+                                        <span>Retail <strong>$<?php echo number_format_i18n((float) ($r['actual_retail'] ?? 0), 2); ?></strong></span>
+                                        <span>Wholesale <strong>$<?php echo number_format_i18n((float) ($r['actual_wholesale'] ?? 0), 2); ?></strong></span>
+                                        <span>Material <strong>$<?php echo number_format_i18n((float) ($r['material_cost'] ?? 0), 2); ?></strong></span>
+                                        <span>Total cost <strong>$<?php echo number_format_i18n((float) ($r['total_cost'] ?? 0), 2); ?></strong></span>
+                                        <span>Time <strong><?php echo number_format_i18n((float) ($r['estimated_minutes'] ?? 0), 2); ?> min</strong></span>
+                                    </div>
+                                    <small class="source-trace">Source: Production Information!<?php echo esc_html($r['source_column'] ?? $col); ?><?php if (!empty($r['alternate_source_columns'])): ?> · Alternate columns: <?php echo esc_html($r['alternate_source_columns']); ?><?php endif; ?></small>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="button" onclick="this.closest('form').querySelectorAll('.wizard-item input[type=checkbox]').forEach(function(x){x.checked=true})">Select all</button>
+                        <button type="button" class="button" onclick="this.closest('form').querySelectorAll('.wizard-item input[type=checkbox]').forEach(function(x){x.checked=false})">Clear</button>
+                        <button class="button button-primary">Import selected family</button>
+                    </div>
+                </section>
+            </form>
+        </section>
+        <?php
     }
 
-    public static function wizard_upload(): void { self::guard();check_admin_referer('elev8_wizard_upload');$r=Elev8_OS_Glass_Catalog_Import_Service::upload_and_parse($_FILES['workbook']??[]);$notice=is_wp_error($r)?$r->get_error_message():sprintf('Workbook analyzed: %d product families and %d items detected.',(int)$r['family_count'],(int)$r['item_count']);wp_safe_redirect(self::url(['view'=>'wizard','notice'=>$notice]));exit; }
-    public static function wizard_import(): void { self::guard();check_admin_referer('elev8_wizard_import');$family=sanitize_text_field(wp_unslash($_POST['family']??''));$summary=Elev8_OS_Glass_Catalog_Import_Service::import_family($family,(array)wp_unslash($_POST['items']??[]),!empty($_POST['update_existing']));$notice=sprintf('%s import complete: %d created, %d updated, %d skipped.',$family,(int)$summary['created'],(int)$summary['updated'],(int)$summary['skipped']);if($summary['errors'])$notice.=' Errors: '.implode(' | ',array_slice($summary['errors'],0,3));wp_safe_redirect(self::url(['view'=>'wizard','family'=>$family,'notice'=>$notice]));exit; }
-    public static function wizard_clear(): void { self::guard();check_admin_referer('elev8_wizard_clear');Elev8_OS_Glass_Catalog_Import_Service::clear();wp_safe_redirect(self::url(['view'=>'wizard','notice'=>'Import wizard reset.']));exit; }
+    public static function wizard_upload(): void {
+        self::guard();
+        check_admin_referer('elev8_wizard_upload');
+        $result = Elev8_OS_Glass_Catalog_Import_Service::upload_and_parse($_FILES['workbook'] ?? []);
+        if (is_wp_error($result)) {
+            wp_safe_redirect(self::url([
+                'view' => 'wizard',
+                'notice_type' => 'error',
+                'notice' => $result->get_error_message(),
+            ]));
+            exit;
+        }
+        wp_safe_redirect(self::url([
+            'view' => 'wizard',
+            'notice_type' => 'success',
+            'notice' => sprintf(
+                'Workbook analyzed: %d product families and %d items detected.',
+                (int) $result['family_count'],
+                (int) $result['item_count']
+            ),
+        ]));
+        exit;
+    }
+
+    public static function wizard_import(): void {
+        self::guard();
+        check_admin_referer('elev8_wizard_import');
+        $family = sanitize_text_field(wp_unslash($_POST['family'] ?? ''));
+        $summary = Elev8_OS_Glass_Catalog_Import_Service::import_family(
+            $family,
+            (array) wp_unslash($_POST['items'] ?? []),
+            !empty($_POST['update_existing'])
+        );
+        $notice = sprintf(
+            '%s import complete: %d created, %d updated, %d skipped.',
+            $family,
+            (int) $summary['created'],
+            (int) $summary['updated'],
+            (int) $summary['skipped']
+        );
+        if ($summary['errors']) {
+            $notice .= ' Errors: ' . implode(' | ', array_slice($summary['errors'], 0, 3));
+        }
+        wp_safe_redirect(self::url(['view' => 'wizard', 'family' => $family, 'notice' => $notice]));
+        exit;
+    }
+
+    public static function wizard_clear(): void {
+        self::guard();
+        check_admin_referer('elev8_wizard_clear');
+        Elev8_OS_Glass_Catalog_Import_Service::clear();
+        wp_safe_redirect(self::url(['view' => 'wizard', 'notice' => 'Import wizard reset.']));
+        exit;
+    }
 
     private static function migration(): void {
         $records = Elev8_OS_Production_Catalog_Service::migration_records();

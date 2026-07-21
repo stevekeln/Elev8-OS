@@ -1,3 +1,13 @@
+## 14.0.1 — Smart Workbook Parser Hotfix
+
+- Replaced silent workbook-analysis failures with explicit upload, workbook, sheet, and parser diagnostics.
+- Added upload-error reporting, including the current WordPress upload-size limit, and support for servers that identify Excel workbooks as ZIP archives.
+- Added durable wizard-session storage through user meta as a fallback when transients or object caches drop the parsed workbook.
+- Replaced rigid row assumptions with label-based financial-row discovery, merged-heading detection, dynamic family blocks, nested subtype/variant detection, and alternate pay-tier grouping.
+- Added a workbook diagnostics panel showing detected source rows, merged ranges, cell counts, last used column, family blocks, and skipped empty columns.
+- Fixed malformed Blower Pay input markup in the family review screen and added source-column traceability.
+- Preserved Production Catalog imports, Fast Glass Pay, financial snapshots, and legacy migration behavior.
+
 ## 14.0.0 — Glass Catalog Import Wizard
 
 - Added a workbook-first Glass Catalog Import Wizard that reads the original Production Information sheet without modifying it.
