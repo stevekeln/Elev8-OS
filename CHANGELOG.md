@@ -1,3 +1,15 @@
+# Changelog
+
+## 12.1.0 - Relationship Engine
+
+- Added a shared Relationship Engine for explicit, trusted links between Elev8 OS records.
+- Added two-way workspace relationships without duplicating authoritative source data.
+- Added relationship types for related records, dependencies, blockers, follow-up, support, and participation.
+- Added relationship impact metrics to Universal Workspaces.
+- Added a workspace connector for authorized owners and managers.
+- Added relationship notes, removal controls, permission checks, and immutable Activity records.
+- Preserved inferred workspace links while allowing explicit Business Graph relationships to supplement them.
+
 ## 11.3.2 — Public Profile Type Save Hotfix
 
 ### Fixed

@@ -164,6 +164,11 @@ final class Elev8_OS_Workspace_Service {
     public static function related_records(string $type, int $id): array {
         $type = self::normalize_type($type);
         $records = [];
+        if (class_exists('Elev8_OS_Relationship_Service')) {
+            foreach (Elev8_OS_Relationship_Service::for_record($type, $id) as $relationship) {
+                $records[] = $relationship;
+            }
+        }
         if ($type === 'work') {
             $source_type = self::normalize_type((string) get_post_meta($id, '_elev8_work_source_type', true));
             $source_id = absint(get_post_meta($id, '_elev8_work_source_id', true));
@@ -178,8 +183,18 @@ final class Elev8_OS_Workspace_Service {
             if ($type !== 'conversation') { $records[] = self::record_link('conversation', (int) $thread->ID); }
         }
         $unique = [];
-        foreach (array_filter($records) as $record) { $unique[$record['type'] . ':' . $record['id']] = $record; }
+        foreach (array_filter($records) as $record) {
+            $key = $record['type'] . ':' . $record['id'];
+            if (!isset($unique[$key]) || !empty($record['relationship_id'])) { $unique[$key] = $record; }
+        }
         return array_values($unique);
+    }
+
+    public static function relationship_impact(string $type, int $id): array {
+        if (!class_exists('Elev8_OS_Relationship_Service')) {
+            return ['total' => 0, 'blocks' => 0, 'depends_on' => 0, 'people' => 0, 'work' => 0, 'conversations' => 0];
+        }
+        return Elev8_OS_Relationship_Service::impact_summary(self::normalize_type($type), $id);
     }
 
     public static function people(string $type, int $id): array {
