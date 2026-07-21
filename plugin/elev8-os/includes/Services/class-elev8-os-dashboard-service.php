@@ -56,19 +56,17 @@ final class Elev8_OS_Dashboard_Service {
             $applications['awaiting_agreement'] = Elev8_OS_Event_Applications_Module::awaiting_agreement_count();
         }
 
-        $needs_attention = 0;
-        if (!empty($my_work['available'])) {
-            $needs_attention += (int) $my_work['overdue'] + (int) $my_work['due_today'];
-        }
-        if ($can_manage_work && !empty($team_work['available'])) {
-            $needs_attention += (int) $team_work['unassigned'];
-        }
-        if ($reservations['available']) {
-            $needs_attention += (int) $reservations['attention'];
-        }
-        if ($applications['available']) {
-            $needs_attention += (int) $applications['attention'];
-        }
+        $attention = class_exists('Elev8_OS_Attention_Service')
+            ? Elev8_OS_Attention_Service::summary($user)
+            : [
+                'available' => false,
+                'total' => 0,
+                'critical' => 0,
+                'high' => 0,
+                'normal' => 0,
+                'items' => [],
+            ];
+        $needs_attention = (int) ($attention['total'] ?? 0);
 
         return [
             'generated_at' => current_time('mysql'),
@@ -89,10 +87,8 @@ final class Elev8_OS_Dashboard_Service {
                 'available' => false,
                 'diagnostic' => __('A shared event calendar service is not connected yet.', 'elev8-os'),
             ],
-            'notifications' => [
-                'available' => false,
-                'diagnostic' => __('Role-aware notification counts are not connected yet.', 'elev8-os'),
-            ],
+            'notifications' => $attention,
+            'attention' => $attention,
         ];
     }
 
@@ -103,29 +99,27 @@ final class Elev8_OS_Dashboard_Service {
      * @return array<int,array<string,string|int>>
      */
     public static function priorities(array $summary): array {
-        $items = [];
-        $my = $summary['my_work'] ?? [];
-        $team = $summary['team_work'] ?? [];
-        $reservations = $summary['reservations'] ?? [];
-        $applications = $summary['applications'] ?? [];
+        $attention = is_array($summary['attention'] ?? null) ? $summary['attention'] : [];
+        $items = is_array($attention['items'] ?? null) ? $attention['items'] : [];
+        $priorities = [];
 
-        if (!empty($my['available']) && (int) ($my['overdue'] ?? 0) > 0) {
-            $items[] = self::priority('critical', (int) $my['overdue'], __('My overdue work', 'elev8-os'), class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::my_url() : '');
-        }
-        if (!empty($my['available']) && (int) ($my['due_today'] ?? 0) > 0) {
-            $items[] = self::priority('high', (int) $my['due_today'], __('My work due today', 'elev8-os'), class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::my_url() : '');
-        }
-        if (!empty($summary['can_manage_work']) && !empty($team['available']) && (int) ($team['unassigned'] ?? 0) > 0) {
-            $items[] = self::priority('high', (int) $team['unassigned'], __('Unassigned team work', 'elev8-os'), class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::team_url() : '');
-        }
-        if (!empty($reservations['available']) && (int) ($reservations['attention'] ?? 0) > 0) {
-            $items[] = self::priority('normal', (int) $reservations['attention'], __('Reservations needing attention', 'elev8-os'), Elev8_OS_Bingo_Reservations_Module::admin_url());
-        }
-        if (!empty($applications['available']) && (int) ($applications['attention'] ?? 0) > 0) {
-            $items[] = self::priority('normal', (int) $applications['attention'], __('Event applications needing attention', 'elev8-os'), Elev8_OS_Event_Applications_Module::admin_url());
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $priorities[] = [
+                'severity' => (string) ($item['severity'] ?? 'normal'),
+                'count' => (int) ($item['count'] ?? 1),
+                'label' => (string) ($item['title'] ?? __('Attention item', 'elev8-os')),
+                'url' => (string) ($item['url'] ?? ''),
+                'summary' => (string) ($item['summary'] ?? ''),
+                'source' => (string) ($item['source'] ?? ''),
+                'created_at' => (string) ($item['created_at'] ?? ''),
+                'icon' => (string) ($item['icon'] ?? 'bell'),
+            ];
         }
 
-        return $items;
+        return $priorities;
     }
 
     /** @return array<string,int|bool> */

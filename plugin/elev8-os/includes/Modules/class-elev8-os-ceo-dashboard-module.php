@@ -175,7 +175,28 @@ final class Elev8_OS_CEO_Dashboard_Module {
 
             <?php self::render_operational_home($operational_summary, $operational_priorities); ?>
 
-            <?php self::render_command_center($operational_summary); ?>
+            <section class="elev8-ceo-launchpad elev8-bi-section" aria-labelledby="elev8-ceo-launchpad-heading">
+                <div class="elev8-bi-section__heading">
+                    <div>
+                        <p class="elev8-bi-eyebrow"><?php esc_html_e('CEO Tools', 'elev8-os'); ?></p>
+                        <h2 id="elev8-ceo-launchpad-heading"><?php esc_html_e('Open a Workspace', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Use these when you need to go deeper. The Attention Center above should be your first stop.', 'elev8-os'); ?></p>
+                    </div>
+                </div>
+                <div class="elev8-ceo-launchpad__grid">
+                    <?php self::render_command_card('clipboard', __('Business Memory', 'elev8-os'), __('Operating logs, owner notes, issues, and follow-up.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=memory')); ?>
+                    <?php self::render_command_card('chart-area', __('Business Intelligence', 'elev8-os'), __('Verified KPIs, confidence, trends, and decision support.', 'elev8-os'), admin_url('admin.php?page=elev8-business-intelligence')); ?>
+                    <?php self::render_command_card('lightbulb', __('Class Requests', 'elev8-os'), __('Customer demand and potential class opportunities.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests')); ?>
+                    <?php self::render_command_card('megaphone', __('Opportunities', 'elev8-os'), __('Actions that can help artists and the business grow.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities')); ?>
+                </div>
+                <div class="elev8-ceo-tool-row" aria-label="<?php esc_attr_e('Additional CEO tools', 'elev8-os'); ?>">
+                    <?php if (class_exists('Elev8_OS_Bingo_Reservations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Bingo_Reservations_Module::admin_url()); ?>"><span class="dashicons dashicons-tickets-alt"></span><?php esc_html_e('Reservations', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Event_Applications_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Event_Applications_Module::admin_url()); ?>"><span class="dashicons dashicons-forms"></span><?php esc_html_e('Event Applications', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Work_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Work_Module::team_url()); ?>"><span class="dashicons dashicons-list-view"></span><?php esc_html_e('Work', 'elev8-os'); ?></a><?php endif; ?>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-growth-center')); ?>"><span class="dashicons dashicons-chart-line"></span><?php esc_html_e('Growth', 'elev8-os'); ?></a>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-system-inspector')); ?>"><span class="dashicons dashicons-admin-tools"></span><?php esc_html_e('System Health', 'elev8-os'); ?></a>
+                </div>
+            </section>
 
             <section class="elev8-bi-section" aria-labelledby="elev8-ceo-money-heading">
                 <div class="elev8-bi-section__heading">
@@ -231,177 +252,84 @@ final class Elev8_OS_CEO_Dashboard_Module {
      * @param array<int,array<string,string|int>> $priorities
      */
     private static function render_operational_home(array $summary, array $priorities): void {
-        $my = is_array($summary['my_work'] ?? null) ? $summary['my_work'] : [];
-        $team = is_array($summary['team_work'] ?? null) ? $summary['team_work'] : [];
-        $reservations = is_array($summary['reservations'] ?? null) ? $summary['reservations'] : [];
-        $applications = is_array($summary['applications'] ?? null) ? $summary['applications'] : [];
-        $work_url = class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::my_url() : '#';
-        $team_url = class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::team_url() : '#';
-        $attention_count = (int) ($summary['needs_attention'] ?? 0);
+        $attention = is_array($summary['attention'] ?? null) ? $summary['attention'] : [];
+        $total = (int) ($attention['total'] ?? 0);
+        $critical = (int) ($attention['critical'] ?? 0);
+        $high = (int) ($attention['high'] ?? 0);
+        $pulse_class = $critical > 0 ? 'is-critical' : ($high > 0 || $total > 0 ? 'is-busy' : 'is-healthy');
+        $pulse_label = $critical > 0
+            ? __('Action Required', 'elev8-os')
+            : ($total > 0 ? __('Needs Attention', 'elev8-os') : __('Healthy', 'elev8-os'));
         ?>
         <section class="elev8-ceo-mission" aria-labelledby="elev8-ceo-mission-heading">
             <div>
-                <p class="elev8-ceo-mission__eyebrow"><?php esc_html_e("Today's Mission", 'elev8-os'); ?></p>
+                <p class="elev8-bi-eyebrow"><?php esc_html_e("Today's Mission", 'elev8-os'); ?></p>
                 <h2 id="elev8-ceo-mission-heading"><?php esc_html_e('Protect the business, remove blockers, and move the best opportunities forward.', 'elev8-os'); ?></h2>
-                <p><?php esc_html_e('Start with verified attention items, confirm business health, then decide what deserves action today.', 'elev8-os'); ?></p>
+                <p><?php esc_html_e('Start with the items waiting on you. Elev8 OS will take you directly to the work, note, reservation, or application that needs a decision.', 'elev8-os'); ?></p>
             </div>
-            <div class="elev8-ceo-mission__steps" aria-label="<?php esc_attr_e('CEO priorities', 'elev8-os'); ?>">
-                <span><span class="dashicons dashicons-warning" aria-hidden="true"></span><?php esc_html_e('Resolve urgent items', 'elev8-os'); ?></span>
-                <span><span class="dashicons dashicons-chart-area" aria-hidden="true"></span><?php esc_html_e('Review business health', 'elev8-os'); ?></span>
-                <span><span class="dashicons dashicons-yes-alt" aria-hidden="true"></span><?php esc_html_e('Approve next actions', 'elev8-os'); ?></span>
+            <div class="elev8-business-pulse <?php echo esc_attr($pulse_class); ?>">
+                <span><?php esc_html_e('Business Pulse', 'elev8-os'); ?></span>
+                <strong><?php echo esc_html($pulse_label); ?></strong>
+                <small><?php echo esc_html($total > 0 ? sprintf(_n('%d verified item is waiting.', '%d verified items are waiting.', $total, 'elev8-os'), $total) : __('No verified urgent items are waiting.', 'elev8-os')); ?></small>
             </div>
         </section>
 
-        <section class="elev8-operational-layout elev8-operational-layout--ceo">
-            <article class="elev8-operational-panel elev8-ceo-attention" id="elev8-needs-attention">
-                <div class="elev8-ceo-section-heading">
-                    <div>
-                        <p class="elev8-ceo-section-heading__eyebrow"><?php esc_html_e('Decision Queue', 'elev8-os'); ?></p>
-                        <h2><?php esc_html_e('Needs Your Attention', 'elev8-os'); ?></h2>
-                        <p><?php esc_html_e('Verified items that may need a decision or follow-up.', 'elev8-os'); ?></p>
-                    </div>
-                    <span class="elev8-ceo-attention__count <?php echo $attention_count > 0 ? 'has-items' : ''; ?>"><?php echo $attention_count; ?></span>
-                </div>
-                <?php if ($priorities) : ?>
-                    <ul class="elev8-priority-list elev8-priority-list--ceo">
-                        <?php foreach ($priorities as $priority) : ?>
-                            <li class="elev8-priority-<?php echo esc_attr((string) $priority['severity']); ?>">
-                                <a href="<?php echo esc_url((string) $priority['url']); ?>">
-                                    <span class="elev8-priority-count"><?php echo (int) $priority['count']; ?></span>
-                                    <span class="elev8-priority-copy"><strong><?php echo esc_html((string) $priority['label']); ?></strong><small><?php esc_html_e('Open the related workspace', 'elev8-os'); ?></small></span>
-                                    <span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php else : ?>
-                    <div class="elev8-empty-state elev8-empty-state--positive"><strong><?php esc_html_e('No urgent items right now.', 'elev8-os'); ?></strong><span><?php esc_html_e('Elev8 OS has not found a verified item that requires immediate review.', 'elev8-os'); ?></span></div>
-                <?php endif; ?>
-            </article>
-
-            <article class="elev8-operational-panel elev8-ceo-today">
-                <div class="elev8-ceo-section-heading">
-                    <div>
-                        <p class="elev8-ceo-section-heading__eyebrow"><?php esc_html_e('Live Operations', 'elev8-os'); ?></p>
-                        <h2><?php esc_html_e('Today Across Elev8', 'elev8-os'); ?></h2>
-                        <p><?php esc_html_e('A fast view of connected operational services.', 'elev8-os'); ?></p>
-                    </div>
-                </div>
-                <div class="elev8-ceo-today__grid">
-                    <a href="<?php echo esc_url($work_url); ?>"><strong><?php echo (int) ($my['active'] ?? 0); ?></strong><span><?php esc_html_e('My active work', 'elev8-os'); ?></span><small><?php echo esc_html(sprintf(__('%1$d overdue · %2$d due today', 'elev8-os'), (int) ($my['overdue'] ?? 0), (int) ($my['due_today'] ?? 0))); ?></small></a>
-                    <a href="<?php echo esc_url($team_url); ?>"><strong><?php echo (int) ($team['active'] ?? 0); ?></strong><span><?php esc_html_e('Team work items', 'elev8-os'); ?></span><small><?php echo esc_html(sprintf(__('%1$d unassigned · %2$d waiting', 'elev8-os'), (int) ($team['unassigned'] ?? 0), (int) ($team['waiting'] ?? 0))); ?></small></a>
-                    <a href="<?php echo esc_url(class_exists('Elev8_OS_Bingo_Reservations_Module') ? Elev8_OS_Bingo_Reservations_Module::admin_url() : '#'); ?>"><strong><?php echo (int) ($reservations['upcoming'] ?? 0); ?></strong><span><?php esc_html_e('Upcoming reservations', 'elev8-os'); ?></span><small><?php echo esc_html(sprintf(__('%d need attention', 'elev8-os'), (int) ($reservations['attention'] ?? 0))); ?></small></a>
-                    <a href="<?php echo esc_url(class_exists('Elev8_OS_Event_Applications_Module') ? Elev8_OS_Event_Applications_Module::admin_url() : '#'); ?>"><strong><?php echo (int) ($applications['attention'] ?? 0); ?></strong><span><?php esc_html_e('Event applications', 'elev8-os'); ?></span><small><?php echo esc_html(sprintf(__('%d awaiting agreement', 'elev8-os'), (int) ($applications['awaiting_agreement'] ?? 0))); ?></small></a>
-                </div>
-            </article>
-        </section>
-
-        <section class="elev8-bi-section elev8-ceo-changes" aria-labelledby="elev8-ceo-changes-heading">
-            <div class="elev8-bi-section__heading">
+        <section class="elev8-attention-center" id="elev8-needs-attention" aria-labelledby="elev8-attention-heading">
+            <div class="elev8-attention-center__header">
                 <div>
-                    <h2 id="elev8-ceo-changes-heading"><?php esc_html_e('What Changed', 'elev8-os'); ?></h2>
-                    <p><?php esc_html_e('Rule-based signals from verified operational counts. This will later feed the AI Executive Brief.', 'elev8-os'); ?></p>
+                    <p class="elev8-bi-eyebrow"><?php esc_html_e('Waiting on Me', 'elev8-os'); ?></p>
+                    <h2 id="elev8-attention-heading"><?php esc_html_e('Attention Center', 'elev8-os'); ?></h2>
+                    <p><?php esc_html_e('Owner notes, approvals, overdue work, reservations, and event applications in one prioritized queue.', 'elev8-os'); ?></p>
                 </div>
+                <div class="elev8-attention-total"><strong><?php echo esc_html((string) $total); ?></strong><span><?php esc_html_e('open', 'elev8-os'); ?></span></div>
             </div>
-            <div class="elev8-ceo-change-list">
-                <?php self::render_change_signal((int) ($team['overdue'] ?? 0), __('Team work is overdue', 'elev8-os'), $team_url, 'warning'); ?>
-                <?php self::render_change_signal((int) ($team['unassigned'] ?? 0), __('Work is waiting for an owner', 'elev8-os'), $team_url, 'neutral'); ?>
-                <?php self::render_change_signal((int) ($applications['attention'] ?? 0), __('Event applications need review', 'elev8-os'), class_exists('Elev8_OS_Event_Applications_Module') ? Elev8_OS_Event_Applications_Module::admin_url() : '#', 'neutral'); ?>
-                <?php self::render_change_signal((int) ($reservations['attention'] ?? 0), __('Reservations need follow-up', 'elev8-os'), class_exists('Elev8_OS_Bingo_Reservations_Module') ? Elev8_OS_Bingo_Reservations_Module::admin_url() : '#', 'neutral'); ?>
-                <?php if ((int) ($team['overdue'] ?? 0) === 0 && (int) ($team['unassigned'] ?? 0) === 0 && (int) ($applications['attention'] ?? 0) === 0 && (int) ($reservations['attention'] ?? 0) === 0) : ?>
-                    <div class="elev8-empty-state elev8-empty-state--positive"><strong><?php esc_html_e('No negative operational changes detected.', 'elev8-os'); ?></strong><span><?php esc_html_e('Connected services are not currently reporting an escalation.', 'elev8-os'); ?></span></div>
-                <?php endif; ?>
-            </div>
+
+            <?php if ($priorities) : ?>
+                <div class="elev8-attention-list">
+                    <?php foreach ($priorities as $priority) :
+                        $severity = sanitize_html_class((string) ($priority['severity'] ?? 'normal'));
+                        $created_at = (string) ($priority['created_at'] ?? '');
+                        $timestamp = $created_at !== '' ? strtotime($created_at) : false;
+                        $time_label = $timestamp ? human_time_diff($timestamp, current_time('timestamp')) . ' ' . __('ago', 'elev8-os') : '';
+                    ?>
+                        <a class="elev8-attention-item elev8-attention-item--<?php echo esc_attr($severity); ?>" href="<?php echo esc_url((string) ($priority['url'] ?? '')); ?>">
+                            <span class="elev8-attention-item__icon dashicons dashicons-<?php echo esc_attr((string) ($priority['icon'] ?? 'bell')); ?>" aria-hidden="true"></span>
+                            <span class="elev8-attention-item__body">
+                                <span class="elev8-attention-item__meta">
+                                    <strong><?php echo esc_html(ucfirst($severity)); ?></strong>
+                                    <?php if ($time_label !== '') : ?><span><?php echo esc_html($time_label); ?></span><?php endif; ?>
+                                </span>
+                                <span class="elev8-attention-item__title"><?php echo esc_html((string) ($priority['label'] ?? __('Attention item', 'elev8-os'))); ?></span>
+                                <?php if (!empty($priority['summary'])) : ?><span class="elev8-attention-item__summary"><?php echo esc_html((string) $priority['summary']); ?></span><?php endif; ?>
+                                <?php if (!empty($priority['source'])) : ?><span class="elev8-attention-item__source"><?php echo esc_html((string) $priority['source']); ?></span><?php endif; ?>
+                            </span>
+                            <span class="elev8-attention-item__action"><?php esc_html_e('Open', 'elev8-os'); ?> <span class="dashicons dashicons-arrow-right-alt2"></span></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php else : ?>
+                <div class="elev8-attention-empty">
+                    <span class="dashicons dashicons-yes-alt" aria-hidden="true"></span>
+                    <div><strong><?php esc_html_e('Nothing urgent is waiting right now.', 'elev8-os'); ?></strong><p><?php esc_html_e('New manager notes, event applications, reservations, and work items will appear here automatically.', 'elev8-os'); ?></p></div>
+                </div>
+            <?php endif; ?>
         </section>
         <?php
     }
 
-    /**
-     * Render the CEO command cards and compact tools navigation.
-     *
-     * @param array<string,mixed> $summary
-     */
-    private static function render_command_center(array $summary): void {
-        $reservations = is_array($summary['reservations'] ?? null) ? $summary['reservations'] : [];
-        $applications = is_array($summary['applications'] ?? null) ? $summary['applications'] : [];
-        $team = is_array($summary['team_work'] ?? null) ? $summary['team_work'] : [];
-        $cards = [
-            [
-                'title' => __('Business Memory', 'elev8-os'),
-                'description' => __('Daily brief, operating logs, issues, and trends.', 'elev8-os'),
-                'status' => __('Review today’s operating record', 'elev8-os'),
-                'url' => admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=memory'),
-                'icon' => 'clipboard',
-                'action' => __('Open Memory', 'elev8-os'),
-            ],
-            [
-                'title' => __('Business Intelligence', 'elev8-os'),
-                'description' => __('Verified KPIs, confidence, and decision support.', 'elev8-os'),
-                'status' => __('View verified business health', 'elev8-os'),
-                'url' => admin_url('admin.php?page=elev8-business-intelligence'),
-                'icon' => 'chart-area',
-                'action' => __('View Intelligence', 'elev8-os'),
-            ],
-            [
-                'title' => __('Class Requests', 'elev8-os'),
-                'description' => __('Customer demand and new class opportunities.', 'elev8-os'),
-                'status' => __('Review incoming requests', 'elev8-os'),
-                'url' => admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests'),
-                'icon' => 'lightbulb',
-                'action' => __('Review Requests', 'elev8-os'),
-            ],
-            [
-                'title' => __('Opportunities', 'elev8-os'),
-                'description' => __('Actions that can help artists and the business grow.', 'elev8-os'),
-                'status' => __('Move the best next action forward', 'elev8-os'),
-                'url' => admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities'),
-                'icon' => 'megaphone',
-                'action' => __('Open Opportunities', 'elev8-os'),
-            ],
-        ];
+    private static function render_command_card(string $icon, string $title, string $description, string $url): void {
         ?>
-        <section class="elev8-bi-section elev8-ceo-launchpad" aria-labelledby="elev8-ceo-launchpad-heading">
-            <div class="elev8-bi-section__heading">
-                <div>
-                    <h2 id="elev8-ceo-launchpad-heading"><?php esc_html_e('CEO Command Center', 'elev8-os'); ?></h2>
-                    <p><?php esc_html_e('Open a major business engine without searching through the WordPress sidebar.', 'elev8-os'); ?></p>
-                </div>
-            </div>
-            <div class="elev8-ceo-launchpad__grid">
-                <?php foreach ($cards as $card) : ?>
-                    <a class="elev8-ceo-command-card" href="<?php echo esc_url($card['url']); ?>">
-                        <span class="elev8-ceo-command-card__icon dashicons dashicons-<?php echo esc_attr($card['icon']); ?>" aria-hidden="true"></span>
-                        <span class="elev8-ceo-command-card__copy"><strong><?php echo esc_html($card['title']); ?></strong><small><?php echo esc_html($card['description']); ?></small><em><?php echo esc_html($card['status']); ?></em></span>
-                        <span class="elev8-ceo-command-card__action"><?php echo esc_html($card['action']); ?><span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span></span>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="elev8-ceo-tools" aria-label="<?php esc_attr_e('CEO tools', 'elev8-os'); ?>">
-                <span class="elev8-ceo-tools__label"><?php esc_html_e('CEO Tools', 'elev8-os'); ?></span>
-                <?php if (class_exists('Elev8_OS_Bingo_Reservations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Bingo_Reservations_Module::admin_url()); ?>"><span class="dashicons dashicons-tickets-alt"></span><?php echo esc_html(sprintf(__('Reservations · %d attention', 'elev8-os'), (int) ($reservations['attention'] ?? 0))); ?></a><?php endif; ?>
-                <?php if (class_exists('Elev8_OS_Event_Applications_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Event_Applications_Module::admin_url()); ?>"><span class="dashicons dashicons-forms"></span><?php echo esc_html(sprintf(__('Event Applications · %d attention', 'elev8-os'), (int) ($applications['attention'] ?? 0))); ?></a><?php endif; ?>
-                <?php if (class_exists('Elev8_OS_Work_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Work_Module::team_url()); ?>"><span class="dashicons dashicons-list-view"></span><?php echo esc_html(sprintf(__('Work · %d active', 'elev8-os'), (int) ($team['active'] ?? 0))); ?></a><?php endif; ?>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-growth-center')); ?>"><span class="dashicons dashicons-chart-line"></span><?php esc_html_e('Growth', 'elev8-os'); ?></a>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-system-inspector')); ?>"><span class="dashicons dashicons-admin-tools"></span><?php esc_html_e('System Health', 'elev8-os'); ?></a>
-            </div>
-        </section>
-        <?php
-    }
-
-    private static function render_change_signal(int $count, string $label, string $url, string $tone = 'neutral'): void {
-        if ($count < 1) {
-            return;
-        }
-        ?>
-        <a class="elev8-ceo-change elev8-ceo-change--<?php echo esc_attr($tone); ?>" href="<?php echo esc_url($url); ?>">
-            <span class="elev8-ceo-change__count"><?php echo $count; ?></span>
-            <strong><?php echo esc_html($label); ?></strong>
-            <span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span>
+        <a class="elev8-ceo-command-card" href="<?php echo esc_url($url); ?>">
+            <span class="elev8-ceo-command-card__icon dashicons dashicons-<?php echo esc_attr($icon); ?>" aria-hidden="true"></span>
+            <span class="elev8-ceo-command-card__body"><strong><?php echo esc_html($title); ?></strong><small><?php echo esc_html($description); ?></small></span>
+            <span class="elev8-ceo-command-card__action"><?php esc_html_e('Open', 'elev8-os'); ?> <span class="dashicons dashicons-arrow-right-alt2"></span></span>
         </a>
         <?php
     }
 
+    /**
+     * @param array<string,mixed> $release
+     */
     private static function render_release_information(array $release): void {
         $available = !empty($release['available']);
         $unavailable = __('Unavailable', 'elev8-os');

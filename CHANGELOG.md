@@ -1,15 +1,14 @@
 # Elev8 OS Changelog
 
-## 10.15.0 — CEO Command Center v2
+## 10.15.0 — CEO Attention Center
 
-- Rebuilt the CEO Command Center as a readable operational workspace instead of a compressed row of small links.
-- Added a CEO Today’s Mission briefing focused on urgent decisions, business health, and next actions.
-- Reworked Needs Your Attention into a clearer decision queue with direct workspace links.
-- Added a Today Across Elev8 summary using verified Work, Reservations, and Event Applications services.
-- Added a rule-based What Changed section as the foundation for the future AI Executive Brief.
-- Added larger compact command cards for Business Memory, Business Intelligence, Class Requests, and Opportunities.
-- Moved secondary navigation into a compact CEO Tools row so navigation no longer dominates the dashboard.
-- Added responsive desktop, tablet, and mobile styling while preserving existing verified KPI calculations and Unavailable behavior.
+- Added a reusable Attention Service that gathers verified items from Daily Operations, Work Management, Reservations, and Event Applications.
+- Added manager messages marked for Steve directly to the CEO Attention Center with the original author, message preview, timestamp, and direct link to the operating log.
+- Replaced the CEO's generic Needs Attention list with a prioritized Waiting on Me queue using critical, high, and normal severity states.
+- Added a rule-based Business Pulse showing whether the business is healthy, needs attention, or requires immediate action.
+- Rebuilt the CEO workspace links as readable command cards and moved secondary navigation into a compact CEO Tools row.
+- Connected the shared Dashboard Service notification state to the Attention Service instead of displaying an unavailable placeholder.
+- Preserved existing Event Application notifications, reservations, work counts, verified financial KPIs, and system information.
 
 ## 10.14.1 - Event Host Access Hotfix
 
