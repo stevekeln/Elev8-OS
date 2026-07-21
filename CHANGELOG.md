@@ -1,3 +1,15 @@
+## 11.2.0 — Unified Public Profiles & CEO Oversight
+
+- Consolidated artists, teachers, event hosts, managers, volunteers, and staff under the shared Public Profiles service.
+- Added multi-type public identities without changing private WordPress roles.
+- Added a CEO Public Profiles workspace with type, status, and search filters.
+- Added Published, Draft/Unpublished, Missing Profile, and Incomplete summaries.
+- Added direct CEO edit, preview, publish, and unpublish workflows for any user, including Event Hosts who are not artists.
+- Added CEO Dashboard attention cards for unpublished or incomplete profiles.
+- Enlarged and clarified the legacy artist public-page activation control.
+- Added backward-compatible synchronization between legacy artist publication and the shared Public Profiles service.
+- Preserved artist storefront, class, payout, and artwork-specific data in the Artist module.
+
 # Elev8 OS Changelog
 
 ## 11.1.0 — Public Profiles Foundation

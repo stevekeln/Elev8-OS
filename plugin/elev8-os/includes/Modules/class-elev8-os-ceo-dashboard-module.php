@@ -192,6 +192,8 @@ final class Elev8_OS_CEO_Dashboard_Module {
 
             <?php self::render_daily_brief($daily_brief); ?>
 
+            <?php self::render_public_profile_attention(); ?>
+
             <?php if (class_exists('Elev8_OS_Coaching_Service')) { Elev8_OS_Coaching_Service::render(wp_get_current_user(), __('CEO Recommended Next Actions', 'elev8-os')); } ?>
 
             <?php self::render_operational_home($operational_summary, $operational_priorities, $executive_intelligence); ?>
@@ -711,4 +713,46 @@ final class Elev8_OS_CEO_Dashboard_Module {
         </div>
         <?php
     }
+
+    /**
+     * Surface unpublished and incomplete public identities to the owner.
+     */
+    private static function render_public_profile_attention(): void {
+        if (!class_exists('Elev8_OS_Public_Profile_Service')) {
+            return;
+        }
+        $profiles = Elev8_OS_Public_Profile_Service::directory();
+        $items = array_values(array_filter($profiles, static function (array $profile): bool {
+            return ($profile['status'] ?? '') !== 'published' || (int) ($profile['completeness'] ?? 0) < 100;
+        }));
+        if (!$items) {
+            return;
+        }
+        $items = array_slice($items, 0, 6);
+        ?>
+        <section class="elev8-bi-section elev8-public-profile-attention" aria-labelledby="elev8-profile-attention-title">
+            <div class="elev8-bi-section__heading">
+                <div>
+                    <p class="elev8-bi-eyebrow"><?php esc_html_e('Public Identity', 'elev8-os'); ?></p>
+                    <h2 id="elev8-profile-attention-title"><?php esc_html_e('Profiles Needing Attention', 'elev8-os'); ?></h2>
+                    <p><?php esc_html_e('People who are not yet public or whose public profile is incomplete.', 'elev8-os'); ?></p>
+                </div>
+                <a class="button button-primary" href="<?php echo esc_url(Elev8_OS_Public_Profile_Service::admin_url()); ?>"><?php esc_html_e('Manage Public Profiles', 'elev8-os'); ?></a>
+            </div>
+            <div class="elev8-public-profile-attention__grid">
+                <?php foreach ($items as $profile) : ?>
+                    <article class="elev8-public-profile-attention__item">
+                        <div>
+                            <strong><?php echo esc_html((string) ($profile['display_name'] ?? __('Unknown user', 'elev8-os'))); ?></strong>
+                            <span><?php echo esc_html((string) ($profile['role_label'] ?? __('Elev8 Team', 'elev8-os'))); ?></span>
+                        </div>
+                        <p><?php echo esc_html(($profile['status'] ?? '') === 'published' ? sprintf(__('%d%% complete', 'elev8-os'), (int) ($profile['completeness'] ?? 0)) : __('Not published', 'elev8-os')); ?></p>
+                        <a href="<?php echo esc_url(Elev8_OS_Public_Profile_Service::admin_url(['user_id' => (int) ($profile['user_id'] ?? 0)])); ?>"><?php esc_html_e('Review Profile', 'elev8-os'); ?></a>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php
+    }
+
 }

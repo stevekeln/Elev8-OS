@@ -765,6 +765,19 @@ final class Elev8_OS {
 
         update_option(self::OPTION_PROFILES, $profiles, false);
 
+        // Keep the shared Public Profiles publication state synchronized with
+        // the legacy artist profile while preserving the artist storefront.
+        if ($requested_user_id > 0 && class_exists('Elev8_OS_Public_Profile_Service')) {
+            update_user_meta($requested_user_id, Elev8_OS_Public_Profile_Service::META_PREFIX . 'status', !empty($profiles[$employee_id]['public_enabled']) ? 'published' : 'draft');
+            $types = get_user_meta($requested_user_id, Elev8_OS_Public_Profile_Service::META_PREFIX . 'types', true);
+            $types = is_array($types) ? $types : [];
+            if (!in_array('artist', $types, true)) {
+                $types[] = 'artist';
+                update_user_meta($requested_user_id, Elev8_OS_Public_Profile_Service::META_PREFIX . 'types', $types);
+            }
+            update_user_meta($requested_user_id, Elev8_OS_Public_Profile_Service::META_PREFIX . 'updated_at', current_time('mysql'));
+        }
+
         // Artist pages are public-facing and may be cached by WordPress, LiteSpeed,
         // a CDN, or the browser. Purge the artist URL immediately so profile and
         // social-link edits appear as soon as the profile is saved.

@@ -138,3 +138,7 @@ body.elev8-qr-open { overflow:hidden; }
 .elev8-public-profile .button-primary,.elev8-public-profile .elev8-contact-primary{border-color:var(--e8-purple)!important;background:var(--e8-purple)!important;color:#fff!important;border-radius:999px;padding:10px 18px;text-decoration:none}
 .elev8-share-tools{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}.elev8-share-tools .button{border-radius:999px}
 @media(max-width:700px){.elev8-public-profile{padding:14px;border-radius:18px}.elev8-public-profile .elev8-cover{height:210px;margin-bottom:-52px}.elev8-public-head{align-items:center;margin:0 8px 24px}.elev8-public-head img{width:105px;height:105px;border-width:5px}.elev8-public-head h1{font-size:34px}.elev8-public-head p{font-size:12px}}
+
+
+/* 11.2.0 prominent legacy artist publication control */
+input[name="public_enabled"]{width:28px!important;height:28px!important;min-width:28px!important;margin-right:10px!important;vertical-align:middle}input[name="public_enabled"]:checked:before{width:30px!important;height:30px!important;margin:-2px 0 0 -2px!important}.elev8-panel label:has(input[name="public_enabled"]){display:flex!important;align-items:center;gap:10px;margin:20px 0;padding:18px;border:2px solid #6b35c9;border-radius:14px;background:#f7f2ff;font-size:18px!important;font-weight:800!important;color:#2d155e}
