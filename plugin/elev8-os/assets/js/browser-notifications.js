@@ -1,0 +1,1 @@
+(()=>{if(!window.Elev8OSBrowserNotifications||!('serviceWorker'in navigator))return;navigator.serviceWorker.register(Elev8OSBrowserNotifications.serviceWorkerUrl,{scope:Elev8OSBrowserNotifications.serviceWorkerScope}).catch(()=>{});})();

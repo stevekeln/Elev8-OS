@@ -527,7 +527,6 @@ final class Elev8_OS_Dashboard_Module {
                 </div>
                 <div class="elev8-event-host-hero-actions">
                     <span class="elev8-event-host-role"><?php esc_html_e('Event Host', 'elev8-os'); ?></span>
-                    <?php if (class_exists('Elev8_OS_App_Install_Module')) { Elev8_OS_App_Install_Module::render_dashboard_control(); } ?>
                 </div>
             </header>
 
@@ -644,7 +643,6 @@ final class Elev8_OS_Dashboard_Module {
                     <p><?php echo esc_html(wp_date('l, F j')); ?> · <?php esc_html_e('Run the day, support the team, and close every loop.', 'elev8-os'); ?></p>
                 </div>
                 <div class="elev8-manager-hero-actions">
-                    <?php if (class_exists('Elev8_OS_App_Install_Module')) { Elev8_OS_App_Install_Module::render_dashboard_control(); } ?>
                     <a class="button button-primary" href="<?php echo esc_url($manager_log_url); ?>"><?php esc_html_e('Complete Manager Log', 'elev8-os'); ?></a>
                 </div>
             </header>
@@ -744,7 +742,6 @@ final class Elev8_OS_Dashboard_Module {
                 </div>
                 <div class="elev8-event-host-hero-actions">
                     <a class="elev8-host-back" href="<?php echo esc_url($dashboard_url); ?>"><span class="dashicons dashicons-arrow-left-alt2" aria-hidden="true"></span><?php esc_html_e('Operational Home', 'elev8-os'); ?></a>
-                    <?php if (class_exists('Elev8_OS_App_Install_Module')) { Elev8_OS_App_Install_Module::render_dashboard_control(); } ?>
                 </div>
             </header>
             <?php Elev8_OS_Bingo_Reservations_Module::render_frontend_workspace($user); ?>

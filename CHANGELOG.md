@@ -1,3 +1,37 @@
+## 15.0.2 - Simplified Staff Access & Knowledge Base Foundation
+
+### Changed
+- Removed the floating Install App/Open App experience and all install prompts while preserving the Experience Engine phone navigation dock.
+- Replaced mobile installation guidance with simple browser access, bookmarking, and staff-resource guidance.
+- Preserved the service-worker support used by class browser notifications without presenting Elev8 OS as an installable app.
+
+### Added
+- Added a shared frontend Employee Guides & Knowledge Base workspace at `/elev8-resources/`.
+- Added the Welcome to Elev8 OS staff quick-start PDF with a clickable access link and scannable QR code.
+- Added an interim link to the existing Elev8Glass.com knowledge base while operational documentation is migrated into Elev8 OS.
+- Added Resources to the universal header, user menu, command palette, and Mobile Home.
+
+### Architecture
+- Core Platform Capability: reusable Knowledge Base and Employee Guides foundation for all current and future businesses.
+- Existing bottom navigation, role routing, conversations, class alerts, and mobile-responsive dashboards remain intact.
+- No database changes.
+
+
+## 15.0.1 — Universal Install Helper
+
+### Fixed
+- Kept the floating Install App control fully inside mobile viewports with iPhone and Android safe-area support.
+- Removed desktop-only positioning assumptions and dynamically lifts the helper above the Experience Engine phone dock and other protected floating controls.
+- Temporarily hides the floating helper while the mobile keyboard is open so it cannot cover forms or action buttons.
+
+### Changed
+- Added a shared Install Helper Service so every frontend dashboard uses the same role-neutral install state, labels, workspace URL, and protected-region configuration.
+- Installed browser sessions now show a compact Open App icon; the helper is hidden when Elev8 OS is already running as a standalone PWA.
+- Improved responsive install instructions for Android Chrome, Samsung Internet, iPhone Safari, and desktop Chromium browsers.
+
+### Architecture
+- Core Platform Capability: reusable PWA Install Helper shared by all current and future Elev8 OS Operational Homes.
+- No database changes.
 
 ## 15.0.0 — Experience Engine
 

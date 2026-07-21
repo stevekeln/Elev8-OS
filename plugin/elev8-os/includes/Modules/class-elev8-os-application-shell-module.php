@@ -150,6 +150,7 @@ final class Elev8_OS_Application_Shell_Module {
         $notifications_url = $dashboard_url !== '' ? add_query_arg('elev8_view', 'attention', $dashboard_url) : $dashboard_url;
         $home_url = home_url('/');
         $help_url = (string) apply_filters('elev8_os_help_url', home_url('/contact/'));
+        $resources_url = class_exists('Elev8_OS_Knowledge_Base_Module') ? Elev8_OS_Knowledge_Base_Module::url() : home_url('/elev8-resources/');
         $logout_url = wp_logout_url($home_url);
         $display_name = trim((string) $user->display_name) ?: (string) $user->user_login;
         $initial = function_exists('mb_substr') ? mb_substr($display_name, 0, 1) : substr($display_name, 0, 1);
@@ -176,6 +177,7 @@ final class Elev8_OS_Application_Shell_Module {
                     <?php if (Elev8_OS_Access_Service::user_can('view_conversations', $user) && class_exists('Elev8_OS_Conversations_Module')) : ?>
                         <a href="<?php echo esc_url(Elev8_OS_Conversations_Module::url()); ?>"><?php esc_html_e('Conversations', 'elev8-os'); ?><?php $conversation_count = class_exists('Elev8_OS_Conversation_Service') ? Elev8_OS_Conversation_Service::unread_count($user->ID) : 0; if ($conversation_count > 0) : ?> <strong>(<?php echo esc_html((string) $conversation_count); ?>)</strong><?php endif; ?></a>
                     <?php endif; ?>
+                    <a href="<?php echo esc_url($resources_url); ?>"><?php esc_html_e('Resources', 'elev8-os'); ?></a>
                 </nav>
 
                 <div class="elev8-app-shell__actions">
@@ -211,6 +213,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a href="<?php echo esc_url($profile_url); ?>">👤 <span><?php esc_html_e('My Profile', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($notifications_url); ?>">🔔 <span><?php esc_html_e('Notifications', 'elev8-os'); ?></span><?php if ($attention_count > 0) : ?><b><?php echo esc_html((string) $attention_count); ?></b><?php endif; ?></a>
                 <?php if (Elev8_OS_Access_Service::user_can('view_conversations', $user) && class_exists('Elev8_OS_Conversations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Conversations_Module::url()); ?>">💬 <span><?php esc_html_e('Conversations', 'elev8-os'); ?></span><?php $conversation_count = class_exists('Elev8_OS_Conversation_Service') ? Elev8_OS_Conversation_Service::unread_count($user->ID) : 0; if ($conversation_count > 0) : ?><b><?php echo esc_html((string) $conversation_count); ?></b><?php endif; ?></a><?php endif; ?>
+                <a href="<?php echo esc_url($resources_url); ?>">📚 <span><?php esc_html_e('Employee Guides', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($settings_url); ?>">⚙️ <span><?php esc_html_e('Settings', 'elev8-os'); ?></span></a>
                 <?php if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::can_preview()) : ?><a href="<?php echo esc_url(Elev8_OS_Preview_Service::preview_page_url()); ?>">👁 <span><?php esc_html_e('Role Preview', 'elev8-os'); ?></span></a><?php endif; ?>
                 <a href="<?php echo esc_url($help_url); ?>">❓ <span><?php esc_html_e('Help', 'elev8-os'); ?></span></a>

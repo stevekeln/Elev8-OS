@@ -48,13 +48,10 @@ final class Elev8_OS_App_Install_Module {
         wp_enqueue_style('dashicons');
         wp_enqueue_style('elev8-os-app-install', ELEV8_OS_URL . 'assets/css/app-install.css', [], ELEV8_OS_VERSION);
         wp_enqueue_script('elev8-os-app-install', ELEV8_OS_URL . 'assets/js/app-install.js', [], ELEV8_OS_VERSION, true);
-        wp_localize_script('elev8-os-app-install', 'Elev8OSInstall', [
-            'serviceWorkerUrl' => self::service_worker_url(),
-            'serviceWorkerScope' => self::service_worker_scope(),
-            'homeUrl' => class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/elev8-app/'),
-            'storageKey' => 'elev8_os_install_dismissed_v1',
-            'installedKey' => 'elev8_os_installed_v1',
-        ]);
+        $config = class_exists('Elev8_OS_Install_Helper_Service') ? Elev8_OS_Install_Helper_Service::config() : [];
+        $config['serviceWorkerUrl'] = self::service_worker_url();
+        $config['serviceWorkerScope'] = self::service_worker_scope();
+        wp_localize_script('elev8-os-app-install', 'Elev8OSInstall', $config);
     }
 
     public static function render_install_control(): void {
@@ -72,7 +69,7 @@ final class Elev8_OS_App_Install_Module {
         <aside class="elev8-app-install<?php echo $inline ? ' is-inline' : ''; ?>" data-elev8-app-install aria-live="polite">
             <button type="button" class="elev8-app-install__compact" data-elev8-install-open aria-label="<?php esc_attr_e('Install Elev8 OS on this phone', 'elev8-os'); ?>">
                 <span class="dashicons dashicons-smartphone" aria-hidden="true"></span>
-                <span><?php esc_html_e('Install App', 'elev8-os'); ?></span>
+                <span data-elev8-install-label><?php esc_html_e('Install App', 'elev8-os'); ?></span>
             </button>
             <div class="elev8-app-install__panel" data-elev8-install-panel hidden>
                 <button type="button" class="elev8-app-install__close" data-elev8-install-close aria-label="<?php esc_attr_e('Close install instructions', 'elev8-os'); ?>">×</button>
@@ -83,7 +80,7 @@ final class Elev8_OS_App_Install_Module {
                     <p data-elev8-install-message><?php esc_html_e('Add Elev8 OS to your phone for one-tap access to your Operational Home.', 'elev8-os'); ?></p>
                     <div class="elev8-app-install__actions">
                         <button type="button" class="elev8-app-install__primary" data-elev8-install-button><?php esc_html_e('Install Elev8 OS', 'elev8-os'); ?></button>
-                        <a href="<?php echo esc_url(class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/elev8-app/')); ?>"><?php esc_html_e('Open App Home', 'elev8-os'); ?></a>
+                        <a data-elev8-open-app href="<?php echo esc_url(class_exists('Elev8_OS_Install_Helper_Service') ? (string) (Elev8_OS_Install_Helper_Service::config()['homeUrl'] ?? home_url('/elev8-app/')) : home_url('/elev8-app/')); ?>"><?php esc_html_e('Open App', 'elev8-os'); ?></a>
                     </div>
                     <ol class="elev8-app-install__steps" data-elev8-install-steps hidden></ol>
                 </div>

@@ -29,6 +29,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'elev8-actions',
                 'shortcode' => 'elev8_action_center',
             ],
+            'resources' => [
+                'option' => 'elev8_os_resources_page_id',
+                'title' => __('Employee Guides', 'elev8-os'),
+                'slug' => 'elev8-resources',
+                'shortcode' => 'elev8_knowledge_base',
+            ],
             'classes' => [
                 'option' => 'elev8_os_artist_classes_page_id',
                 'title' => __('My Classes', 'elev8-os'),

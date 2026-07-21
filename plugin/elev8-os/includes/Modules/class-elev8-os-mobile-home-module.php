@@ -152,8 +152,11 @@ final class Elev8_OS_Mobile_Home_Module {
             </section>
 
             <aside class="elev8-mobile-install-tip">
-                <strong><?php esc_html_e('Put Elev8 OS on your phone', 'elev8-os'); ?></strong>
-                <span><?php esc_html_e('Use the Install App button on this screen. Elev8 OS will open from your Home screen like an app.', 'elev8-os'); ?></span>
+                <strong><?php esc_html_e('Quick access on your phone', 'elev8-os'); ?></strong>
+                <span><?php esc_html_e('Bookmark this page or add a normal browser shortcut. No app installation is required.', 'elev8-os'); ?></span>
+                <?php if (class_exists('Elev8_OS_Knowledge_Base_Module')) : ?>
+                    <a href="<?php echo esc_url(Elev8_OS_Knowledge_Base_Module::url()); ?>"><?php esc_html_e('Open Employee Guides', 'elev8-os'); ?></a>
+                <?php endif; ?>
             </aside>
         </main>
         <?php
@@ -164,6 +167,10 @@ final class Elev8_OS_Mobile_Home_Module {
     private static function cards_for_user(WP_User $user): array {
         $cards = [];
         $can = static fn(string $permission): bool => Elev8_OS_Access_Service::user_can($permission, $user);
+
+        if (class_exists('Elev8_OS_Knowledge_Base_Module')) {
+            $cards[] = self::card(__('Employee Guides', 'elev8-os'), __('Quick-start guides, procedures, training, and company knowledge.', 'elev8-os'), Elev8_OS_Knowledge_Base_Module::url(), 'welcome-learn-more');
+        }
 
         if ($can('view_ceo_dashboard')) {
             $cards[] = self::card(__('CEO Dashboard', 'elev8-os'), __('See the owner view, priorities, and business intelligence.', 'elev8-os'), admin_url('admin.php?page=elev8-ceo-dashboard'), 'chart-area', true);

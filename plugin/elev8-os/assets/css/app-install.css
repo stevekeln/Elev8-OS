@@ -1,3 +1,53 @@
-.elev8-app-install{position:fixed;right:16px;bottom:16px;z-index:99990;font-family:inherit}.elev8-app-install[hidden]{display:none!important}.elev8-app-install__compact{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:7px 12px;border:1px solid #d8c9f2;border-radius:999px;background:#fff;color:#542099;font-weight:800;box-shadow:0 8px 24px rgba(35,18,70,.18);cursor:pointer}.elev8-app-install__compact .dashicons{width:20px;height:20px;font-size:20px}.elev8-app-install__compact.is-installed{font-size:12px;opacity:.82}.elev8-app-install__panel{position:relative;display:grid;grid-template-columns:52px 1fr;gap:14px;width:min(390px,calc(100vw - 24px));padding:20px;border:1px solid #ddd2f0;border-radius:20px;background:linear-gradient(145deg,#fff,#f8f3ff);box-shadow:0 18px 48px rgba(35,18,70,.24)}.elev8-app-install__panel>.dashicons{width:48px;height:48px;line-height:48px;border-radius:14px;background:#6f2dbd;color:#fff;font-size:30px;text-align:center}.elev8-app-install__close{position:absolute;right:9px;top:7px;width:32px;height:32px;padding:0;border:0;background:transparent;color:#665d72;font-size:26px;line-height:1;cursor:pointer}.elev8-app-install__eyebrow{margin:0;color:#6f2dbd;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.elev8-app-install h2{margin:2px 32px 6px 0;font-size:24px;line-height:1.15}.elev8-app-install p{margin:0;color:#5d5666;line-height:1.45}.elev8-app-install__actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:14px}.elev8-app-install__actions button,.elev8-app-install__actions a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 15px;border-radius:999px;font-weight:800;text-decoration:none}.elev8-app-install__primary{border:1px solid #6f2dbd;background:#6f2dbd;color:#fff;cursor:pointer}.elev8-app-install__actions a{border:1px solid #cfc3df;background:#fff;color:#542099}.elev8-app-install__steps{margin:13px 0 0;padding-left:20px;color:#4f4858}.elev8-app-install__steps li{margin:5px 0}.elev8-app-install__compact[hidden],.elev8-app-install__panel[hidden]{display:none!important}@media(max-width:600px){.elev8-app-install{right:10px;bottom:10px}.elev8-app-install__panel{grid-template-columns:42px 1fr;padding:17px}.elev8-app-install__panel>.dashicons{width:40px;height:40px;line-height:40px;font-size:25px}.elev8-app-install h2{font-size:21px}}
+.elev8-app-install{
+ --elev8-install-edge:16px;
+ --elev8-install-protected-offset:0px;
+ position:fixed;
+ z-index:99991;
+ right:max(var(--elev8-install-edge),env(safe-area-inset-right,0px));
+ bottom:calc(max(var(--elev8-install-edge),env(safe-area-inset-bottom,0px)) + var(--elev8-install-protected-offset));
+ max-width:calc(100vw - max(var(--elev8-install-edge),env(safe-area-inset-left,0px)) - max(var(--elev8-install-edge),env(safe-area-inset-right,0px)));
+ font-family:inherit;
+ transition:bottom .18s ease,opacity .18s ease,transform .18s ease;
+}
+.elev8-app-install[hidden],.elev8-app-install[aria-hidden="true"]{display:none!important}
+.elev8-app-install__compact{display:inline-flex;align-items:center;gap:7px;max-width:100%;min-height:38px;padding:7px 12px;border:1px solid #d8c9f2;border-radius:999px;background:#fff;color:#542099;font-weight:800;box-shadow:0 8px 24px rgba(35,18,70,.18);cursor:pointer;white-space:nowrap}
+.elev8-app-install__compact .dashicons{flex:0 0 auto;width:20px;height:20px;font-size:20px}
+.elev8-app-install__compact.is-installed{width:40px;height:40px;min-height:40px;padding:0;justify-content:center;font-size:0;opacity:.9}
+.elev8-app-install__compact.is-installed .dashicons{margin:0}
+.elev8-app-install__panel{position:relative;display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;width:min(390px,calc(100vw - 32px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));max-height:calc(100dvh - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:20px;border:1px solid #ddd2f0;border-radius:20px;background:linear-gradient(145deg,#fff,#f8f3ff);box-shadow:0 18px 48px rgba(35,18,70,.24)}
+.elev8-app-install__panel>.dashicons{width:48px;height:48px;line-height:48px;border-radius:14px;background:#6f2dbd;color:#fff;font-size:30px;text-align:center}
+.elev8-app-install__close{position:absolute;right:9px;top:7px;width:32px;height:32px;padding:0;border:0;background:transparent;color:#665d72;font-size:26px;line-height:1;cursor:pointer}
+.elev8-app-install__eyebrow{margin:0;color:#6f2dbd;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.elev8-app-install h2{margin:2px 32px 6px 0;font-size:24px;line-height:1.15}
+.elev8-app-install p{margin:0;color:#5d5666;line-height:1.45}
+.elev8-app-install__actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:14px}
+.elev8-app-install__actions button,.elev8-app-install__actions a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 15px;border-radius:999px;font-weight:800;text-decoration:none}
+.elev8-app-install__primary{border:1px solid #6f2dbd;background:#6f2dbd;color:#fff;cursor:pointer}
+.elev8-app-install__actions a{border:1px solid #cfc3df;background:#fff;color:#542099}
+.elev8-app-install__steps{margin:13px 0 0;padding-left:20px;color:#4f4858}
+.elev8-app-install__steps li{margin:5px 0}
+.elev8-app-install__compact[hidden],.elev8-app-install__panel[hidden]{display:none!important}
+.elev8-app-install.is-keyboard-open:not(.is-inline){opacity:0;pointer-events:none;transform:translateY(12px)}
 
-.elev8-app-install.is-inline{position:relative;right:auto;bottom:auto;z-index:2;font-family:inherit}.elev8-app-install.is-inline .elev8-app-install__compact{background:#fff}.elev8-app-install.is-inline .elev8-app-install__panel{position:absolute;right:0;top:calc(100% + 10px);z-index:20}.elev8-event-host-hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}@media(max-width:700px){.elev8-event-host-hero-actions{align-items:flex-start}.elev8-app-install.is-inline .elev8-app-install__panel{position:fixed;right:10px;left:10px;top:auto;bottom:10px;width:auto}}
+.elev8-app-install.is-inline{position:relative;right:auto;bottom:auto;z-index:2;max-width:100%;font-family:inherit}
+.elev8-app-install.is-inline .elev8-app-install__compact{background:#fff}
+.elev8-app-install.is-inline .elev8-app-install__panel{position:absolute;right:0;top:calc(100% + 10px);z-index:20}
+.elev8-event-host-hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+
+@media(max-width:700px){
+ .elev8-app-install{--elev8-install-edge:16px;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + var(--elev8-install-protected-offset));max-width:calc(100vw - 32px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px))}
+ .elev8-app-install__compact{min-height:44px;padding:9px 13px}
+ .elev8-app-install__compact.is-installed{width:38px;height:38px;min-height:38px}
+ .elev8-app-install__panel{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + var(--elev8-install-protected-offset));top:auto;width:auto;max-width:none;grid-template-columns:42px minmax(0,1fr);padding:17px}
+ .elev8-app-install__panel>.dashicons{width:40px;height:40px;line-height:40px;font-size:25px}
+ .elev8-app-install h2{font-size:21px}
+ .elev8-event-host-hero-actions{align-items:flex-start}
+ .elev8-app-install.is-inline .elev8-app-install__panel{position:fixed;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:auto;bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + var(--elev8-install-protected-offset));width:auto}
+}
+
+@media(max-width:390px){
+ .elev8-app-install__panel{grid-template-columns:1fr;padding-top:54px}
+ .elev8-app-install__panel>.dashicons{display:none}
+ .elev8-app-install__actions{display:grid;grid-template-columns:1fr}
+ .elev8-app-install__actions button,.elev8-app-install__actions a{width:100%}
+}
