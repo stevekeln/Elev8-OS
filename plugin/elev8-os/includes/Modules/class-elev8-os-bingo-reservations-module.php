@@ -393,6 +393,89 @@ final class Elev8_OS_Bingo_Reservations_Module {
         <?php
     }
 
+    public static function render_frontend_workspace(?WP_User $user = null): void {
+        $user = $user ?: wp_get_current_user();
+        if (!$user->exists() || !self::can_view_reservations()) {
+            echo '<div class="elev8-host-empty"><strong>' . esc_html__('Reservations are unavailable.', 'elev8-os') . '</strong><p>' . esc_html__('Your account does not have access to this workspace.', 'elev8-os') . '</p></div>';
+            return;
+        }
+
+        $can_manage_all = Elev8_OS_Access_Service::user_can('manage_reservations', $user)
+            || Elev8_OS_Access_Service::user_can('manage_bingo', $user);
+        $status_filter = sanitize_key((string) ($_GET['reservation_status'] ?? ''));
+        $date_filter = sanitize_text_field((string) ($_GET['reservation_date'] ?? ''));
+        $meta_query = ['relation' => 'AND'];
+        if (!$can_manage_all) {
+            $meta_query[] = [
+                'key' => '_elev8_reservation_assigned_user',
+                'value' => (int) $user->ID,
+                'type' => 'NUMERIC',
+            ];
+        }
+        if ($status_filter !== '' && array_key_exists($status_filter, self::statuses())) {
+            $meta_query[] = ['key' => '_elev8_bingo_status', 'value' => $status_filter];
+        }
+        if ($date_filter !== '') {
+            $meta_query[] = ['key' => '_elev8_bingo_event_date', 'value' => $date_filter];
+        }
+
+        $query = new WP_Query([
+            'post_type' => self::POST_TYPE,
+            'post_status' => 'publish',
+            'posts_per_page' => 100,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'meta_query' => $meta_query,
+        ]);
+        $total_people = 0;
+        foreach ($query->posts as $reservation) {
+            $total_people += (int) get_post_meta($reservation->ID, '_elev8_bingo_guest_count', true);
+        }
+        ?>
+        <section class="elev8-host-reservations-summary">
+            <article><strong><?php echo esc_html((string) $query->post_count); ?></strong><span><?php esc_html_e('Groups shown', 'elev8-os'); ?></span></article>
+            <article><strong><?php echo esc_html((string) $total_people); ?></strong><span><?php esc_html_e('Expected guests', 'elev8-os'); ?></span></article>
+            <article><strong><?php echo esc_html((string) self::attention_count($can_manage_all ? 0 : (int) $user->ID)); ?></strong><span><?php esc_html_e('Need attention', 'elev8-os'); ?></span></article>
+        </section>
+
+        <form class="elev8-host-reservation-filters" method="get">
+            <input type="hidden" name="elev8_event_host_view" value="reservations">
+            <label><?php esc_html_e('Event date', 'elev8-os'); ?><input type="date" name="reservation_date" value="<?php echo esc_attr($date_filter); ?>"></label>
+            <label><?php esc_html_e('Status', 'elev8-os'); ?><select name="reservation_status"><option value=""><?php esc_html_e('All statuses', 'elev8-os'); ?></option><?php foreach (self::statuses() as $key => $label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($status_filter, $key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
+            <button type="submit"><?php esc_html_e('Filter', 'elev8-os'); ?></button>
+        </form>
+
+        <div class="elev8-host-reservation-list">
+            <?php if (!$query->have_posts()) : ?>
+                <div class="elev8-host-empty"><strong><?php esc_html_e('No reservations match these filters.', 'elev8-os'); ?></strong><p><?php esc_html_e('New assigned reservations will appear here automatically.', 'elev8-os'); ?></p></div>
+            <?php else : foreach ($query->posts as $reservation) :
+                $id = (int) $reservation->ID;
+                $date = (string) get_post_meta($id, '_elev8_bingo_event_date', true);
+                $name = (string) get_post_meta($id, '_elev8_bingo_name', true);
+                $email = (string) get_post_meta($id, '_elev8_bingo_email', true);
+                $phone = (string) get_post_meta($id, '_elev8_bingo_phone', true);
+                $count = (int) get_post_meta($id, '_elev8_bingo_guest_count', true);
+                $accessibility = (string) get_post_meta($id, '_elev8_bingo_accessibility', true);
+                $notes = (string) get_post_meta($id, '_elev8_bingo_notes', true);
+                $status = (string) get_post_meta($id, '_elev8_bingo_status', true);
+                ?>
+                <article class="elev8-host-reservation-card">
+                    <div class="elev8-host-reservation-main"><p class="elev8-eyebrow"><?php echo esc_html(self::format_date($date)); ?></p><h2><?php echo esc_html($name !== '' ? $name : __('Unnamed guest', 'elev8-os')); ?></h2><p><strong><?php echo esc_html((string) $count); ?></strong> <?php esc_html_e('people expected', 'elev8-os'); ?></p></div>
+                    <div class="elev8-host-reservation-contact"><?php if ($phone !== '') : ?><a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $phone)); ?>"><?php echo esc_html($phone); ?></a><?php endif; ?><?php if ($email !== '') : ?><a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a><?php endif; ?></div>
+                    <?php if ($accessibility !== '' || $notes !== '') : ?><div class="elev8-host-reservation-note"><strong><?php esc_html_e('Needs review', 'elev8-os'); ?></strong><?php if ($accessibility !== '') : ?><p><?php echo esc_html($accessibility); ?></p><?php endif; ?><?php if ($notes !== '') : ?><p><?php echo esc_html($notes); ?></p><?php endif; ?></div><?php endif; ?>
+                    <form class="elev8-host-reservation-status" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                        <?php wp_nonce_field('elev8_bingo_update_' . $id, 'elev8_bingo_update_nonce'); ?>
+                        <input type="hidden" name="action" value="elev8_os_update_bingo_reservation">
+                        <input type="hidden" name="reservation_id" value="<?php echo esc_attr((string) $id); ?>">
+                        <select name="reservation_status"><?php foreach (self::statuses() as $key => $label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($status ?: 'reserved', $key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select>
+                        <button type="submit"><?php esc_html_e('Save status', 'elev8-os'); ?></button>
+                    </form>
+                </article>
+            <?php endforeach; endif; ?>
+        </div>
+        <?php
+    }
+
     public static function update_status(): void {
         if (!self::can_view_reservations()) {
             wp_die(esc_html__('You do not have permission to update reservations.', 'elev8-os'));
@@ -413,7 +496,11 @@ final class Elev8_OS_Bingo_Reservations_Module {
         if (Elev8_OS_Access_Service::user_can('manage_reservations') || Elev8_OS_Access_Service::user_can('manage_bingo')) {
             update_post_meta($id, '_elev8_reservation_assigned_user', absint($_POST['assigned_user'] ?? 0));
         }
-        wp_safe_redirect(admin_url('admin.php?page=' . self::ADMIN_SLUG));
+        $redirect = wp_get_referer();
+        if (!$redirect) {
+            $redirect = admin_url('admin.php?page=' . self::ADMIN_SLUG);
+        }
+        wp_safe_redirect($redirect);
         exit;
     }
 

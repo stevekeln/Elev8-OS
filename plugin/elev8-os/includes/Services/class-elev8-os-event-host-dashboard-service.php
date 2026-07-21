@@ -42,7 +42,7 @@ final class Elev8_OS_Event_Host_Dashboard_Service {
             'event_log_url' => add_query_arg(['type' => 'event', 'team' => '1'], Elev8_OS_Checkin_Center_Module::page_url()),
             'open_mic_form_url' => add_query_arg('type', 'open_mic', Elev8_OS_Checkin_Center_Module::page_url()),
             'reservations_url' => class_exists('Elev8_OS_Bingo_Reservations_Module')
-                ? Elev8_OS_Bingo_Reservations_Module::admin_url()
+                ? add_query_arg('elev8_event_host_view', 'reservations', Elev8_OS_Portal_Page_Manager::get_url('dashboard'))
                 : '',
             'generated_at' => current_time('mysql'),
         ];

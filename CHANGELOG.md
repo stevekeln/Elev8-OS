@@ -1,3 +1,26 @@
+# Elev8 OS Changelog
+
+## 10.15.0 — CEO Command Center v2
+
+- Rebuilt the CEO Command Center as a readable operational workspace instead of a compressed row of small links.
+- Added a CEO Today’s Mission briefing focused on urgent decisions, business health, and next actions.
+- Reworked Needs Your Attention into a clearer decision queue with direct workspace links.
+- Added a Today Across Elev8 summary using verified Work, Reservations, and Event Applications services.
+- Added a rule-based What Changed section as the foundation for the future AI Executive Brief.
+- Added larger compact command cards for Business Memory, Business Intelligence, Class Requests, and Opportunities.
+- Moved secondary navigation into a compact CEO Tools row so navigation no longer dominates the dashboard.
+- Added responsive desktop, tablet, and mobile styling while preserving existing verified KPI calculations and Unavailable behavior.
+
+## 10.14.1 - Event Host Access Hotfix
+
+- Added a frontend Bingo Reservations workspace inside the Event Host Operational Home so event hosts are not redirected into a blocked WordPress admin screen.
+- Corrected the Event Host Bingo Reservations action to use the verified dashboard workspace route.
+- Added mobile-friendly reservation cards, filters, contact links, notes, guest counts, and status updates.
+- Preserved assignment-scoped reservation visibility through the centralized Access Service.
+- Kept reservation status updates on the frontend workspace after saving.
+- Embedded the Install Elev8 OS control directly in the Event Host dashboard header and added a no-JavaScript visible fallback.
+- Preserved the Complete Event Log action and existing event-host metrics.
+
 ## 10.14.0 — Installable App & Mission Briefing
 - Added a reusable Elev8 OS app-install capability for logged-in team members on supported mobile and desktop browsers.
 - Added a standards-based web app manifest and service worker so Elev8 OS can open from a phone Home screen in standalone app mode.

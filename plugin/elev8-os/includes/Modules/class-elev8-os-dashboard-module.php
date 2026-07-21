@@ -249,6 +249,11 @@ final class Elev8_OS_Dashboard_Module {
         $user = wp_get_current_user();
 
         if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::uses_event_host_home($user)) {
+            $event_host_view = sanitize_key((string) ($_GET['elev8_event_host_view'] ?? ''));
+            if ($event_host_view === 'reservations' && class_exists('Elev8_OS_Bingo_Reservations_Module')) {
+                self::render_event_host_reservations($user);
+                return;
+            }
             self::render_event_host_dashboard($user);
             return;
         }
@@ -516,7 +521,10 @@ final class Elev8_OS_Dashboard_Module {
                     <h1><?php echo esc_html(sprintf(__('Welcome back, %s!', 'elev8-os'), $name)); ?></h1>
                     <p><?php echo esc_html(wp_date('l, F j')); ?> · <?php esc_html_e('Here is what needs your attention for Elev8 events.', 'elev8-os'); ?></p>
                 </div>
-                <span class="elev8-event-host-role"><?php esc_html_e('Event Host', 'elev8-os'); ?></span>
+                <div class="elev8-event-host-hero-actions">
+                    <span class="elev8-event-host-role"><?php esc_html_e('Event Host', 'elev8-os'); ?></span>
+                    <?php if (class_exists('Elev8_OS_App_Install_Module')) { Elev8_OS_App_Install_Module::render_dashboard_control(); } ?>
+                </div>
             </header>
 
             <?php if (empty($profile['published'])) : ?>
@@ -592,6 +600,26 @@ final class Elev8_OS_Dashboard_Module {
                 <h2><?php esc_html_e('Built to grow into live event control', 'elev8-os'); ?></h2>
                 <p><?php esc_html_e('Future releases can add assignments, performer lineup, walk-ins, equipment requests, check-in status, incident reporting, messaging, and event closeout without replacing this Operational Home.', 'elev8-os'); ?></p>
             </section>
+        </div>
+        <?php
+    }
+
+    private static function render_event_host_reservations(WP_User $user): void {
+        $dashboard_url = Elev8_OS_Portal_Page_Manager::get_url('dashboard');
+        ?>
+        <div class="elev8-artist-dashboard elev8-event-host-dashboard elev8-event-host-workspace">
+            <header class="elev8-event-host-hero">
+                <div>
+                    <p class="elev8-eyebrow"><?php esc_html_e('Event Host Workspace', 'elev8-os'); ?></p>
+                    <h1><?php esc_html_e('Bingo Reservations', 'elev8-os'); ?></h1>
+                    <p><?php esc_html_e('Review assigned groups, guest counts, contact details, notes, and attendance status without leaving Elev8 OS.', 'elev8-os'); ?></p>
+                </div>
+                <div class="elev8-event-host-hero-actions">
+                    <a class="elev8-host-back" href="<?php echo esc_url($dashboard_url); ?>"><span class="dashicons dashicons-arrow-left-alt2" aria-hidden="true"></span><?php esc_html_e('Operational Home', 'elev8-os'); ?></a>
+                    <?php if (class_exists('Elev8_OS_App_Install_Module')) { Elev8_OS_App_Install_Module::render_dashboard_control(); } ?>
+                </div>
+            </header>
+            <?php Elev8_OS_Bingo_Reservations_Module::render_frontend_workspace($user); ?>
         </div>
         <?php
     }

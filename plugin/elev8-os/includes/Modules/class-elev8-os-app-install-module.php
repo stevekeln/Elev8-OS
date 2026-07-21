@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) { exit; }
  * platform-specific fallback instructions. It does not hardcode roles.
  */
 final class Elev8_OS_App_Install_Module {
+    private static bool $rendered = false;
+
     private const MANIFEST_QUERY = 'elev8_os_manifest';
     private const SERVICE_WORKER_QUERY = 'elev8_os_service_worker';
 
@@ -56,9 +58,18 @@ final class Elev8_OS_App_Install_Module {
     }
 
     public static function render_install_control(): void {
-        if (!self::should_load()) { return; }
+        self::render_control(false);
+    }
+
+    public static function render_dashboard_control(): void {
+        self::render_control(true);
+    }
+
+    private static function render_control(bool $inline): void {
+        if (!self::should_load() || self::$rendered) { return; }
+        self::$rendered = true;
         ?>
-        <aside class="elev8-app-install" data-elev8-app-install hidden aria-live="polite">
+        <aside class="elev8-app-install<?php echo $inline ? ' is-inline' : ''; ?>" data-elev8-app-install aria-live="polite">
             <button type="button" class="elev8-app-install__compact" data-elev8-install-open aria-label="<?php esc_attr_e('Install Elev8 OS on this phone', 'elev8-os'); ?>">
                 <span class="dashicons dashicons-smartphone" aria-hidden="true"></span>
                 <span><?php esc_html_e('Install App', 'elev8-os'); ?></span>
