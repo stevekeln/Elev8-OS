@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Glass_Operations_Service {
-    const DB_VERSION = '2.0.0';
+    const DB_VERSION = '2.1.0';
     const OPTION_DB_VERSION = 'elev8_os_glass_ops_db_version';
 
     public static function init(): void {
@@ -136,7 +136,7 @@ final class Elev8_OS_Glass_Operations_Service {
     public static function save_job(array $data): int|WP_Error {
         global $wpdb; $t = self::tables(); $now = current_time('mysql');
         $row = [
-            'job_type'=>in_array(($data['job_type']??''),['production','cremation'],true)?$data['job_type']:'production',
+            'job_type'=>in_array(($data['job_type']??''),['production','cremation','repair','memorial'],true)?$data['job_type']:'production',
             'order_number'=>sanitize_text_field($data['order_number']??''),
             'customer_name'=>sanitize_text_field($data['customer_name']??''),
             'customer_email'=>sanitize_email($data['customer_email']??''),
@@ -174,6 +174,7 @@ final class Elev8_OS_Glass_Operations_Service {
             'ready_for_pickup' => 'Ready for Pickup',
             'ready_to_ship' => 'Ready to Ship',
             'completed' => 'Complete',
+            'cancelled' => 'Cancelled',
         ];
     }
 

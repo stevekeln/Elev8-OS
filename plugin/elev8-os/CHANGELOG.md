@@ -1,5 +1,15 @@
 # Changelog
 
+## 13.5.0 — Repair & Memorial Production Engine
+
+- Added repair intake with damage description, evaluation, quote, approval, payment, risk and intake-photo tracking.
+- Added memorial intake with secure storage, container description, amount received/used/returned and required reconciliation before completion.
+- Added immutable memorial chain-of-custody events with user, time, location, notes and optional attachment.
+- Added case-specific workflow statuses while preserving Glass Operations jobs, production lines, QC, pay and assignments as sources of truth.
+- Added reusable customer-update templates for receipt, quote/ashes confirmation, production, QC and release.
+- Added Glass Manager attention signals for incomplete custody, overdue repair approval and missing ashes reconciliation.
+- Added multi-photo uploads through the WordPress Media Library and preserved Universal Activity records.
+
 ## 13.4.0 — Glass Manager Operational Home
 
 - Rebuilt the Glass Manager dashboard as a role-specific operational briefing instead of a passive job list.
@@ -116,6 +126,16 @@
 - Existing CRM records are updated only where fields are missing; Food Vendor classification takes priority when applicable.
 
 # Elev8 OS Changelog
+
+## 13.5.0 — Repair & Memorial Production Engine
+
+- Added repair intake with damage description, evaluation, quote, approval, payment, risk and intake-photo tracking.
+- Added memorial intake with secure storage, container description, amount received/used/returned and required reconciliation before completion.
+- Added immutable memorial chain-of-custody events with user, time, location, notes and optional attachment.
+- Added case-specific workflow statuses while preserving Glass Operations jobs, production lines, QC, pay and assignments as sources of truth.
+- Added reusable customer-update templates for receipt, quote/ashes confirmation, production, QC and release.
+- Added Glass Manager attention signals for incomplete custody, overdue repair approval and missing ashes reconciliation.
+- Added multi-photo uploads through the WordPress Media Library and preserved Universal Activity records.
 
 ## 10.10.0 — Relationships & Community Outreach
 - Added a CRM-backed Relationships directory seeded with 123 cleaned dispensary records.

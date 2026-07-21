@@ -59,6 +59,7 @@ final class Elev8_OS_Glass_Manager_Brief_Service {
         $metrics['qc_lines'] = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$tables['job_lines']} WHERE quantity_completed>0 AND qc_status='not_reviewed'");
 
         $attention = self::attention_items($active_jobs, $metrics, $today);
+        if (class_exists('Elev8_OS_Repair_Memorial_Service')) { $attention = array_merge(Elev8_OS_Repair_Memorial_Service::attention_items(), $attention); }
         $risk_points = ($metrics['overdue'] * 3) + ($metrics['urgent'] * 3) + ($metrics['unassigned'] * 2) + ($metrics['rework_lines'] * 2) + ($metrics['qc_lines']) + ($metrics['pending_payout_count'] > 0 ? 1 : 0);
         $pulse = $risk_points >= 8 ? 'action_required' : ($risk_points >= 3 ? 'needs_attention' : 'healthy');
 

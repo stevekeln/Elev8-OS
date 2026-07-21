@@ -74,6 +74,7 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Glass_Operations_Service')) {
             Elev8_OS_Glass_Operations_Service::activate();
         }
+        if (class_exists('Elev8_OS_Repair_Memorial_Service')) { Elev8_OS_Repair_Memorial_Service::activate(); }
         if (class_exists('Elev8_OS_Production_Catalog_Service')) {
             Elev8_OS_Production_Catalog_Service::activate();
         }

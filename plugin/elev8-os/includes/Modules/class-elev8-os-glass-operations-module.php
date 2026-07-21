@@ -16,6 +16,8 @@ final class Elev8_OS_Glass_Operations_Module {
         add_action('admin_post_elev8_os_approve_glass_entry', [__CLASS__, 'approve_entry']);
         add_action('admin_post_elev8_os_save_glassblower_profile', [__CLASS__, 'save_glassblower_profile']);
         add_action('admin_post_elev8_os_import_cremation_orders', [__CLASS__, 'import_orders']);
+        add_action('admin_post_elev8_os_save_glass_case', [__CLASS__, 'save_case']);
+        add_action('admin_post_elev8_os_add_custody_event', [__CLASS__, 'add_custody_event']);
         add_action('wp_ajax_elev8_os_move_glass_job', [__CLASS__, 'ajax_move_job']);
     }
 
@@ -55,6 +57,8 @@ final class Elev8_OS_Glass_Operations_Module {
                     <a class="button <?php echo $view === 'new-job' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'new-job'])); ?>">New job</a>
                     <a class="button <?php echo $view === 'payouts' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'payouts'])); ?>">Pay sheets</a>
                     <a class="button <?php echo $view === 'team' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'team'])); ?>">Glassblower Team</a>
+                    <a class="button <?php echo $view === 'repair-intake' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'repair-intake'])); ?>">Repair Intake</a>
+                    <a class="button <?php echo $view === 'memorial-intake' ? 'button-primary' : ''; ?>" href="<?php echo esc_url(self::url(['view' => 'memorial-intake'])); ?>">Memorial Intake</a>
                 </nav>
             </header>
             <?php if (!empty($_GET['notice'])) : ?><div class="notice notice-success is-dismissible"><p><?php echo esc_html(wp_unslash($_GET['notice'])); ?></p></div><?php endif; ?>
@@ -63,6 +67,8 @@ final class Elev8_OS_Glass_Operations_Module {
             elseif ($view === 'new-job') { self::job_form($workers, $products); }
             elseif ($view === 'payouts') { self::payouts($workers); }
             elseif ($view === 'team') { self::team($workers); }
+            elseif ($view === 'repair-intake') { self::case_intake('repair', $workers, $products); }
+            elseif ($view === 'memorial-intake') { self::case_intake('memorial', $workers, $products); }
             elseif ($view === 'job') { self::job_detail(absint($_GET['job_id'] ?? 0), $workers, $products); }
             else { self::dashboard($summary); }
             ?>
@@ -239,7 +245,7 @@ final class Elev8_OS_Glass_Operations_Module {
     private static function job_form(array $workers, array $products): void {
         ?><section class="panel"><h2>Create a production job</h2><p>The selected production product supplies the compensation and cost snapshot. More lines can be added after creation.</p><form class="form-grid" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_save_glass_job'); ?><input type="hidden" name="action" value="elev8_os_save_glass_job">
         <label>Job source<select name="source"><option value="shipping">Shipping</option><option value="head_shop">Head Shop</option><option value="cremation">Cremation</option><option value="website">Website</option><option value="wholesale">Wholesale</option><option value="repair">Repair</option><option value="internal_inventory">Internal Inventory</option><option value="custom">Custom</option></select></label>
-        <label>Job type<select name="job_type"><option value="production">Production</option><option value="cremation">Cremation / memorial</option></select></label><label>Order number<input name="order_number"></label>
+        <label>Job type<select name="job_type"><option value="production">Production</option><option value="repair">Repair</option><option value="memorial">Memorial / cremation</option></select></label><label>Order number<input name="order_number"></label>
         <label>Production product<select name="production_product_id"><option value="0">Choose catalog product</option><?php foreach ($products as $p) : ?><option value="<?php echo absint($p['id']); ?>"><?php echo esc_html($p['product_name'] . ' · ' . ucwords($p['compensation_method'])); ?></option><?php endforeach; ?></select></label>
         <label class="span-2">Product or work requested<input name="product_name" required></label><label>Quantity<input type="number" min="1" step="0.01" name="quantity" value="1"></label><label>Priority<select name="priority"><option>normal</option><option>high</option><option>urgent</option><option>low</option></select></label><label>Due date<input type="date" name="due_date"></label><label>Assign blower<select name="assigned_user_id"><option value="0">Unassigned</option><?php foreach ($workers as $u) : ?><option value="<?php echo absint($u->ID); ?>"><?php echo esc_html($u->display_name); ?></option><?php endforeach; ?></select></label><label>Customer name<input name="customer_name"></label><label>Memorial name<input name="memorial_name"></label><label>Customer email<input type="email" name="customer_email"></label><label>Customer phone<input name="customer_phone"></label><label class="span-2">Colors / design<input name="colors"></label><label class="span-2">Engraving<input name="engraving"></label><label>Ashes status<select name="ashes_status"><option value="not_applicable">Not applicable</option><option value="waiting">Waiting for ashes</option><option value="received">Received</option><option value="returned">Returned</option></select></label><label>Status<select name="status"><?php foreach (['new','waiting_customer_info','waiting_ashes','ready_for_production','assigned','in_production','quality_control','ready_for_pickup','ready_to_ship','completed'] as $st) : ?><option value="<?php echo esc_attr($st); ?>"><?php echo esc_html(ucwords(str_replace('_',' ',$st))); ?></option><?php endforeach; ?></select></label><label class="span-2">Return / shipping instructions<textarea name="return_instructions" rows="3"></textarea></label><label class="span-2">Special notes<textarea name="special_notes" rows="4"></textarea></label><div class="span-2"><button class="button button-primary button-large">Create production job</button></div></form></section><?php
     }
@@ -249,6 +255,7 @@ final class Elev8_OS_Glass_Operations_Module {
         $lines = Elev8_OS_Glass_Operations_Service::job_lines($id);
         ?><p><a href="<?php echo esc_url(self::url()); ?>">← Back to queue</a></p><div class="elev8-glass__grid"><section class="panel panel-wide"><p class="eyebrow"><?php echo esc_html(ucfirst($j['job_type']) . ($j['order_number'] ? ' · Order #' . $j['order_number'] : '')); ?></p><h2><?php echo esc_html($j['product_name']); ?></h2><div class="detail-grid"><?php foreach (['customer_name'=>'Customer','customer_email'=>'Email','customer_phone'=>'Phone','memorial_name'=>'Memorial name','quantity'=>'Quantity','colors'=>'Colors / design','engraving'=>'Engraving','ashes_status'=>'Ashes','return_instructions'=>'Return instructions','special_notes'=>'Special notes'] as $k=>$label) : ?><div><small><?php echo esc_html($label); ?></small><strong><?php echo $j[$k] !== '' ? nl2br(esc_html(ucwords(str_replace('_',' ',(string)$j[$k])))) : 'Unavailable'; ?></strong></div><?php endforeach; ?></div></section><aside class="panel"><h2>Manager controls</h2><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_update_glass_job_' . $id); ?><input type="hidden" name="action" value="elev8_os_update_glass_job"><input type="hidden" name="job_id" value="<?php echo absint($id); ?>"><label>Status<select name="status"><?php foreach (['new','waiting_customer_info','waiting_ashes','ready_for_production','assigned','in_production','quality_control','ready_for_pickup','ready_to_ship','completed','cancelled'] as $st) : ?><option value="<?php echo esc_attr($st); ?>" <?php selected($j['status'],$st); ?>><?php echo esc_html(ucwords(str_replace('_',' ',$st))); ?></option><?php endforeach; ?></select></label><label>Assigned blower<select name="assigned_user_id"><option value="0">Unassigned</option><?php foreach ($workers as $u) : ?><option value="<?php echo absint($u->ID); ?>" <?php selected($j['assigned_user_id'],$u->ID); ?>><?php echo esc_html($u->display_name); ?></option><?php endforeach; ?></select></label><label>Due date<input type="date" name="due_date" value="<?php echo esc_attr($j['due_date']); ?>"></label><button class="button button-primary">Update job</button></form></aside></div>
         <section class="panel"><div class="panel-head"><div><h2>Production lines</h2><p>Each line preserves the catalog version, payout rule and material-cost snapshot used when it was added.</p></div></div><?php self::lines_table($lines, $j); ?><hr><h3>Add production line</h3><form class="form-grid compact" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_save_glass_job_line_' . $id); ?><input type="hidden" name="action" value="elev8_os_save_glass_job_line"><input type="hidden" name="job_id" value="<?php echo absint($id); ?>"><label class="span-2">Production product<select name="production_product_id" required><option value="">Choose product</option><?php foreach ($products as $p) : ?><option value="<?php echo absint($p['id']); ?>"><?php echo esc_html($p['product_name'] . ' · ' . ucwords($p['compensation_method'])); ?></option><?php endforeach; ?></select></label><label>Quantity<input type="number" min="0.01" step="0.01" name="quantity" value="1"></label><div><button class="button button-primary">Add line</button></div></form></section>
+        <?php self::case_workspace($j); ?>
         <section class="panel"><h2>Record blower work</h2><?php self::entry_form($workers, $j, $lines); ?></section><?php
     }
 
@@ -268,6 +275,102 @@ final class Elev8_OS_Glass_Operations_Module {
         <label class="span-2">Item / work completed<input name="item_name" value="<?php echo esc_attr($job['product_name'] ?? ''); ?>" required></label><label>Pay method<select name="pay_method"><option value="piece_rate">Piece rate</option><option value="hourly">Hourly</option></select></label><label>Quantity<input type="number" step="0.01" name="quantity" value="1"></label><label>Rate ($)<input type="number" step="0.01" name="rate" placeholder="Uses profile/catalog when blank"></label><label>Minutes (hourly only)<input type="number" step="1" name="minutes" value="0"></label><label>Bonus ($)<input type="number" step="0.01" name="bonus" value="0"></label><label>Adjustment ($)<input type="number" step="0.01" name="adjustment" value="0"></label><label class="span-2">Notes<textarea name="notes" rows="2"></textarea></label><div class="span-2"><button class="button button-primary">Add to payout review</button></div></form><?php
     }
 
+    private static function case_intake(string $type, array $workers, array $products): void {
+        $is_memorial = $type === 'memorial';
+        ?>
+        <section class="panel elev8-case-intake">
+            <p class="eyebrow"><?php echo $is_memorial ? 'High-trust memorial workflow' : 'Customer repair workflow'; ?></p>
+            <h2><?php echo $is_memorial ? 'Create Memorial Intake' : 'Create Repair Intake'; ?></h2>
+            <p>This creates the Glass Operations job first. After creation, complete custody, quote, photos, production lines and QC from the job workspace.</p>
+            <form class="form-grid" method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <?php wp_nonce_field('elev8_save_glass_job'); ?>
+                <input type="hidden" name="action" value="elev8_os_save_glass_job">
+                <input type="hidden" name="job_type" value="<?php echo esc_attr($type); ?>">
+                <input type="hidden" name="source" value="<?php echo $is_memorial ? 'cremation' : 'repair'; ?>">
+                <input type="hidden" name="status" value="<?php echo $is_memorial ? 'waiting_ashes' : 'new'; ?>">
+                <label>Order / intake number<input name="order_number"></label>
+                <label>Priority<select name="priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option><option value="low">Low</option></select></label>
+                <label class="span-2">Product or piece description<input name="product_name" required></label>
+                <label>Customer name<input name="customer_name" required></label>
+                <label><?php echo $is_memorial ? 'Loved one’s name' : 'Customer phone'; ?><input name="<?php echo $is_memorial ? 'memorial_name' : 'customer_phone'; ?>"></label>
+                <label>Customer email<input type="email" name="customer_email"></label>
+                <?php if ($is_memorial) : ?><label>Customer phone<input name="customer_phone"></label><?php endif; ?>
+                <label>Due date<input type="date" name="due_date"></label>
+                <label>Assign glassblower<select name="assigned_user_id"><option value="0">Unassigned</option><?php foreach ($workers as $u) : ?><option value="<?php echo absint($u->ID); ?>"><?php echo esc_html($u->display_name); ?></option><?php endforeach; ?></select></label>
+                <label class="span-2">Initial instructions / damage / personalization<textarea name="special_notes" rows="5"></textarea></label>
+                <label class="span-2">Return or shipping instructions<textarea name="return_instructions" rows="3"></textarea></label>
+                <div class="span-2"><button class="button button-primary button-large">Create <?php echo $is_memorial ? 'Memorial' : 'Repair'; ?> Job</button></div>
+            </form>
+        </section>
+        <?php
+    }
+
+    private static function case_workspace(array $job): void {
+        if (!class_exists('Elev8_OS_Repair_Memorial_Service') || !in_array($job['job_type'], ['repair','memorial','cremation'], true)) { return; }
+        $type = in_array($job['job_type'], ['memorial','cremation'], true) ? 'memorial' : 'repair';
+        $case = Elev8_OS_Repair_Memorial_Service::case_for_job((int)$job['id']);
+        $case = $case ?: ['case_type'=>$type,'case_status'=>'received','receiving_location'=>'','received_at'=>'','received_by'=>0,'piece_description'=>'','damage_description'=>'','requested_work'=>'','repairability'=>'unknown','risk_notice'=>'','quote_amount'=>0,'quote_status'=>'not_required','approval_deadline'=>'','payment_status'=>'unknown','ashes_amount_received'=>0,'ashes_amount_used'=>0,'ashes_amount_returned'=>0,'ashes_unit'=>'teaspoon','ashes_estimated'=>1,'reconciliation_confirmed'=>0,'storage_location'=>'','container_description'=>'','final_recipient'=>'','release_method'=>'','intake_photo_ids'=>[]];
+        $statuses = Elev8_OS_Repair_Memorial_Service::case_statuses($type);
+        ?>
+        <section class="panel elev8-case-workspace">
+            <div class="panel-head"><div><p class="eyebrow"><?php echo $type === 'memorial' ? 'Memorial chain of custody' : 'Repair evaluation and approval'; ?></p><h2><?php echo $type === 'memorial' ? 'Memorial Case' : 'Repair Case'; ?></h2></div><span class="pill"><?php echo esc_html($statuses[$case['case_status']] ?? 'Received'); ?></span></div>
+            <form class="form-grid" method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <?php wp_nonce_field('elev8_save_glass_case_' . $job['id']); ?>
+                <input type="hidden" name="action" value="elev8_os_save_glass_case"><input type="hidden" name="job_id" value="<?php echo absint($job['id']); ?>"><input type="hidden" name="case_type" value="<?php echo esc_attr($type); ?>">
+                <label>Case status<select name="case_status"><?php foreach ($statuses as $key=>$label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($case['case_status'],$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
+                <label>Receiving location<input name="receiving_location" value="<?php echo esc_attr($case['receiving_location']); ?>"></label>
+                <label>Received date/time<input type="datetime-local" name="received_at" value="<?php echo esc_attr($case['received_at'] ? str_replace(' ','T',substr($case['received_at'],0,16)) : ''); ?>"></label>
+                <label>Intake photos<input type="file" name="intake_photos[]" accept="image/*" multiple></label>
+                <label class="span-2">Piece / container description<textarea name="piece_description" rows="3"><?php echo esc_textarea($case['piece_description']); ?></textarea></label>
+                <?php if ($type === 'repair') : ?>
+                    <label class="span-2">Damage description<textarea name="damage_description" rows="3"><?php echo esc_textarea($case['damage_description']); ?></textarea></label>
+                    <label class="span-2">Requested / recommended repair<textarea name="requested_work" rows="3"><?php echo esc_textarea($case['requested_work']); ?></textarea></label>
+                    <label>Repairability<select name="repairability"><option value="unknown" <?php selected($case['repairability'],'unknown'); ?>>Unknown</option><option value="yes" <?php selected($case['repairability'],'yes'); ?>>Repairable</option><option value="uncertain" <?php selected($case['repairability'],'uncertain'); ?>>Uncertain</option><option value="no" <?php selected($case['repairability'],'no'); ?>>Not repairable</option></select></label>
+                    <label>Quote amount ($)<input type="number" step="0.01" name="quote_amount" value="<?php echo esc_attr($case['quote_amount']); ?>"></label>
+                    <label>Quote / approval<select name="quote_status"><option value="not_required" <?php selected($case['quote_status'],'not_required'); ?>>Not required</option><option value="draft" <?php selected($case['quote_status'],'draft'); ?>>Draft</option><option value="ready" <?php selected($case['quote_status'],'ready'); ?>>Ready</option><option value="waiting_customer" <?php selected($case['quote_status'],'waiting_customer'); ?>>Waiting for customer</option><option value="approved" <?php selected($case['quote_status'],'approved'); ?>>Approved</option><option value="declined" <?php selected($case['quote_status'],'declined'); ?>>Declined</option></select></label>
+                    <label>Approval deadline<input type="date" name="approval_deadline" value="<?php echo esc_attr($case['approval_deadline']); ?>"></label>
+                    <label class="span-2">Breakage / repair risk notice<textarea name="risk_notice" rows="3"><?php echo esc_textarea($case['risk_notice']); ?></textarea></label>
+                <?php else : ?>
+                    <label class="span-2">Container description<textarea name="container_description" rows="3"><?php echo esc_textarea($case['container_description']); ?></textarea></label>
+                    <label>Secure storage location<input name="storage_location" value="<?php echo esc_attr($case['storage_location']); ?>"></label>
+                    <label>Unit<select name="ashes_unit"><option value="teaspoon" <?php selected($case['ashes_unit'],'teaspoon'); ?>>Teaspoon</option><option value="tablespoon" <?php selected($case['ashes_unit'],'tablespoon'); ?>>Tablespoon</option><option value="gram" <?php selected($case['ashes_unit'],'gram'); ?>>Gram</option><option value="estimated_portion" <?php selected($case['ashes_unit'],'estimated_portion'); ?>>Estimated portion</option></select></label>
+                    <label>Amount received<input type="number" step="0.0001" name="ashes_amount_received" value="<?php echo esc_attr($case['ashes_amount_received']); ?>"></label>
+                    <label>Amount used<input type="number" step="0.0001" name="ashes_amount_used" value="<?php echo esc_attr($case['ashes_amount_used']); ?>"></label>
+                    <label>Amount returned<input type="number" step="0.0001" name="ashes_amount_returned" value="<?php echo esc_attr($case['ashes_amount_returned']); ?>"></label>
+                    <label>Final recipient<input name="final_recipient" value="<?php echo esc_attr($case['final_recipient']); ?>"></label>
+                    <label>Release method<select name="release_method"><option value="">Choose</option><option value="pickup" <?php selected($case['release_method'],'pickup'); ?>>Pickup</option><option value="shipping" <?php selected($case['release_method'],'shipping'); ?>>Shipping</option><option value="returned_with_order" <?php selected($case['release_method'],'returned_with_order'); ?>>Returned with order</option></select></label>
+                    <label><input type="checkbox" name="ashes_estimated" value="1" <?php checked(!empty($case['ashes_estimated'])); ?>> Amounts are estimated</label>
+                    <label><input type="checkbox" name="reconciliation_confirmed" value="1" <?php checked(!empty($case['reconciliation_confirmed'])); ?>> Reconciliation confirmed; no remains are left in production</label>
+                <?php endif; ?>
+                <label>Payment status<select name="payment_status"><option value="unknown" <?php selected($case['payment_status'],'unknown'); ?>>Unknown</option><option value="not_required" <?php selected($case['payment_status'],'not_required'); ?>>Not required</option><option value="deposit_paid" <?php selected($case['payment_status'],'deposit_paid'); ?>>Deposit paid</option><option value="paid" <?php selected($case['payment_status'],'paid'); ?>>Paid</option><option value="balance_due" <?php selected($case['payment_status'],'balance_due'); ?>>Balance due</option></select></label>
+                <div class="span-2"><button class="button button-primary">Save Case Details</button></div>
+            </form>
+            <?php if (!empty($case['intake_photo_ids'])) : ?><div class="elev8-case-photos"><?php foreach ($case['intake_photo_ids'] as $photo_id) { echo wp_get_attachment_image($photo_id,'thumbnail'); } ?></div><?php endif; ?>
+        </section>
+        <?php if ($type === 'memorial') : self::custody_workspace($job, $case); endif; ?>
+        <?php self::customer_updates($job, $case); ?>
+        <?php
+    }
+
+    private static function custody_workspace(array $job, array $case): void {
+        $events = Elev8_OS_Repair_Memorial_Service::custody_events((int)$job['id']);
+        ?>
+        <section class="panel elev8-custody"><div class="panel-head"><div><h2>Chain of Custody</h2><p>Permanent custody events cannot be edited or silently deleted.</p></div></div>
+            <form class="form-grid compact" method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <?php wp_nonce_field('elev8_add_custody_event_' . $job['id']); ?><input type="hidden" name="action" value="elev8_os_add_custody_event"><input type="hidden" name="job_id" value="<?php echo absint($job['id']); ?>">
+                <label>Event type<select name="event_type"><option value="received">Ashes received</option><option value="verified">Intake verified</option><option value="stored">Stored securely</option><option value="assigned">Assigned to glassblower</option><option value="removed_for_production">Removed for production</option><option value="returned_to_storage">Returned to storage</option><option value="qc_passed">Quality control passed</option><option value="packaged">Packaged</option><option value="released">Released / shipped</option><option value="note">Other custody note</option></select></label>
+                <label>Location<input name="event_location"></label><label class="span-2">Event label<input name="event_label" required></label><label class="span-2">Notes<textarea name="notes" rows="2"></textarea></label><label>Photo / document<input type="file" name="custody_attachment" accept="image/*,.pdf"></label><div><button class="button button-primary">Record Custody Event</button></div>
+            </form>
+            <?php if (!$events) : ?><div class="empty">No custody events recorded yet.</div><?php else : ?><div class="elev8-custody-timeline"><?php foreach ($events as $event) : $user=get_userdata((int)$event['created_by']); ?><article><strong><?php echo esc_html($event['event_label']); ?></strong><span><?php echo esc_html($event['created_at'] . ' · ' . ($user ? $user->display_name : 'Unknown user')); ?></span><p><?php echo esc_html($event['event_location']); ?><?php echo $event['notes'] ? ' — ' . esc_html($event['notes']) : ''; ?></p><?php if ($event['attachment_id']) : ?><a href="<?php echo esc_url(wp_get_attachment_url((int)$event['attachment_id'])); ?>" target="_blank" rel="noopener">Open attachment</a><?php endif; ?></article><?php endforeach; ?></div><?php endif; ?>
+        </section>
+        <?php
+    }
+
+    private static function customer_updates(array $job, array $case): void {
+        $templates = Elev8_OS_Repair_Memorial_Service::templates($job, $case);
+        ?><section class="panel elev8-customer-updates"><h2>Customer Update Templates</h2><p>Copy an approved status message. Sending automation can be connected later through Notifications.</p><div class="elev8-template-grid"><?php foreach ($templates as $key=>$template) : ?><article><h3><?php echo esc_html($template[0]); ?></h3><textarea readonly rows="5"><?php echo esc_textarea($template[1]); ?></textarea><button type="button" class="button" onclick="navigator.clipboard && navigator.clipboard.writeText(this.previousElementSibling.value)">Copy message</button></article><?php endforeach; ?></div></section><?php
+    }
+
     private static function team(array $workers): void {
         $all = get_users(['orderby' => 'display_name', 'order' => 'ASC']);
         ?><div class="elev8-glass__grid"><section class="panel"><h2>Add or update glassblower</h2><p>Only active compensation profiles with the Elev8 Glassblower role appear in production dropdowns.</p><form class="form-grid compact" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_save_glassblower_profile'); ?><input type="hidden" name="action" value="elev8_os_save_glassblower_profile"><label class="span-2">WordPress user<select name="user_id" required><option value="">Choose user</option><?php foreach ($all as $u) : ?><option value="<?php echo absint($u->ID); ?>"><?php echo esc_html($u->display_name . ' · ' . $u->user_email); ?></option><?php endforeach; ?></select></label><label>Hourly rate<input type="number" step="0.01" name="hourly_rate" value="18.00"></label><label>Effective date<input type="date" name="effective_date" value="<?php echo esc_attr(current_time('Y-m-d')); ?>"></label><label><input type="checkbox" name="piecework_eligible" value="1" checked> Piecework eligible</label><label><input type="checkbox" name="active" value="1" checked> Active on roster</label><label class="span-2">Notes<textarea name="notes"></textarea></label><div class="span-2"><button class="button button-primary">Save glassblower</button></div></form></section><section class="panel panel-wide"><h2>Active Glassblower Team</h2><?php if (!$workers) { echo '<div class="empty">No active glassblowers found.</div>'; } else { ?><div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Hourly rate</th><th>Piecework</th><th>Dashboard</th></tr></thead><tbody><?php foreach ($workers as $u) : $profile = Elev8_OS_Production_Catalog_Service::compensation_profile((int)$u->ID); ?><tr><td><strong><?php echo esc_html($u->display_name); ?></strong></td><td><?php echo esc_html($u->user_email); ?></td><td>$<?php echo number_format_i18n((float)($profile['hourly_rate'] ?? 0),2); ?></td><td><?php echo !empty($profile['piecework_eligible']) ? 'Eligible' : 'No'; ?></td><td><a class="button button-small" href="<?php echo esc_url(Elev8_OS_Portal_Page_Manager::get_url('dashboard')); ?>" target="_blank">Open dashboard</a></td></tr><?php endforeach; ?></tbody></table></div><?php } ?></section></div><?php
@@ -280,6 +383,17 @@ final class Elev8_OS_Glass_Operations_Module {
     public static function save_entry(): void { self::guard(); check_admin_referer('elev8_save_glass_entry'); $data = wp_unslash($_POST); $r = Elev8_OS_Glass_Operations_Service::save_entry($data); $job = absint($data['job_id'] ?? 0); wp_safe_redirect(self::url(['view' => $job ? 'job' : 'payouts', 'job_id' => $job, 'notice' => is_wp_error($r) ? $r->get_error_message() : 'Blower work added for review.'])); exit; }
     public static function approve_entry(): void { self::guard(); $id = absint($_POST['entry_id'] ?? 0); check_admin_referer('elev8_approve_glass_entry_' . $id); Elev8_OS_Glass_Operations_Service::approve_entry($id, sanitize_key($_POST['status'] ?? 'pending')); wp_safe_redirect(self::url(['view' => 'payouts', 'notice' => 'Payout entry updated.'])); exit; }
     public static function save_glassblower_profile(): void { self::guard(); check_admin_referer('elev8_save_glassblower_profile'); $data = wp_unslash($_POST); $user = get_userdata(absint($data['user_id'] ?? 0)); if ($user instanceof WP_User) { $user->add_role(Elev8_OS_Access_Service::ROLE_GLASS_BLOWER); Elev8_OS_Production_Catalog_Service::save_compensation_profile($data); $notice = 'Glassblower roster updated.'; } else { $notice = 'User not found.'; } wp_safe_redirect(self::url(['view' => 'team', 'notice' => $notice])); exit; }
+    public static function save_case(): void {
+        self::guard(); $job_id=absint($_POST['job_id']??0); check_admin_referer('elev8_save_glass_case_' . $job_id);
+        $result=Elev8_OS_Repair_Memorial_Service::save_case($job_id, wp_unslash($_POST), $_FILES['intake_photos']??[]);
+        wp_safe_redirect(self::url(['view'=>'job','job_id'=>$job_id,'notice'=>is_wp_error($result)?$result->get_error_message():'Case details saved.'])); exit;
+    }
+    public static function add_custody_event(): void {
+        self::guard(); $job_id=absint($_POST['job_id']??0); check_admin_referer('elev8_add_custody_event_' . $job_id);
+        $result=Elev8_OS_Repair_Memorial_Service::add_custody_event($job_id, wp_unslash($_POST), $_FILES['custody_attachment']??[]);
+        wp_safe_redirect(self::url(['view'=>'job','job_id'=>$job_id,'notice'=>is_wp_error($result)?$result->get_error_message():'Custody event recorded.'])); exit;
+    }
+
     public static function ajax_move_job(): void {
         self::guard();
         check_ajax_referer('elev8_glass_board', 'nonce');
