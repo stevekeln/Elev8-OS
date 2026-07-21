@@ -100,11 +100,22 @@ final class Elev8_OS_My_Classes_Module {
                     <?php self::render_summary_card(__('Booked value', 'elev8-os'), $summary['booked_value'], $summary['booked_value'] === null ? __('Unavailable because booking amounts were not detected', 'elev8-os') : __('Booked value, not recognized revenue', 'elev8-os'), true); ?>
                 </section>
 
+                <section class="elev8-classes-section elev8-teaching-calendar-section">
+                    <div class="elev8-panel-heading elev8-calendar-heading">
+                        <div>
+                            <p class="elev8-eyebrow"><?php esc_html_e('Teaching Calendar', 'elev8-os'); ?></p>
+                            <h2><?php esc_html_e('My Teaching Schedule', 'elev8-os'); ?></h2>
+                            <p><?php esc_html_e('Switch between agenda, week, and month views. Amelia remains the verified scheduling and booking source.', 'elev8-os'); ?></p>
+                        </div>
+                    </div>
+                    <?php self::render_teaching_calendar($result['upcoming']); ?>
+                </section>
+
                 <section class="elev8-classes-section">
                     <div class="elev8-panel-heading">
                         <div>
-                            <p class="elev8-eyebrow"><?php esc_html_e('Schedule', 'elev8-os'); ?></p>
-                            <h2><?php esc_html_e('Upcoming Classes', 'elev8-os'); ?></h2>
+                            <p class="elev8-eyebrow"><?php esc_html_e('Upcoming details', 'elev8-os'); ?></p>
+                            <h2><?php esc_html_e('Upcoming Class Details', 'elev8-os'); ?></h2>
                         </div>
                     </div>
                     <?php self::render_class_list($result['upcoming'], true); ?>
@@ -165,10 +176,12 @@ final class Elev8_OS_My_Classes_Module {
         $timestamp = strtotime((string) $class['start']);
         $month = $timestamp ? wp_date('M', $timestamp) : '';
         $day = $timestamp ? wp_date('j', $timestamp) : '';
-        $date_time = $timestamp ? wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp) : (string) $class['start'];
+        $weekday = $timestamp ? wp_date('D', $timestamp) : '';
+        $date_only = !empty($class['date_only']);
+        $date_time = self::format_schedule_date((string) $class['start'], $date_only, false);
         ?>
-        <article class="elev8-class-card">
-            <div class="elev8-class-date"><span><?php echo esc_html($month); ?></span><strong><?php echo esc_html($day); ?></strong></div>
+        <article class="elev8-class-card" id="elev8-class-<?php echo esc_attr((string) max(0, (int) $class['id'])); ?>-<?php echo esc_attr(sanitize_title((string) $class['start'])); ?>">
+            <div class="elev8-class-date"><small><?php echo esc_html($weekday); ?></small><span><?php echo esc_html($month); ?></span><strong><?php echo esc_html($day); ?></strong></div>
             <div class="elev8-class-main">
                 <div class="elev8-class-title-row">
                     <div>
@@ -202,6 +215,202 @@ final class Elev8_OS_My_Classes_Module {
             </div>
         </article>
         <?php
+    }
+
+    /**
+     * Render the shared teaching calendar using verified Amelia-backed occurrences.
+     *
+     * @param array<int,array<string,mixed>> $classes
+     */
+    private static function render_teaching_calendar(array $classes): void {
+        $view = sanitize_key((string) ($_GET['elev8_calendar_view'] ?? 'agenda'));
+        if (!in_array($view, ['agenda', 'week', 'month'], true)) {
+            $view = 'agenda';
+        }
+
+        $anchor_raw = sanitize_text_field((string) ($_GET['elev8_calendar_date'] ?? wp_date('Y-m-d')));
+        $anchor = strtotime($anchor_raw . ' 12:00:00');
+        if (!$anchor) {
+            $anchor = current_time('timestamp');
+        }
+
+        self::render_calendar_toolbar($view, $anchor);
+
+        if (!$classes) {
+            echo '<div class="elev8-class-empty"><span class="dashicons dashicons-calendar-alt" aria-hidden="true"></span><h3>' . esc_html__('No upcoming classes found', 'elev8-os') . '</h3><p>' . esc_html__('When Amelia assigns a future class to you, it will appear on this calendar.', 'elev8-os') . '</p></div>';
+            return;
+        }
+
+        if ($view === 'month') {
+            self::render_month_view($classes, $anchor);
+        } elseif ($view === 'week') {
+            self::render_week_view($classes, $anchor);
+        } else {
+            self::render_agenda_view($classes);
+        }
+    }
+
+    private static function render_calendar_toolbar(string $view, int $anchor): void {
+        $base = Elev8_OS_Portal_Page_Manager::get_url('classes');
+        $views = [
+            'agenda' => __('Agenda', 'elev8-os'),
+            'week' => __('Week', 'elev8-os'),
+            'month' => __('Month', 'elev8-os'),
+        ];
+        ?>
+        <div class="elev8-calendar-toolbar">
+            <div class="elev8-calendar-view-tabs" role="navigation" aria-label="<?php esc_attr_e('Calendar views', 'elev8-os'); ?>">
+                <?php foreach ($views as $key => $label) : ?>
+                    <a class="<?php echo $view === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $key, 'elev8_calendar_date' => wp_date('Y-m-d', $anchor)], $base)); ?>"><?php echo esc_html($label); ?></a>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($view !== 'agenda') :
+                $step = $view === 'month' ? 'month' : 'week';
+                $previous = strtotime('-1 ' . $step, $anchor);
+                $next = strtotime('+1 ' . $step, $anchor);
+                $label = $view === 'month'
+                    ? wp_date('F Y', $anchor)
+                    : sprintf(
+                        __('%1$s – %2$s', 'elev8-os'),
+                        wp_date('M j', self::week_start($anchor)),
+                        wp_date('M j, Y', self::week_start($anchor) + (6 * DAY_IN_SECONDS))
+                    );
+                ?>
+                <div class="elev8-calendar-period-nav">
+                    <a aria-label="<?php esc_attr_e('Previous period', 'elev8-os'); ?>" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d', $previous)], $base)); ?>">&larr;</a>
+                    <strong><?php echo esc_html($label); ?></strong>
+                    <a aria-label="<?php esc_attr_e('Next period', 'elev8-os'); ?>" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d', $next)], $base)); ?>">&rarr;</a>
+                    <a class="elev8-calendar-today" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d')], $base)); ?>"><?php esc_html_e('Today', 'elev8-os'); ?></a>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+    }
+
+    /** @param array<int,array<string,mixed>> $classes */
+    private static function render_agenda_view(array $classes): void {
+        $groups = [];
+        foreach ($classes as $class) {
+            $timestamp = strtotime((string) ($class['start'] ?? ''));
+            if (!$timestamp) { continue; }
+            $groups[wp_date('Y-m-d', $timestamp)][] = $class;
+        }
+        echo '<div class="elev8-calendar-agenda">';
+        foreach ($groups as $date => $items) {
+            $timestamp = strtotime($date . ' 12:00:00');
+            echo '<section class="elev8-agenda-day">';
+            echo '<header><span>' . esc_html(wp_date('D', $timestamp)) . '</span><strong>' . esc_html(wp_date('l, F j, Y', $timestamp)) . '</strong><small>' . esc_html(sprintf(_n('%d class', '%d classes', count($items), 'elev8-os'), count($items))) . '</small></header>';
+            echo '<div class="elev8-agenda-items">';
+            foreach ($items as $class) {
+                self::render_calendar_event($class, 'agenda');
+            }
+            echo '</div></section>';
+        }
+        echo '</div>';
+    }
+
+    /** @param array<int,array<string,mixed>> $classes */
+    private static function render_week_view(array $classes, int $anchor): void {
+        $start = self::week_start($anchor);
+        $map = self::classes_by_date($classes);
+        echo '<div class="elev8-calendar-week">';
+        for ($i = 0; $i < 7; $i++) {
+            $day_ts = $start + ($i * DAY_IN_SECONDS);
+            $key = wp_date('Y-m-d', $day_ts);
+            $is_today = $key === wp_date('Y-m-d');
+            echo '<section class="elev8-calendar-day-column' . ($is_today ? ' is-today' : '') . '">';
+            echo '<header><span>' . esc_html(wp_date('D', $day_ts)) . '</span><strong>' . esc_html(wp_date('j', $day_ts)) . '</strong><small>' . esc_html(wp_date('M', $day_ts)) . '</small></header>';
+            echo '<div class="elev8-calendar-day-events">';
+            foreach (($map[$key] ?? []) as $class) {
+                self::render_calendar_event($class, 'week');
+            }
+            if (empty($map[$key])) {
+                echo '<span class="elev8-calendar-no-class">' . esc_html__('No class', 'elev8-os') . '</span>';
+            }
+            echo '</div></section>';
+        }
+        echo '</div>';
+    }
+
+    /** @param array<int,array<string,mixed>> $classes */
+    private static function render_month_view(array $classes, int $anchor): void {
+        $year = (int) wp_date('Y', $anchor);
+        $month = (int) wp_date('n', $anchor);
+        $first = strtotime(sprintf('%04d-%02d-01 12:00:00', $year, $month));
+        $days = (int) wp_date('t', $first);
+        $offset = (int) wp_date('N', $first) - 1;
+        $map = self::classes_by_date($classes);
+        $weekdays = [__('Mon', 'elev8-os'), __('Tue', 'elev8-os'), __('Wed', 'elev8-os'), __('Thu', 'elev8-os'), __('Fri', 'elev8-os'), __('Sat', 'elev8-os'), __('Sun', 'elev8-os')];
+        echo '<div class="elev8-calendar-month">';
+        foreach ($weekdays as $weekday) {
+            echo '<div class="elev8-calendar-weekday">' . esc_html($weekday) . '</div>';
+        }
+        for ($i = 0; $i < $offset; $i++) {
+            echo '<div class="elev8-calendar-month-day is-empty" aria-hidden="true"></div>';
+        }
+        for ($day = 1; $day <= $days; $day++) {
+            $day_ts = strtotime(sprintf('%04d-%02d-%02d 12:00:00', $year, $month, $day));
+            $key = wp_date('Y-m-d', $day_ts);
+            $items = $map[$key] ?? [];
+            $is_today = $key === wp_date('Y-m-d');
+            echo '<section class="elev8-calendar-month-day' . ($is_today ? ' is-today' : '') . '"><header><span>' . esc_html((string) $day) . '</span><small>' . esc_html(wp_date('D', $day_ts)) . '</small></header><div>';
+            foreach (array_slice($items, 0, 3) as $class) {
+                self::render_calendar_event($class, 'month');
+            }
+            if (count($items) > 3) {
+                echo '<span class="elev8-calendar-more">' . esc_html(sprintf(__('+%d more', 'elev8-os'), count($items) - 3)) . '</span>';
+            }
+            echo '</div></section>';
+        }
+        echo '</div>';
+    }
+
+    /** @param array<string,mixed> $class */
+    private static function render_calendar_event(array $class, string $context): void {
+        $timestamp = strtotime((string) ($class['start'] ?? ''));
+        $date_only = !empty($class['date_only']);
+        $time = $date_only ? __('Time unavailable', 'elev8-os') : ($timestamp ? wp_date(get_option('time_format'), $timestamp) : __('Unavailable', 'elev8-os'));
+        $students = max(0, (int) ($class['students'] ?? 0));
+        $capacity = isset($class['capacity']) && $class['capacity'] !== null ? (int) $class['capacity'] : null;
+        $seats = isset($class['seats_left']) && $class['seats_left'] !== null ? (int) $class['seats_left'] : null;
+        $anchor = '#elev8-class-' . max(0, (int) ($class['id'] ?? 0)) . '-' . sanitize_title((string) ($class['start'] ?? ''));
+        ?>
+        <article class="elev8-calendar-event is-<?php echo esc_attr($context); ?>">
+            <a href="<?php echo esc_url($anchor); ?>">
+                <span class="elev8-calendar-event-time"><?php echo esc_html($time); ?></span>
+                <strong><?php echo esc_html((string) ($class['name'] ?? __('Class', 'elev8-os'))); ?></strong>
+                <?php if ($context !== 'month') : ?>
+                    <small><?php echo esc_html(sprintf(__('%1$d booked%2$s', 'elev8-os'), $students, $capacity === null ? '' : sprintf(__(' · %d capacity', 'elev8-os'), $capacity))); ?></small>
+                    <small><?php echo $seats === null ? esc_html__('Seats unavailable', 'elev8-os') : esc_html(sprintf(__('%d seats left', 'elev8-os'), $seats)); ?></small>
+                <?php endif; ?>
+            </a>
+        </article>
+        <?php
+    }
+
+    /** @param array<int,array<string,mixed>> $classes @return array<string,array<int,array<string,mixed>>> */
+    private static function classes_by_date(array $classes): array {
+        $map = [];
+        foreach ($classes as $class) {
+            $timestamp = strtotime((string) ($class['start'] ?? ''));
+            if (!$timestamp) { continue; }
+            $map[wp_date('Y-m-d', $timestamp)][] = $class;
+        }
+        return $map;
+    }
+
+    private static function week_start(int $timestamp): int {
+        $weekday = (int) wp_date('N', $timestamp);
+        return strtotime('-' . ($weekday - 1) . ' days', strtotime(wp_date('Y-m-d', $timestamp) . ' 12:00:00'));
+    }
+
+    public static function format_schedule_date(string $start, bool $date_only = false, bool $compact = false): string {
+        $timestamp = strtotime($start);
+        if (!$timestamp) { return $start !== '' ? $start : __('Unavailable', 'elev8-os'); }
+        if ($compact) {
+            return $date_only ? wp_date('D, M j', $timestamp) : wp_date('D, M j · ' . get_option('time_format'), $timestamp);
+        }
+        return $date_only ? wp_date('l, F j, Y', $timestamp) : wp_date('l, F j, Y · ' . get_option('time_format'), $timestamp);
     }
 
     /** @return array<string,mixed> */

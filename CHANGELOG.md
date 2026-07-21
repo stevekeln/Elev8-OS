@@ -1,3 +1,10 @@
+## 13.7.0 — Teaching Calendar & Booking View
+- Added shared Agenda, Week, and Month calendar views to My Classes for Glass Managers, teachers, and teaching artists.
+- Added day-of-week labels to calendar events, class detail cards, and the Next Class dashboard card.
+- Added verified Amelia-backed booked, capacity, and seats-left context directly inside calendar events.
+- Added previous/next period navigation, Today shortcuts, phone-friendly agenda behavior, and direct links from calendar events to class details.
+- Preserved Amelia as the scheduling and booking source of truth and continued displaying Unavailable when values cannot be verified.
+
 
 ## 13.6.0 — Universal Role Preview Mode
 - Replaced the single Artist Dashboard Preview concept with a founder-only Role Preview tool for CEO, Shop Manager, Glass Manager, Glassblower, Artist, Teacher, Event Host, Volunteer, and Retail Employee experiences.
