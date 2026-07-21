@@ -48,6 +48,12 @@ final class Elev8_OS_Application_Shell_Module {
             ELEV8_OS_VERSION,
             true
         );
+        wp_localize_script('elev8-os-application-shell', 'Elev8OSCommandPalette', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('elev8_os_command_palette'),
+            'emptyMessage' => __('No matching Elev8 OS results.', 'elev8-os'),
+            'errorMessage' => __('Search is temporarily unavailable.', 'elev8-os'),
+        ]);
     }
 
     public static function render_frontend(): void {
@@ -146,6 +152,11 @@ final class Elev8_OS_Application_Shell_Module {
                 </nav>
 
                 <div class="elev8-app-shell__actions">
+                    <button class="elev8-app-shell__search-button" type="button" data-elev8-command-open aria-haspopup="dialog" aria-controls="elev8-command-palette">
+                        <span aria-hidden="true">⌕</span>
+                        <span><?php esc_html_e('Search', 'elev8-os'); ?></span>
+                        <kbd>Ctrl K</kbd>
+                    </button>
                     <a class="elev8-app-shell__attention" href="<?php echo esc_url($notifications_url); ?>" aria-label="<?php echo esc_attr(sprintf(__('Notifications: %d items', 'elev8-os'), $attention_count)); ?>">
                         <span aria-hidden="true">🔔</span>
                         <?php if ($attention_count > 0) : ?><span class="elev8-app-shell__badge"><?php echo esc_html((string) min(99, $attention_count)); ?></span><?php endif; ?>
@@ -175,6 +186,23 @@ final class Elev8_OS_Application_Shell_Module {
                 <a class="elev8-app-shell__logout" href="<?php echo esc_url($logout_url); ?>">🚪 <span><?php esc_html_e('Log Out', 'elev8-os'); ?></span></a>
             </div>
         </div>
+
+            <div class="elev8-command-palette" id="elev8-command-palette" data-elev8-command-palette hidden>
+                <button class="elev8-command-palette__backdrop" type="button" data-elev8-command-close aria-label="<?php esc_attr_e('Close search', 'elev8-os'); ?>"></button>
+                <section class="elev8-command-palette__dialog" role="dialog" aria-modal="true" aria-labelledby="elev8-command-title">
+                    <header>
+                        <div>
+                            <span aria-hidden="true">⌕</span>
+                            <input id="elev8-command-input" data-elev8-command-input type="search" autocomplete="off" placeholder="<?php esc_attr_e('Search Elev8 OS or type a command…', 'elev8-os'); ?>" aria-label="<?php esc_attr_e('Search Elev8 OS', 'elev8-os'); ?>">
+                        </div>
+                        <button type="button" data-elev8-command-close><?php esc_html_e('Esc', 'elev8-os'); ?></button>
+                    </header>
+                    <h2 id="elev8-command-title" class="screen-reader-text"><?php esc_html_e('Elev8 OS Search and Command Palette', 'elev8-os'); ?></h2>
+                    <div class="elev8-command-palette__status" data-elev8-command-status><?php esc_html_e('Quick actions', 'elev8-os'); ?></div>
+                    <div class="elev8-command-palette__results" data-elev8-command-results role="listbox"></div>
+                    <footer><span>↑↓ <?php esc_html_e('Navigate', 'elev8-os'); ?></span><span>Enter <?php esc_html_e('Open', 'elev8-os'); ?></span><span>Esc <?php esc_html_e('Close', 'elev8-os'); ?></span></footer>
+                </section>
+            </div>
         <?php
     }
 

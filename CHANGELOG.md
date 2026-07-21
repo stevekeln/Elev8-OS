@@ -1,3 +1,13 @@
+## 10.23.0 — Universal Search & Command Palette
+
+- Added a shared, role-aware Elev8 OS command palette to the Universal Application Shell.
+- Added Search and Ctrl/Cmd+K access on supported Elev8 OS frontend and admin workspaces.
+- Added keyboard navigation, mobile presentation, Escape-to-close, and quick-action discovery.
+- Added capability-aware commands for dashboards, work, Business Memory, Business Intelligence, reservations, event tools, opportunities, and artist workspaces.
+- Added secure AJAX search for work items, scoped to the current user unless team-work permission is granted.
+- Added owner-only team-member search and an extension filter for future module search providers.
+- Preserved the existing Universal Application Header, notifications, user menu, dashboards, and access rules.
+
 ## 10.22.0 — Universal Application Shell
 
 ### Added
