@@ -248,6 +248,11 @@ final class Elev8_OS_Dashboard_Module {
     private static function render_dashboard(): void {
         $user = wp_get_current_user();
 
+        if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_manager($user) && !Elev8_OS_Access_Service::is_owner($user)) {
+            self::render_manager_dashboard($user);
+            return;
+        }
+
         if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::uses_event_host_home($user)) {
             $event_host_view = sanitize_key((string) ($_GET['elev8_event_host_view'] ?? ''));
             if ($event_host_view === 'reservations' && class_exists('Elev8_OS_Bingo_Reservations_Module')) {
@@ -604,6 +609,123 @@ final class Elev8_OS_Dashboard_Module {
         <?php
     }
 
+
+    private static function render_manager_dashboard(WP_User $user): void {
+        $snapshot = class_exists('Elev8_OS_Manager_Dashboard_Service')
+            ? Elev8_OS_Manager_Dashboard_Service::snapshot($user)
+            : [];
+        $first_name = trim((string)$user->first_name);
+        if ($first_name === '') { $first_name = $user->display_name ?: __('Manager', 'elev8-os'); }
+        $attention = is_array($snapshot['attention'] ?? null) ? $snapshot['attention'] : ['items'=>[],'total'=>0];
+        $items = is_array($attention['items'] ?? null) ? $attention['items'] : [];
+        $my_work = is_array($snapshot['my_work'] ?? null) ? $snapshot['my_work'] : [];
+        $team_work = is_array($snapshot['team_work'] ?? null) ? $snapshot['team_work'] : [];
+        $operations = is_array($snapshot['operations'] ?? null) ? $snapshot['operations'] : [];
+        $team = is_array($snapshot['team'] ?? null) ? $snapshot['team'] : [];
+        $pulse = is_array($snapshot['pulse'] ?? null) ? $snapshot['pulse'] : ['status'=>'unavailable','label'=>__('Unavailable','elev8-os'),'message'=>__('No verified status is available.','elev8-os')];
+        $reservations = is_array($snapshot['reservations'] ?? null) ? $snapshot['reservations'] : [];
+        $applications = is_array($snapshot['applications'] ?? null) ? $snapshot['applications'] : [];
+        $wins = is_array($snapshot['wins'] ?? null) ? $snapshot['wins'] : [];
+        $manager_log_url = class_exists('Elev8_OS_Checkin_Center_Module') ? add_query_arg(['type'=>'manager','team'=>'1'], Elev8_OS_Checkin_Center_Module::page_url()) : home_url('/checkin/');
+        $work_url = class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::team_url() : admin_url('admin.php?page=elev8-work-team');
+        $my_work_url = class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::my_url() : $work_url;
+        $reservations_url = class_exists('Elev8_OS_Bingo_Reservations_Module') ? Elev8_OS_Bingo_Reservations_Module::admin_url() : admin_url('admin.php?page=elev8-bingo-reservations');
+        $applications_url = class_exists('Elev8_OS_Event_Applications_Module') ? Elev8_OS_Event_Applications_Module::admin_url() : admin_url('admin.php?page=elev8-event-applications');
+        ?>
+        <div class="elev8-artist-dashboard elev8-manager-dashboard">
+            <header class="elev8-manager-hero">
+                <div>
+                    <p class="elev8-eyebrow"><?php esc_html_e('Manager Operational Home', 'elev8-os'); ?></p>
+                    <h1><?php echo esc_html(sprintf(__('Welcome back, %s', 'elev8-os'), $first_name)); ?></h1>
+                    <p><?php echo esc_html(wp_date('l, F j')); ?> · <?php esc_html_e('Run the day, support the team, and close every loop.', 'elev8-os'); ?></p>
+                </div>
+                <div class="elev8-manager-hero-actions">
+                    <?php if (class_exists('Elev8_OS_App_Install_Module')) { Elev8_OS_App_Install_Module::render_dashboard_control(); } ?>
+                    <a class="button button-primary" href="<?php echo esc_url($manager_log_url); ?>"><?php esc_html_e('Complete Manager Log', 'elev8-os'); ?></a>
+                </div>
+            </header>
+
+            <section class="elev8-manager-mission">
+                <div><p class="elev8-eyebrow"><?php esc_html_e("Today's Mission", 'elev8-os'); ?></p><h2><?php esc_html_e('Build a stronger team, take care of customers, and keep operations moving.', 'elev8-os'); ?></h2></div>
+                <div class="elev8-manager-pulse is-<?php echo esc_attr((string)$pulse['status']); ?>"><span></span><div><small><?php esc_html_e('Business Pulse', 'elev8-os'); ?></small><strong><?php echo esc_html((string)$pulse['label']); ?></strong><p><?php echo esc_html((string)$pulse['message']); ?></p></div></div>
+            </section>
+
+            <section class="elev8-manager-metrics" aria-label="<?php esc_attr_e('Manager summary', 'elev8-os'); ?>">
+                <?php self::render_manager_metric(__('Needs Attention','elev8-os'), $attention['total'] ?? null, __('Verified items waiting on you','elev8-os'), 'bell'); ?>
+                <?php self::render_manager_metric(__('My Work','elev8-os'), $my_work['active'] ?? null, __('Assigned active work','elev8-os'), 'clipboard'); ?>
+                <?php self::render_manager_metric(__('Due Today','elev8-os'), $my_work['due_today'] ?? null, __('Your work due today','elev8-os'), 'clock'); ?>
+                <?php self::render_manager_metric(__('Team Overdue','elev8-os'), $team_work['overdue'] ?? null, __('Verified overdue team work','elev8-os'), 'warning'); ?>
+            </section>
+
+            <section class="elev8-manager-layout">
+                <article class="elev8-manager-card elev8-manager-attention">
+                    <div class="elev8-manager-card-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Needs My Attention','elev8-os'); ?></p><h2><?php esc_html_e('What needs action now','elev8-os'); ?></h2></div><span><?php echo esc_html(number_format_i18n((int)($attention['total'] ?? 0))); ?></span></div>
+                    <?php if (!$items): ?><div class="elev8-manager-empty"><span class="dashicons dashicons-yes-alt"></span><p><?php esc_html_e('No verified attention items are waiting.','elev8-os'); ?></p></div><?php else: ?>
+                        <div class="elev8-manager-attention-list"><?php foreach (array_slice($items,0,6) as $item): ?><a href="<?php echo esc_url((string)($item['url'] ?? '#')); ?>" class="is-<?php echo esc_attr((string)($item['severity'] ?? 'normal')); ?>"><span class="dashicons dashicons-<?php echo esc_attr((string)($item['icon'] ?? 'bell')); ?>"></span><div><strong><?php echo esc_html((string)($item['title'] ?? __('Attention item','elev8-os'))); ?></strong><p><?php echo esc_html((string)($item['summary'] ?? '')); ?></p></div><em><?php esc_html_e('Open','elev8-os'); ?> →</em></a><?php endforeach; ?></div>
+                    <?php endif; ?>
+                </article>
+
+                <article class="elev8-manager-card">
+                    <div class="elev8-manager-card-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Daily Operations','elev8-os'); ?></p><h2><?php esc_html_e('Close the operating loop','elev8-os'); ?></h2></div></div>
+                    <div class="elev8-manager-stat-list">
+                        <div><span><?php esc_html_e('My manager logs today','elev8-os'); ?></span><strong><?php echo isset($operations['submitted_today']) ? esc_html(number_format_i18n((int)$operations['submitted_today'])) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Team logs today','elev8-os'); ?></span><strong><?php echo isset($operations['team_logs_today']) ? esc_html(number_format_i18n((int)$operations['team_logs_today'])) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Logs needing review','elev8-os'); ?></span><strong><?php echo isset($operations['needs_review']) ? esc_html(number_format_i18n((int)$operations['needs_review'])) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                    </div>
+                    <a class="elev8-manager-primary-action" href="<?php echo esc_url($manager_log_url); ?>"><?php esc_html_e('Complete Manager Log','elev8-os'); ?> →</a>
+                </article>
+
+                <article class="elev8-manager-card">
+                    <div class="elev8-manager-card-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Work Center','elev8-os'); ?></p><h2><?php esc_html_e('Keep ownership clear','elev8-os'); ?></h2></div></div>
+                    <div class="elev8-manager-stat-list">
+                        <div><span><?php esc_html_e('Team active','elev8-os'); ?></span><strong><?php echo !empty($team_work['available']) ? esc_html(number_format_i18n((int)($team_work['active'] ?? 0))) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Unassigned','elev8-os'); ?></span><strong><?php echo !empty($team_work['available']) ? esc_html(number_format_i18n((int)($team_work['unassigned'] ?? 0))) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Waiting','elev8-os'); ?></span><strong><?php echo !empty($team_work['available']) ? esc_html(number_format_i18n((int)($team_work['waiting'] ?? 0))) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                    </div>
+                    <div class="elev8-manager-actions"><a href="<?php echo esc_url($my_work_url); ?>"><?php esc_html_e('My Work','elev8-os'); ?></a><a href="<?php echo esc_url($work_url); ?>"><?php esc_html_e('Team Work','elev8-os'); ?></a></div>
+                </article>
+
+                <article class="elev8-manager-card">
+                    <div class="elev8-manager-card-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Team Pulse','elev8-os'); ?></p><h2><?php esc_html_e('People available for assignments','elev8-os'); ?></h2></div></div>
+                    <div class="elev8-manager-stat-list">
+                        <div><span><?php esc_html_e('Assignable people','elev8-os'); ?></span><strong><?php echo !empty($team['available']) ? esc_html(number_format_i18n((int)($team['assignable'] ?? 0))) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Shop employees','elev8-os'); ?></span><strong><?php echo !empty($team['available']) ? esc_html(number_format_i18n((int)($team['shop_employees'] ?? 0))) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Event staff','elev8-os'); ?></span><strong><?php echo !empty($team['available']) ? esc_html(number_format_i18n((int)($team['event_staff'] ?? 0))) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                    </div>
+                    <p class="elev8-manager-card-note"><?php esc_html_e('Scheduling and live attendance are not connected yet, so Elev8 OS does not guess who is working today.','elev8-os'); ?></p>
+                </article>
+
+                <article class="elev8-manager-card">
+                    <div class="elev8-manager-card-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Events & Guests','elev8-os'); ?></p><h2><?php esc_html_e('Public activity needing coordination','elev8-os'); ?></h2></div></div>
+                    <div class="elev8-manager-stat-list">
+                        <div><span><?php esc_html_e('Upcoming reservations','elev8-os'); ?></span><strong><?php echo !empty($reservations['available']) && isset($reservations['upcoming']) ? esc_html(number_format_i18n((int)$reservations['upcoming'])) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Reservations needing attention','elev8-os'); ?></span><strong><?php echo !empty($reservations['available']) && isset($reservations['attention']) ? esc_html(number_format_i18n((int)$reservations['attention'])) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                        <div><span><?php esc_html_e('Event applications waiting','elev8-os'); ?></span><strong><?php echo !empty($applications['available']) && isset($applications['attention']) ? esc_html(number_format_i18n((int)$applications['attention'])) : esc_html__('Unavailable','elev8-os'); ?></strong></div>
+                    </div>
+                    <div class="elev8-manager-actions"><a href="<?php echo esc_url($reservations_url); ?>"><?php esc_html_e('Reservations','elev8-os'); ?></a><a href="<?php echo esc_url($applications_url); ?>"><?php esc_html_e('Event Applications','elev8-os'); ?></a></div>
+                </article>
+
+                <article class="elev8-manager-card">
+                    <div class="elev8-manager-card-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Recent Wins','elev8-os'); ?></p><h2><?php esc_html_e('Progress worth recognizing','elev8-os'); ?></h2></div></div>
+                    <?php if (!$wins): ?><div class="elev8-manager-empty"><p><?php esc_html_e('No verified win is available yet.','elev8-os'); ?></p></div><?php else: ?><ul class="elev8-manager-wins"><?php foreach ($wins as $win): ?><li><span class="dashicons dashicons-awards"></span><?php echo esc_html((string)$win); ?></li><?php endforeach; ?></ul><?php endif; ?>
+                </article>
+            </section>
+
+            <section class="elev8-manager-card elev8-manager-closeout">
+                <div><p class="elev8-eyebrow"><?php esc_html_e('Before You Leave','elev8-os'); ?></p><h2><?php esc_html_e('End-of-shift closeout','elev8-os'); ?></h2><p><?php esc_html_e('Make sure the next person can understand what happened, what remains open, and who owns the follow-up.','elev8-os'); ?></p></div>
+                <div class="elev8-manager-closeout-list"><span><?php echo (int)($operations['submitted_today'] ?? 0) > 0 ? '✓' : '○'; ?> <?php esc_html_e('Manager log submitted','elev8-os'); ?></span><span><?php echo (int)($my_work['overdue'] ?? 0) === 0 ? '✓' : '○'; ?> <?php esc_html_e('Overdue work reviewed','elev8-os'); ?></span><span><?php echo (int)($team_work['unassigned'] ?? 0) === 0 ? '✓' : '○'; ?> <?php esc_html_e('Unassigned work reviewed','elev8-os'); ?></span></div>
+                <a class="button button-primary" href="<?php echo esc_url($manager_log_url); ?>"><?php esc_html_e('Complete End-of-Shift Log','elev8-os'); ?></a>
+            </section>
+        </div>
+        <?php
+    }
+
+    /** @param int|float|null $value */
+    private static function render_manager_metric(string $title, $value, string $description, string $icon): void {
+        $available = is_numeric($value);
+        ?><article class="elev8-manager-metric <?php echo $available ? '' : 'is-unavailable'; ?>"><span class="dashicons dashicons-<?php echo esc_attr($icon); ?>"></span><div><small><?php echo esc_html($title); ?></small><strong><?php echo $available ? esc_html(number_format_i18n((int)$value)) : esc_html__('Unavailable','elev8-os'); ?></strong><p><?php echo esc_html($description); ?></p></div></article><?php
+    }
+
     private static function render_event_host_reservations(WP_User $user): void {
         $dashboard_url = Elev8_OS_Portal_Page_Manager::get_url('dashboard');
         ?>
@@ -637,6 +759,7 @@ final class Elev8_OS_Dashboard_Module {
 
     private static function is_dashboard_user(WP_User $user): bool {
         return self::is_artist_user($user)
+            || (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_manager($user))
             || (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::uses_event_host_home($user));
     }
 

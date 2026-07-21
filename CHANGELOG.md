@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 10.19.0 — Manager Operational Home
+
+- Added a capability-driven Manager Operational Home for non-owner managers.
+- Added mission briefing, Business Pulse, attention queue, work summaries, daily operations status, team pulse, events and reservation coordination, verified wins, and end-of-shift closeout.
+- Added a reusable Manager Dashboard Service backed by Access, Attention, Work, Daily Operations, Reservations, and Event Applications engines.
+- Preserved artist, event-host, and CEO dashboard behavior.
+- Added responsive phone-first manager dashboard styling.
+
 ## 10.18.0 — Workflow Engine Foundation & Explain Why
 
 - Added a reusable Workflow Engine that listens for trusted Elev8 OS events, evaluates configurable definitions, executes registered actions, and preserves an auditable run history.
