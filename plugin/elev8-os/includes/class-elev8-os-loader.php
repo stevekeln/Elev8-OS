@@ -82,6 +82,8 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-intake-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-work-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-action-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-workspace-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workflow-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-explanation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-attention-service.php';
@@ -114,6 +116,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Unified_Intake_Module::init();
         Elev8_OS_Work_Module::init();
         Elev8_OS_Action_Center_Module::init();
+        Elev8_OS_Workspace_Module::init();
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Recommendation_State_Service::init();
         Elev8_OS_Gallery_Operations_Service::init();

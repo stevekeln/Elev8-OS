@@ -28,6 +28,7 @@ final class Elev8_OS_Conversations_Module {
     public static function enqueue(): void {
         if (!self::is_page()) { return; }
         wp_enqueue_style('elev8-os-conversations', ELEV8_OS_URL . 'assets/css/conversations.css', [], ELEV8_OS_VERSION);
+        wp_enqueue_style('elev8-workspace-button', ELEV8_OS_URL . 'assets/css/workspace.css', [], ELEV8_OS_VERSION);
     }
 
     public static function shortcode(): string {
@@ -72,7 +73,7 @@ final class Elev8_OS_Conversations_Module {
         $thread = get_post($thread_id);
         if (!$thread instanceof WP_Post) { return; }
         $status = (string) get_post_meta($thread_id, '_elev8_conversation_status', true) ?: 'open';
-        echo '<section class="elev8-conversation-thread"><a class="elev8-conversation-thread__back" href="' . esc_url(self::url()) . '">← ' . esc_html__('All conversations', 'elev8-os') . '</a><header><div><span>' . esc_html(ucfirst($status)) . '</span><h2>' . esc_html(get_the_title($thread)) . '</h2><p>' . esc_html(self::participant_names($thread_id, 0)) . '</p></div>';
+        echo '<section class="elev8-conversation-thread"><div class="elev8-conversation-thread__nav"><a class="elev8-conversation-thread__back" href="' . esc_url(self::url()) . '">← ' . esc_html__('All conversations', 'elev8-os') . '</a>' . (class_exists('Elev8_OS_Workspace_Service') ? '<a class="elev8-open-workspace" href="' . esc_url(Elev8_OS_Workspace_Service::url('conversation', $thread_id)) . '">' . esc_html__('Open Workspace', 'elev8-os') . '</a>' : '') . '</div><header><div><span>' . esc_html(ucfirst($status)) . '</span><h2>' . esc_html(get_the_title($thread)) . '</h2><p>' . esc_html(self::participant_names($thread_id, 0)) . '</p></div>';
         if ($status === 'open' && ((int) $thread->post_author === $user->ID || Elev8_OS_Access_Service::user_can('manage_conversations', $user))) {
             echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'; wp_nonce_field('elev8_close_conversation_' . $thread_id); echo '<input type="hidden" name="action" value="elev8_os_close_conversation"><input type="hidden" name="thread_id" value="' . $thread_id . '"><button>' . esc_html__('Close Conversation', 'elev8-os') . '</button></form>';
         }

@@ -698,3 +698,12 @@
 - Preserves normal WordPress behavior for administrators and users who are not linked to an Amelia artist/provider.
 - Adds redirect-loop protections and keeps the public Artist Dashboard as the single artist home.
 - No database changes.
+
+## 12.0.0 — Workspace Engine Foundation
+- Added a universal frontend Workspace Engine that gathers one source record's summary, status, activity timeline, actions, conversations, related records, people, and files without duplicating authoritative business data.
+- Added the `/elev8-workspace/` operational page and reusable **Open Workspace** URLs for work items, conversations, manager logs, event applications, reservations, and people.
+- Added capability-aware workspace permissions through the centralized Access Service.
+- Added the first universal Activity Timeline, Related Record inference, and Workspace header components.
+- Added **Open Workspace** actions to frontend Work and Conversation experiences.
+- Added a Workspace command to Universal Search / Command Palette.
+- Preserved existing dashboards, Action Center, Conversations, Business Memory, and source-record workspaces.
