@@ -1,3 +1,14 @@
+# Elev8 OS Changelog
+
+## 11.1.0 — Public Profiles Foundation
+
+- Added a shared Public Profile Service for Event Hosts, Artists, Managers, and future roles.
+- Added a frontend My Public Profile editor with draft, preview, publish, and unpublish controls.
+- Added public profile routes at `/people/{profile-slug}/`.
+- Connected the Event Host profile warning and coaching recommendation to the working editor.
+- Updated the universal user menu and command palette to open the public profile workspace.
+- Preserved the existing private WordPress account settings link separately.
+
 ## 11.0.0 — Action Engine Foundation
 - Added a frontend My Actions workspace so non-admin users no longer get redirected away from Work.
 - Added direct status, due-date, notes, completion, and team action controls.

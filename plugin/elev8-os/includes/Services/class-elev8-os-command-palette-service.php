@@ -26,7 +26,7 @@ final class Elev8_OS_Command_Palette_Service {
         $commands = [
             self::command('dashboard', __('My Dashboard', 'elev8-os'), __('Open your role-based Operational Home.', 'elev8-os'), $dashboard, 'dashboard', '🏠'),
             self::command('public_home', __('Elev8 Arts Home', 'elev8-os'), __('Return to the public Elev8 Arts website.', 'elev8-os'), home_url('/'), 'navigation', '🌐'),
-            self::command('profile', __('My Profile', 'elev8-os'), __('Update your WordPress account and profile information.', 'elev8-os'), get_edit_profile_url($user->ID), 'account', '👤'),
+            self::command('profile', __('My Public Profile', 'elev8-os'), __('Create, preview, publish, or update your public Elev8 profile.', 'elev8-os'), class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::editor_url() : get_edit_profile_url($user->ID), 'account', '👤'),
         ];
 
         if (Elev8_OS_Access_Service::user_can('view_work', $user) && class_exists('Elev8_OS_Work_Module')) {

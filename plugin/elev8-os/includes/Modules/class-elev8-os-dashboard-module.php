@@ -538,7 +538,10 @@ final class Elev8_OS_Dashboard_Module {
                     <div>
                         <p class="elev8-eyebrow"><?php esc_html_e('Profile Attention', 'elev8-os'); ?></p>
                         <h2><?php esc_html_e('Your public host profile is not published', 'elev8-os'); ?></h2>
-                        <p><?php esc_html_e('Your private Elev8 OS account is active, but guests cannot currently view a public event-host profile for you. The public host-profile editor will connect here in a future release.', 'elev8-os'); ?></p>
+                        <p><?php esc_html_e('Your private Elev8 OS account is active. Create and publish a public profile so guests can learn about you before Open Mic, Bingo, and other events.', 'elev8-os'); ?></p>
+                        <?php $profile_editor_url = (string) ($profile['editor_url'] ?? ''); if ($profile_editor_url !== '') : ?>
+                            <a class="elev8-host-profile-action" href="<?php echo esc_url($profile_editor_url); ?>"><?php esc_html_e('Create Public Profile', 'elev8-os'); ?></a>
+                        <?php endif; ?>
                     </div>
                 </section>
             <?php endif; ?>

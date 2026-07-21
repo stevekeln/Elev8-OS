@@ -33,7 +33,11 @@ final class Elev8_OS_Event_Host_Dashboard_Service {
             'user_id' => $user_id,
             'display_name' => self::display_name($user),
             'public_profile' => [
-                'published' => get_user_meta($user_id, self::META_PUBLIC_PROFILE_STATUS, true) === 'published',
+                'published' => class_exists('Elev8_OS_Public_Profile_Service')
+                    ? Elev8_OS_Public_Profile_Service::is_published($user_id)
+                    : get_user_meta($user_id, self::META_PUBLIC_PROFILE_STATUS, true) === 'published',
+                'editor_url' => class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::editor_url() : '',
+                'public_url' => class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::public_url($user_id) : '',
                 'diagnostic' => __('A public event-host profile has not been published for this account.', 'elev8-os'),
             ],
             'attention' => $attention,

@@ -154,3 +154,5 @@
 .elev8-coaching-why{margin-top:auto;padding-top:10px;border-top:1px solid #e8ebef}.elev8-coaching-why summary{cursor:pointer;font-weight:700;color:#5b36a8}.elev8-coaching-why p{margin:9px 0 0;font-size:13px;color:#596579}
 .elev8-coaching-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:11px 14px;border-radius:10px;background:#5b36a8;color:#fff!important;text-decoration:none!important;font-weight:800}
 @media(max-width:640px){.elev8-coaching-panel{padding:18px}.elev8-coaching-heading{display:block}.elev8-coaching-method{display:inline-block;margin-top:12px}.elev8-coaching-grid{grid-template-columns:1fr}.elev8-coaching-card{min-height:0}}
+
+.elev8-host-profile-action{display:inline-flex;align-items:center;justify-content:center;margin-top:14px;padding:11px 18px;border-radius:999px;background:#8a5700;color:#fff!important;font-weight:800;text-decoration:none}.elev8-host-profile-action:hover{background:#6f4600;color:#fff!important}

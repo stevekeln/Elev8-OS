@@ -145,8 +145,8 @@ final class Elev8_OS_Application_Shell_Module {
             : ['total' => 0];
         $attention_count = max(0, (int) ($attention['total'] ?? 0));
         $role_label = self::role_label($user);
-        $profile_url = get_edit_profile_url($user->ID);
-        $settings_url = $profile_url;
+        $profile_url = class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::editor_url() : get_edit_profile_url($user->ID);
+        $settings_url = get_edit_profile_url($user->ID);
         $notifications_url = $dashboard_url !== '' ? add_query_arg('elev8_view', 'attention', $dashboard_url) : $dashboard_url;
         $home_url = home_url('/');
         $help_url = (string) apply_filters('elev8_os_help_url', home_url('/contact/'));

@@ -90,6 +90,8 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-coaching-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-event-host-dashboard-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-public-profile-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-public-profiles-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-manager-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-unified-intake-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-work-module.php';
@@ -153,5 +155,6 @@ final class Elev8_OS_Loader {
         Elev8_OS_Artist_Growth_Studio_Module::init();
         Elev8_OS_Business_GPS_Module::init();
         Elev8_OS_Artist_Success_Module::init();
+        Elev8_OS_Public_Profiles_Module::init();
     }
 }
