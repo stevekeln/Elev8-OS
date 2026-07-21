@@ -151,6 +151,38 @@ final class Elev8_OS_Production_Catalog_Service {
         return $wpdb->get_results($sql, ARRAY_A) ?: [];
     }
 
+    public static function pay_search(string $term = '', int $limit = 30): array {
+        $products = self::products(['active'=>1, 'search'=>sanitize_text_field($term)]);
+        $out=[];
+        foreach(array_slice($products,0,max(1,min(100,$limit))) as $product){
+            $method=(string)$product['compensation_method'];
+            if($method==='included'){continue;}
+            $out[]=[
+                'id'=>(int)$product['id'],'name'=>(string)$product['product_name'],'code'=>(string)$product['product_code'],
+                'category'=>(string)$product['category'],'method'=>$method,'piecework_rate'=>(float)$product['piecework_rate'],
+                'piecework_unit'=>(string)$product['piecework_unit'],'estimated_minutes'=>(float)$product['estimated_minutes'],
+                'cost_complete'=>((float)$product['consumable_cost']+(float)$product['packaging_cost']+(float)$product['other_cost'])>0 || !empty(self::product_materials((int)$product['id']))
+            ];
+        }
+        return $out;
+    }
+
+    public static function quick_create_pay_item(array $data): int|WP_Error {
+        $method=sanitize_key($data['compensation_method']??'piecework');
+        if(!in_array($method,['hourly','piecework','either'],true)){$method='piecework';}
+        $name=sanitize_text_field($data['product_name']??'');
+        if($name===''){return new WP_Error('quick_pay_name','Enter a name for the new pay item.');}
+        if($method==='piecework' && (float)($data['piecework_rate']??0)<=0){return new WP_Error('quick_pay_rate','Enter a piecework payout greater than zero.');}
+        return self::save_product([
+            'product_name'=>$name,'product_code'=>$data['product_code']??'','category'=>$data['category']??'Quick Pay Items',
+            'description'=>'Created from Glass Manager Fast Pay Entry. Material and full costing details may still need completion.',
+            'active'=>1,'skill_level'=>'standard','department'=>'Glass Operations','compensation_method'=>$method,
+            'piecework_rate'=>$data['piecework_rate']??0,'piecework_unit'=>$data['piecework_unit']??'piece',
+            'effective_date'=>$data['effective_date']??current_time('Y-m-d'),'manager_approval_required'=>1,
+            'estimated_minutes'=>$data['estimated_minutes']??0,'costing_hourly_rate'=>0,'consumable_cost'=>0,'packaging_cost'=>0,'other_cost'=>0,
+        ]);
+    }
+
     public static function product(int $id): ?array {
         global $wpdb; $t = self::tables();
         $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['products']} WHERE id=%d", $id), ARRAY_A);

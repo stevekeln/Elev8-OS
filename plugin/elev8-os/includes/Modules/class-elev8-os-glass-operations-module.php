@@ -14,6 +14,10 @@ final class Elev8_OS_Glass_Operations_Module {
         add_action('admin_post_elev8_os_update_glass_job_line', [__CLASS__, 'update_job_line']);
         add_action('admin_post_elev8_os_save_glass_entry', [__CLASS__, 'save_entry']);
         add_action('admin_post_elev8_os_approve_glass_entry', [__CLASS__, 'approve_entry']);
+        add_action('admin_post_elev8_os_save_fast_pay_sheet', [__CLASS__, 'save_fast_pay_sheet']);
+        add_action('admin_post_elev8_os_copy_previous_pay_day', [__CLASS__, 'copy_previous_pay_day']);
+        add_action('wp_ajax_elev8_os_quick_create_pay_item', [__CLASS__, 'ajax_quick_create_pay_item']);
+        add_action('wp_ajax_elev8_os_toggle_pay_favorite', [__CLASS__, 'ajax_toggle_pay_favorite']);
         add_action('admin_post_elev8_os_save_glassblower_profile', [__CLASS__, 'save_glassblower_profile']);
         add_action('admin_post_elev8_os_import_cremation_orders', [__CLASS__, 'import_orders']);
         add_action('admin_post_elev8_os_save_glass_case', [__CLASS__, 'save_case']);
@@ -34,6 +38,16 @@ final class Elev8_OS_Glass_Operations_Module {
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('elev8_glass_board'),
                 'errorMessage' => 'The production job could not be updated.',
+            ]);
+        }
+        if (sanitize_key($_GET['view'] ?? '') === 'payouts') {
+            wp_enqueue_script('elev8-glass-fast-pay', ELEV8_OS_URL . 'assets/js/glass-fast-pay.js', [], ELEV8_OS_VERSION, true);
+            wp_localize_script('elev8-glass-fast-pay', 'Elev8GlassFastPay', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'createNonce' => wp_create_nonce('elev8_quick_create_pay_item'),
+                'favoriteNonce' => wp_create_nonce('elev8_toggle_pay_favorite'),
+                'products' => Elev8_OS_Production_Catalog_Service::pay_search('', 100),
+                'hourlyRates' => array_reduce(Elev8_OS_Glass_Operations_Service::glass_workers(), static function($carry,$user){$p=Elev8_OS_Production_Catalog_Service::compensation_profile((int)$user->ID);$carry[$user->ID]=(float)($p['hourly_rate']??0);return $carry;}, []),
             ]);
         }
     }
@@ -265,8 +279,35 @@ final class Elev8_OS_Glass_Operations_Module {
     }
 
     private static function payouts(array $workers): void {
-        $entries = Elev8_OS_Glass_Operations_Service::entries();
-        ?><div class="elev8-glass__grid"><section class="panel"><h2>Add blower work</h2><?php self::entry_form($workers, null, []); ?></section><section class="panel panel-wide"><h2>Automatic pay sheet review</h2><p>Approved hourly and piecework records stay linked to their source production job.</p><?php if (!$entries) { echo '<div class="empty">No blower work has been recorded.</div>'; } else { ?><div class="table-wrap"><table><thead><tr><th>Date</th><th>Blower</th><th>Work</th><th>Calculation</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody><?php foreach ($entries as $e) : $u = get_userdata((int)$e['blower_user_id']); ?><tr><td><?php echo esc_html($e['work_date']); ?></td><td><?php echo esc_html($u ? $u->display_name : 'Unknown user'); ?></td><td><?php echo esc_html($e['item_name']); ?></td><td><?php echo esc_html($e['pay_method'] === 'hourly' ? $e['minutes'] . ' min @ $' . $e['rate'] . '/hr' : $e['quantity'] . ' × $' . $e['rate']); ?></td><td><strong>$<?php echo number_format_i18n((float)$e['total'],2); ?></strong></td><td><?php echo esc_html(ucfirst($e['approval_status'])); ?></td><td><?php if ($e['approval_status'] === 'pending') : ?><form class="inline" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_approve_glass_entry_' . $e['id']); ?><input type="hidden" name="action" value="elev8_os_approve_glass_entry"><input type="hidden" name="entry_id" value="<?php echo absint($e['id']); ?>"><button name="status" value="approved" class="button button-small">Approve</button><button name="status" value="rejected" class="button button-small">Reject</button></form><?php endif; ?></td></tr><?php endforeach; ?></tbody></table></div><?php } ?></section></div><?php
+        $blower_id=absint($_GET['blower_user_id']??0);
+        $work_date=sanitize_text_field($_GET['work_date']??current_time('Y-m-d'));
+        $entries=Elev8_OS_Glass_Operations_Service::entries(array_filter(['blower_user_id'=>$blower_id,'work_date'=>$blower_id?$work_date:'']));
+        $favorites=array_map('absint',(array)get_user_meta(get_current_user_id(),'elev8_glass_pay_favorites',true));
+        $recent_ids=Elev8_OS_Glass_Operations_Service::recent_product_ids($blower_id,8);
+        $lookup=[]; foreach(Elev8_OS_Production_Catalog_Service::pay_search('',100) as $p){$lookup[(int)$p['id']]=$p;}
+        $day_total=0; foreach($entries as $e){$day_total+=(float)$e['total'];}
+        ?>
+        <section class="elev8-fast-pay" data-fast-pay>
+            <div class="panel-head"><div><p class="eyebrow">Fast Glass Pay Entry</p><h2>Type the work, enter quantity or time, and keep moving.</h2><p>The Production Catalog remains the trusted payout source. New pay items can be created without leaving this screen.</p></div><button type="button" class="button" onclick="window.print()">Print Pay Sheet</button></div>
+            <form class="elev8-fast-pay-filter" method="get"><input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG); ?>"><input type="hidden" name="view" value="payouts"><label>Glassblower<select name="blower_user_id" required><option value="">Choose blower</option><?php foreach($workers as $u):?><option value="<?php echo absint($u->ID);?>" <?php selected($blower_id,$u->ID);?>><?php echo esc_html($u->display_name);?></option><?php endforeach;?></select></label><label>Work date<input type="date" name="work_date" value="<?php echo esc_attr($work_date);?>"></label><button class="button button-primary">Open Daily Sheet</button></form>
+            <?php if($blower_id): $user=get_userdata($blower_id); ?>
+            <div class="elev8-fast-pay-shortcuts">
+                <div><strong>★ Favorites</strong><div class="elev8-pay-chips"><?php foreach($favorites as $id){if(isset($lookup[$id])){echo '<button type="button" class="elev8-pay-chip" data-product-id="'.absint($id).'">'.esc_html($lookup[$id]['name']).'</button>';}} if(!$favorites)echo '<span>No favorites yet. Star an item after adding it.</span>';?></div></div>
+                <div><strong>Recently used</strong><div class="elev8-pay-chips"><?php foreach($recent_ids as $id){if(isset($lookup[$id])){echo '<button type="button" class="elev8-pay-chip" data-product-id="'.absint($id).'">'.esc_html($lookup[$id]['name']).'</button>';}} if(!$recent_ids)echo '<span>No recent items yet.</span>';?></div></div>
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_copy_previous_pay_day');?><input type="hidden" name="action" value="elev8_os_copy_previous_pay_day"><input type="hidden" name="blower_user_id" value="<?php echo absint($blower_id);?>"><input type="hidden" name="work_date" value="<?php echo esc_attr($work_date);?>"><button class="button">Copy Previous Day</button></form>
+            </div>
+            <form class="elev8-fast-pay-form" method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_save_fast_pay_sheet');?><input type="hidden" name="action" value="elev8_os_save_fast_pay_sheet"><input type="hidden" name="blower_user_id" value="<?php echo absint($blower_id);?>"><input type="hidden" name="work_date" value="<?php echo esc_attr($work_date);?>">
+                <div class="elev8-pay-search-wrap"><label for="elev8-pay-search">Add work</label><input id="elev8-pay-search" type="search" autocomplete="off" placeholder="Start typing: mushroom, knob, repair..."><div class="elev8-pay-suggestions" hidden></div><button type="button" class="button" data-open-quick-item>+ Create New Pay Item</button></div>
+                <div class="elev8-pay-lines" data-pay-lines><div class="empty">Start typing above to add the first item.</div></div>
+                <div class="elev8-pay-total"><span>Daily tracked pay</span><strong data-sheet-total>$0.00</strong></div>
+                <div class="elev8-pay-actions"><button class="button" name="sheet_action" value="draft">Save Draft</button><button class="button button-primary" name="sheet_action" value="pending">Submit for Approval</button></div>
+            </form>
+            <dialog class="elev8-quick-pay-dialog" data-quick-item-dialog><form method="dialog"><button class="elev8-dialog-close" aria-label="Close">×</button></form><h3>Create New Pay Item</h3><p>This item can be used immediately for pay. Material and full cost details can be completed later in Production Catalog.</p><div class="form-grid compact"><label class="span-2">Item name<input data-quick-name></label><label>Pay method<select data-quick-method><option value="piecework">Piecework</option><option value="hourly">Hourly</option><option value="either">Either</option></select></label><label>Piecework payout<input type="number" min="0" step="0.01" data-quick-rate></label><label>Paid per<select data-quick-unit><option value="piece">Piece</option><option value="pair">Pair</option><option value="set">Set</option><option value="batch">Batch</option><option value="job">Job</option></select></label><label>Estimated minutes<input type="number" min="0" step="1" data-quick-minutes></label><label class="span-2">Category<input data-quick-category value="Quick Pay Items"></label><div class="span-2"><button type="button" class="button button-primary" data-save-quick-item>Save and Add</button><span data-quick-message></span></div></div></dialog>
+            <section class="panel elev8-daily-pay-sheet"><div class="panel-head"><div><h2><?php echo esc_html(($user?$user->display_name:'Glassblower').' — '.wp_date('l, F j, Y',strtotime($work_date)));?></h2><p>Draft, pending, approved and rejected entries for this day.</p></div><strong>$<?php echo number_format_i18n($day_total,2);?></strong></div>
+                <?php if(!$entries):?><div class="empty">No work is recorded for this daily sheet yet.</div><?php else:?><div class="table-wrap"><table><thead><tr><th>Item</th><th>Qty / Time</th><th>Rate</th><th>Pay</th><th>Status</th><th></th></tr></thead><tbody><?php foreach($entries as $e):?><tr><td><?php echo esc_html($e['item_name']);?></td><td><?php echo esc_html($e['pay_method']==='hourly'?$e['minutes'].' min':$e['quantity']);?></td><td><?php echo esc_html($e['pay_method']==='hourly'?'$'.number_format_i18n((float)$e['rate'],2).'/hr':'$'.number_format_i18n((float)$e['rate'],2));?></td><td><strong>$<?php echo number_format_i18n((float)$e['total'],2);?></strong></td><td><?php echo esc_html(ucfirst($e['approval_status']));?></td><td><?php if($e['approval_status']==='pending'):?><form class="inline" method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_approve_glass_entry_'.$e['id']);?><input type="hidden" name="action" value="elev8_os_approve_glass_entry"><input type="hidden" name="entry_id" value="<?php echo absint($e['id']);?>"><input type="hidden" name="return_blower_user_id" value="<?php echo absint($blower_id);?>"><input type="hidden" name="return_work_date" value="<?php echo esc_attr($work_date);?>"><button name="status" value="approved" class="button button-small">Approve</button><button name="status" value="rejected" class="button button-small">Reject</button></form><?php endif;?></td></tr><?php endforeach;?></tbody></table></div><?php endif;?>
+            </section>
+            <?php else:?><div class="panel empty">Choose a glassblower and date to open a fast daily pay sheet.</div><?php endif;?>
+        </section><?php
     }
 
     private static function entry_form(array $workers, ?array $job, array $lines): void {
@@ -381,8 +422,34 @@ final class Elev8_OS_Glass_Operations_Module {
     public static function save_job_line(): void { self::guard(); $job = absint($_POST['job_id'] ?? 0); check_admin_referer('elev8_save_glass_job_line_' . $job); $r = Elev8_OS_Glass_Operations_Service::save_job_line(wp_unslash($_POST)); wp_safe_redirect(self::url(['view' => 'job', 'job_id' => $job, 'notice' => is_wp_error($r) ? $r->get_error_message() : 'Production line added.'])); exit; }
     public static function update_job_line(): void { self::guard(); $line = absint($_POST['line_id'] ?? 0); $job = absint($_POST['job_id'] ?? 0); check_admin_referer('elev8_update_glass_job_line_' . $line); Elev8_OS_Glass_Operations_Service::update_job_line($line, wp_unslash($_POST)); wp_safe_redirect(self::url(['view' => 'job', 'job_id' => $job, 'notice' => 'Production line updated.'])); exit; }
     public static function save_entry(): void { self::guard(); check_admin_referer('elev8_save_glass_entry'); $data = wp_unslash($_POST); $r = Elev8_OS_Glass_Operations_Service::save_entry($data); $job = absint($data['job_id'] ?? 0); wp_safe_redirect(self::url(['view' => $job ? 'job' : 'payouts', 'job_id' => $job, 'notice' => is_wp_error($r) ? $r->get_error_message() : 'Blower work added for review.'])); exit; }
-    public static function approve_entry(): void { self::guard(); $id = absint($_POST['entry_id'] ?? 0); check_admin_referer('elev8_approve_glass_entry_' . $id); Elev8_OS_Glass_Operations_Service::approve_entry($id, sanitize_key($_POST['status'] ?? 'pending')); wp_safe_redirect(self::url(['view' => 'payouts', 'notice' => 'Payout entry updated.'])); exit; }
+    public static function approve_entry(): void { self::guard(); $id = absint($_POST['entry_id'] ?? 0); check_admin_referer('elev8_approve_glass_entry_' . $id); Elev8_OS_Glass_Operations_Service::approve_entry($id, sanitize_key($_POST['status'] ?? 'pending')); wp_safe_redirect(self::url(['view' => 'payouts', 'blower_user_id'=>absint($_POST['return_blower_user_id']??0), 'work_date'=>sanitize_text_field($_POST['return_work_date']??''), 'notice' => 'Payout entry updated.'])); exit; }
     public static function save_glassblower_profile(): void { self::guard(); check_admin_referer('elev8_save_glassblower_profile'); $data = wp_unslash($_POST); $user = get_userdata(absint($data['user_id'] ?? 0)); if ($user instanceof WP_User) { $user->add_role(Elev8_OS_Access_Service::ROLE_GLASS_BLOWER); Elev8_OS_Production_Catalog_Service::save_compensation_profile($data); $notice = 'Glassblower roster updated.'; } else { $notice = 'User not found.'; } wp_safe_redirect(self::url(['view' => 'team', 'notice' => $notice])); exit; }
+    public static function save_fast_pay_sheet(): void {
+        self::guard(); check_admin_referer('elev8_save_fast_pay_sheet'); $data=wp_unslash($_POST);
+        $result=Elev8_OS_Glass_Operations_Service::save_fast_pay_sheet($data);
+        $notice=is_wp_error($result)?$result->get_error_message():count($result).' pay item(s) saved.';
+        wp_safe_redirect(self::url(['view'=>'payouts','blower_user_id'=>absint($data['blower_user_id']??0),'work_date'=>sanitize_text_field($data['work_date']??''),'notice'=>$notice])); exit;
+    }
+    public static function copy_previous_pay_day(): void {
+        self::guard(); check_admin_referer('elev8_copy_previous_pay_day'); $blower=absint($_POST['blower_user_id']??0);$date=sanitize_text_field($_POST['work_date']??'');
+        $result=Elev8_OS_Glass_Operations_Service::copy_previous_day($blower,$date);
+        $notice=is_wp_error($result)?$result->get_error_message():$result.' item(s) copied as drafts.';
+        wp_safe_redirect(self::url(['view'=>'payouts','blower_user_id'=>$blower,'work_date'=>$date,'notice'=>$notice])); exit;
+    }
+    public static function ajax_quick_create_pay_item(): void {
+        self::guard(); check_ajax_referer('elev8_quick_create_pay_item','nonce');
+        $result=Elev8_OS_Production_Catalog_Service::quick_create_pay_item(wp_unslash($_POST));
+        if(is_wp_error($result)){wp_send_json_error(['message'=>$result->get_error_message()],400);}
+        $product=Elev8_OS_Production_Catalog_Service::product((int)$result);
+        wp_send_json_success(['product'=>Elev8_OS_Production_Catalog_Service::pay_search($product['product_name'],10)[0]??null,'message'=>'Pay item created. Cost details are incomplete until reviewed in Production Catalog.']);
+    }
+    public static function ajax_toggle_pay_favorite(): void {
+        self::guard(); check_ajax_referer('elev8_toggle_pay_favorite','nonce'); $id=absint($_POST['product_id']??0);
+        $ids=array_map('absint',(array)get_user_meta(get_current_user_id(),'elev8_glass_pay_favorites',true));
+        if(in_array($id,$ids,true)){$ids=array_values(array_diff($ids,[$id]));$favorite=false;}else{$ids[]=$id;$ids=array_values(array_unique($ids));$favorite=true;}
+        update_user_meta(get_current_user_id(),'elev8_glass_pay_favorites',$ids); wp_send_json_success(['favorite'=>$favorite]);
+    }
+
     public static function save_case(): void {
         self::guard(); $job_id=absint($_POST['job_id']??0); check_admin_referer('elev8_save_glass_case_' . $job_id);
         $result=Elev8_OS_Repair_Memorial_Service::save_case($job_id, wp_unslash($_POST), $_FILES['intake_photos']??[]);

@@ -1,3 +1,11 @@
+## 13.9.0 — Fast Glass Pay Entry
+- Added a keyboard-friendly daily blower pay sheet with type-ahead Production Catalog search.
+- Added live hourly and piecework calculations using blower compensation profiles and catalog payout rules.
+- Added inline creation of new pay items without leaving the pay sheet, with an explicit warning when full cost details remain incomplete.
+- Added recent items, manager favorites, copy-previous-day drafts, daily totals, draft submission, approval controls, and print-friendly output.
+- Preserved Production Jobs as the preferred source for order-driven work while allowing quick after-the-fact entry into the same payout records.
+- Added direct Production Catalog snapshots to quick pay entries so rate history remains explainable.
+
 ## 13.8.1 — Clean Role Preview & Glass Manager Return Fix
 - Role Preview now opens in a separate browser window.
 - Clean Preview hides the WordPress administrator toolbar, sidebar, update notices, and other owner-only chrome so the preview matches the selected person's Elev8 OS application experience.

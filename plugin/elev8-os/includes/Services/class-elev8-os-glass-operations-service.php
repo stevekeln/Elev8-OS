@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Glass_Operations_Service {
-    const DB_VERSION = '2.1.0';
+    const DB_VERSION = '2.2.0';
     const OPTION_DB_VERSION = 'elev8_os_glass_ops_db_version';
 
     public static function init(): void {
@@ -274,7 +274,10 @@ final class Elev8_OS_Glass_Operations_Service {
         if (!$blower_id) { return new WP_Error('glass_entry_user', 'Choose a blower.'); }
         $line_id = absint($data['job_line_id'] ?? 0);
         $line = $line_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['job_lines']} WHERE id=%d", $line_id), ARRAY_A) : null;
-        $method = sanitize_key($data['pay_method'] ?? ($line['compensation_method'] ?? 'piece_rate'));
+        $product_id = absint($data['production_product_id'] ?? ($line['production_product_id'] ?? 0));
+        $product = $product_id && class_exists('Elev8_OS_Production_Catalog_Service') ? Elev8_OS_Production_Catalog_Service::product($product_id) : null;
+        $default_method = $line['compensation_method'] ?? ($product['compensation_method'] ?? 'piece_rate');
+        $method = sanitize_key($data['pay_method'] ?? $default_method);
         if ($method === 'piecework') { $method = 'piece_rate'; }
         $qty = max(0, (float)($data['quantity'] ?? ($line['quantity_completed'] ?? 0)));
         $minutes = max(0, (float)($data['minutes'] ?? ($line['actual_minutes'] ?? 0)));
@@ -282,17 +285,18 @@ final class Elev8_OS_Glass_Operations_Service {
         $profile = class_exists('Elev8_OS_Production_Catalog_Service') ? Elev8_OS_Production_Catalog_Service::compensation_profile($blower_id) : null;
         if ($rate <= 0 && $method === 'hourly') { $rate = (float)($profile['hourly_rate'] ?? 0); }
         if ($rate <= 0 && $method === 'piece_rate' && $line) { $rate = (float)($line['piecework_rate'] ?? 0); }
+        if ($rate <= 0 && $method === 'piece_rate' && $product) { $rate = (float)($product['piecework_rate'] ?? 0); }
         if ($rate <= 0) { return new WP_Error('glass_entry_rate', 'No valid hourly or piecework rate is available.'); }
         $bonus = (float)($data['bonus'] ?? 0); $adj = (float)($data['adjustment'] ?? 0);
         $base = $method === 'hourly' ? ($minutes / 60) * $rate : $qty * $rate;
         $total = round($base + $bonus + $adj, 2);
-        $snapshot = ['profile' => $profile, 'job_line' => $line, 'calculated_at' => current_time('mysql')];
+        $snapshot = ['profile' => $profile, 'job_line' => $line, 'production_product' => $product, 'calculated_at' => current_time('mysql')];
         $row = [
             'job_id' => absint($data['job_id'] ?? 0),
             'job_line_id' => $line_id,
-            'production_product_id' => absint($line['production_product_id'] ?? 0),
+            'production_product_id' => $product_id,
             'blower_user_id' => $blower_id,
-            'item_name' => sanitize_text_field($data['item_name'] ?? ($line['item_name'] ?? '')),
+            'item_name' => sanitize_text_field($data['item_name'] ?? ($line['item_name'] ?? ($product['product_name'] ?? ''))),
             'quantity' => $qty,
             'pay_method' => $method,
             'rate' => $rate,
@@ -303,7 +307,7 @@ final class Elev8_OS_Glass_Operations_Service {
             'notes' => sanitize_textarea_field($data['notes'] ?? ''),
             'snapshot_json' => wp_json_encode($snapshot),
             'work_date' => self::date_or_null($data['work_date'] ?? '') ?: current_time('Y-m-d'),
-            'approval_status' => 'pending',
+            'approval_status' => in_array(sanitize_key($data['approval_status'] ?? 'pending'), ['draft','pending'], true) ? sanitize_key($data['approval_status'] ?? 'pending') : 'pending',
             'created_by' => get_current_user_id(),
             'created_at' => current_time('mysql'),
         ];
@@ -315,11 +319,65 @@ final class Elev8_OS_Glass_Operations_Service {
         global $wpdb;$t=self::tables();$where=['1=1'];$params=[];
         if(!empty($args['blower_user_id'])){$where[]='blower_user_id=%d';$params[]=absint($args['blower_user_id']);}
         if(!empty($args['approval_status'])){$where[]='approval_status=%s';$params[]=sanitize_key($args['approval_status']);}
-        $sql="SELECT * FROM {$t['entries']} WHERE ".implode(' AND ',$where)." ORDER BY work_date DESC,id DESC LIMIT 200";if($params)$sql=$wpdb->prepare($sql,$params);
+        if(!empty($args['work_date'])){$where[]='work_date=%s';$params[]=sanitize_text_field($args['work_date']);}
+        if(!empty($args['date_from'])){$where[]='work_date>=%s';$params[]=sanitize_text_field($args['date_from']);}
+        if(!empty($args['date_to'])){$where[]='work_date<=%s';$params[]=sanitize_text_field($args['date_to']);}
+        $sql="SELECT * FROM {$t['entries']} WHERE ".implode(' AND ',$where)." ORDER BY work_date DESC,id DESC LIMIT 500";if($params)$sql=$wpdb->prepare($sql,$params);
         return $wpdb->get_results($sql,ARRAY_A)?:[];
     }
 
     public static function approve_entry(int $id,string $status): bool { global $wpdb;$t=self::tables();return false!==$wpdb->update($t['entries'],['approval_status'=>in_array($status,['approved','rejected','pending'],true)?$status:'pending'],['id'=>$id]); }
+
+    public static function recent_product_ids(int $blower_user_id = 0, int $limit = 8): array {
+        global $wpdb; $t = self::tables();
+        $where = "production_product_id>0"; $params = [];
+        if ($blower_user_id > 0) { $where .= " AND blower_user_id=%d"; $params[] = $blower_user_id; }
+        $sql = "SELECT production_product_id, MAX(created_at) last_used, COUNT(*) uses FROM {$t['entries']} WHERE {$where} GROUP BY production_product_id ORDER BY last_used DESC, uses DESC LIMIT " . max(1,min(20,$limit));
+        if ($params) { $sql = $wpdb->prepare($sql, $params); }
+        return array_map('absint', $wpdb->get_col($sql) ?: []);
+    }
+
+    public static function save_fast_pay_sheet(array $data): array|WP_Error {
+        $blower_id = absint($data['blower_user_id'] ?? 0);
+        if (!$blower_id) { return new WP_Error('fast_pay_blower', 'Choose a glassblower.'); }
+        $work_date = self::date_or_null($data['work_date'] ?? '') ?: current_time('Y-m-d');
+        $status = sanitize_key($data['sheet_action'] ?? 'pending') === 'draft' ? 'draft' : 'pending';
+        $items = is_array($data['items'] ?? null) ? $data['items'] : [];
+        $created = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) { continue; }
+            $product_id = absint($item['production_product_id'] ?? 0);
+            $name = sanitize_text_field($item['item_name'] ?? '');
+            if (!$product_id && $name === '') { continue; }
+            $item['blower_user_id'] = $blower_id;
+            $item['work_date'] = $work_date;
+            $item['approval_status'] = $status;
+            $result = self::save_entry($item);
+            if (is_wp_error($result)) { return $result; }
+            $created[] = (int)$result;
+        }
+        if (!$created) { return new WP_Error('fast_pay_empty', 'Add at least one production item.'); }
+        return $created;
+    }
+
+    public static function copy_previous_day(int $blower_id, string $target_date): int|WP_Error {
+        global $wpdb; $t=self::tables();
+        $target = self::date_or_null($target_date);
+        if (!$blower_id || !$target) { return new WP_Error('fast_pay_copy', 'Choose a glassblower and valid target date.'); }
+        $previous = $wpdb->get_var($wpdb->prepare("SELECT MAX(work_date) FROM {$t['entries']} WHERE blower_user_id=%d AND work_date<%s", $blower_id, $target));
+        if (!$previous) { return new WP_Error('fast_pay_copy_none', 'No previous blower work was found to copy.'); }
+        $rows = self::entries(['blower_user_id'=>$blower_id,'work_date'=>$previous]);
+        $count=0;
+        foreach($rows as $row){
+            $result=self::save_entry([
+                'blower_user_id'=>$blower_id,'work_date'=>$target,'production_product_id'=>(int)$row['production_product_id'],
+                'item_name'=>$row['item_name'],'pay_method'=>$row['pay_method'],'quantity'=>$row['quantity'],'rate'=>$row['rate'],
+                'minutes'=>$row['minutes'],'bonus'=>0,'adjustment'=>0,'notes'=>'Copied from '.$previous,'approval_status'=>'draft'
+            ]);
+            if(!is_wp_error($result)){$count++;}
+        }
+        return $count;
+    }
 
     public static function summary(): array {
         global $wpdb;$t=self::tables();$today=current_time('Y-m-d');
