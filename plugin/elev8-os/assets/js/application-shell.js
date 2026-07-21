@@ -1,5 +1,11 @@
 (function(){
   'use strict';
+  function ensureShellPlacement(shell){
+    if(!shell||shell.getAttribute('data-elev8-shell-context')!=='frontend'){return;}
+    var adminBar=document.getElementById('wpadminbar');
+    var target=adminBar&&adminBar.parentNode===document.body?adminBar.nextSibling:document.body.firstChild;
+    if(target!==shell){document.body.insertBefore(shell,target);}
+  }
   function initUserMenu(shell){
     var button=shell.querySelector('.elev8-app-shell__user-button');
     var menu=shell.querySelector('.elev8-app-shell__menu');
@@ -26,5 +32,5 @@
     function search(query){var config=window.Elev8OSCommandPalette||{};if(!config.ajaxUrl){return;}var id=++requestId;status.textContent=query?'Searching Elev8 OS…':'Quick actions';var url=config.ajaxUrl+'?action=elev8_os_command_search&nonce='+encodeURIComponent(config.nonce||'')+'&q='+encodeURIComponent(query);fetch(url,{credentials:'same-origin'}).then(function(response){return response.json();}).then(function(payload){if(id!==requestId){return;}if(!payload||!payload.success){throw new Error('search_failed');}var list=(payload.data&&payload.data.results)||[];status.textContent=query?list.length+' result'+(list.length===1?'':'s'):'Quick actions';render(list);}).catch(function(){if(id!==requestId){return;}status.textContent=config.errorMessage||'Search is temporarily unavailable.';render([]);});}
     openers.forEach(function(button){button.addEventListener('click',open);});palette.querySelectorAll('[data-elev8-command-close]').forEach(function(button){button.addEventListener('click',close);});input.addEventListener('input',function(){window.clearTimeout(timer);timer=window.setTimeout(function(){search(input.value.trim());},160);});input.addEventListener('keydown',function(event){var list=items();if(event.key==='ArrowDown'){event.preventDefault();setActive(activeIndex+1);}if(event.key==='ArrowUp'){event.preventDefault();setActive(activeIndex-1);}if(event.key==='Enter'&&list[activeIndex]){event.preventDefault();list[activeIndex].click();}});document.addEventListener('keydown',function(event){var target=event.target;var typing=target&&(/INPUT|TEXTAREA|SELECT/.test(target.tagName)||target.isContentEditable);if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();palette.hidden?open():close();}else if(event.key==='Escape'&&!palette.hidden){event.preventDefault();close();}else if(event.key==='/'&&!typing&&palette.hidden){event.preventDefault();open();}});
   }
-  document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-elev8-app-shell]').forEach(initUserMenu);initCommandPalette();});
+  document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-elev8-app-shell]').forEach(function(shell){ensureShellPlacement(shell);initUserMenu(shell);});initCommandPalette();});
 })();

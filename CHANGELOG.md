@@ -1,3 +1,12 @@
+## 10.24.0 — Universal Application Shell Frontend Compatibility Fix
+
+- Fixed the Universal Application Shell not appearing on the frontend Event Host / DJ Operational Home.
+- Added a safe `wp_footer` fallback for themes that do not call WordPress `wp_body_open()`.
+- Added direct portal-slug detection so dashboard pages remain recognized even when saved page IDs are stale or unavailable.
+- Added frontend shell placement logic that moves fallback markup to the top of the page while preserving the WordPress admin bar.
+- Applied the same compatibility behavior to CEO, Manager, Event Host, Artist, Teacher, Volunteer, and future frontend Operational Homes.
+- Preserved Universal Search, notifications, the user menu, Install App, dashboard actions, and centralized access rules.
+
 ## 10.23.0 — Universal Search & Command Palette
 
 - Added a shared, role-aware Elev8 OS command palette to the Universal Application Shell.

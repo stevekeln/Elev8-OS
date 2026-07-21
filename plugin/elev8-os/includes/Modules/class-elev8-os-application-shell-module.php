@@ -11,10 +11,13 @@ if (!defined('ABSPATH')) {
 
 final class Elev8_OS_Application_Shell_Module {
 
+    private static bool $frontend_rendered = false;
+
     public static function init(): void {
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_frontend']);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin']);
         add_action('wp_body_open', [__CLASS__, 'render_frontend']);
+        add_action('wp_footer', [__CLASS__, 'render_frontend_fallback'], 1);
         add_action('admin_notices', [__CLASS__, 'render_admin']);
         add_filter('body_class', [__CLASS__, 'frontend_body_class']);
         add_filter('admin_body_class', [__CLASS__, 'admin_body_class']);
@@ -57,14 +60,26 @@ final class Elev8_OS_Application_Shell_Module {
     }
 
     public static function render_frontend(): void {
-        if (self::should_render_frontend()) {
-            self::render();
+        if (self::$frontend_rendered || !self::should_render_frontend()) {
+            return;
         }
+
+        self::$frontend_rendered = true;
+        self::render('frontend');
+    }
+
+    /**
+     * Some WordPress themes do not call wp_body_open(). Render once from the
+     * footer as a compatibility fallback; the application-shell script moves
+     * the shell to the top of the document before initializing it.
+     */
+    public static function render_frontend_fallback(): void {
+        self::render_frontend();
     }
 
     public static function render_admin(): void {
         if (self::should_render_admin()) {
-            self::render();
+            self::render('admin');
         }
     }
 
@@ -85,16 +100,22 @@ final class Elev8_OS_Application_Shell_Module {
             return false;
         }
 
+        $path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {
-            foreach (array_keys(Elev8_OS_Portal_Page_Manager::definitions()) as $key) {
-                if (Elev8_OS_Portal_Page_Manager::is_current_page($key)) {
+            foreach (Elev8_OS_Portal_Page_Manager::definitions() as $key => $definition) {
+                if (Elev8_OS_Portal_Page_Manager::is_current_page((string) $key)) {
+                    return true;
+                }
+
+                $slug = trim((string) ($definition['slug'] ?? ''), '/');
+                if ($slug !== '' && ($path === $slug || substr($path, -strlen('/' . $slug)) === '/' . $slug)) {
                     return true;
                 }
             }
         }
 
-        $path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
-        $known = ['checkin', 'elev8-mobile-home'];
+        $known = ['checkin', 'elev8-mobile-home', 'artist-dashboard'];
         foreach ($known as $slug) {
             if ($path === $slug || substr($path, -strlen('/' . $slug)) === '/' . $slug) {
                 return true;
@@ -112,7 +133,7 @@ final class Elev8_OS_Application_Shell_Module {
         return $page !== '' && (strpos($page, 'elev8-') === 0 || strpos($page, 'elev8_os') === 0);
     }
 
-    private static function render(): void {
+    private static function render(string $context = 'frontend'): void {
         $user = wp_get_current_user();
         if (!$user instanceof WP_User || $user->ID <= 0) {
             return;
@@ -133,7 +154,7 @@ final class Elev8_OS_Application_Shell_Module {
         $display_name = trim((string) $user->display_name) ?: (string) $user->user_login;
         $initial = function_exists('mb_substr') ? mb_substr($display_name, 0, 1) : substr($display_name, 0, 1);
         ?>
-        <div class="elev8-app-shell" data-elev8-app-shell>
+        <div class="elev8-app-shell" data-elev8-app-shell data-elev8-shell-context="<?php echo esc_attr($context); ?>">
             <div class="elev8-app-shell__inner">
                 <a class="elev8-app-shell__brand" href="<?php echo esc_url($dashboard_url); ?>" aria-label="<?php esc_attr_e('Open my Elev8 OS dashboard', 'elev8-os'); ?>">
                     <span class="elev8-app-shell__brand-mark" aria-hidden="true">8</span>
