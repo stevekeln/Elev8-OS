@@ -14,6 +14,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-print-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-gallery-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-glass-operations-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-glass-manager-brief-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-production-catalog-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-student-relationship-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-marketing-service.php';

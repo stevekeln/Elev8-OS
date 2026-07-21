@@ -1,5 +1,15 @@
 # Elev8 OS Changelog
 
+## 13.4.0 — Glass Manager Operational Home
+
+- Rebuilt the Glass Manager dashboard as a role-specific operational briefing instead of a passive job list.
+- Added a rule-based Studio Pulse using overdue and urgent jobs, ready work without assignments, QC/rework, and pending pay approvals.
+- Added a prioritized Needs Your Attention queue with direct actions into source jobs, the Production Board, and Pay Sheets.
+- Added verified production KPIs for open jobs, overdue and due-today work, unassigned work, QC/rework, pending pay, and jobs ready for pickup or shipping.
+- Added live Glassblower Workload summaries and a data-driven Before You Leave studio closeout checklist.
+- Added manager Quick Actions for job creation, board assignment, pay review, roster management, Production Catalog, and cremation-order import.
+- Preserved Production Catalog, Production Jobs, Glassblower dashboards, automatic pay sheets, Production Board, and QR Label Sheet Composer.
+
 ## 13.3.0 — QR Label Sheet Composer
 
 - Added batch artwork QR label selection for artists and administrators.

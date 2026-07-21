@@ -71,10 +71,104 @@ final class Elev8_OS_Glass_Operations_Module {
     }
 
     private static function dashboard(array $s): void {
-        $jobs = Elev8_OS_Glass_Operations_Service::jobs(['limit' => 100]);
-        ?><section class="elev8-glass__kpis"><article><strong><?php echo absint($s['open_jobs']); ?></strong><span>Open jobs</span></article><article><strong><?php echo absint($s['cremation_ready']); ?></strong><span>Cremation ready</span></article><article><strong><?php echo absint($s['overdue']); ?></strong><span>Overdue</span></article><article><strong>$<?php echo number_format_i18n($s['pending_payout'], 2); ?></strong><span>Pending approval</span></article><article><strong>$<?php echo number_format_i18n($s['approved_payout'], 2); ?></strong><span>Approved production pay</span></article></section>
-        <div class="elev8-glass__grid"><section class="panel panel-wide"><div class="panel-head"><div><h2>Active production queue</h2><p>Jobs can originate from Shipping, Head Shop, Cremation, Website, Wholesale, Repair or internal stock.</p></div><a class="button button-primary" href="<?php echo esc_url(self::url(['view' => 'new-job'])); ?>">Add job</a></div><?php self::jobs_table($jobs); ?></section>
-        <aside class="panel"><h2>Glassblower roster</h2><p>Only active users on the Glassblower Team appear in assignment and payout lists.</p><a class="button" href="<?php echo esc_url(self::url(['view' => 'team'])); ?>">Manage team</a><hr><h3>Cremation orders</h3><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_import_cremation_orders'); ?><input type="hidden" name="action" value="elev8_os_import_cremation_orders"><button class="button button-primary">Import new cremation orders</button></form></aside></div><?php
+        $brief = class_exists('Elev8_OS_Glass_Manager_Brief_Service')
+            ? Elev8_OS_Glass_Manager_Brief_Service::build()
+            : ['pulse' => 'healthy', 'metrics' => $s, 'attention' => [], 'workload' => [], 'recent_jobs' => Elev8_OS_Glass_Operations_Service::jobs(['limit' => 8]), 'closeout' => []];
+        $m = $brief['metrics'];
+        $pulse_labels = [
+            'healthy' => ['Healthy', 'Production is moving without verified critical blockers.'],
+            'needs_attention' => ['Needs Attention', 'Several production items should be reviewed today.'],
+            'action_required' => ['Action Required', 'Urgent, overdue, QC or assignment issues require manager action.'],
+        ];
+        $pulse = $pulse_labels[$brief['pulse']] ?? $pulse_labels['needs_attention'];
+        ?>
+        <section class="elev8-glass-brief pulse-<?php echo esc_attr($brief['pulse']); ?>">
+            <div>
+                <p class="eyebrow">Glass Manager Operational Home</p>
+                <h2>Today's mission: keep production moving, protect quality and approve accurate pay.</h2>
+                <p>Start with the attention queue, balance the blower team, then complete the studio closeout.</p>
+            </div>
+            <aside>
+                <span>Studio pulse</span>
+                <strong><?php echo esc_html($pulse[0]); ?></strong>
+                <small><?php echo esc_html($pulse[1]); ?></small>
+                <details><summary>Why?</summary><p>This status is rule-based from overdue and urgent jobs, unassigned ready work, QC/rework, and pending pay approvals. No production data is guessed.</p></details>
+            </aside>
+        </section>
+
+        <section class="elev8-glass__kpis elev8-glass__kpis--manager">
+            <article><strong><?php echo absint($m['open_jobs']); ?></strong><span>Open jobs</span><small><?php echo absint($m['in_production']); ?> currently in production</small></article>
+            <article class="<?php echo $m['overdue'] ? 'is-danger' : ''; ?>"><strong><?php echo absint($m['overdue']); ?></strong><span>Overdue</span><small><?php echo absint($m['due_today']); ?> due today</small></article>
+            <article class="<?php echo $m['unassigned'] ? 'is-warning' : ''; ?>"><strong><?php echo absint($m['unassigned']); ?></strong><span>Unassigned jobs</span><small>Ready work needing a blower</small></article>
+            <article class="<?php echo ($m['qc_lines'] + $m['rework_lines']) ? 'is-warning' : ''; ?>"><strong><?php echo absint($m['qc_lines'] + $m['rework_lines']); ?></strong><span>QC / rework</span><small><?php echo absint($m['rework_lines']); ?> specifically require rework</small></article>
+            <article class="<?php echo $m['pending_payout_count'] ? 'is-warning' : ''; ?>"><strong>$<?php echo number_format_i18n((float)$m['pending_payout_total'], 2); ?></strong><span>Pay awaiting review</span><small><?php echo absint($m['pending_payout_count']); ?> entries</small></article>
+            <article><strong><?php echo absint($m['ready_to_finish']); ?></strong><span>Ready to finish</span><small>Pickup or shipping</small></article>
+        </section>
+
+        <div class="elev8-glass-manager-grid">
+            <section class="panel elev8-glass-attention">
+                <div class="panel-head"><div><h2>Needs Your Attention</h2><p>The highest-priority verified blockers across production, QC and pay.</p></div><a class="button button-primary" href="<?php echo esc_url(self::url(['view' => 'board'])); ?>">Open Production Board</a></div>
+                <?php if (empty($brief['attention'])) : ?>
+                    <div class="elev8-glass-all-clear"><strong>All clear.</strong><span>No verified production blockers need manager action right now.</span></div>
+                <?php else : ?>
+                    <div class="elev8-glass-attention-list">
+                        <?php foreach ($brief['attention'] as $item) :
+                            if ($item['kind'] === 'job') { $href = self::url(['view' => 'job', 'job_id' => $item['job_id']]); }
+                            elseif ($item['kind'] === 'payouts') { $href = self::url(['view' => 'payouts']); }
+                            else { $href = self::url(['view' => 'board']); }
+                            ?>
+                            <article class="severity-<?php echo esc_attr($item['severity']); ?>">
+                                <div><span><?php echo esc_html(ucfirst($item['severity'])); ?></span><h3><?php echo esc_html($item['title']); ?></h3><p><?php echo esc_html($item['detail']); ?></p></div>
+                                <a class="button" href="<?php echo esc_url($href); ?>"><?php echo esc_html($item['action']); ?></a>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+            <aside class="panel elev8-glass-quick-actions">
+                <h2>Quick Actions</h2>
+                <a class="button button-primary" href="<?php echo esc_url(self::url(['view' => 'new-job'])); ?>">Create Production Job</a>
+                <a class="button" href="<?php echo esc_url(self::url(['view' => 'board'])); ?>">Assign & Move Jobs</a>
+                <a class="button" href="<?php echo esc_url(self::url(['view' => 'payouts'])); ?>">Review Pay Sheets</a>
+                <a class="button" href="<?php echo esc_url(self::url(['view' => 'team'])); ?>">Manage Glassblower Team</a>
+                <?php if (class_exists('Elev8_OS_Production_Catalog_Module')) : ?><a class="button" href="<?php echo esc_url(admin_url('admin.php?page=elev8-production-catalog')); ?>">Production Catalog</a><?php endif; ?>
+                <hr>
+                <h3>Cremation Intake</h3>
+                <p>Bring new trusted cremation orders into the studio queue.</p>
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><?php wp_nonce_field('elev8_import_cremation_orders'); ?><input type="hidden" name="action" value="elev8_os_import_cremation_orders"><button class="button">Import New Orders</button></form>
+            </aside>
+        </div>
+
+        <div class="elev8-glass-manager-grid elev8-glass-manager-grid--equal">
+            <section class="panel">
+                <div class="panel-head"><div><h2>Glassblower Workload</h2><p>Open production assigned to each active roster member.</p></div><a class="button" href="<?php echo esc_url(self::url(['view' => 'team'])); ?>">Team</a></div>
+                <div class="elev8-manager-workload">
+                    <?php foreach ($brief['workload'] as $row) : ?>
+                        <article class="<?php echo $row['overdue'] ? 'has-risk' : ''; ?>">
+                            <strong><?php echo esc_html($row['label']); ?></strong>
+                            <span><?php echo absint($row['open']); ?> open</span>
+                            <small><?php if ($row['overdue']) { echo absint($row['overdue']) . ' overdue'; } elseif ($row['due_today']) { echo absint($row['due_today']) . ' due today'; } else { echo 'On track'; } ?></small>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <section class="panel elev8-glass-closeout">
+                <div class="panel-head"><div><h2>Before You Leave</h2><p>A live closeout checklist based on current studio data.</p></div></div>
+                <ul>
+                    <?php foreach ($brief['closeout'] as $item) : $href = self::url(['view' => $item['kind'] === 'payouts' ? 'payouts' : 'board']); ?>
+                        <li class="<?php echo $item['complete'] ? 'is-complete' : 'is-open'; ?>"><span aria-hidden="true"><?php echo $item['complete'] ? '✓' : '!'; ?></span><a href="<?php echo esc_url($href); ?>"><?php echo esc_html($item['label']); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </section>
+        </div>
+
+        <section class="panel panel-wide elev8-glass-recent">
+            <div class="panel-head"><div><h2>Recent Production Queue</h2><p>Open the source job for full instructions, production lines, QC and pay history.</p></div><a class="button" href="<?php echo esc_url(self::url(['view' => 'board'])); ?>">View All Jobs</a></div>
+            <?php self::jobs_table($brief['recent_jobs']); ?>
+        </section>
+        <?php
     }
 
     private static function jobs_table(array $jobs): void {
