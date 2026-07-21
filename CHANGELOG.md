@@ -1,3 +1,13 @@
+## 10.13.0 — Event Host Operational Home
+- Added a capability-driven Event Host Operational Home for Open Mic DJs and future event-host roles.
+- Replaced irrelevant artist sales, class, student, and payout widgets for event hosts with verified Open Mic and Bingo operational data.
+- Added an immediate public host-profile status notice while preserving the private Elev8 OS account.
+- Added phone-first event actions for Open Mic check-ins, Bingo reservations, and the Event Operating Log.
+- Added verified Open Mic submission metrics and recent check-ins from Daily Operations Intelligence.
+- Added scoped Bingo reservation metrics using the existing Reservations engine and Access Service.
+- Added a mobile-first Tonight Mode foundation ready for future event-control capabilities.
+- Preserved the existing Artist Dashboard for artists and teachers.
+
 ## 10.12.7 — Operational Home
 - Added a shared Dashboard Service as the single source for verified role-aware operational counts.
 - Added CEO Operational Home sections for Needs Attention, My Work, Team Work, Reservations, and Event Applications.

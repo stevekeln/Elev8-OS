@@ -119,7 +119,7 @@ final class Elev8_OS_Dashboard_Module {
             return $redirect_to;
         }
 
-        if (!self::is_artist_user($user)) {
+        if (!self::is_dashboard_user($user)) {
             return $redirect_to;
         }
 
@@ -134,7 +134,7 @@ final class Elev8_OS_Dashboard_Module {
     public static function ultimate_member_login_redirect(string $redirect_url, int $user_id): string {
         $user = get_user_by('id', $user_id);
 
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_dashboard_user($user)) {
             return $redirect_url;
         }
 
@@ -149,7 +149,7 @@ final class Elev8_OS_Dashboard_Module {
     public static function ultimate_member_before_redirect(int $user_id): void {
         $user = get_user_by('id', $user_id);
 
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_dashboard_user($user)) {
             return;
         }
 
@@ -171,7 +171,7 @@ final class Elev8_OS_Dashboard_Module {
         }
 
         $user = wp_get_current_user();
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_dashboard_user($user)) {
             return;
         }
 
@@ -198,7 +198,7 @@ final class Elev8_OS_Dashboard_Module {
         }
 
         $user = wp_get_current_user();
-        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_artist_user($user)) {
+        if (!($user instanceof WP_User) || $user->has_cap('manage_options') || !self::is_dashboard_user($user)) {
             return;
         }
 
@@ -247,6 +247,11 @@ final class Elev8_OS_Dashboard_Module {
 
     private static function render_dashboard(): void {
         $user = wp_get_current_user();
+
+        if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::uses_event_host_home($user)) {
+            self::render_event_host_dashboard($user);
+            return;
+        }
         $snapshot = class_exists('Elev8_OS_My_Classes_Module')
             ? Elev8_OS_My_Classes_Module::get_dashboard_snapshot($user)
             : [
@@ -490,6 +495,116 @@ final class Elev8_OS_Dashboard_Module {
     private static function format_money(float $value): string {
         if (function_exists('wc_price')) { return wp_strip_all_tags((string) wc_price($value)); }
         return '$' . number_format_i18n($value, 2);
+    }
+
+    private static function render_event_host_dashboard(WP_User $user): void {
+        $snapshot = class_exists('Elev8_OS_Event_Host_Dashboard_Service')
+            ? Elev8_OS_Event_Host_Dashboard_Service::snapshot($user)
+            : ['available' => false];
+        $name = (string) ($snapshot['display_name'] ?? $user->display_name);
+        $open_mic = is_array($snapshot['open_mic'] ?? null) ? $snapshot['open_mic'] : ['available' => false];
+        $bingo = is_array($snapshot['bingo'] ?? null) ? $snapshot['bingo'] : ['available' => false];
+        $profile = is_array($snapshot['public_profile'] ?? null) ? $snapshot['public_profile'] : ['published' => false];
+        $open_mic_url = (string) ($snapshot['open_mic_form_url'] ?? '');
+        $reservations_url = (string) ($snapshot['reservations_url'] ?? '');
+        $event_log_url = (string) ($snapshot['event_log_url'] ?? '');
+        ?>
+        <div class="elev8-artist-dashboard elev8-event-host-dashboard">
+            <header class="elev8-event-host-hero">
+                <div>
+                    <p class="elev8-eyebrow"><?php esc_html_e('Event Host Operational Home', 'elev8-os'); ?></p>
+                    <h1><?php echo esc_html(sprintf(__('Welcome back, %s!', 'elev8-os'), $name)); ?></h1>
+                    <p><?php echo esc_html(wp_date('l, F j')); ?> · <?php esc_html_e('Here is what needs your attention for Elev8 events.', 'elev8-os'); ?></p>
+                </div>
+                <span class="elev8-event-host-role"><?php esc_html_e('Event Host', 'elev8-os'); ?></span>
+            </header>
+
+            <?php if (empty($profile['published'])) : ?>
+                <section class="elev8-host-profile-alert" aria-label="<?php esc_attr_e('Public host profile status', 'elev8-os'); ?>">
+                    <span class="dashicons dashicons-id-alt" aria-hidden="true"></span>
+                    <div>
+                        <p class="elev8-eyebrow"><?php esc_html_e('Profile Attention', 'elev8-os'); ?></p>
+                        <h2><?php esc_html_e('Your public host profile is not published', 'elev8-os'); ?></h2>
+                        <p><?php esc_html_e('Your private Elev8 OS account is active, but guests cannot currently view a public event-host profile for you. The public host-profile editor will connect here in a future release.', 'elev8-os'); ?></p>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <section class="elev8-host-tonight">
+                <div>
+                    <p class="elev8-eyebrow"><?php esc_html_e('Phone-First Event Mode', 'elev8-os'); ?></p>
+                    <h2><?php esc_html_e('Run tonight from one screen', 'elev8-os'); ?></h2>
+                    <p><?php esc_html_e('Review Open Mic check-ins, see Bingo reservations, and complete the event operating log without entering the artist tools.', 'elev8-os'); ?></p>
+                </div>
+                <div class="elev8-host-actions">
+                    <?php if ($open_mic_url !== '') : ?><a class="elev8-host-primary" href="<?php echo esc_url($open_mic_url); ?>"><span class="dashicons dashicons-microphone"></span><?php esc_html_e('Open Mic Check-In', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if ($reservations_url !== '') : ?><a href="<?php echo esc_url($reservations_url); ?>"><span class="dashicons dashicons-tickets-alt"></span><?php esc_html_e('Bingo Reservations', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if ($event_log_url !== '') : ?><a href="<?php echo esc_url($event_log_url); ?>"><span class="dashicons dashicons-clipboard"></span><?php esc_html_e('Complete Event Log', 'elev8-os'); ?></a><?php endif; ?>
+                </div>
+            </section>
+
+            <section class="elev8-host-metrics" aria-label="<?php esc_attr_e('Event metrics', 'elev8-os'); ?>">
+                <?php self::render_event_metric('microphone', __('Open Mic Check-Ins', 'elev8-os'), $open_mic['total'] ?? null, __('Verified submissions received', 'elev8-os')); ?>
+                <?php self::render_event_metric('visibility', __('New Open Mic Entries', 'elev8-os'), $open_mic['new'] ?? null, __('Waiting for event-team review', 'elev8-os')); ?>
+                <?php self::render_event_metric('tickets-alt', __('Upcoming Bingo Groups', 'elev8-os'), $bingo['upcoming'] ?? null, __('Within the next 30 days', 'elev8-os')); ?>
+                <?php self::render_event_metric('warning', __('Needs Attention', 'elev8-os'), $snapshot['attention'] ?? null, __('Open Mic and Bingo items', 'elev8-os')); ?>
+            </section>
+
+            <section class="elev8-event-host-grid">
+                <article class="elev8-event-host-panel">
+                    <div class="elev8-host-panel-heading">
+                        <div><p class="elev8-eyebrow"><?php esc_html_e('Open Mic', 'elev8-os'); ?></p><h2><?php esc_html_e('Recent check-ins', 'elev8-os'); ?></h2></div>
+                        <?php if ($open_mic_url !== '') : ?><a href="<?php echo esc_url($open_mic_url); ?>"><?php esc_html_e('Open form', 'elev8-os'); ?></a><?php endif; ?>
+                    </div>
+                    <?php $recent = is_array($open_mic['recent'] ?? null) ? $open_mic['recent'] : []; ?>
+                    <?php if (!$recent) : ?>
+                        <div class="elev8-host-empty"><strong><?php esc_html_e('No Open Mic check-ins yet', 'elev8-os'); ?></strong><p><?php esc_html_e('New submissions will appear here automatically.', 'elev8-os'); ?></p></div>
+                    <?php else : ?>
+                        <div class="elev8-host-entry-list">
+                            <?php foreach ($recent as $entry) : ?>
+                                <div>
+                                    <span class="dashicons dashicons-microphone"></span>
+                                    <p><strong><?php echo esc_html((string) ($entry['name'] ?: __('Guest', 'elev8-os'))); ?></strong><small><?php echo esc_html(trim((string) ($entry['attendee_type'] ?? '') . ' · ' . (string) ($entry['date'] ?? ''), ' ·')); ?></small></p>
+                                    <em><?php echo esc_html((string) ($entry['interest'] ?: __('Submitted', 'elev8-os'))); ?></em>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </article>
+
+                <article class="elev8-event-host-panel">
+                    <div class="elev8-host-panel-heading"><div><p class="elev8-eyebrow"><?php esc_html_e('Tonight Checklist', 'elev8-os'); ?></p><h2><?php esc_html_e('Ready to host', 'elev8-os'); ?></h2></div></div>
+                    <div class="elev8-host-checklist">
+                        <div><span class="dashicons dashicons-yes-alt"></span><p><strong><?php esc_html_e('Review incoming entries', 'elev8-os'); ?></strong><small><?php esc_html_e('Know who is attending and what needs attention.', 'elev8-os'); ?></small></p></div>
+                        <div><span class="dashicons dashicons-smartphone"></span><p><strong><?php esc_html_e('Keep this dashboard open', 'elev8-os'); ?></strong><small><?php esc_html_e('The layout is optimized for Scott’s phone during the event.', 'elev8-os'); ?></small></p></div>
+                        <div><span class="dashicons dashicons-clipboard"></span><p><strong><?php esc_html_e('Close the event with a log', 'elev8-os'); ?></strong><small><?php esc_html_e('Capture attendance, problems, wins, and follow-up for Business Memory.', 'elev8-os'); ?></small></p></div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="elev8-host-foundation-note">
+                <p class="elev8-eyebrow"><?php esc_html_e('Event Workspace Foundation', 'elev8-os'); ?></p>
+                <h2><?php esc_html_e('Built to grow into live event control', 'elev8-os'); ?></h2>
+                <p><?php esc_html_e('Future releases can add assignments, performer lineup, walk-ins, equipment requests, check-in status, incident reporting, messaging, and event closeout without replacing this Operational Home.', 'elev8-os'); ?></p>
+            </section>
+        </div>
+        <?php
+    }
+
+    /** @param int|float|null $value */
+    private static function render_event_metric(string $icon, string $title, $value, string $description): void {
+        $available = is_numeric($value);
+        ?>
+        <article class="elev8-host-metric <?php echo $available ? '' : 'is-unavailable'; ?>">
+            <span class="dashicons dashicons-<?php echo esc_attr($icon); ?>"></span>
+            <div><p><?php echo esc_html($title); ?></p><strong><?php echo esc_html($available ? number_format_i18n((int) $value) : __('Unavailable', 'elev8-os')); ?></strong><small><?php echo esc_html($description); ?></small></div>
+        </article>
+        <?php
+    }
+
+    private static function is_dashboard_user(WP_User $user): bool {
+        return self::is_artist_user($user)
+            || (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::uses_event_host_home($user));
     }
 
     private static function is_artist_user(WP_User $user): bool {

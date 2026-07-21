@@ -174,6 +174,19 @@ final class Elev8_OS_Access_Service {
     public static function is_retail_employee(WP_User $user): bool { return self::user_can('submit_retail_log', $user) && !self::is_manager($user); }
     public static function is_teacher(WP_User $user): bool { return self::has_role($user, self::ROLE_TEACHER); }
     public static function is_dj(WP_User $user): bool { return self::user_can('submit_event_log', $user); }
+
+    /**
+     * Whether this user should receive the event-host Operational Home.
+     *
+     * This is capability-driven so future event roles can reuse the same home
+     * without dashboard code inspecting WordPress role names.
+     */
+    public static function uses_event_host_home(WP_User $user): bool {
+        return self::user_can('submit_event_log', $user)
+            && !self::is_owner($user)
+            && !self::is_manager($user)
+            && !self::is_artist($user);
+    }
     public static function is_artist(WP_User $user): bool { return self::user_can('view_artist_dashboard', $user); }
     public static function can_distribute_flyers(WP_User $user): bool { return self::user_can('manage_relationships', $user) || self::user_can('manage_events', $user) || self::is_retail_employee($user); }
 
