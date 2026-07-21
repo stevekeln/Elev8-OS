@@ -1,3 +1,12 @@
+## 13.9.1 — Production Catalog Migration & Financial Model
+- Added a normalized Step 1 migration workbook generated from the legacy Production Information sheet, with one reviewable row per production item and source-column traceability.
+- Added a built-in Production Catalog Migration workspace with preview, selective import, duplicate-safe import codes, and update-existing controls.
+- Added searchable aliases so Fast Glass Pay can find families and variants from terms such as knob, color knob, custom knob, SSV wand, CON wand, and other practical names.
+- Preserved the source financial model for each product: Actual Retail, Dist Profit @ Retail, Dist Additional Cost, Suggested Retail, Dist Profit (WS), Premier Profit, Actual Wholesale, Suggested Wholesale, Sold to Distributor @, Material Cost, Total Cost, blower pay, estimated production time, instructions, and training video.
+- Added financial-model and source-identity fields to Production Catalog editing and version snapshots.
+- Moved Copy Previous Day into Advanced Tools while preserving it for future repetitive workflows.
+- Kept Fast Glass Pay, Production Jobs, historical snapshots, and existing glass workflows backward-compatible.
+
 ## 13.9.0 — Fast Glass Pay Entry
 - Added a keyboard-friendly daily blower pay sheet with type-ahead Production Catalog search.
 - Added live hourly and piecework calculations using blower compensation profiles and catalog payout rules.

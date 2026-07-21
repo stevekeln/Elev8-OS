@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Production_Catalog_Service {
-    const DB_VERSION = '1.0.0';
+    const DB_VERSION = '1.1.0';
     const OPTION_DB_VERSION = 'elev8_os_production_catalog_db_version';
 
     public static function init(): void {
@@ -44,6 +44,27 @@ final class Elev8_OS_Production_Catalog_Service {
             product_name varchar(190) NOT NULL DEFAULT '',
             category varchar(100) NOT NULL DEFAULT '',
             description text NOT NULL,
+            search_aliases text NOT NULL,
+            source_family varchar(190) NOT NULL DEFAULT '',
+            source_subtype varchar(190) NOT NULL DEFAULT '',
+            source_variant varchar(190) NOT NULL DEFAULT '',
+            actual_retail decimal(14,2) NOT NULL DEFAULT 0.00,
+            dist_profit_at_retail decimal(14,2) NOT NULL DEFAULT 0.00,
+            dist_additional_cost decimal(14,2) NOT NULL DEFAULT 0.00,
+            suggested_retail decimal(14,2) NOT NULL DEFAULT 0.00,
+            dist_profit_wholesale decimal(14,2) NOT NULL DEFAULT 0.00,
+            premier_profit decimal(14,2) NOT NULL DEFAULT 0.00,
+            actual_wholesale decimal(14,2) NOT NULL DEFAULT 0.00,
+            suggested_wholesale decimal(14,2) NOT NULL DEFAULT 0.00,
+            sold_to_distributor_at decimal(14,2) NOT NULL DEFAULT 0.00,
+            source_material_cost decimal(14,2) NOT NULL DEFAULT 0.00,
+            source_total_cost decimal(14,2) NOT NULL DEFAULT 0.00,
+            instructions longtext NOT NULL,
+            training_video_url text NOT NULL,
+            source_sheet varchar(190) NOT NULL DEFAULT '',
+            source_column varchar(20) NOT NULL DEFAULT '',
+            alternate_source_columns text NOT NULL,
+            alternate_pay_tiers_json longtext NOT NULL,
             active tinyint(1) NOT NULL DEFAULT 1,
             skill_level varchar(40) NOT NULL DEFAULT 'standard',
             department varchar(100) NOT NULL DEFAULT '',
@@ -143,8 +164,8 @@ final class Elev8_OS_Production_Catalog_Service {
         if (!empty($args['category'])) { $where[] = 'category=%s'; $params[] = sanitize_text_field($args['category']); }
         if (!empty($args['search'])) {
             $like = '%' . $wpdb->esc_like((string)$args['search']) . '%';
-            $where[] = '(product_name LIKE %s OR product_code LIKE %s OR category LIKE %s)';
-            array_push($params, $like, $like, $like);
+            $where[] = '(product_name LIKE %s OR product_code LIKE %s OR category LIKE %s OR search_aliases LIKE %s OR source_family LIKE %s OR source_subtype LIKE %s OR source_variant LIKE %s)';
+            array_push($params, $like, $like, $like, $like, $like, $like, $like);
         }
         $sql = "SELECT * FROM {$t['products']} WHERE " . implode(' AND ', $where) . ' ORDER BY active DESC, category ASC, product_name ASC';
         if ($params) { $sql = $wpdb->prepare($sql, $params); }
@@ -161,6 +182,9 @@ final class Elev8_OS_Production_Catalog_Service {
                 'id'=>(int)$product['id'],'name'=>(string)$product['product_name'],'code'=>(string)$product['product_code'],
                 'category'=>(string)$product['category'],'method'=>$method,'piecework_rate'=>(float)$product['piecework_rate'],
                 'piecework_unit'=>(string)$product['piecework_unit'],'estimated_minutes'=>(float)$product['estimated_minutes'],
+                'aliases'=>(string)($product['search_aliases']??''),'actual_retail'=>(float)($product['actual_retail']??0),
+                'actual_wholesale'=>(float)($product['actual_wholesale']??0),'source_family'=>(string)($product['source_family']??''),
+                'source_subtype'=>(string)($product['source_subtype']??''),'source_variant'=>(string)($product['source_variant']??''),
                 'cost_complete'=>((float)$product['consumable_cost']+(float)$product['packaging_cost']+(float)$product['other_cost'])>0 || !empty(self::product_materials((int)$product['id']))
             ];
         }
@@ -207,6 +231,27 @@ final class Elev8_OS_Production_Catalog_Service {
             'product_name' => $name,
             'category' => sanitize_text_field($data['category'] ?? ''),
             'description' => sanitize_textarea_field($data['description'] ?? ''),
+            'search_aliases' => sanitize_textarea_field($data['search_aliases'] ?? ''),
+            'source_family' => sanitize_text_field($data['source_family'] ?? ''),
+            'source_subtype' => sanitize_text_field($data['source_subtype'] ?? ''),
+            'source_variant' => sanitize_text_field($data['source_variant'] ?? ''),
+            'actual_retail' => max(0, (float)($data['actual_retail'] ?? 0)),
+            'dist_profit_at_retail' => (float)($data['dist_profit_at_retail'] ?? 0),
+            'dist_additional_cost' => (float)($data['dist_additional_cost'] ?? 0),
+            'suggested_retail' => max(0, (float)($data['suggested_retail'] ?? 0)),
+            'dist_profit_wholesale' => (float)($data['dist_profit_wholesale'] ?? 0),
+            'premier_profit' => (float)($data['premier_profit'] ?? 0),
+            'actual_wholesale' => max(0, (float)($data['actual_wholesale'] ?? 0)),
+            'suggested_wholesale' => max(0, (float)($data['suggested_wholesale'] ?? 0)),
+            'sold_to_distributor_at' => max(0, (float)($data['sold_to_distributor_at'] ?? 0)),
+            'source_material_cost' => max(0, (float)($data['source_material_cost'] ?? ($data['material_cost'] ?? 0))),
+            'source_total_cost' => max(0, (float)($data['source_total_cost'] ?? ($data['total_cost'] ?? 0))),
+            'instructions' => sanitize_textarea_field($data['instructions'] ?? ''),
+            'training_video_url' => esc_url_raw($data['training_video_url'] ?? ($data['video_url'] ?? '')),
+            'source_sheet' => sanitize_text_field($data['source_sheet'] ?? ''),
+            'source_column' => sanitize_text_field($data['source_column'] ?? ''),
+            'alternate_source_columns' => sanitize_text_field($data['alternate_source_columns'] ?? ''),
+            'alternate_pay_tiers_json' => wp_json_encode(json_decode((string)($data['alternate_pay_tiers_json'] ?? '[]'), true) ?: []),
             'active' => empty($data['active']) ? 0 : 1,
             'skill_level' => sanitize_key($data['skill_level'] ?? 'standard'),
             'department' => sanitize_text_field($data['department'] ?? ''),
@@ -368,6 +413,72 @@ final class Elev8_OS_Production_Catalog_Service {
             $user=$exact[0]; if(self::compensation_profile((int)$user->ID))continue;
             self::save_compensation_profile(['user_id'=>$user->ID,'hourly_rate'=>18,'piecework_eligible'=>1,'active'=>1,'effective_date'=>current_time('Y-m-d'),'notes'=>'Initial configurable rate created during Production Catalog setup.']);
         }
+    }
+
+
+    public static function migration_records(): array {
+        $path = ELEV8_OS_DIR . 'assets/data/glass-production-catalog-migration.json';
+        if (!is_readable($path)) { return []; }
+        $payload = json_decode((string)file_get_contents($path), true);
+        return is_array($payload['records'] ?? null) ? $payload['records'] : [];
+    }
+
+    public static function import_migration_records(array $source_columns, bool $update_existing = false): array {
+        global $wpdb;
+        $selected = array_values(array_unique(array_filter(array_map('sanitize_text_field', $source_columns))));
+        $records = self::migration_records();
+        $summary = ['created'=>0,'updated'=>0,'skipped'=>0,'errors'=>[]];
+        $t = self::tables();
+        foreach ($records as $record) {
+            $source_column = sanitize_text_field($record['source_column'] ?? '');
+            if (!$source_column || !in_array($source_column, $selected, true)) { continue; }
+            if (($record['import_status'] ?? '') === 'Skip') { $summary['skipped']++; continue; }
+            $code = sanitize_text_field($record['product_code'] ?? '');
+            $existing_id = $code ? absint($wpdb->get_var($wpdb->prepare("SELECT id FROM {$t['products']} WHERE product_code=%s", strtoupper(sanitize_key(str_replace(' ','-',$code)))))) : 0;
+            if ($existing_id && !$update_existing) { $summary['skipped']++; continue; }
+            $payload = [
+                'product_id'=>$existing_id,
+                'product_name'=>$record['catalog_name'] ?? '',
+                'product_code'=>$code,
+                'category'=>$record['family'] ?? '',
+                'department'=>'Glass Operations',
+                'description'=>$record['instructions'] ?? '',
+                'search_aliases'=>$record['search_aliases'] ?? '',
+                'source_family'=>$record['family'] ?? '',
+                'source_subtype'=>$record['subtype'] ?? '',
+                'source_variant'=>$record['variant'] ?? '',
+                'compensation_method'=>$record['compensation_method'] ?? 'piecework',
+                'piecework_rate'=>$record['blower_pay'] ?? 0,
+                'piecework_unit'=>$record['piecework_unit'] ?? 'piece',
+                'estimated_minutes'=>$record['estimated_minutes'] ?? 0,
+                'actual_retail'=>$record['actual_retail'] ?? 0,
+                'dist_profit_at_retail'=>$record['dist_profit_at_retail'] ?? 0,
+                'dist_additional_cost'=>$record['dist_additional_cost'] ?? 0,
+                'suggested_retail'=>$record['suggested_retail'] ?? 0,
+                'dist_profit_wholesale'=>$record['dist_profit_wholesale'] ?? 0,
+                'premier_profit'=>$record['premier_profit'] ?? 0,
+                'actual_wholesale'=>$record['actual_wholesale'] ?? 0,
+                'suggested_wholesale'=>$record['suggested_wholesale'] ?? 0,
+                'sold_to_distributor_at'=>$record['sold_to_distributor_at'] ?? 0,
+                'source_material_cost'=>$record['material_cost'] ?? 0,
+                'source_total_cost'=>$record['total_cost'] ?? 0,
+                'instructions'=>$record['instructions'] ?? '',
+                'training_video_url'=>$record['video_url'] ?? '',
+                'source_sheet'=>$record['source_sheet'] ?? 'Production Information',
+                'source_column'=>$source_column,
+                'alternate_source_columns'=>$record['alternate_source_columns'] ?? '',
+                'alternate_pay_tiers_json'=>$record['alternate_pay_tiers_json'] ?? '[]',
+                'effective_date'=>current_time('Y-m-d'),
+                'manager_approval_required'=>1,
+                'costing_hourly_rate'=>18,
+                'active'=>1,
+            ];
+            $result = self::save_product($payload);
+            if (is_wp_error($result)) { $summary['errors'][] = ($record['catalog_name'] ?? $source_column) . ': ' . $result->get_error_message(); }
+            elseif ($existing_id) { $summary['updated']++; }
+            else { $summary['created']++; }
+        }
+        return $summary;
     }
 
     private static function date_or_null($value): ?string {
