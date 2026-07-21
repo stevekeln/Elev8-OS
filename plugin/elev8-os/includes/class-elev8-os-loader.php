@@ -59,6 +59,8 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-mobile-home-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-app-install-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-command-palette-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-conversation-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-conversations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-application-shell-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-bingo-reservations-module.php';
@@ -79,6 +81,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-person-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-intake-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-work-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-action-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workflow-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-explanation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-attention-service.php';
@@ -90,6 +93,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-manager-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-unified-intake-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-work-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-action-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-demand-manager-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-opportunity-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php';
@@ -107,6 +111,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Workflow_Service::init();
         Elev8_OS_Unified_Intake_Module::init();
         Elev8_OS_Work_Module::init();
+        Elev8_OS_Action_Center_Module::init();
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Recommendation_State_Service::init();
         Elev8_OS_Gallery_Operations_Service::init();
@@ -130,6 +135,8 @@ final class Elev8_OS_Loader {
         Elev8_OS_Mobile_Home_Module::init();
         Elev8_OS_App_Install_Module::init();
         Elev8_OS_Command_Palette_Service::init();
+        Elev8_OS_Conversation_Service::init();
+        Elev8_OS_Conversations_Module::init();
         Elev8_OS_Application_Shell_Module::init();
         Elev8_OS_Checkin_Center_Module::init();
         Elev8_OS_Bingo_Reservations_Module::init();

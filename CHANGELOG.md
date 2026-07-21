@@ -1,3 +1,20 @@
+## 11.0.0 — Action Engine Foundation
+- Added a frontend My Actions workspace so non-admin users no longer get redirected away from Work.
+- Added direct status, due-date, notes, completion, and team action controls.
+- Added Manager Logs to the universal header for authorized leaders.
+- Made manager-log activity in the Daily Executive Brief clickable.
+- Added shared Action Service and reusable Action Center portal page.
+
+## 10.25.0 — Conversation Engine Foundation
+
+- Added a shared threaded Conversation Service for questions, decisions, replies, and operational follow-up.
+- Added a phone-friendly frontend Conversation Center available from the Universal Application Shell.
+- Added capability-aware conversation access for owners, managers, event hosts, artists, teachers, volunteers, retail employees, and glass team members.
+- Added multi-person conversations, replies, open/closed status, unread tracking, participant visibility, and @username participant inclusion.
+- Added immutable Activity records for conversation creation and replies so communication contributes to Business Memory and future intelligence.
+- Added Conversations to the universal header, user menu, and Command Palette with unread counts.
+- Preserved existing dashboards, Universal Search, Attention Center, Coaching, Executive Brief, Workflow Engine, and centralized access rules.
+
 ## 10.24.0 — Universal Application Shell Frontend Compatibility Fix
 
 - Fixed the Universal Application Shell not appearing on the frontend Event Host / DJ Operational Home.

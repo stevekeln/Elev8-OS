@@ -165,10 +165,16 @@ final class Elev8_OS_Application_Shell_Module {
                     <a href="<?php echo esc_url($home_url); ?>"><?php esc_html_e('Elev8 Arts Home', 'elev8-os'); ?></a>
                     <a href="<?php echo esc_url($dashboard_url); ?>"><?php esc_html_e('My Dashboard', 'elev8-os'); ?></a>
                     <?php if (Elev8_OS_Access_Service::user_can('view_work', $user)) : ?>
-                        <a href="<?php echo esc_url(class_exists('Elev8_OS_Work_Module') ? Elev8_OS_Work_Module::my_url() : $dashboard_url); ?>"><?php esc_html_e('Work', 'elev8-os'); ?></a>
+                        <a href="<?php echo esc_url(class_exists('Elev8_OS_Action_Center_Module') ? Elev8_OS_Action_Center_Module::url() : $dashboard_url); ?>"><?php esc_html_e('My Actions', 'elev8-os'); ?></a>
+                    <?php endif; ?>
+                    <?php if (Elev8_OS_Access_Service::user_can('manage_daily_operations', $user)) : ?>
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-daily-operations&view=brief')); ?>"><?php esc_html_e('Manager Logs', 'elev8-os'); ?></a>
                     <?php endif; ?>
                     <?php if (Elev8_OS_Access_Service::user_can('view_business_memory', $user)) : ?>
                         <a href="<?php echo esc_url(admin_url('admin.php?page=elev8-business-memory')); ?>"><?php esc_html_e('Business Memory', 'elev8-os'); ?></a>
+                    <?php endif; ?>
+                    <?php if (Elev8_OS_Access_Service::user_can('view_conversations', $user) && class_exists('Elev8_OS_Conversations_Module')) : ?>
+                        <a href="<?php echo esc_url(Elev8_OS_Conversations_Module::url()); ?>"><?php esc_html_e('Conversations', 'elev8-os'); ?><?php $conversation_count = class_exists('Elev8_OS_Conversation_Service') ? Elev8_OS_Conversation_Service::unread_count($user->ID) : 0; if ($conversation_count > 0) : ?> <strong>(<?php echo esc_html((string) $conversation_count); ?>)</strong><?php endif; ?></a>
                     <?php endif; ?>
                 </nav>
 
@@ -201,6 +207,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a href="<?php echo esc_url($dashboard_url); ?>">🏠 <span><?php esc_html_e('My Dashboard', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($profile_url); ?>">👤 <span><?php esc_html_e('My Profile', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($notifications_url); ?>">🔔 <span><?php esc_html_e('Notifications', 'elev8-os'); ?></span><?php if ($attention_count > 0) : ?><b><?php echo esc_html((string) $attention_count); ?></b><?php endif; ?></a>
+                <?php if (Elev8_OS_Access_Service::user_can('view_conversations', $user) && class_exists('Elev8_OS_Conversations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Conversations_Module::url()); ?>">💬 <span><?php esc_html_e('Conversations', 'elev8-os'); ?></span><?php $conversation_count = class_exists('Elev8_OS_Conversation_Service') ? Elev8_OS_Conversation_Service::unread_count($user->ID) : 0; if ($conversation_count > 0) : ?><b><?php echo esc_html((string) $conversation_count); ?></b><?php endif; ?></a><?php endif; ?>
                 <a href="<?php echo esc_url($settings_url); ?>">⚙️ <span><?php esc_html_e('Settings', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($help_url); ?>">❓ <span><?php esc_html_e('Help', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($home_url); ?>">🌐 <span><?php esc_html_e('Return to Elev8Arts.com', 'elev8-os'); ?></span></a>

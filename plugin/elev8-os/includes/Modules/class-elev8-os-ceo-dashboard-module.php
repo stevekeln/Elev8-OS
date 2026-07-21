@@ -330,7 +330,7 @@ final class Elev8_OS_CEO_Dashboard_Module {
         ?>
         <article class="elev8-daily-brief__panel">
             <h3><span class="dashicons dashicons-<?php echo esc_attr($icon); ?>"></span><?php echo esc_html($title); ?></h3>
-            <ul><?php foreach ($items as $item) : ?><li><?php echo esc_html((string) $item); ?></li><?php endforeach; ?></ul>
+            <ul><?php foreach ($items as $item) : ?><li><?php if (is_array($item) && !empty($item['url'])) : ?><a href="<?php echo esc_url((string) $item['url']); ?>"><?php echo esc_html((string) ($item['title'] ?? '')); ?></a><?php else : ?><?php echo esc_html((string) (is_array($item) ? ($item['title'] ?? '') : $item)); ?><?php endif; ?></li><?php endforeach; ?></ul>
             <?php self::render_why($why); ?>
         </article>
         <?php

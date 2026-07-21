@@ -124,7 +124,7 @@ final class Elev8_OS_Daily_Brief_Service {
         if (!empty($operations['available'])) {
             $manager = (int) ($operations['manager'] ?? 0);
             $total = (int) ($operations['total'] ?? 0);
-            if ($manager > 0) { $items[] = sprintf(_n('%d manager operating log was submitted.', '%d manager operating logs were submitted.', $manager, 'elev8-os'), $manager); }
+            if ($manager > 0) { $items[] = ['title'=>sprintf(_n('%d manager operating log was submitted.', '%d manager operating logs were submitted.', $manager, 'elev8-os'), $manager),'url'=>admin_url('admin.php?page=elev8-daily-operations&view=search')]; }
             if ($total > $manager) { $items[] = sprintf(_n('%d additional operating log was submitted.', '%d additional operating logs were submitted.', $total - $manager, 'elev8-os'), $total - $manager); }
         }
         if ((int) ($work['completed'] ?? 0) > 0) { $items[] = sprintf(_n('%d work item was completed.', '%d work items were completed.', (int) $work['completed'], 'elev8-os'), (int) $work['completed']); }
