@@ -1,4 +1,12 @@
 
+## 14.2.0 — Frontend Glass Manager Suite
+- Added a dedicated frontend Glass Manager application at `/glass-manager/`.
+- Exposed Production Board, Jobs, Fast Pay, Glassblower Team, Repair and Memorial Intake without WordPress admin access.
+- Exposed Production Products, Materials, Compensation Profiles, Catalog Manager and Import Wizard through the same frontend suite.
+- Reused existing Glass Operations and Production Catalog services and forms; no duplicate business logic or data stores were introduced.
+- Updated Glass Manager dashboard and Role Preview routing to use the frontend suite.
+
+
 ## 14.1.0 — Production Catalog Manager
 - Added Active, Draft, and Archived lifecycle states so obsolete production products can be removed from new work without deleting historical job, pay, and costing records.
 - Added bulk lifecycle and family/category controls to the Production Catalog.

@@ -246,7 +246,7 @@ final class Elev8_OS_Application_Shell_Module {
             return admin_url('admin.php?page=elev8-ceo-dashboard');
         }
         if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return admin_url('admin.php?page=elev8-glass-operations');
+            return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : admin_url('admin.php?page=elev8-glass-operations');
         }
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {
             return Elev8_OS_Portal_Page_Manager::get_url('dashboard');

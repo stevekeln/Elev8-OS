@@ -32,7 +32,12 @@ final class Elev8_OS_Production_Catalog_Module {
         return Elev8_OS_Access_Service::user_can('manage_glass_production') || current_user_can('manage_options');
     }
     private static function guard(): void { if(!self::can_manage())wp_die('You do not have permission to manage the Production Catalog.'); }
-    private static function url(array $args=[]): string { return add_query_arg(array_merge(['page'=>self::SLUG],$args),admin_url('admin.php')); }
+    private static function url(array $args=[]): string {
+        if (class_exists('Elev8_OS_Glass_Manager_Suite_Module') && (!empty($_GET['elev8_glass_suite']) || strpos((string) wp_get_referer(), '/glass-manager/') !== false)) {
+            return Elev8_OS_Glass_Manager_Suite_Module::url(array_merge(['suite_tool'=>'catalog'],$args));
+        }
+        return add_query_arg(array_merge(['page'=>self::SLUG],$args),admin_url('admin.php'));
+    }
 
     public static function render(): void {
         self::guard();
@@ -59,7 +64,7 @@ final class Elev8_OS_Production_Catalog_Module {
         ]);
         $categories=Elev8_OS_Production_Catalog_Service::categories();
         ?><section class="panel"><div class="panel-head"><div><h2>Production products</h2><p>The Production Catalog is the trusted source for Fast Glass Pay, job snapshots, costing and financial analysis. Archive products instead of deleting history.</p></div><div class="catalog-head-actions"><a class="button" href="<?php echo esc_url(self::url(['view'=>'manager']));?>">Manage families & duplicates</a><a class="button button-primary" href="<?php echo esc_url(self::url(['view'=>'new-product']));?>">Create production product</a></div></div>
-        <form class="catalog-filters"><input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG);?>"><input type="search" name="s" value="<?php echo esc_attr($_GET['s']??'');?>" placeholder="Search name, code, family or alias"><select name="status"><option value="">All lifecycle statuses</option><?php foreach(Elev8_OS_Production_Catalog_Service::lifecycle_statuses() as $value=>$label):?><option value="<?php echo esc_attr($value);?>" <?php selected($status,$value);?>><?php echo esc_html($label);?></option><?php endforeach;?></select><select name="category"><option value="">All families</option><?php foreach($categories as $cat):?><option value="<?php echo esc_attr($cat);?>" <?php selected($category,$cat);?>><?php echo esc_html($cat);?></option><?php endforeach;?></select><button class="button">Filter</button></form>
+        <form class="catalog-filters"><?php if(!empty($_GET['elev8_glass_suite'])):?><input type="hidden" name="suite_tool" value="catalog"><?php else:?><input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG);?>"><?php endif;?><input type="search" name="s" value="<?php echo esc_attr($_GET['s']??'');?>" placeholder="Search name, code, family or alias"><select name="status"><option value="">All lifecycle statuses</option><?php foreach(Elev8_OS_Production_Catalog_Service::lifecycle_statuses() as $value=>$label):?><option value="<?php echo esc_attr($value);?>" <?php selected($status,$value);?>><?php echo esc_html($label);?></option><?php endforeach;?></select><select name="category"><option value="">All families</option><?php foreach($categories as $cat):?><option value="<?php echo esc_attr($cat);?>" <?php selected($category,$cat);?>><?php echo esc_html($cat);?></option><?php endforeach;?></select><button class="button">Filter</button></form>
         <?php if(!$products){echo '<div class="empty">No production products match these filters.</div>';}else{?>
         <form method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>" class="catalog-bulk-form"><?php wp_nonce_field('elev8_production_catalog_bulk');?><input type="hidden" name="action" value="elev8_os_production_catalog_bulk">
             <div class="catalog-bulk-bar"><label>Bulk action <select name="bulk_action"><option value="">Choose action</option><option value="status">Change lifecycle status</option><option value="category">Move to family</option></select></label><label>Value <input name="bulk_value" placeholder="active, draft, archived, or family name"></label><button class="button">Apply to selected</button><small>Historical jobs and pay records remain unchanged.</small></div>

@@ -37,6 +37,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-print-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-gallery-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-operations-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-manager-suite-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glassblower-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-production-catalog-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-classes-module.php';
@@ -144,6 +145,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Artist_Print_Center_Module::init();
         Elev8_OS_Gallery_Operations_Module::init();
         Elev8_OS_Glass_Operations_Module::init();
+        Elev8_OS_Glass_Manager_Suite_Module::init();
         Elev8_OS_Production_Catalog_Module::init();
         Elev8_OS_My_Classes_Module::init();
         Elev8_OS_My_Artwork_Module::init();

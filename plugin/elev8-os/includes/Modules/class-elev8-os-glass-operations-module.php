@@ -54,7 +54,12 @@ final class Elev8_OS_Glass_Operations_Module {
 
     private static function can_manage(): bool { return Elev8_OS_Access_Service::user_can('view_glass_dashboard'); }
     private static function guard(): void { if (!self::can_manage()) { wp_die('You do not have access to Glass Operations.'); } }
-    private static function url(array $args = []): string { return add_query_arg(array_merge(['page' => self::SLUG], $args), admin_url('admin.php')); }
+    private static function url(array $args = []): string {
+        if (class_exists('Elev8_OS_Glass_Manager_Suite_Module') && (!empty($_GET['elev8_glass_suite']) || strpos((string) wp_get_referer(), '/glass-manager/') !== false)) {
+            return Elev8_OS_Glass_Manager_Suite_Module::url(array_merge(['suite_tool' => 'operations'], $args));
+        }
+        return add_query_arg(array_merge(['page' => self::SLUG], $args), admin_url('admin.php'));
+    }
 
     public static function render(): void {
         self::guard();
@@ -212,7 +217,7 @@ final class Elev8_OS_Glass_Operations_Module {
         <section class="panel elev8-production-board-controls">
             <div class="panel-head"><div><h2>Production Board</h2><p>Move work through the studio, balance blower assignments and surface late jobs.</p></div><a class="button button-primary" href="<?php echo esc_url(self::url(['view'=>'new-job'])); ?>">Create job</a></div>
             <form method="get" class="elev8-board-filters">
-                <input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG); ?>"><input type="hidden" name="view" value="board">
+                <?php if (!empty($_GET['elev8_glass_suite'])): ?><input type="hidden" name="suite_tool" value="operations"><input type="hidden" name="view" value="board"><?php else: ?><input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG); ?>"><input type="hidden" name="view" value="board"><?php endif; ?>
                 <label>Search<input type="search" name="s" value="<?php echo esc_attr($filters['search']); ?>" placeholder="Job, customer, order..."></label>
                 <label>Glassblower<select name="blower"><option value="0">All blowers</option><?php foreach ($workers as $u) : ?><option value="<?php echo absint($u->ID); ?>" <?php selected($filters['assigned_user_id'],$u->ID); ?>><?php echo esc_html($u->display_name); ?></option><?php endforeach; ?></select></label>
                 <label>Source<select name="source"><option value="">All sources</option><?php foreach ($sources as $key=>$label) : ?><option value="<?php echo esc_attr($key); ?>" <?php selected($filters['source'],$key); ?>><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
@@ -289,7 +294,7 @@ final class Elev8_OS_Glass_Operations_Module {
         ?>
         <section class="elev8-fast-pay" data-fast-pay>
             <div class="panel-head"><div><p class="eyebrow">Fast Glass Pay Entry</p><h2>Type the work, enter quantity or time, and keep moving.</h2><p>The Production Catalog remains the trusted payout source. New pay items can be created without leaving this screen.</p></div><button type="button" class="button" onclick="window.print()">Print Pay Sheet</button></div>
-            <form class="elev8-fast-pay-filter" method="get"><input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG); ?>"><input type="hidden" name="view" value="payouts"><label>Glassblower<select name="blower_user_id" required><option value="">Choose blower</option><?php foreach($workers as $u):?><option value="<?php echo absint($u->ID);?>" <?php selected($blower_id,$u->ID);?>><?php echo esc_html($u->display_name);?></option><?php endforeach;?></select></label><label>Work date<input type="date" name="work_date" value="<?php echo esc_attr($work_date);?>"></label><button class="button button-primary">Open Daily Sheet</button></form>
+            <form class="elev8-fast-pay-filter" method="get"><?php if (!empty($_GET['elev8_glass_suite'])): ?><input type="hidden" name="suite_tool" value="operations"><input type="hidden" name="view" value="payouts"><?php else: ?><input type="hidden" name="page" value="<?php echo esc_attr(self::SLUG); ?>"><input type="hidden" name="view" value="payouts"><?php endif; ?><label>Glassblower<select name="blower_user_id" required><option value="">Choose blower</option><?php foreach($workers as $u):?><option value="<?php echo absint($u->ID);?>" <?php selected($blower_id,$u->ID);?>><?php echo esc_html($u->display_name);?></option><?php endforeach;?></select></label><label>Work date<input type="date" name="work_date" value="<?php echo esc_attr($work_date);?>"></label><button class="button button-primary">Open Daily Sheet</button></form>
             <?php if($blower_id): $user=get_userdata($blower_id); ?>
             <div class="elev8-fast-pay-shortcuts">
                 <div><strong>★ Favorites</strong><div class="elev8-pay-chips"><?php foreach($favorites as $id){if(isset($lookup[$id])){echo '<button type="button" class="elev8-pay-chip" data-product-id="'.absint($id).'">'.esc_html($lookup[$id]['name']).'</button>';}} if(!$favorites)echo '<span>No favorites yet. Star an item after adding it.</span>';?></div></div>

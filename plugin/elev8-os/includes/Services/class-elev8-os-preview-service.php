@@ -108,7 +108,7 @@ final class Elev8_OS_Preview_Service {
             return self::clean_url(admin_url('admin.php?page=elev8-ceo-dashboard'));
         }
         if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return self::clean_url(admin_url('admin.php?page=elev8-glass-operations'));
+            return self::clean_url(class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : (class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : admin_url('admin.php?page=elev8-glass-operations')));
         }
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {
             return self::clean_url(Elev8_OS_Portal_Page_Manager::get_url('dashboard'));
@@ -136,9 +136,9 @@ final class Elev8_OS_Preview_Service {
             $links[] = ['label' => __('Conversations', 'elev8-os'), 'url' => Elev8_OS_Conversations_Module::url()];
         }
         if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            $links[] = ['label' => __('Glass Operations', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-glass-operations')];
+            $links[] = ['label' => __('Glass Operations', 'elev8-os'), 'url' => (class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : admin_url('admin.php?page=elev8-glass-operations'))];
             $links[] = ['label' => __('Glass Classes', 'elev8-os'), 'url' => class_exists('Elev8_OS_Portal_Page_Manager') ? Elev8_OS_Portal_Page_Manager::get_url('classes') : self::dashboard_url($user)];
-            $links[] = ['label' => __('Production Board', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-glass-operations&view=board')];
+            $links[] = ['label' => __('Production Board', 'elev8-os'), 'url' => (class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url(['suite_tool'=>'operations','view'=>'board']) : admin_url('admin.php?page=elev8-glass-operations&view=board'))];
         }
         if (Elev8_OS_Access_Service::uses_event_host_home($user)) {
             $links[] = ['label' => __('Open Mic Check-In', 'elev8-os'), 'url' => home_url('/checkin/?type=open_mic')];
