@@ -532,9 +532,14 @@ final class Elev8_OS_Dashboard_Module {
 
             <section class="elev8-host-tonight">
                 <div>
-                    <p class="elev8-eyebrow"><?php esc_html_e('Phone-First Event Mode', 'elev8-os'); ?></p>
-                    <h2><?php esc_html_e('Run tonight from one screen', 'elev8-os'); ?></h2>
-                    <p><?php esc_html_e('Review Open Mic check-ins, see Bingo reservations, and complete the event operating log without entering the artist tools.', 'elev8-os'); ?></p>
+                    <p class="elev8-eyebrow"><?php esc_html_e("Tonight's Mission", 'elev8-os'); ?></p>
+                    <h2><?php esc_html_e('Run a welcoming, organized event', 'elev8-os'); ?></h2>
+                    <p><?php esc_html_e('Review incoming entries, keep the event moving, and preserve the wins, issues, and follow-up in Business Memory before you leave.', 'elev8-os'); ?></p>
+                    <div class="elev8-host-mission-goals" aria-label="<?php esc_attr_e('Mission goals', 'elev8-os'); ?>">
+                        <span><i class="dashicons dashicons-yes-alt" aria-hidden="true"></i><?php esc_html_e('Welcome participants', 'elev8-os'); ?></span>
+                        <span><i class="dashicons dashicons-clock" aria-hidden="true"></i><?php esc_html_e('Stay organized', 'elev8-os'); ?></span>
+                        <span><i class="dashicons dashicons-clipboard" aria-hidden="true"></i><?php esc_html_e('Close the event', 'elev8-os'); ?></span>
+                    </div>
                 </div>
                 <div class="elev8-host-actions">
                     <?php if ($open_mic_url !== '') : ?><a class="elev8-host-primary" href="<?php echo esc_url($open_mic_url); ?>"><span class="dashicons dashicons-microphone"></span><?php esc_html_e('Open Mic Check-In', 'elev8-os'); ?></a><?php endif; ?>

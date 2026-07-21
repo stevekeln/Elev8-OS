@@ -153,7 +153,7 @@ final class Elev8_OS_Mobile_Home_Module {
 
             <aside class="elev8-mobile-install-tip">
                 <strong><?php esc_html_e('Put Elev8 OS on your phone', 'elev8-os'); ?></strong>
-                <span><?php esc_html_e('Use your browser menu and choose “Add to Home Screen.” This page will open like an app button.', 'elev8-os'); ?></span>
+                <span><?php esc_html_e('Use the Install App button on this screen. Elev8 OS will open from your Home screen like an app.', 'elev8-os'); ?></span>
             </aside>
         </main>
         <?php

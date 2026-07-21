@@ -1,3 +1,12 @@
+## 10.14.0 — Installable App & Mission Briefing
+- Added a reusable Elev8 OS app-install capability for logged-in team members on supported mobile and desktop browsers.
+- Added a standards-based web app manifest and service worker so Elev8 OS can open from a phone Home screen in standalone app mode.
+- Added a large first-use Install Elev8 OS prompt that collapses into a small persistent button after dismissal or installation.
+- Added iPhone/iPad Safari and non-install-prompt browser instructions without pretending an automatic install is available.
+- Connected the installed app start screen to the role-aware Elev8 OS Mobile Home.
+- Added a clearer event-host mission briefing focused on reviewing entries, running the event, and preserving the closeout in Business Memory.
+- Preserved existing role dashboards, permissions, and operational data sources.
+
 ## 10.13.0 — Event Host Operational Home
 - Added a capability-driven Event Host Operational Home for Open Mic DJs and future event-host roles.
 - Replaced irrelevant artist sales, class, student, and payout widgets for event hosts with verified Open Mic and Bingo operational data.
