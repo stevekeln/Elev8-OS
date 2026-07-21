@@ -119,6 +119,7 @@ final class Elev8_OS_Preview_Service {
         }
         if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
             $links[] = ['label' => __('Glass Operations', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-glass-operations')];
+            $links[] = ['label' => __('Glass Classes', 'elev8-os'), 'url' => class_exists('Elev8_OS_Portal_Page_Manager') ? Elev8_OS_Portal_Page_Manager::get_url('classes') : self::dashboard_url($user)];
             $links[] = ['label' => __('Production Board', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-glass-operations&view=board')];
         }
         if (Elev8_OS_Access_Service::uses_event_host_home($user)) {

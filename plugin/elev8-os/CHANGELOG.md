@@ -1,3 +1,14 @@
+## 13.7.1 — Role-Aware Teaching Calendar Hotfix
+
+- Fixed Role Preview so My Classes uses the previewed Elev8 OS identity instead of the authenticated owner account.
+- Added a Glass Manager class scope that shows all verified Amelia glassblowing classes rather than the owner’s personal teaching schedule.
+- Added teacher names to class cards and calendar events.
+- Added an All Glass Teachers filter for Glass Managers.
+- Added Glass Classes to the Glass Manager preview shortcuts.
+- Granted the Glass Manager role class-view access through the centralized Access Service.
+- Preserved Amelia as the scheduling and booking source of truth; service scope is resolved from configurable service IDs or verified glassblowing service/category keywords.
+- No hardcoded Amelia service IDs or WordPress user IDs were added.
+
 ## 13.7.0 — Teaching Calendar & Booking View
 - Added shared Agenda, Week, and Month calendar views to My Classes for Glass Managers, teachers, and teaching artists.
 - Added day-of-week labels to calendar events, class detail cards, and the Next Class dashboard card.

@@ -27,14 +27,21 @@ final class Elev8_OS_My_Classes_Module {
      * @return array<string,mixed>
      */
     public static function get_dashboard_snapshot(WP_User $user): array {
+        if (self::uses_glass_manager_scope($user)) {
+            $result = self::load_glass_manager_classes();
+            $result['scope'] = 'glass_manager';
+            return $result;
+        }
+
         $artist = self::find_artist_for_user($user);
 
         if (!$artist) {
-            return self::unavailable_result(__('Your WordPress account is not connected to an Amelia artist.', 'elev8-os'));
+            return self::unavailable_result(__('Your WordPress account is not connected to an Amelia teacher.', 'elev8-os'));
         }
 
         $result = self::load_classes((int) $artist['id']);
         $result['artist'] = $artist;
+        $result['scope'] = 'teacher';
 
         return $result;
     }
@@ -70,19 +77,35 @@ final class Elev8_OS_My_Classes_Module {
             );
         }
 
-        $artist = self::find_artist_for_user(wp_get_current_user());
-        $result = $artist ? self::load_classes((int) $artist['id']) : self::unavailable_result(__('Your WordPress account is not connected to an Amelia artist.', 'elev8-os'));
+        $effective_user = class_exists('Elev8_OS_Preview_Service')
+            ? Elev8_OS_Preview_Service::effective_user()
+            : wp_get_current_user();
+        $glass_manager_scope = self::uses_glass_manager_scope($effective_user);
+        $artist = $glass_manager_scope ? null : self::find_artist_for_user($effective_user);
+        $result = $glass_manager_scope
+            ? self::load_glass_manager_classes()
+            : ($artist ? self::load_classes((int) $artist['id']) : self::unavailable_result(__('This account is not connected to an Amelia teacher.', 'elev8-os')));
+
+        if (!empty($result['available'])) {
+            $result = self::apply_class_filters($result);
+        }
 
         ob_start();
         ?>
         <div class="elev8-artist-dashboard elev8-my-classes">
-            <?php Elev8_OS_Artist_Portal_Module::render_navigation('classes'); ?>
+            <?php if (!$glass_manager_scope) : ?>
+                <?php Elev8_OS_Artist_Portal_Module::render_navigation('classes'); ?>
+            <?php else : ?>
+                <nav class="elev8-glass-class-return"><a href="<?php echo esc_url(admin_url('admin.php?page=elev8-glass-operations')); ?>">&larr; <?php esc_html_e('Back to Glass Operations', 'elev8-os'); ?></a></nav>
+            <?php endif; ?>
 
             <header class="elev8-dashboard-header">
                 <div>
-                    <p class="elev8-eyebrow"><?php esc_html_e('Artist Portal', 'elev8-os'); ?></p>
-                    <h1><?php esc_html_e('My Classes', 'elev8-os'); ?></h1>
-                    <p><?php esc_html_e('Your verified Amelia schedule, enrollment, and available seats in one place.', 'elev8-os'); ?></p>
+                    <p class="elev8-eyebrow"><?php echo esc_html($glass_manager_scope ? __('Glass Operations', 'elev8-os') : __('Teaching Portal', 'elev8-os')); ?></p>
+                    <h1><?php echo esc_html($glass_manager_scope ? __('Glass Classes', 'elev8-os') : __('My Classes', 'elev8-os')); ?></h1>
+                    <p><?php echo esc_html($glass_manager_scope
+                        ? __('All verified Amelia glassblowing classes, teachers, enrollment, and open seats in one place.', 'elev8-os')
+                        : __('Your verified Amelia schedule, enrollment, and available seats in one place.', 'elev8-os')); ?></p>
                 </div>
                 <span class="elev8-dashboard-badge"><?php esc_html_e('Amelia connected', 'elev8-os'); ?></span>
             </header>
@@ -104,10 +127,13 @@ final class Elev8_OS_My_Classes_Module {
                     <div class="elev8-panel-heading elev8-calendar-heading">
                         <div>
                             <p class="elev8-eyebrow"><?php esc_html_e('Teaching Calendar', 'elev8-os'); ?></p>
-                            <h2><?php esc_html_e('My Teaching Schedule', 'elev8-os'); ?></h2>
-                            <p><?php esc_html_e('Switch between agenda, week, and month views. Amelia remains the verified scheduling and booking source.', 'elev8-os'); ?></p>
+                            <h2><?php echo esc_html($glass_manager_scope ? __('Glass Teaching Schedule', 'elev8-os') : __('My Teaching Schedule', 'elev8-os')); ?></h2>
+                            <p><?php echo esc_html($glass_manager_scope
+                                ? __('Review all glassblowing classes by date or teacher. Amelia remains the verified scheduling and booking source.', 'elev8-os')
+                                : __('Switch between agenda, week, and month views. Amelia remains the verified scheduling and booking source.', 'elev8-os')); ?></p>
                         </div>
                     </div>
+                    <?php if ($glass_manager_scope) { self::render_glass_manager_filters($result); } ?>
                     <?php self::render_teaching_calendar($result['upcoming']); ?>
                 </section>
 
@@ -187,6 +213,7 @@ final class Elev8_OS_My_Classes_Module {
                     <div>
                         <h3><?php echo esc_html((string) $class['name']); ?></h3>
                         <p><span class="dashicons dashicons-clock" aria-hidden="true"></span> <?php echo esc_html($date_time); ?></p>
+                        <?php if (!empty($class['teacher'])) : ?><p><span class="dashicons dashicons-businessperson" aria-hidden="true"></span> <?php echo esc_html((string) $class['teacher']); ?></p><?php endif; ?>
                         <?php if ($class['location'] !== '') : ?><p><span class="dashicons dashicons-location" aria-hidden="true"></span> <?php echo esc_html((string) $class['location']); ?></p><?php endif; ?>
                     </div>
                     <span class="elev8-class-status <?php echo $upcoming ? 'is-upcoming' : 'is-complete'; ?>"><?php echo esc_html($upcoming ? __('Upcoming', 'elev8-os') : __('Completed', 'elev8-os')); ?></span>
@@ -252,6 +279,7 @@ final class Elev8_OS_My_Classes_Module {
 
     private static function render_calendar_toolbar(string $view, int $anchor): void {
         $base = Elev8_OS_Portal_Page_Manager::get_url('classes');
+        $teacher_id = absint($_GET['elev8_teacher'] ?? 0);
         $views = [
             'agenda' => __('Agenda', 'elev8-os'),
             'week' => __('Week', 'elev8-os'),
@@ -261,7 +289,7 @@ final class Elev8_OS_My_Classes_Module {
         <div class="elev8-calendar-toolbar">
             <div class="elev8-calendar-view-tabs" role="navigation" aria-label="<?php esc_attr_e('Calendar views', 'elev8-os'); ?>">
                 <?php foreach ($views as $key => $label) : ?>
-                    <a class="<?php echo $view === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $key, 'elev8_calendar_date' => wp_date('Y-m-d', $anchor)], $base)); ?>"><?php echo esc_html($label); ?></a>
+                    <a class="<?php echo $view === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg(array_filter(['elev8_calendar_view' => $key, 'elev8_calendar_date' => wp_date('Y-m-d', $anchor), 'elev8_teacher' => $teacher_id]), $base)); ?>"><?php echo esc_html($label); ?></a>
                 <?php endforeach; ?>
             </div>
             <?php if ($view !== 'agenda') :
@@ -277,10 +305,10 @@ final class Elev8_OS_My_Classes_Module {
                     );
                 ?>
                 <div class="elev8-calendar-period-nav">
-                    <a aria-label="<?php esc_attr_e('Previous period', 'elev8-os'); ?>" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d', $previous)], $base)); ?>">&larr;</a>
+                    <a aria-label="<?php esc_attr_e('Previous period', 'elev8-os'); ?>" href="<?php echo esc_url(add_query_arg(array_filter(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d', $previous), 'elev8_teacher' => $teacher_id]), $base)); ?>">&larr;</a>
                     <strong><?php echo esc_html($label); ?></strong>
-                    <a aria-label="<?php esc_attr_e('Next period', 'elev8-os'); ?>" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d', $next)], $base)); ?>">&rarr;</a>
-                    <a class="elev8-calendar-today" href="<?php echo esc_url(add_query_arg(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d')], $base)); ?>"><?php esc_html_e('Today', 'elev8-os'); ?></a>
+                    <a aria-label="<?php esc_attr_e('Next period', 'elev8-os'); ?>" href="<?php echo esc_url(add_query_arg(array_filter(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d', $next), 'elev8_teacher' => $teacher_id]), $base)); ?>">&rarr;</a>
+                    <a class="elev8-calendar-today" href="<?php echo esc_url(add_query_arg(array_filter(['elev8_calendar_view' => $view, 'elev8_calendar_date' => wp_date('Y-m-d'), 'elev8_teacher' => $teacher_id]), $base)); ?>"><?php esc_html_e('Today', 'elev8-os'); ?></a>
                 </div>
             <?php endif; ?>
         </div>
@@ -380,6 +408,7 @@ final class Elev8_OS_My_Classes_Module {
                 <span class="elev8-calendar-event-time"><?php echo esc_html($time); ?></span>
                 <strong><?php echo esc_html((string) ($class['name'] ?? __('Class', 'elev8-os'))); ?></strong>
                 <?php if ($context !== 'month') : ?>
+                    <?php if (!empty($class['teacher'])) : ?><small><?php echo esc_html((string) $class['teacher']); ?></small><?php endif; ?>
                     <small><?php echo esc_html(sprintf(__('%1$d booked%2$s', 'elev8-os'), $students, $capacity === null ? '' : sprintf(__(' · %d capacity', 'elev8-os'), $capacity))); ?></small>
                     <small><?php echo $seats === null ? esc_html__('Seats unavailable', 'elev8-os') : esc_html(sprintf(__('%d seats left', 'elev8-os'), $seats)); ?></small>
                 <?php endif; ?>
@@ -485,6 +514,8 @@ final class Elev8_OS_My_Classes_Module {
                 'seats_left' => $capacity === null ? null : max(0, $capacity - $students),
                 'booked_value' => $aggregate['booked_value'],
                 'booking_url' => $booking_base,
+                'teacher_id' => $artist_id,
+                'teacher' => '',
             ];
             // Upcoming classes are normalized through the shared Class Discovery
             // service below. Keep this direct appointment query for class history only.
@@ -517,6 +548,8 @@ final class Elev8_OS_My_Classes_Module {
                     'booked_value' => $aggregate['booked_value'] ?? null,
                     'booking_url' => $booking_base,
                     'source' => (string) ($occurrence['source'] ?? 'unknown'),
+                    'teacher_id' => $artist_id,
+                    'teacher' => '',
                 ];
             }
         }
@@ -554,6 +587,302 @@ final class Elev8_OS_My_Classes_Module {
             'upcoming' => $upcoming,
             'past' => $past,
         ];
+    }
+
+
+    private static function uses_glass_manager_scope(WP_User $user): bool {
+        if (!class_exists('Elev8_OS_Access_Service')) { return false; }
+        if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::is_active()) {
+            return Elev8_OS_Preview_Service::selected_role() === 'glass_manager';
+        }
+        return Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)
+            && !Elev8_OS_Access_Service::is_teacher($user);
+    }
+
+    /** @param array<string,mixed> $result @return array<string,mixed> */
+    private static function apply_class_filters(array $result): array {
+        $teacher_id = absint($_GET['elev8_teacher'] ?? 0);
+        if ($teacher_id <= 0) { return $result; }
+
+        foreach (['upcoming', 'past'] as $bucket) {
+            $result[$bucket] = array_values(array_filter((array) ($result[$bucket] ?? []), static function (array $class) use ($teacher_id): bool {
+                return (int) ($class['teacher_id'] ?? 0) === $teacher_id;
+            }));
+        }
+        $result['summary'] = self::summarize_classes((array) $result['upcoming']);
+        return $result;
+    }
+
+    /** @param array<string,mixed> $result */
+    private static function render_glass_manager_filters(array $result): void {
+        $teachers = [];
+        foreach (array_merge((array) ($result['upcoming'] ?? []), (array) ($result['past'] ?? [])) as $class) {
+            $id = (int) ($class['teacher_id'] ?? 0);
+            $name = trim((string) ($class['teacher'] ?? ''));
+            if ($id > 0 && $name !== '') { $teachers[$id] = $name; }
+        }
+        asort($teachers, SORT_NATURAL | SORT_FLAG_CASE);
+        $selected = absint($_GET['elev8_teacher'] ?? 0);
+        ?>
+        <form class="elev8-class-manager-filters" method="get" action="<?php echo esc_url(Elev8_OS_Portal_Page_Manager::get_url('classes')); ?>">
+            <?php foreach (['elev8_calendar_view', 'elev8_calendar_date'] as $key) : if (!empty($_GET[$key])) : ?>
+                <input type="hidden" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr(sanitize_text_field((string) $_GET[$key])); ?>">
+            <?php endif; endforeach; ?>
+            <label>
+                <span><?php esc_html_e('Teacher', 'elev8-os'); ?></span>
+                <select name="elev8_teacher">
+                    <option value="0"><?php esc_html_e('All glass teachers', 'elev8-os'); ?></option>
+                    <?php foreach ($teachers as $id => $name) : ?>
+                        <option value="<?php echo esc_attr((string) $id); ?>" <?php selected($selected, $id); ?>><?php echo esc_html($name); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <button type="submit"><?php esc_html_e('Apply', 'elev8-os'); ?></button>
+            <?php if ($selected > 0) : ?><a href="<?php echo esc_url(Elev8_OS_Portal_Page_Manager::get_url('classes')); ?>"><?php esc_html_e('Clear', 'elev8-os'); ?></a><?php endif; ?>
+        </form>
+        <?php
+    }
+
+    /** @return array<string,mixed> */
+    private static function load_glass_manager_classes(): array {
+        $service_ids = self::glass_class_service_ids();
+        if (!$service_ids) {
+            return self::unavailable_result(__('No Amelia glassblowing services could be verified. Assign them to a glassblowing category or include a glassblowing keyword in the service name.', 'elev8-os'));
+        }
+
+        $teachers = self::amelia_teacher_map();
+        $bookings = self::booking_aggregates();
+        $service_names = self::service_map();
+        $service_capacities = self::service_capacity_map();
+        $location_names = self::location_map();
+        $upcoming = [];
+        $past = [];
+        $now = current_time('timestamp');
+
+        global $wpdb;
+        $appointments = $wpdb->prefix . 'amelia_appointments';
+        if (!self::table_exists($appointments)) {
+            return self::unavailable_result(__('The Amelia appointments table was not found.', 'elev8-os'));
+        }
+        $columns = self::table_columns($appointments);
+        $id_col = self::first_existing_column($columns, ['id']);
+        $provider_col = self::first_existing_column($columns, ['providerId', 'provider_id', 'employeeId']);
+        $service_col = self::first_existing_column($columns, ['serviceId', 'service_id']);
+        $start_col = self::first_existing_column($columns, ['bookingStart', 'booking_start', 'start']);
+        $location_col = self::first_existing_column($columns, ['locationId', 'location_id']);
+        $capacity_col = self::first_existing_column($columns, ['maxCapacity', 'max_capacity', 'capacity']);
+        $status_col = self::first_existing_column($columns, ['status']);
+        if (!$id_col || !$provider_col || !$service_col || !$start_col) {
+            return self::unavailable_result(__('Required Amelia appointment columns could not be verified.', 'elev8-os'));
+        }
+
+        $select = ["`{$id_col}` AS appointment_id", "`{$provider_col}` AS provider_id", "`{$service_col}` AS service_id", "`{$start_col}` AS booking_start"];
+        $select[] = $location_col ? "`{$location_col}` AS location_id" : 'NULL AS location_id';
+        $select[] = $capacity_col ? "`{$capacity_col}` AS appointment_capacity" : 'NULL AS appointment_capacity';
+        $select[] = $status_col ? "`{$status_col}` AS appointment_status" : "'' AS appointment_status";
+        $placeholders = implode(',', array_fill(0, count($service_ids), '%d'));
+        $query = $wpdb->prepare(
+            'SELECT ' . implode(', ', $select) . " FROM `{$appointments}` WHERE `{$service_col}` IN ({$placeholders}) ORDER BY `{$start_col}` DESC LIMIT 600",
+            ...$service_ids
+        );
+        $rows = $wpdb->get_results($query, ARRAY_A);
+        if (!is_array($rows)) {
+            return self::unavailable_result(__('Amelia glass class appointments could not be read.', 'elev8-os'));
+        }
+
+        foreach ($rows as $row) {
+            $status = strtolower((string) ($row['appointment_status'] ?? ''));
+            if (in_array($status, ['canceled', 'cancelled', 'rejected'], true)) { continue; }
+            $appointment_id = (int) ($row['appointment_id'] ?? 0);
+            $provider_id = (int) ($row['provider_id'] ?? 0);
+            $service_id = (int) ($row['service_id'] ?? 0);
+            $start = (string) ($row['booking_start'] ?? '');
+            $timestamp = strtotime($start);
+            $capacity = self::nullable_positive_int($row['appointment_capacity'] ?? null);
+            if ($capacity === null && isset($service_capacities[$service_id])) { $capacity = $service_capacities[$service_id]; }
+            $aggregate = $bookings[$appointment_id] ?? ['students' => 0, 'booked_value' => null];
+            $class = [
+                'id' => $appointment_id,
+                'name' => $service_names[$service_id] ?? __('Glass Class', 'elev8-os'),
+                'start' => $start,
+                'date_only' => false,
+                'location' => $location_names[(int) ($row['location_id'] ?? 0)] ?? '',
+                'students' => max(0, (int) ($aggregate['students'] ?? 0)),
+                'capacity' => $capacity,
+                'seats_left' => $capacity === null ? null : max(0, $capacity - (int) ($aggregate['students'] ?? 0)),
+                'booked_value' => $aggregate['booked_value'] ?? null,
+                'booking_url' => '',
+                'teacher_id' => $provider_id,
+                'teacher' => $teachers[$provider_id] ?? __('Unassigned teacher', 'elev8-os'),
+                'source' => 'appointment',
+            ];
+            if ($timestamp !== false && $timestamp >= $now) { $upcoming[] = $class; }
+            else { $past[] = $class; }
+        }
+
+        if (class_exists('Elev8_OS_Class_Discovery')) {
+            foreach (array_keys($teachers) as $provider_id) {
+                foreach (Elev8_OS_Class_Discovery::upcoming_for_employee((int) $provider_id) as $occurrence) {
+                    $service_id = (int) ($occurrence['service_id'] ?? 0);
+                    if (!in_array($service_id, $service_ids, true)) { continue; }
+                    $appointment_id = max(0, (int) ($occurrence['appointment_id'] ?? 0));
+                    $aggregate = $appointment_id > 0 ? ($bookings[$appointment_id] ?? ['students' => 0, 'booked_value' => null]) : ['students' => 0, 'booked_value' => null];
+                    $start = (string) ($occurrence['sort_start'] ?? '');
+                    if ($start === '') { continue; }
+                    $upcoming[] = [
+                        'id' => $appointment_id,
+                        'name' => (string) ($occurrence['name'] ?? ($service_names[$service_id] ?? __('Glass Class', 'elev8-os'))),
+                        'start' => $start,
+                        'date_only' => !empty($occurrence['date_only']),
+                        'location' => '',
+                        'students' => max(0, (int) ($occurrence['booked'] ?? $aggregate['students'] ?? 0)),
+                        'capacity' => isset($occurrence['capacity']) && $occurrence['capacity'] !== null ? (int) $occurrence['capacity'] : null,
+                        'seats_left' => isset($occurrence['seats_left']) && $occurrence['seats_left'] !== null ? (int) $occurrence['seats_left'] : null,
+                        'booked_value' => $aggregate['booked_value'] ?? null,
+                        'booking_url' => '',
+                        'teacher_id' => (int) $provider_id,
+                        'teacher' => $teachers[(int) $provider_id] ?? __('Unassigned teacher', 'elev8-os'),
+                        'source' => (string) ($occurrence['source'] ?? 'unknown'),
+                    ];
+                }
+            }
+        }
+
+        $upcoming = self::dedupe_classes($upcoming);
+        usort($upcoming, static fn(array $a, array $b): int => strcmp((string) $a['start'], (string) $b['start']));
+        usort($past, static fn(array $a, array $b): int => strcmp((string) $b['start'], (string) $a['start']));
+        $past = array_slice(self::dedupe_classes($past), 0, 30);
+
+        return [
+            'available' => true,
+            'reason' => '',
+            'summary' => self::summarize_classes($upcoming),
+            'upcoming' => $upcoming,
+            'past' => $past,
+        ];
+    }
+
+    /** @param array<int,array<string,mixed>> $classes @return array<string,mixed> */
+    private static function summarize_classes(array $classes): array {
+        $student_count = 0;
+        $seats_available = 0;
+        $capacity_available = false;
+        $booked_value = 0.0;
+        $value_available = false;
+        foreach ($classes as $class) {
+            $student_count += (int) ($class['students'] ?? 0);
+            if (isset($class['seats_left']) && $class['seats_left'] !== null) {
+                $seats_available += (int) $class['seats_left'];
+                $capacity_available = true;
+            }
+            if (isset($class['booked_value']) && $class['booked_value'] !== null) {
+                $booked_value += (float) $class['booked_value'];
+                $value_available = true;
+            }
+        }
+        return [
+            'upcoming_count' => count($classes),
+            'student_count' => $student_count,
+            'seats_available' => $capacity_available ? $seats_available : null,
+            'booked_value' => $value_available ? $booked_value : null,
+        ];
+    }
+
+    /** @param array<int,array<string,mixed>> $classes @return array<int,array<string,mixed>> */
+    private static function dedupe_classes(array $classes): array {
+        $seen = [];
+        $out = [];
+        foreach ($classes as $class) {
+            $key = (int) ($class['id'] ?? 0) > 0
+                ? 'appointment:' . (int) $class['id']
+                : (int) ($class['teacher_id'] ?? 0) . '|' . (string) ($class['name'] ?? '') . '|' . (string) ($class['start'] ?? '');
+            if (isset($seen[$key])) { continue; }
+            $seen[$key] = true;
+            $out[] = $class;
+        }
+        return $out;
+    }
+
+    /** @return array<int,string> */
+    private static function amelia_teacher_map(): array {
+        global $wpdb;
+        $table = $wpdb->prefix . 'amelia_users';
+        if (!self::table_exists($table)) { return []; }
+        $columns = self::table_columns($table);
+        if (!in_array('id', $columns, true)) { return []; }
+        $first = self::first_existing_column($columns, ['firstName', 'first_name']);
+        $last = self::first_existing_column($columns, ['lastName', 'last_name']);
+        $email = self::first_existing_column($columns, ['email']);
+        $type = self::first_existing_column($columns, ['type']);
+        $select = ['`id`'];
+        $select[] = $first ? "`{$first}` AS first_name" : "'' AS first_name";
+        $select[] = $last ? "`{$last}` AS last_name" : "'' AS last_name";
+        $select[] = $email ? "`{$email}` AS email" : "'' AS email";
+        $where = $type ? " WHERE LOWER(COALESCE(`{$type}`,'')) IN ('provider','employee')" : '';
+        $rows = $wpdb->get_results('SELECT ' . implode(',', $select) . " FROM `{$table}`{$where} ORDER BY `id` ASC", ARRAY_A) ?: [];
+        $map = [];
+        foreach ($rows as $row) {
+            $name = trim((string) ($row['first_name'] ?? '') . ' ' . (string) ($row['last_name'] ?? ''));
+            if ($name === '') { $name = (string) ($row['email'] ?? ''); }
+            if ($name !== '') { $map[(int) $row['id']] = $name; }
+        }
+        return $map;
+    }
+
+    /** @return int[] */
+    private static function glass_class_service_ids(): array {
+        $configured = array_map('absint', (array) get_option('elev8_os_glass_class_service_ids', []));
+        $configured = array_values(array_filter($configured));
+        $configured = (array) apply_filters('elev8_os_glass_class_service_ids', $configured);
+        if ($configured) { return array_values(array_unique(array_map('absint', $configured))); }
+
+        global $wpdb;
+        $services = $wpdb->prefix . 'amelia_services';
+        if (!self::table_exists($services)) { return []; }
+        $columns = self::table_columns($services);
+        if (!in_array('id', $columns, true)) { return []; }
+        $name_col = self::first_existing_column($columns, ['name', 'title']);
+        $description_col = self::first_existing_column($columns, ['description', 'details', 'content']);
+        $category_col = self::first_existing_column($columns, ['categoryId', 'category_id']);
+        $category_names = [];
+        if ($category_col) {
+            foreach (['amelia_categories', 'amelia_service_categories'] as $suffix) {
+                $table = $wpdb->prefix . $suffix;
+                if (!self::table_exists($table)) { continue; }
+                $cat_columns = self::table_columns($table);
+                $cat_name_col = self::first_existing_column($cat_columns, ['name', 'title']);
+                if (!$cat_name_col || !in_array('id', $cat_columns, true)) { continue; }
+                foreach ($wpdb->get_results("SELECT `id`, `{$cat_name_col}` AS label FROM `{$table}`", ARRAY_A) ?: [] as $row) {
+                    $category_names[(int) $row['id']] = (string) $row['label'];
+                }
+                break;
+            }
+        }
+
+        $keywords = (array) apply_filters('elev8_os_glass_class_keywords', [
+            'glassblowing', 'glass blowing', 'liquid arts', 'lampwork', 'flamework', 'torch class', 'glass 101',
+        ]);
+        $select = ['`id`'];
+        $select[] = $name_col ? "`{$name_col}` AS service_name" : "'' AS service_name";
+        $select[] = $description_col ? "`{$description_col}` AS service_description" : "'' AS service_description";
+        $select[] = $category_col ? "`{$category_col}` AS category_id" : '0 AS category_id';
+        $rows = $wpdb->get_results('SELECT ' . implode(',', $select) . " FROM `{$services}` ORDER BY `id` ASC", ARRAY_A) ?: [];
+        $ids = [];
+        foreach ($rows as $row) {
+            $haystack = strtolower(wp_strip_all_tags(
+                (string) ($row['service_name'] ?? '') . ' ' .
+                (string) ($row['service_description'] ?? '') . ' ' .
+                (string) ($category_names[(int) ($row['category_id'] ?? 0)] ?? '')
+            ));
+            foreach ($keywords as $keyword) {
+                $keyword = strtolower(trim((string) $keyword));
+                if ($keyword !== '' && strpos($haystack, $keyword) !== false) {
+                    $ids[] = (int) $row['id'];
+                    break;
+                }
+            }
+        }
+        return array_values(array_unique(array_filter($ids)));
     }
 
     /** @return array<int,array{students:int,booked_value:?float}> */

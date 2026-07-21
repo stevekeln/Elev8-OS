@@ -152,7 +152,7 @@ final class Elev8_OS_Access_Service {
         self::grant_to_role(self::ROLE_DJ, ['elev8_manage_events','elev8_view_assigned_reservations','elev8_submit_event_log','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
         self::grant_to_role(self::ROLE_VOLUNTEER, ['elev8_view_volunteer_portal','elev8_view_conversations']);
 
-        self::grant_to_role(self::ROLE_GLASS_MANAGER, ['elev8_view_glass_dashboard','elev8_manage_glass_orders','elev8_manage_glass_production','elev8_manage_blower_payouts','elev8_glass_work','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
+        self::grant_to_role(self::ROLE_GLASS_MANAGER, ['elev8_view_glass_dashboard','elev8_manage_glass_orders','elev8_manage_glass_production','elev8_manage_blower_payouts','elev8_glass_work','elev8_view_artist_classes','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
         self::grant_to_role(self::ROLE_GLASS_BLOWER, ['elev8_glass_work','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
 
         self::assign_foundation_glass_manager();
