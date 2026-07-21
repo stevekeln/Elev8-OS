@@ -36,7 +36,12 @@ final class Elev8_OS_Public_Profile_Service {
         $legacy = self::legacy_artist_profile($user_id);
 
         $bio = (string) get_user_meta($user_id, self::META_PREFIX . 'bio', true);
-        $photo = (string) get_user_meta($user_id, self::META_PREFIX . 'photo_url', true);
+        $photo_id = absint(get_user_meta($user_id, self::META_PREFIX . 'photo_id', true));
+        $cover_id = absint(get_user_meta($user_id, self::META_PREFIX . 'cover_id', true));
+        $photo = self::attachment_url($photo_id, 'large');
+        $cover = self::attachment_url($cover_id, 'full');
+        if ($photo === '') $photo = (string) get_user_meta($user_id, self::META_PREFIX . 'photo_url', true);
+        if ($cover === '') $cover = (string) get_user_meta($user_id, self::META_PREFIX . 'cover_url', true);
         $website = (string) get_user_meta($user_id, self::META_PREFIX . 'website_url', true);
         $published = get_user_meta($user_id, self::META_PREFIX . 'status', true) === 'published';
         if ($legacy) {
@@ -53,7 +58,10 @@ final class Elev8_OS_Public_Profile_Service {
             'slug' => $slug !== '' ? $slug : self::default_slug($user),
             'headline' => (string) get_user_meta($user_id, self::META_PREFIX . 'headline', true),
             'bio' => $bio,
+            'photo_id' => $photo_id,
             'photo_url' => $photo,
+            'cover_id' => $cover_id,
+            'cover_url' => $cover,
             'website_url' => $website,
             'instagram_url' => (string) get_user_meta($user_id, self::META_PREFIX . 'instagram_url', true),
             'facebook_url' => (string) get_user_meta($user_id, self::META_PREFIX . 'facebook_url', true),
@@ -87,7 +95,10 @@ final class Elev8_OS_Public_Profile_Service {
         $headline=sanitize_text_field((string)($input['headline']??''));
         $bio=sanitize_textarea_field((string)($input['bio']??''));
         $slug=sanitize_title((string)($input['slug']??''));
-        $photo_url=esc_url_raw((string)($input['photo_url']??''));
+        $photo_id=self::validated_image_attachment_id(absint($input['photo_attachment_id']??0));
+        $cover_id=self::validated_image_attachment_id(absint($input['cover_attachment_id']??0));
+        $photo_url=$photo_id>0?self::attachment_url($photo_id,'large'):esc_url_raw((string)($input['photo_legacy_url']??''));
+        $cover_url=$cover_id>0?self::attachment_url($cover_id,'full'):esc_url_raw((string)($input['cover_legacy_url']??''));
         $website_url=esc_url_raw((string)($input['website_url']??''));
         $instagram_url=esc_url_raw((string)($input['instagram_url']??''));
         $facebook_url=esc_url_raw((string)($input['facebook_url']??''));
@@ -99,7 +110,9 @@ final class Elev8_OS_Public_Profile_Service {
         if($slug==='') $slug=self::default_slug($user);
         $slug=self::unique_slug($slug,$user_id);
         if($publish && trim($bio)==='') return ['success'=>false,'message'=>__('Add a short biography before publishing this public profile.','elev8-os')];
-        foreach(compact('display_name','headline','bio','slug','photo_url','website_url','instagram_url','facebook_url','contact_email') as $key=>$value) update_user_meta($user_id,self::META_PREFIX.$key,$value);
+        foreach(compact('display_name','headline','bio','slug','photo_url','cover_url','website_url','instagram_url','facebook_url','contact_email') as $key=>$value) update_user_meta($user_id,self::META_PREFIX.$key,$value);
+        update_user_meta($user_id,self::META_PREFIX.'photo_id',$photo_id);
+        update_user_meta($user_id,self::META_PREFIX.'cover_id',$cover_id);
         update_user_meta($user_id,self::META_PREFIX.'types',$types);
         update_user_meta($user_id,self::META_PREFIX.'status',$publish?'published':'draft');
         update_user_meta($user_id,self::META_PREFIX.'updated_at',current_time('mysql'));
@@ -124,6 +137,18 @@ final class Elev8_OS_Public_Profile_Service {
 
     /** @return array<string,int> */
     public static function summary(): array { $s=['total'=>0,'published'=>0,'draft'=>0,'missing'=>0,'incomplete'=>0]; foreach(self::directory() as $p){$s['total']++;$s[$p['status']]++;if((int)$p['completeness']<100)$s['incomplete']++;} return $s; }
+
+    private static function attachment_url(int $attachment_id,string $size='full'): string {
+        if($attachment_id<=0)return '';
+        $url=wp_get_attachment_image_url($attachment_id,$size);
+        return is_string($url)?$url:'';
+    }
+    private static function validated_image_attachment_id(int $attachment_id): int {
+        if($attachment_id<=0)return 0;
+        $post=get_post($attachment_id);
+        if(!$post instanceof WP_Post||$post->post_type!=='attachment'||strpos((string)get_post_mime_type($attachment_id),'image/')!==0)return 0;
+        return $attachment_id;
+    }
 
     private static function completeness(string $bio,string $photo,string $name): int { $score=0; if(trim($name)!=='')$score+=25;if(trim($bio)!=='')$score+=40;if(trim($photo)!=='')$score+=35;return $score; }
     private static function default_slug(WP_User $user): string { $p=sanitize_title((string)$user->display_name); return $p!==''?$p:sanitize_title((string)$user->user_nicename); }

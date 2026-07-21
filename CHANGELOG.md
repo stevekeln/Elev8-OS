@@ -1,3 +1,13 @@
+## 11.3.0 — Identity Media Uploads
+
+- Replaced public-profile image URL fields with direct WordPress Media Library upload controls.
+- Added reusable profile photo and cover-image selectors with preview, replace, and remove actions.
+- Stored WordPress attachment IDs as the trusted image references while preserving legacy image URLs for backward compatibility.
+- Added a public cover image to published profiles and retained existing profile-photo behavior.
+- Added shared media-control styling and JavaScript for frontend and CEO profile editors.
+- Updated profile completeness and legacy artist synchronization to continue using verified resolved image URLs.
+- Preserved unified profile types, publication controls, CEO oversight, artist compatibility, and existing public URLs.
+
 ## 11.2.0 — Unified Public Profiles & CEO Oversight
 
 - Consolidated artists, teachers, event hosts, managers, volunteers, and staff under the shared Public Profiles service.
