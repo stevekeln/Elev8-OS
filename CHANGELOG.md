@@ -1,3 +1,12 @@
+## 12.2.0 — Workspace Automation Engine
+
+- Added rule-based suggested actions inside Universal Workspaces.
+- Added confirmation-first automations for manager notes, event applications, reservations, conversations, and work completion.
+- Added Explain Why details for every suggested automation.
+- Created connected Work items without modifying source records.
+- Added activity audit entries and relationship links for executed automations.
+- Added dependency signals for Blocks and Depends On relationships.
+
 # Changelog
 
 ## 12.1.0 - Relationship Engine

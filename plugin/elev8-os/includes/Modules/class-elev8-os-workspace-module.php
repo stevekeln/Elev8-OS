@@ -13,6 +13,7 @@ final class Elev8_OS_Workspace_Module {
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
         add_action('admin_post_elev8_os_connect_workspace_record', [__CLASS__, 'connect_record']);
         add_action('admin_post_elev8_os_disconnect_workspace_record', [__CLASS__, 'disconnect_record']);
+        add_action('admin_post_elev8_os_run_workspace_automation', [__CLASS__, 'run_automation']);
     }
     public static function activate(): void { self::ensure_page(true); }
     public static function ensure_page_for_admin(): void { if (current_user_can('manage_options')) { self::ensure_page(true); } }
@@ -39,6 +40,7 @@ final class Elev8_OS_Workspace_Module {
         $files = Elev8_OS_Workspace_Service::files($type, $id);
         $impact = Elev8_OS_Workspace_Service::relationship_impact($type, $id);
         $can_manage_relationships = class_exists('Elev8_OS_Relationship_Service') && Elev8_OS_Relationship_Service::can_manage($user);
+        $automations = class_exists('Elev8_OS_Automation_Service') ? Elev8_OS_Automation_Service::suggestions($type, $id, $user) : [];
 
         ob_start(); ?>
         <main class="elev8-workspace">
@@ -57,6 +59,8 @@ final class Elev8_OS_Workspace_Module {
 
             <?php if (!empty($_GET['relationship_saved'])) : ?><div class="elev8-workspace__notice elev8-workspace__notice--success"><?php esc_html_e('Relationship saved.', 'elev8-os'); ?></div><?php endif; ?>
             <?php if (!empty($_GET['relationship_removed'])) : ?><div class="elev8-workspace__notice elev8-workspace__notice--success"><?php esc_html_e('Relationship removed.', 'elev8-os'); ?></div><?php endif; ?>
+            <?php if (!empty($_GET['automation_saved'])) : ?><div class="elev8-workspace__notice elev8-workspace__notice--success"><?php esc_html_e('Suggested action completed.', 'elev8-os'); ?></div><?php endif; ?>
+            <?php if (!empty($_GET['automation_error'])) : ?><div class="elev8-workspace__notice elev8-workspace__notice--error"><?php esc_html_e('The suggested action could not be completed.', 'elev8-os'); ?></div><?php endif; ?>
             <?php if (!empty($_GET['relationship_error'])) : ?><div class="elev8-workspace__notice elev8-workspace__notice--error"><?php esc_html_e('The relationship could not be saved. Confirm the record type, record ID, and your access.', 'elev8-os'); ?></div><?php endif; ?>
 
             <section class="elev8-workspace__panel elev8-workspace__impact">
@@ -69,6 +73,8 @@ final class Elev8_OS_Workspace_Module {
                 </div>
                 <p class="elev8-workspace__impact-note"><?php esc_html_e('Explicit relationships supplement inferred links. Source records remain owned by their original Elev8 OS engines.', 'elev8-os'); ?></p>
             </section>
+
+            <?php self::render_automations($automations, $type, $id); ?>
 
             <?php if ($details !== '') : ?><section class="elev8-workspace__panel elev8-workspace__source-details"><header><h2><?php esc_html_e('Source Details', 'elev8-os'); ?></h2></header><div><?php echo wp_kses_post(wpautop($details)); ?></div></section><?php endif; ?>
 
@@ -89,6 +95,45 @@ final class Elev8_OS_Workspace_Module {
             </div>
         </main>
         <?php return (string) ob_get_clean();
+    }
+
+    private static function render_automations(array $items, string $type, int $id): void {
+        if (!$items) { return; } ?>
+        <section class="elev8-workspace__panel elev8-workspace__automations">
+            <header><div><p><?php esc_html_e('AUTOMATION ENGINE', 'elev8-os'); ?></p><h2><?php esc_html_e('Suggested next actions', 'elev8-os'); ?></h2></div></header>
+            <p class="elev8-workspace__impact-note"><?php esc_html_e('Elev8 OS will never run these actions without your confirmation.', 'elev8-os'); ?></p>
+            <div class="elev8-workspace__automation-grid">
+            <?php foreach ($items as $item) : ?>
+                <article class="elev8-workspace__automation-card">
+                    <span><?php echo esc_html(ucfirst((string)$item['priority'])); ?></span>
+                    <h3><?php echo esc_html((string)$item['title']); ?></h3>
+                    <p><?php echo esc_html((string)$item['reason']); ?></p>
+                    <details><summary><?php esc_html_e('Why?', 'elev8-os'); ?></summary><p><?php echo esc_html((string)$item['why']); ?></p></details>
+                    <?php if (Elev8_OS_Automation_Service::can_execute()) : ?>
+                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                        <?php wp_nonce_field('elev8_run_workspace_automation_' . $type . '_' . $id); ?>
+                        <input type="hidden" name="action" value="elev8_os_run_workspace_automation">
+                        <input type="hidden" name="workspace_type" value="<?php echo esc_attr($type); ?>">
+                        <input type="hidden" name="workspace_id" value="<?php echo esc_attr((string)$id); ?>">
+                        <input type="hidden" name="automation_key" value="<?php echo esc_attr((string)$item['key']); ?>">
+                        <button type="submit"><?php esc_html_e('Run Suggested Action', 'elev8-os'); ?></button>
+                    </form>
+                    <?php endif; ?>
+                </article>
+            <?php endforeach; ?>
+            </div>
+        </section>
+    <?php }
+
+    public static function run_automation(): void {
+        $type = Elev8_OS_Workspace_Service::normalize_type((string)($_POST['workspace_type'] ?? ''));
+        $id = absint($_POST['workspace_id'] ?? 0);
+        check_admin_referer('elev8_run_workspace_automation_' . $type . '_' . $id);
+        $key = sanitize_key((string)($_POST['automation_key'] ?? ''));
+        $result = Elev8_OS_Automation_Service::execute($key, $type, $id);
+        $args = is_wp_error($result) ? ['automation_error'=>1] : ['automation_saved'=>1];
+        wp_safe_redirect(add_query_arg($args, Elev8_OS_Workspace_Service::url($type, $id)));
+        exit;
     }
 
     private static function render_work(array $items): void { ?>
