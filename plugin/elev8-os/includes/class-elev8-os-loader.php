@@ -24,6 +24,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-content-studio-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-access-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-preview-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
@@ -67,6 +68,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-conversation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-conversations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-application-shell-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-role-preview-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-bingo-reservations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-event-applications-module.php';
@@ -114,6 +116,7 @@ final class Elev8_OS_Loader {
 
         Elev8_OS::init();
         Elev8_OS_Access_Service::init();
+        Elev8_OS_Preview_Service::init();
         Elev8_OS_WooCommerce::init();
         Elev8_OS_Asset_Sale_Notification_Service::init();
         Elev8_OS_Activity_Service::init();
@@ -155,6 +158,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Conversation_Service::init();
         Elev8_OS_Conversations_Module::init();
         Elev8_OS_Application_Shell_Module::init();
+        Elev8_OS_Role_Preview_Module::init();
         Elev8_OS_Checkin_Center_Module::init();
         Elev8_OS_Bingo_Reservations_Module::init();
         Elev8_OS_Event_Applications_Module::init();

@@ -134,7 +134,7 @@ final class Elev8_OS_Application_Shell_Module {
     }
 
     private static function render(string $context = 'frontend'): void {
-        $user = wp_get_current_user();
+        $user = class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user();
         if (!$user instanceof WP_User || $user->ID <= 0) {
             return;
         }
@@ -179,6 +179,9 @@ final class Elev8_OS_Application_Shell_Module {
                 </nav>
 
                 <div class="elev8-app-shell__actions">
+                    <?php if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::can_preview()) : ?>
+                        <a class="elev8-app-shell__preview-button" href="<?php echo esc_url(Elev8_OS_Preview_Service::preview_page_url()); ?>">👁 <span><?php esc_html_e('Preview', 'elev8-os'); ?></span></a>
+                    <?php endif; ?>
                     <button class="elev8-app-shell__search-button" type="button" data-elev8-command-open aria-haspopup="dialog" aria-controls="elev8-command-palette">
                         <span aria-hidden="true">⌕</span>
                         <span><?php esc_html_e('Search', 'elev8-os'); ?></span>
@@ -209,6 +212,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a href="<?php echo esc_url($notifications_url); ?>">🔔 <span><?php esc_html_e('Notifications', 'elev8-os'); ?></span><?php if ($attention_count > 0) : ?><b><?php echo esc_html((string) $attention_count); ?></b><?php endif; ?></a>
                 <?php if (Elev8_OS_Access_Service::user_can('view_conversations', $user) && class_exists('Elev8_OS_Conversations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Conversations_Module::url()); ?>">💬 <span><?php esc_html_e('Conversations', 'elev8-os'); ?></span><?php $conversation_count = class_exists('Elev8_OS_Conversation_Service') ? Elev8_OS_Conversation_Service::unread_count($user->ID) : 0; if ($conversation_count > 0) : ?><b><?php echo esc_html((string) $conversation_count); ?></b><?php endif; ?></a><?php endif; ?>
                 <a href="<?php echo esc_url($settings_url); ?>">⚙️ <span><?php esc_html_e('Settings', 'elev8-os'); ?></span></a>
+                <?php if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::can_preview()) : ?><a href="<?php echo esc_url(Elev8_OS_Preview_Service::preview_page_url()); ?>">👁 <span><?php esc_html_e('Role Preview', 'elev8-os'); ?></span></a><?php endif; ?>
                 <a href="<?php echo esc_url($help_url); ?>">❓ <span><?php esc_html_e('Help', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($home_url); ?>">🌐 <span><?php esc_html_e('Return to Elev8Arts.com', 'elev8-os'); ?></span></a>
                 <a class="elev8-app-shell__logout" href="<?php echo esc_url($logout_url); ?>">🚪 <span><?php esc_html_e('Log Out', 'elev8-os'); ?></span></a>
@@ -238,6 +242,9 @@ final class Elev8_OS_Application_Shell_Module {
         if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
             return admin_url('admin.php?page=elev8-ceo-dashboard');
         }
+        if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
+            return admin_url('admin.php?page=elev8-glass-operations');
+        }
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {
             return Elev8_OS_Portal_Page_Manager::get_url('dashboard');
         }
@@ -248,10 +255,11 @@ final class Elev8_OS_Application_Shell_Module {
         if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
             return __('Owner', 'elev8-os');
         }
+        if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
+            return __('Glass Manager', 'elev8-os');
+        }
         if (Elev8_OS_Access_Service::user_can('view_manager_dashboard', $user)) {
-            return Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)
-                ? __('Glass Manager', 'elev8-os')
-                : __('Shop Manager', 'elev8-os');
+            return __('Shop Manager', 'elev8-os');
         }
         if (Elev8_OS_Access_Service::user_can('glass_work', $user) && !Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
             return __('Glassblower', 'elev8-os');

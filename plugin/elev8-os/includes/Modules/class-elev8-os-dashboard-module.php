@@ -73,14 +73,8 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     public static function register_admin_menu(): void {
-        add_submenu_page(
-            'elev8-os',
-            __('Artist Dashboard Preview', 'elev8-os'),
-            __('Artist Dashboard Preview', 'elev8-os'),
-            'manage_options',
-            self::ADMIN_PAGE_SLUG,
-            [__CLASS__, 'render_admin_preview']
-        );
+        // The former single Artist Dashboard Preview is superseded by the
+        // universal founder Role Preview tool registered by its own module.
     }
 
     public static function enqueue_frontend_assets(): void {
@@ -246,7 +240,7 @@ final class Elev8_OS_Dashboard_Module {
     }
 
     private static function render_dashboard(): void {
-        $user = wp_get_current_user();
+        $user = class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user();
 
         if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('glass_work', $user) && !Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
             if (class_exists('Elev8_OS_Glassblower_Dashboard_Module')) { Elev8_OS_Glassblower_Dashboard_Module::render($user); }

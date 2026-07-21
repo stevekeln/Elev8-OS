@@ -87,7 +87,7 @@ final class Elev8_OS_Access_Service {
     }
 
     public static function user_can(string $permission, ?WP_User $user = null): bool {
-        $user = $user ?: wp_get_current_user();
+        $user = $user ?: (class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user());
         if (!$user instanceof WP_User || $user->ID <= 0) { return false; }
 
         $capability = self::capability($permission);
@@ -212,7 +212,7 @@ final class Elev8_OS_Access_Service {
     }
 
     public static function can_use_operations_template(string $template_key, ?WP_User $user = null): bool {
-        $user = $user ?: wp_get_current_user();
+        $user = $user ?: (class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user());
         return in_array($template_key, self::allowed_operations_templates($user), true);
     }
 

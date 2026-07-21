@@ -1,3 +1,11 @@
+
+## 13.6.0 — Universal Role Preview Mode
+- Replaced the single Artist Dashboard Preview concept with a founder-only Role Preview tool for CEO, Shop Manager, Glass Manager, Glassblower, Artist, Teacher, Event Host, Volunteer, and Retail Employee experiences.
+- Added role-filtered user selection, one-click dashboard or public-profile preview, a persistent Preview Mode banner, workspace jump links, and one-click exit.
+- Integrated preview identity with the centralized Access Service and role-aware dashboard renderer while preserving the owner’s WordPress authentication.
+- Added a universal Preview action to the Elev8 OS application header and user menu.
+- Suppressed WordPress email and Elev8 OS notification delivery during preview requests to prevent accidental test messages.
+- Added responsive founder tooling for faster desktop and phone testing without passwords, logout, or Incognito windows.
 # Changelog
 
 ## 13.5.0 — Repair & Memorial Production Engine
