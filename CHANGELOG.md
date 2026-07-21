@@ -1,3 +1,21 @@
+## 10.22.0 — Universal Application Shell
+
+### Added
+- Universal Elev8 OS application header across frontend portal pages and Elev8 OS admin workspaces.
+- Capability-aware navigation for Dashboard, Work, and Business Memory.
+- Consistent user menu with My Dashboard, My Profile, Notifications, Settings, Help, Return to Elev8Arts.com, and Log Out.
+- Role labels for Owner, Shop Manager, Glass Manager, Event Host, Teacher, Artist, Volunteer, and other team members.
+- Shared notification badge backed by the Attention Service.
+- Responsive mobile menu and sticky application header.
+
+### Preserved
+- Existing CEO, Manager, Event Host, Artist, Teacher, and Volunteer dashboards.
+- Existing Install App control and dashboard actions.
+- Existing Access Service permissions and Attention Service data.
+
+### Database changes
+- None.
+
 # Elev8 OS Changelog
 
 ## 10.21.0 — Role-Aware Coaching Foundation
