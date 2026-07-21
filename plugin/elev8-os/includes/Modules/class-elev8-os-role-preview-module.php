@@ -9,6 +9,7 @@ final class Elev8_OS_Role_Preview_Module {
         add_action('admin_notices', [__CLASS__, 'render_banner']);
         add_action('wp_body_open', [__CLASS__, 'render_banner']);
         add_action('wp_footer', [__CLASS__, 'render_banner_fallback'], 0);
+        add_action('admin_head', [__CLASS__, 'render_clean_preview_admin_styles']);
     }
 
     public static function register_menu(): void {
@@ -57,7 +58,7 @@ final class Elev8_OS_Role_Preview_Module {
                     </select>
                 </form>
 
-                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" target="_blank">
                     <?php wp_nonce_field('elev8_os_start_preview'); ?>
                     <input type="hidden" name="action" value="elev8_os_start_preview">
                     <input type="hidden" name="preview_role" value="<?php echo esc_attr($role); ?>">
@@ -74,7 +75,8 @@ final class Elev8_OS_Role_Preview_Module {
                         <option value="dashboard"><?php esc_html_e('Role Dashboard', 'elev8-os'); ?></option>
                         <option value="profile"><?php esc_html_e('Public Profile Editor', 'elev8-os'); ?></option>
                     </select>
-                    <button class="button button-primary button-hero" type="submit" <?php disabled(!$users); ?>><?php esc_html_e('Start Preview', 'elev8-os'); ?></button>
+                    <button class="button button-primary button-hero" type="submit" <?php disabled(!$users); ?>><?php esc_html_e('Open Preview in New Window', 'elev8-os'); ?></button>
+                    <p class="description"><?php esc_html_e('The new window hides the WordPress administrator chrome so you see the same Elev8 OS application experience as the selected person.', 'elev8-os'); ?></p>
                 </form>
             </section>
 
@@ -101,4 +103,18 @@ final class Elev8_OS_Role_Preview_Module {
     }
 
     public static function render_banner_fallback(): void { self::render_banner(); }
+
+    public static function render_clean_preview_admin_styles(): void {
+        if (!Elev8_OS_Preview_Service::is_clean_request()) { return; }
+        ?>
+        <style id="elev8-clean-preview-admin">
+            #wpadminbar,#adminmenumain,#screen-meta-links,.update-nag,.notice:not(.elev8-preview-keep),.wrap>h1.wp-heading-inline+.page-title-action{display:none!important}
+            html.wp-toolbar{padding-top:0!important}
+            #wpcontent,#wpfooter{margin-left:0!important}
+            #wpbody-content{padding-bottom:20px!important}
+            body.wp-admin{background:#f4f3f7!important}
+            .elev8-preview-banner{position:sticky!important;top:0!important}
+        </style>
+        <?php
+    }
 }

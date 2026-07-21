@@ -17,6 +17,7 @@ final class Elev8_OS_Preview_Service {
         add_action('admin_post_elev8_os_stop_preview', [__CLASS__, 'stop_preview']);
         add_filter('pre_wp_mail', [__CLASS__, 'suppress_mail_during_preview'], 10, 2);
         add_filter('elev8_os_notifications_suppressed', [__CLASS__, 'notifications_suppressed']);
+        add_filter('show_admin_bar', [__CLASS__, 'filter_admin_bar']);
     }
 
     public static function can_preview(?WP_User $user = null): bool {
@@ -43,6 +44,23 @@ final class Elev8_OS_Preview_Service {
         if ($target instanceof WP_User) { return $target; }
         if ($fallback instanceof WP_User) { return $fallback; }
         return wp_get_current_user();
+    }
+
+
+    public static function is_clean_request(): bool {
+        return self::is_active() && isset($_GET['elev8_clean_preview']) && (string) $_GET['elev8_clean_preview'] === '1';
+    }
+
+    public static function filter_admin_bar($show): bool {
+        return self::is_clean_request() ? false : (bool) $show;
+    }
+
+    public static function clean_url(string $url, bool $force = false): string {
+        if ($url === '') { return $url; }
+        if ($force || self::is_clean_request()) {
+            return add_query_arg('elev8_clean_preview', '1', $url);
+        }
+        return $url;
     }
 
     public static function selected_role(): string {
@@ -87,15 +105,15 @@ final class Elev8_OS_Preview_Service {
 
     public static function dashboard_url(WP_User $user): string {
         if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
-            return admin_url('admin.php?page=elev8-ceo-dashboard');
+            return self::clean_url(admin_url('admin.php?page=elev8-ceo-dashboard'));
         }
         if (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
-            return admin_url('admin.php?page=elev8-glass-operations');
+            return self::clean_url(admin_url('admin.php?page=elev8-glass-operations'));
         }
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {
-            return Elev8_OS_Portal_Page_Manager::get_url('dashboard');
+            return self::clean_url(Elev8_OS_Portal_Page_Manager::get_url('dashboard'));
         }
-        return home_url('/artist-dashboard/');
+        return self::clean_url(home_url('/artist-dashboard/'));
     }
 
     public static function preview_page_url(array $args = []): string {
@@ -135,6 +153,8 @@ final class Elev8_OS_Preview_Service {
         if (class_exists('Elev8_OS_Public_Profile_Service')) {
             $links[] = ['label' => __('Public Profile Editor', 'elev8-os'), 'url' => Elev8_OS_Public_Profile_Service::editor_url((int) $user->ID)];
         }
+        foreach ($links as &$link) { $link['url'] = self::clean_url($link['url']); }
+        unset($link);
         return $links;
     }
 
@@ -151,9 +171,9 @@ final class Elev8_OS_Preview_Service {
         update_user_meta(get_current_user_id(), self::META_TARGET, $target_id);
         update_user_meta(get_current_user_id(), self::META_ROLE, $role);
         $destination = sanitize_key((string) ($_POST['preview_destination'] ?? 'dashboard'));
-        $url = self::dashboard_url($target);
+        $url = self::clean_url(self::dashboard_url($target), true);
         if ($destination === 'profile' && class_exists('Elev8_OS_Public_Profile_Service')) {
-            $url = Elev8_OS_Public_Profile_Service::editor_url($target_id);
+            $url = self::clean_url(Elev8_OS_Public_Profile_Service::editor_url($target_id), true);
         }
         wp_safe_redirect($url);
         exit;

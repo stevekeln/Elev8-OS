@@ -96,7 +96,7 @@ final class Elev8_OS_My_Classes_Module {
             <?php if (!$glass_manager_scope) : ?>
                 <?php Elev8_OS_Artist_Portal_Module::render_navigation('classes'); ?>
             <?php else : ?>
-                <nav class="elev8-glass-class-return"><a href="<?php echo esc_url(admin_url('admin.php?page=elev8-glass-operations')); ?>">&larr; <?php esc_html_e('Back to Glass Operations', 'elev8-os'); ?></a></nav>
+                <nav class="elev8-glass-class-return"><a href="<?php echo esc_url(class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::dashboard_url($effective_user) : admin_url('admin.php?page=elev8-glass-operations')); ?>">&larr; <?php esc_html_e('Back to Glass Operations', 'elev8-os'); ?></a></nav>
             <?php endif; ?>
 
             <header class="elev8-dashboard-header">

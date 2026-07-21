@@ -239,6 +239,9 @@ final class Elev8_OS_Application_Shell_Module {
     }
 
     private static function dashboard_url(WP_User $user): string {
+        if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::is_active()) {
+            return Elev8_OS_Preview_Service::dashboard_url($user);
+        }
         if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) {
             return admin_url('admin.php?page=elev8-ceo-dashboard');
         }

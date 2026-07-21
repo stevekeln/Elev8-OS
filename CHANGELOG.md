@@ -1,3 +1,11 @@
+## 13.8.1 — Clean Role Preview & Glass Manager Return Fix
+- Role Preview now opens in a separate browser window.
+- Clean Preview hides the WordPress administrator toolbar, sidebar, update notices, and other owner-only chrome so the preview matches the selected person's Elev8 OS application experience.
+- Preview navigation preserves clean mode across dashboard and role-specific shortcuts.
+- The universal header now routes My Dashboard through the Preview Context Service.
+- Glass Manager Classes now returns to Glass Operations instead of the public home page.
+- Existing preview notification suppression and centralized capability simulation remain intact.
+
 ## 13.8.0 — Team Communications & Smart Conversations
 
 - Added a searchable recipient picker with multi-person selection and one-click team selection.
