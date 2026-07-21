@@ -37,6 +37,12 @@ final class Elev8_OS_Workspace_Resolver_Service {
         return $primary;
     }
 
+    public static function primary_destination_for(?WP_User $user = null): string {
+        $user = $user ?: wp_get_current_user();
+        if (!$user instanceof WP_User || $user->ID <= 0) { return home_url('/'); }
+        return self::primary_destination($user);
+    }
+
     public static function role_key(?WP_User $user = null): string {
         $user = $user ?: wp_get_current_user();
         if (!$user instanceof WP_User) { return 'team'; }
@@ -131,7 +137,7 @@ final class Elev8_OS_Workspace_Resolver_Service {
         switch (self::role_key($user)) {
             case 'owner': return admin_url('admin.php?page=elev8-ceo-dashboard');
             case 'glass_manager': return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : home_url('/glass-manager/');
-            case 'glassblower':
+            case 'glassblower': return class_exists('Elev8_OS_Glass_Workbench_Module') ? Elev8_OS_Glass_Workbench_Module::url() : home_url('/glass-workbench/');
             case 'shop_manager':
             case 'event_host':
             case 'teacher':
@@ -152,8 +158,10 @@ final class Elev8_OS_Workspace_Resolver_Service {
         $host = (string) wp_parse_url($url, PHP_URL_HOST);
         $site_host = (string) wp_parse_url(home_url('/'), PHP_URL_HOST);
         if ($host !== '' && strtolower($host) !== strtolower($site_host)) { return false; }
-        if (self::role_key($user) === 'glass_manager') { return strpos($url, '/glass-manager') !== false; }
-        return true;
+        $role = self::role_key($user);
+        if ($role === 'glass_manager') { return strpos($url, '/glass-manager') !== false; }
+        if ($role === 'glassblower') { return strpos($url, '/glass-workbench') !== false || strpos($url, '/elev8-actions') !== false || strpos($url, '/elev8-conversations') !== false || strpos($url, '/elev8-workspace') !== false; }
+        return class_exists('Elev8_OS_Experience_Service') ? Elev8_OS_Experience_Service::is_managed_workspace_url($url) : true;
     }
 
     private static function same_destination(string $left, string $right): bool {

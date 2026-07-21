@@ -1,3 +1,26 @@
+
+## 15.0.0 — Experience Engine
+
+### Added
+- Added a shared Experience Service that remembers each user's last verified Elev8 OS frontend workspace without changing module ownership or duplicating business logic.
+- Added a dedicated frontend Glass Workbench at `/glass-workbench/` for the Elev8 Glassblower role.
+- Added a universal phone navigation dock with role-aware shortcuts for Home, Actions, Conversations, Production Board, Class Approvals, Workbench, or Classes.
+- Added reusable role shortcuts and role-home resolution through the centralized Workspace Resolver.
+
+### Changed
+- Glassblowers now land in the Glass Workbench instead of the shared Artist Dashboard page.
+- The universal Elev8 OS header resumes the user's last allowed workspace while preserving a stable role-home shortcut.
+- Workspace memory is ignored during founder Preview Mode and is cleared when WordPress roles change.
+- Glass Managers continue to land in the frontend Glass Manager Suite.
+
+### Architecture
+- Core Platform Capability: Experience Engine, workspace memory, mobile application navigation, and Workbench framework.
+- Configurable Business Module: Glass Workbench presentation and role-specific shortcuts.
+- Existing Production, Classes, Conversations, Actions, and Access Service remain the sources of truth.
+
+### Database changes
+- None. Uses WordPress user metadata for last-workspace memory.
+
 ## 14.3.1 - Universal Role Landing & Workspace Routing
 
 - Added one centralized Workspace Resolver for login, Universal Header, Preview Mode, command palette, and legacy dashboard routes.

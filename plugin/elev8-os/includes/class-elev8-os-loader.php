@@ -26,6 +26,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-access-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-resolver-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-experience-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-preview-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
@@ -40,6 +41,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-manager-suite-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glassblower-dashboard-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-workbench-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-production-catalog-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-classes-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-artwork-module.php';
@@ -71,6 +73,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-conversation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-conversations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-application-shell-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-experience-engine-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-role-preview-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-bingo-reservations-module.php';
@@ -122,6 +125,7 @@ final class Elev8_OS_Loader {
         Elev8_OS::init();
         Elev8_OS_Access_Service::init();
         Elev8_OS_Workspace_Resolver_Service::init();
+        Elev8_OS_Experience_Service::init();
         Elev8_OS_Preview_Service::init();
         Elev8_OS_WooCommerce::init();
         Elev8_OS_Asset_Sale_Notification_Service::init();
@@ -150,6 +154,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Gallery_Operations_Module::init();
         Elev8_OS_Glass_Operations_Module::init();
         Elev8_OS_Glass_Manager_Suite_Module::init();
+        Elev8_OS_Glass_Workbench_Module::init();
         Elev8_OS_Production_Catalog_Module::init();
         Elev8_OS_My_Classes_Module::init();
         Elev8_OS_My_Artwork_Module::init();
@@ -165,6 +170,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Conversation_Service::init();
         Elev8_OS_Conversations_Module::init();
         Elev8_OS_Application_Shell_Module::init();
+        Elev8_OS_Experience_Engine_Module::init();
         Elev8_OS_Role_Preview_Module::init();
         Elev8_OS_Checkin_Center_Module::init();
         Elev8_OS_Bingo_Reservations_Module::init();
