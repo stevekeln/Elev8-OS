@@ -81,6 +81,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-explanation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-attention-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-intelligence-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-brief-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-event-host-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-manager-dashboard-service.php';

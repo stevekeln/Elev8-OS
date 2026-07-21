@@ -145,6 +145,10 @@ final class Elev8_OS_CEO_Dashboard_Module {
         $operational_priorities = class_exists('Elev8_OS_Dashboard_Service')
             ? Elev8_OS_Dashboard_Service::priorities($operational_summary)
             : [];
+        $daily_brief = class_exists('Elev8_OS_Daily_Brief_Service')
+            ? Elev8_OS_Daily_Brief_Service::build($operational_summary, $metrics, wp_get_current_user())
+            : [];
+
         $executive_intelligence = class_exists('Elev8_OS_Executive_Intelligence_Service')
             ? Elev8_OS_Executive_Intelligence_Service::build($operational_summary, $metrics)
             : [
@@ -185,6 +189,8 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     </span>
                 </div>
             </header>
+
+            <?php self::render_daily_brief($daily_brief); ?>
 
             <?php self::render_operational_home($operational_summary, $operational_priorities, $executive_intelligence); ?>
 
@@ -260,6 +266,87 @@ final class Elev8_OS_CEO_Dashboard_Module {
         <?php
     }
 
+
+    /** Render the rule-based morning reading brief. */
+    private static function render_daily_brief(array $brief): void {
+        if (!$brief) { return; }
+        $pulse = is_array($brief['pulse'] ?? null) ? $brief['pulse'] : [];
+        $confidence = is_array($brief['confidence'] ?? null) ? $brief['confidence'] : [];
+        $explanations = is_array($brief['explanations'] ?? null) ? $brief['explanations'] : [];
+        ?>
+        <section class="elev8-daily-brief" aria-labelledby="elev8-daily-brief-heading">
+            <header class="elev8-daily-brief__header">
+                <div>
+                    <p class="elev8-bi-eyebrow"><?php esc_html_e('Daily Executive Brief', 'elev8-os'); ?></p>
+                    <h2 id="elev8-daily-brief-heading"><?php echo esc_html((string) ($brief['greeting'] ?? __('Good day.', 'elev8-os'))); ?></h2>
+                    <p><?php echo esc_html((string) ($brief['date_label'] ?? '')); ?></p>
+                </div>
+                <div class="elev8-daily-brief__confidence">
+                    <span><?php esc_html_e('Confidence', 'elev8-os'); ?></span>
+                    <strong><?php echo esc_html((string) ($confidence['label'] ?? __('Unavailable', 'elev8-os'))); ?></strong>
+                    <small><?php echo esc_html(sprintf(__('%d trusted sources', 'elev8-os'), (int) ($confidence['sources'] ?? 0))); ?></small>
+                    <?php self::render_why($explanations['confidence'] ?? []); ?>
+                </div>
+            </header>
+
+            <div class="elev8-daily-brief__pulse elev8-daily-brief__pulse--<?php echo esc_attr(sanitize_html_class((string) ($pulse['status'] ?? 'healthy'))); ?>">
+                <span><?php esc_html_e('Business Pulse', 'elev8-os'); ?></span>
+                <strong><?php echo esc_html((string) ($pulse['label'] ?? __('Unavailable', 'elev8-os'))); ?></strong>
+                <p><?php echo esc_html((string) ($pulse['reason'] ?? __('Unavailable', 'elev8-os'))); ?></p>
+                <?php self::render_why($explanations['pulse'] ?? []); ?>
+            </div>
+
+            <div class="elev8-daily-brief__grid">
+                <?php self::render_brief_list(__('Yesterday', 'elev8-os'), (array) ($brief['yesterday'] ?? []), 'calendar-alt', $explanations['yesterday'] ?? []); ?>
+                <?php self::render_attention_brief((array) ($brief['attention'] ?? [])); ?>
+                <?php self::render_brief_list(__('Wins', 'elev8-os'), (array) ($brief['wins'] ?? []), 'awards'); ?>
+                <?php self::render_brief_list(__('Risks', 'elev8-os'), (array) ($brief['risks'] ?? []), 'warning'); ?>
+            </div>
+
+            <div class="elev8-daily-brief__bottom">
+                <div class="elev8-daily-brief__panel">
+                    <h3><span class="dashicons dashicons-lightbulb"></span><?php esc_html_e('Today’s Opportunities', 'elev8-os'); ?></h3>
+                    <ul><?php foreach ((array) ($brief['opportunities'] ?? []) as $item) : ?><li><?php if (!empty($item['url'])) : ?><a href="<?php echo esc_url((string) $item['url']); ?>"><?php echo esc_html((string) ($item['title'] ?? '')); ?></a><?php else : ?><?php echo esc_html((string) ($item['title'] ?? '')); ?><?php endif; ?></li><?php endforeach; ?></ul>
+                </div>
+                <div class="elev8-daily-brief__panel elev8-daily-brief__focus">
+                    <h3><span class="dashicons dashicons-flag"></span><?php esc_html_e('Today’s Focus', 'elev8-os'); ?></h3>
+                    <ol><?php foreach ((array) ($brief['focus'] ?? []) as $item) : ?><li><?php echo esc_html((string) $item); ?></li><?php endforeach; ?></ol>
+                </div>
+            </div>
+
+            <?php if (!empty($brief['timeline'])) : ?>
+                <details class="elev8-daily-brief__timeline">
+                    <summary><?php esc_html_e('View Yesterday’s Timeline', 'elev8-os'); ?></summary>
+                    <div><?php foreach ((array) $brief['timeline'] as $item) : ?><article><time><?php echo esc_html((string) ($item['time'] ?? '')); ?></time><span><strong><?php echo esc_html((string) ($item['title'] ?? '')); ?></strong><small><?php echo esc_html((string) ($item['detail'] ?? '')); ?></small></span></article><?php endforeach; ?></div>
+                </details>
+            <?php endif; ?>
+        </section>
+        <?php
+    }
+
+    private static function render_brief_list(string $title, array $items, string $icon, array $why = []): void {
+        ?>
+        <article class="elev8-daily-brief__panel">
+            <h3><span class="dashicons dashicons-<?php echo esc_attr($icon); ?>"></span><?php echo esc_html($title); ?></h3>
+            <ul><?php foreach ($items as $item) : ?><li><?php echo esc_html((string) $item); ?></li><?php endforeach; ?></ul>
+            <?php self::render_why($why); ?>
+        </article>
+        <?php
+    }
+
+    private static function render_attention_brief(array $items): void {
+        ?>
+        <article class="elev8-daily-brief__panel">
+            <h3><span class="dashicons dashicons-bell"></span><?php esc_html_e('Needs Your Attention', 'elev8-os'); ?></h3>
+            <?php if ($items) : ?><ul><?php foreach ($items as $item) : ?><li class="is-<?php echo esc_attr(sanitize_html_class((string) ($item['severity'] ?? 'normal'))); ?>"><?php if (!empty($item['url'])) : ?><a href="<?php echo esc_url((string) $item['url']); ?>"><?php echo esc_html((string) ($item['title'] ?? '')); ?></a><?php else : ?><?php echo esc_html((string) ($item['title'] ?? '')); ?><?php endif; ?><?php if (!empty($item['summary'])) : ?><small><?php echo esc_html((string) $item['summary']); ?></small><?php endif; ?></li><?php endforeach; ?></ul><?php else : ?><p><?php esc_html_e('No verified urgent items are waiting.', 'elev8-os'); ?></p><?php endif; ?>
+        </article>
+        <?php
+    }
+
+    private static function render_why(array $why): void {
+        if (!$why) { return; }
+        ?><details class="elev8-why"><summary><?php esc_html_e('Why?', 'elev8-os'); ?></summary><div><strong><?php echo esc_html((string) ($why['title'] ?? __('Why?', 'elev8-os'))); ?></strong><p><?php echo esc_html((string) ($why['body'] ?? __('Unavailable', 'elev8-os'))); ?></p></div></details><?php
+    }
 
     /**
      * Render the role-aware Operational Home using verified shared services.

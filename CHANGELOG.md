@@ -1,5 +1,15 @@
 # Elev8 OS Changelog
 
+## 10.20.0 — Executive Brief Engine
+
+- Added a reusable, rule-based Daily Brief Service built from verified Elev8 OS sources.
+- Added a phone-friendly Daily Executive Brief with Yesterday, Business Pulse, Attention, Wins, Risks, Opportunities, Today’s Focus, and an expandable timeline.
+- Added confidence indicators based on available trusted sources.
+- Added reusable Why explanations for the daily summary, Business Pulse, and confidence level.
+- Preserved existing CEO intelligence, workflow health, manager-note notifications, event applications, reservations, and KPI calculations.
+- Missing or unconnected data remains explicitly Unavailable rather than inferred.
+
+
 ## 10.19.0 — Manager Operational Home
 
 - Added a capability-driven Manager Operational Home for non-owner managers.
