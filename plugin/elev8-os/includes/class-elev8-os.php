@@ -99,6 +99,7 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Opportunity_Module')) {
             Elev8_OS_Opportunity_Module::activate();
         }
+        if (class_exists('Elev8_OS_Class_Approval_Service')) { Elev8_OS_Class_Approval_Service::activate(); }
         self::add_rewrite_rules();
         flush_rewrite_rules();
     }
@@ -2376,6 +2377,7 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Opportunity_Module')) {
             Elev8_OS_Opportunity_Module::activate();
         }
+        if (class_exists('Elev8_OS_Class_Approval_Service')) { Elev8_OS_Class_Approval_Service::activate(); }
         $items=get_option(self::OPTION_DEV_ITEMS,[]);
         return is_array($items)?$items:[];
     }

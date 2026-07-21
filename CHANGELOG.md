@@ -1,3 +1,11 @@
+## 14.3.0 — Class Approval & Teacher Notification Center
+- Added frontend Class Approval Center for pending Amelia glass-class bookings.
+- Added approve, move-date, and cancel actions with immutable Activity history.
+- Added urgent booking indicators, customer-safe details, and weekday/date formatting.
+- Added five-minute pending-booking detection with email fallback to Glass Managers.
+- Added browser/PWA notification permission, test alerts, app badges, one-minute foreground polling, and deep links.
+- Added Class Approvals to the Frontend Glass Manager Suite.
+
 
 ## 14.2.0 — Frontend Glass Manager Suite
 - Added a dedicated frontend Glass Manager application at `/glass-manager/`.

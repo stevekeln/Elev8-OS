@@ -138,6 +138,7 @@ final class Elev8_OS_App_Install_Module {
     }
 
     private static function serve_service_worker(): void {
+        $home = class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/elev8-app/');
         nocache_headers();
         header('Content-Type: application/javascript; charset=UTF-8');
         header('Service-Worker-Allowed: ' . self::service_worker_scope());
@@ -145,6 +146,7 @@ final class Elev8_OS_App_Install_Module {
         echo "self.addEventListener('install',event=>{self.skipWaiting();});\n";
         echo "self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('elev8-os-shell-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});\n";
         echo "self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||event.request.mode==='navigate'){return;}event.respondWith(fetch(event.request).catch(()=>caches.match(event.request)));});\n";
+        echo "self.addEventListener('notificationclick',event=>{event.notification.close();const url=(event.notification.data&&event.notification.data.url)||'" . esc_js($home ?? home_url('/')) . "';event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const client of list){if('focus' in client){client.navigate(url);return client.focus();}}return clients.openWindow(url);}));});\n";
         exit;
     }
 }

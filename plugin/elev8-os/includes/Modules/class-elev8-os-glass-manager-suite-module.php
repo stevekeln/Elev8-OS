@@ -52,6 +52,7 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
         wp_enqueue_style('elev8-glass-manager-suite', ELEV8_OS_URL . 'assets/css/glass-manager-suite.css', [], ELEV8_OS_VERSION);
         wp_enqueue_style('elev8-glass-operations', ELEV8_OS_URL . 'assets/css/glass-operations.css', [], ELEV8_OS_VERSION);
         wp_enqueue_style('elev8-production-catalog', ELEV8_OS_URL . 'assets/css/production-catalog.css', [], ELEV8_OS_VERSION);
+        wp_enqueue_style('elev8-class-approvals', ELEV8_OS_URL . 'assets/css/class-approvals.css', [], ELEV8_OS_VERSION);
         $tool = sanitize_key($_GET['suite_tool'] ?? 'operations');
         $view = sanitize_key($_GET['view'] ?? 'dashboard');
         if ($tool === 'operations' && $view === 'board') {
@@ -61,6 +62,14 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
                 'errorMessage' => __('The production job could not be updated.', 'elev8-os'),
             ]);
         }
+        wp_enqueue_script('elev8-class-approvals', ELEV8_OS_URL . 'assets/js/class-approvals.js', [], ELEV8_OS_VERSION, true);
+        wp_localize_script('elev8-class-approvals', 'Elev8ClassAlerts', [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('elev8_class_alerts'),
+            'url' => self::url(['suite_tool'=>'approvals']),
+            'icon' => get_site_icon_url(192),
+            'initialCount' => count(Elev8_OS_Class_Approval_Service::pending_for_current_user()),
+        ]);
         if ($tool === 'operations' && $view === 'payouts') {
             wp_enqueue_script('elev8-glass-fast-pay', ELEV8_OS_URL . 'assets/js/glass-fast-pay.js', [], ELEV8_OS_VERSION, true);
             wp_localize_script('elev8-glass-fast-pay', 'Elev8GlassFastPay', [
@@ -78,7 +87,7 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
         if (!Elev8_OS_Access_Service::user_can('view_glass_dashboard')) { return '<div class="elev8-suite-message">You do not have access to Glass Operations.</div>'; }
 
         $tool = sanitize_key($_GET['suite_tool'] ?? 'operations');
-        if (!in_array($tool, ['operations','catalog'], true)) { $tool = 'operations'; }
+        if (!in_array($tool, ['operations','catalog','approvals'], true)) { $tool = 'operations'; }
 
         ob_start();
         ?>
@@ -90,6 +99,7 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
                 <?php self::nav_link('New Production Job', ['suite_tool'=>'operations','view'=>'new-job']); ?>
                 <?php self::nav_link('Fast Pay & Pay Sheets', ['suite_tool'=>'operations','view'=>'payouts']); ?>
                 <?php self::nav_link('Glassblower Team', ['suite_tool'=>'operations','view'=>'team']); ?>
+                <?php self::nav_link('Class Approvals', ['suite_tool'=>'approvals']); ?>
                 <?php self::nav_link('Repair Intake', ['suite_tool'=>'operations','view'=>'repair-intake']); ?>
                 <?php self::nav_link('Memorial Intake', ['suite_tool'=>'operations','view'=>'memorial-intake']); ?>
                 <div class="elev8-glass-suite__divider">Catalog</div>
@@ -105,10 +115,18 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
                 <a href="<?php echo esc_url(Elev8_OS_Portal_Page_Manager::get_url('actions')); ?>">My Actions</a>
             </aside>
             <main class="elev8-glass-suite__content">
+                <?php $pending_class_count = count(Elev8_OS_Class_Approval_Service::pending_for_current_user()); ?>
+                <?php if ($tool !== 'approvals' && $pending_class_count > 0) : ?>
+                    <a class="elev8-suite-class-alert" data-elev8-class-alert-count="<?php echo esc_attr((string) $pending_class_count); ?>" href="<?php echo esc_url(self::url(['suite_tool'=>'approvals'])); ?>">
+                        <strong><?php echo esc_html(sprintf(_n('%d class booking needs a decision', '%d class bookings need a decision', $pending_class_count, 'elev8-os'), $pending_class_count)); ?></strong>
+                        <span><?php esc_html_e('Approve, move the date, or cancel now.', 'elev8-os'); ?></span>
+                    </a>
+                <?php endif; ?>
                 <?php
                 // Existing modules use this flag to create frontend-safe navigation URLs.
                 $_GET['elev8_glass_suite'] = '1';
                 if ($tool === 'catalog') { Elev8_OS_Production_Catalog_Module::render(); }
+                elseif ($tool === 'approvals') { Elev8_OS_Class_Approval_Module::render(); }
                 else { Elev8_OS_Glass_Operations_Module::render(); }
                 ?>
             </main>
@@ -121,7 +139,7 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
         $current_tool = sanitize_key($_GET['suite_tool'] ?? 'operations');
         $current_view = sanitize_key($_GET['view'] ?? ($current_tool === 'operations' ? 'dashboard' : 'products'));
         $target_tool = $args['suite_tool'];
-        $target_view = $args['view'] ?? ($target_tool === 'operations' ? 'dashboard' : 'products');
+        $target_view = $args['view'] ?? ($target_tool === 'operations' ? 'dashboard' : ($target_tool === 'catalog' ? 'products' : '')); 
         $active = $current_tool === $target_tool && $current_view === $target_view;
         echo '<a class="' . ($active ? 'is-active' : '') . '" href="' . esc_url(self::url($args)) . '">' . esc_html($label) . '</a>';
     }
