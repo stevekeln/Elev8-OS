@@ -253,6 +253,9 @@ final class Elev8_OS_Application_Shell_Module {
                 ? __('Glass Manager', 'elev8-os')
                 : __('Shop Manager', 'elev8-os');
         }
+        if (Elev8_OS_Access_Service::user_can('glass_work', $user) && !Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) {
+            return __('Glassblower', 'elev8-os');
+        }
         if (Elev8_OS_Access_Service::is_dj($user) && !Elev8_OS_Access_Service::user_can('view_manager_dashboard', $user)) {
             return __('Event Host', 'elev8-os');
         }

@@ -1,3 +1,16 @@
+# Elev8 OS Changelog
+
+## 13.1.0 — Production Jobs, Glassblower Team & Pay Sheets
+
+- Added catalog-backed production job lines with compensation, material-cost and product-version snapshots.
+- Added configurable job sources for Shipping, Head Shop, Cremation, Website, Wholesale, Repair, Internal Inventory and Custom work.
+- Added Glassblower Team roster management; production dropdowns now show only active roster members with the Glassblower role and compensation profile.
+- Added automatic foundation matching for Nick (shimkus92@gmail.com) and Adam (adamelev8@gmail.com) at $18/hour with piecework eligibility, without hardcoded user IDs.
+- Added manager QC, completion, time and payroll approval controls for production lines.
+- Added catalog/profile-driven hourly and piecework calculations and automatic pay-sheet review.
+- Added a role-aware Glassblower Operational Home showing assigned work, QC status, pending/approved pay and Conversations access.
+- Preserved existing Glass Operations, Production Catalog, Workspace, Relationship and Intelligence engines.
+
 ## 13.0.0 — Glass Production Catalog & Compensation Engine
 
 - Added a new Elev8 OS Production Catalog designed for manual entry rather than importing the legacy spreadsheet as a database.

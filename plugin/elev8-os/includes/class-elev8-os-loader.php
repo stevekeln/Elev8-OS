@@ -33,6 +33,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-print-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-gallery-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glass-operations-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-glassblower-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-production-catalog-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-classes-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-my-artwork-module.php';

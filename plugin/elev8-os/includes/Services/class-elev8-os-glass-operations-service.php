@@ -2,11 +2,12 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Glass_Operations_Service {
-    const DB_VERSION = '1.0.0';
+    const DB_VERSION = '2.0.0';
     const OPTION_DB_VERSION = 'elev8_os_glass_ops_db_version';
 
     public static function init(): void {
         add_action('init', [__CLASS__, 'maybe_install'], 7);
+        add_action('init', [__CLASS__, 'ensure_foundation_blowers'], 12);
     }
 
     public static function activate(): void { self::install(); }
@@ -17,6 +18,7 @@ final class Elev8_OS_Glass_Operations_Service {
             'jobs' => $wpdb->prefix . 'elev8_glass_jobs',
             'entries' => $wpdb->prefix . 'elev8_glass_work_entries',
             'pay_periods' => $wpdb->prefix . 'elev8_glass_pay_periods',
+            'job_lines' => $wpdb->prefix . 'elev8_glass_job_lines',
         ];
     }
 
@@ -62,6 +64,8 @@ final class Elev8_OS_Glass_Operations_Service {
         dbDelta("CREATE TABLE {$t['entries']} (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             job_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            job_line_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            production_product_id bigint(20) unsigned NOT NULL DEFAULT 0,
             blower_user_id bigint(20) unsigned NOT NULL DEFAULT 0,
             item_name varchar(190) NOT NULL DEFAULT '',
             quantity decimal(10,2) NOT NULL DEFAULT 1.00,
@@ -72,6 +76,7 @@ final class Elev8_OS_Glass_Operations_Service {
             adjustment decimal(12,2) NOT NULL DEFAULT 0.00,
             total decimal(12,2) NOT NULL DEFAULT 0.00,
             notes text NOT NULL,
+            snapshot_json longtext NOT NULL,
             work_date date NOT NULL,
             approval_status varchar(20) NOT NULL DEFAULT 'pending',
             pay_period_id bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -80,8 +85,40 @@ final class Elev8_OS_Glass_Operations_Service {
             PRIMARY KEY (id),
             KEY blower_period (blower_user_id,pay_period_id),
             KEY job_id (job_id),
+            KEY job_line_id (job_line_id),
+            KEY production_product_id (production_product_id),
             KEY approval_status (approval_status)
         ) {$c};");
+
+        dbDelta("CREATE TABLE {$t['job_lines']} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            job_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            production_product_id bigint(20) unsigned NOT NULL DEFAULT 0,
+            product_version int(10) unsigned NOT NULL DEFAULT 0,
+            item_name varchar(190) NOT NULL DEFAULT '',
+            quantity decimal(10,2) NOT NULL DEFAULT 1.00,
+            compensation_method varchar(30) NOT NULL DEFAULT 'hourly',
+            piecework_rate decimal(12,2) NOT NULL DEFAULT 0.00,
+            piecework_unit varchar(30) NOT NULL DEFAULT 'piece',
+            estimated_minutes decimal(10,2) NOT NULL DEFAULT 0.00,
+            material_cost decimal(12,2) NOT NULL DEFAULT 0.00,
+            snapshot_json longtext NOT NULL,
+            status varchar(30) NOT NULL DEFAULT 'planned',
+            quantity_completed decimal(10,2) NOT NULL DEFAULT 0.00,
+            quantity_rejected decimal(10,2) NOT NULL DEFAULT 0.00,
+            actual_minutes decimal(10,2) NOT NULL DEFAULT 0.00,
+            qc_status varchar(30) NOT NULL DEFAULT 'not_reviewed',
+            manager_approved tinyint(1) NOT NULL DEFAULT 0,
+            payroll_approved tinyint(1) NOT NULL DEFAULT 0,
+            created_by bigint(20) unsigned NOT NULL DEFAULT 0,
+            created_at datetime NOT NULL,
+            updated_at datetime NOT NULL,
+            PRIMARY KEY (id),
+            KEY job_id (job_id),
+            KEY production_product_id (production_product_id),
+            KEY status (status)
+        ) {$c};");
+
         dbDelta("CREATE TABLE {$t['pay_periods']} (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             period_start date NOT NULL,
@@ -147,13 +184,46 @@ final class Elev8_OS_Glass_Operations_Service {
     public static function job(int $id): ?array { global $wpdb;$t=self::tables();$r=$wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['jobs']} WHERE id=%d",$id),ARRAY_A);return $r?:null; }
 
     public static function save_entry(array $data): int|WP_Error {
-        global $wpdb;$t=self::tables();$method=sanitize_key($data['pay_method']??'piece_rate');
-        $qty=max(0,(float)($data['quantity']??0));$rate=max(0,(float)($data['rate']??0));$minutes=max(0,(float)($data['minutes']??0));$bonus=(float)($data['bonus']??0);$adj=(float)($data['adjustment']??0);
-        $base=$method==='hourly' ? ($minutes/60)*$rate : ($method==='fixed' ? $rate : $qty*$rate);
-        $total=round($base+$bonus+$adj,2);
-        $row=['job_id'=>absint($data['job_id']??0),'blower_user_id'=>absint($data['blower_user_id']??0),'item_name'=>sanitize_text_field($data['item_name']??''),'quantity'=>$qty,'pay_method'=>$method,'rate'=>$rate,'minutes'=>$minutes,'bonus'=>$bonus,'adjustment'=>$adj,'total'=>$total,'notes'=>sanitize_textarea_field($data['notes']??''),'work_date'=>self::date_or_null($data['work_date']??'')?:current_time('Y-m-d'),'approval_status'=>'pending','created_by'=>get_current_user_id(),'created_at'=>current_time('mysql')];
-        if(!$row['blower_user_id'])return new WP_Error('glass_entry_user','Choose a blower.');
-        $ok=$wpdb->insert($t['entries'],$row);return $ok?(int)$wpdb->insert_id:new WP_Error('glass_entry_save','The payout entry could not be saved.');
+        global $wpdb; $t = self::tables();
+        $blower_id = absint($data['blower_user_id'] ?? 0);
+        if (!$blower_id) { return new WP_Error('glass_entry_user', 'Choose a blower.'); }
+        $line_id = absint($data['job_line_id'] ?? 0);
+        $line = $line_id ? $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['job_lines']} WHERE id=%d", $line_id), ARRAY_A) : null;
+        $method = sanitize_key($data['pay_method'] ?? ($line['compensation_method'] ?? 'piece_rate'));
+        if ($method === 'piecework') { $method = 'piece_rate'; }
+        $qty = max(0, (float)($data['quantity'] ?? ($line['quantity_completed'] ?? 0)));
+        $minutes = max(0, (float)($data['minutes'] ?? ($line['actual_minutes'] ?? 0)));
+        $rate = max(0, (float)($data['rate'] ?? 0));
+        $profile = class_exists('Elev8_OS_Production_Catalog_Service') ? Elev8_OS_Production_Catalog_Service::compensation_profile($blower_id) : null;
+        if ($rate <= 0 && $method === 'hourly') { $rate = (float)($profile['hourly_rate'] ?? 0); }
+        if ($rate <= 0 && $method === 'piece_rate' && $line) { $rate = (float)($line['piecework_rate'] ?? 0); }
+        if ($rate <= 0) { return new WP_Error('glass_entry_rate', 'No valid hourly or piecework rate is available.'); }
+        $bonus = (float)($data['bonus'] ?? 0); $adj = (float)($data['adjustment'] ?? 0);
+        $base = $method === 'hourly' ? ($minutes / 60) * $rate : $qty * $rate;
+        $total = round($base + $bonus + $adj, 2);
+        $snapshot = ['profile' => $profile, 'job_line' => $line, 'calculated_at' => current_time('mysql')];
+        $row = [
+            'job_id' => absint($data['job_id'] ?? 0),
+            'job_line_id' => $line_id,
+            'production_product_id' => absint($line['production_product_id'] ?? 0),
+            'blower_user_id' => $blower_id,
+            'item_name' => sanitize_text_field($data['item_name'] ?? ($line['item_name'] ?? '')),
+            'quantity' => $qty,
+            'pay_method' => $method,
+            'rate' => $rate,
+            'minutes' => $minutes,
+            'bonus' => $bonus,
+            'adjustment' => $adj,
+            'total' => $total,
+            'notes' => sanitize_textarea_field($data['notes'] ?? ''),
+            'snapshot_json' => wp_json_encode($snapshot),
+            'work_date' => self::date_or_null($data['work_date'] ?? '') ?: current_time('Y-m-d'),
+            'approval_status' => 'pending',
+            'created_by' => get_current_user_id(),
+            'created_at' => current_time('mysql'),
+        ];
+        $ok = $wpdb->insert($t['entries'], $row);
+        return $ok ? (int)$wpdb->insert_id : new WP_Error('glass_entry_save', 'The payout entry could not be saved.');
     }
 
     public static function entries(array $args=[]): array {
@@ -178,9 +248,124 @@ final class Elev8_OS_Glass_Operations_Service {
     }
 
     public static function glass_workers(): array {
-        $users=get_users(['orderby'=>'display_name','order'=>'ASC']);$out=[];
-        foreach($users as $u){if(user_can($u,'elev8_glass_work')||user_can($u,'elev8_manage_glass')||user_can($u,'manage_options'))$out[]=$u;}
+        global $wpdb;
+        $catalog = class_exists('Elev8_OS_Production_Catalog_Service') ? Elev8_OS_Production_Catalog_Service::tables() : [];
+        if (empty($catalog['compensation_profiles'])) { return []; }
+        $ids = $wpdb->get_col("SELECT user_id FROM {$catalog['compensation_profiles']} WHERE active=1 ORDER BY id ASC") ?: [];
+        $out = [];
+        foreach ($ids as $id) {
+            $user = get_userdata((int) $id);
+            if ($user instanceof WP_User && user_can($user, 'elev8_glass_work')) { $out[] = $user; }
+        }
+        usort($out, static fn(WP_User $a, WP_User $b): int => strcasecmp($a->display_name, $b->display_name));
         return $out;
+    }
+
+    public static function ensure_foundation_blowers(): void {
+        $emails = [
+            'shimkus92@gmail.com' => 'Nick',
+            'adamelev8@gmail.com' => 'Adam',
+        ];
+        foreach ($emails as $email => $label) {
+            $user = get_user_by('email', $email);
+            if (!($user instanceof WP_User)) { continue; }
+            if (!in_array(Elev8_OS_Access_Service::ROLE_GLASS_BLOWER, (array) $user->roles, true)) {
+                $user->add_role(Elev8_OS_Access_Service::ROLE_GLASS_BLOWER);
+            }
+            if (class_exists('Elev8_OS_Production_Catalog_Service')) {
+                Elev8_OS_Production_Catalog_Service::save_compensation_profile([
+                    'user_id' => $user->ID,
+                    'hourly_rate' => 18,
+                    'piecework_eligible' => 1,
+                    'active' => 1,
+                    'effective_date' => current_time('Y-m-d'),
+                    'notes' => $label . ' foundation glassblower profile.',
+                ]);
+            }
+        }
+    }
+
+    public static function job_lines(int $job_id): array {
+        global $wpdb; $t = self::tables();
+        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$t['job_lines']} WHERE job_id=%d ORDER BY id ASC", $job_id), ARRAY_A) ?: [];
+    }
+
+    public static function save_job_line(array $data): int|WP_Error {
+        global $wpdb; $t = self::tables();
+        $job_id = absint($data['job_id'] ?? 0);
+        $product_id = absint($data['production_product_id'] ?? 0);
+        if (!$job_id || !$product_id || !class_exists('Elev8_OS_Production_Catalog_Service')) {
+            return new WP_Error('glass_job_line_missing', 'Choose a production product.');
+        }
+        $product = Elev8_OS_Production_Catalog_Service::product($product_id);
+        if (!$product) { return new WP_Error('glass_job_line_product', 'Production product not found.'); }
+        $materials = (array) ($product['materials'] ?? []);
+        $material_cost = 0.0;
+        foreach ($materials as $m) { $material_cost += (float) ($m['calculated_cost'] ?? 0); }
+        $snapshot = [
+            'product_id' => $product_id,
+            'version_number' => (int) ($product['version_number'] ?? 1),
+            'product_code' => (string) ($product['product_code'] ?? ''),
+            'product_name' => (string) ($product['product_name'] ?? ''),
+            'compensation_method' => (string) ($product['compensation_method'] ?? 'hourly'),
+            'piecework_rate' => (float) ($product['piecework_rate'] ?? 0),
+            'piecework_unit' => (string) ($product['piecework_unit'] ?? 'piece'),
+            'estimated_minutes' => (float) ($product['estimated_minutes'] ?? 0),
+            'material_cost' => $material_cost,
+            'materials' => $materials,
+            'captured_at' => current_time('mysql'),
+        ];
+        $now = current_time('mysql');
+        $row = [
+            'job_id' => $job_id,
+            'production_product_id' => $product_id,
+            'product_version' => (int) $snapshot['version_number'],
+            'item_name' => sanitize_text_field($product['product_name']),
+            'quantity' => max(0.01, (float) ($data['quantity'] ?? 1)),
+            'compensation_method' => sanitize_key($product['compensation_method']),
+            'piecework_rate' => (float) $product['piecework_rate'],
+            'piecework_unit' => sanitize_key($product['piecework_unit']),
+            'estimated_minutes' => (float) $product['estimated_minutes'],
+            'material_cost' => $material_cost,
+            'snapshot_json' => wp_json_encode($snapshot),
+            'status' => 'planned',
+            'created_by' => get_current_user_id(),
+            'created_at' => $now,
+            'updated_at' => $now,
+        ];
+        $ok = $wpdb->insert($t['job_lines'], $row);
+        return $ok ? (int) $wpdb->insert_id : new WP_Error('glass_job_line_save', 'Production line could not be saved.');
+    }
+
+    public static function update_job_line(int $id, array $data): bool {
+        global $wpdb; $t = self::tables();
+        $allowed = [
+            'status' => sanitize_key($data['status'] ?? 'planned'),
+            'quantity_completed' => max(0, (float) ($data['quantity_completed'] ?? 0)),
+            'quantity_rejected' => max(0, (float) ($data['quantity_rejected'] ?? 0)),
+            'actual_minutes' => max(0, (float) ($data['actual_minutes'] ?? 0)),
+            'qc_status' => sanitize_key($data['qc_status'] ?? 'not_reviewed'),
+            'manager_approved' => empty($data['manager_approved']) ? 0 : 1,
+            'payroll_approved' => empty($data['payroll_approved']) ? 0 : 1,
+            'updated_at' => current_time('mysql'),
+        ];
+        return false !== $wpdb->update($t['job_lines'], $allowed, ['id' => $id]);
+    }
+
+    public static function blower_pay_summary(int $user_id, string $start = '', string $end = ''): array {
+        global $wpdb; $t = self::tables();
+        $where = ['blower_user_id=%d']; $params = [$user_id];
+        if ($start) { $where[] = 'work_date >= %s'; $params[] = $start; }
+        if ($end) { $where[] = 'work_date <= %s'; $params[] = $end; }
+        $sql = $wpdb->prepare("SELECT * FROM {$t['entries']} WHERE " . implode(' AND ', $where) . " ORDER BY work_date DESC,id DESC", $params);
+        $entries = $wpdb->get_results($sql, ARRAY_A) ?: [];
+        $summary = ['hourly' => 0.0, 'piecework' => 0.0, 'pending' => 0.0, 'approved' => 0.0, 'entries' => $entries];
+        foreach ($entries as $entry) {
+            $total = (float) $entry['total'];
+            if ($entry['pay_method'] === 'hourly') { $summary['hourly'] += $total; } else { $summary['piecework'] += $total; }
+            if ($entry['approval_status'] === 'approved') { $summary['approved'] += $total; } elseif ($entry['approval_status'] === 'pending') { $summary['pending'] += $total; }
+        }
+        return $summary;
     }
 
     public static function import_woocommerce_cremation_orders(): int {
