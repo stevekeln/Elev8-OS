@@ -13,6 +13,7 @@ final class Elev8_OS_Conversations_Module {
         add_action('admin_post_elev8_os_create_conversation', [__CLASS__, 'create']);
         add_action('admin_post_elev8_os_reply_conversation', [__CLASS__, 'reply']);
         add_action('admin_post_elev8_os_close_conversation', [__CLASS__, 'close']);
+        add_action('admin_post_elev8_os_pin_conversation', [__CLASS__, 'pin']);
         add_filter('elev8_os_application_shell_frontend', [__CLASS__, 'shell_page']);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
     }
@@ -29,11 +30,12 @@ final class Elev8_OS_Conversations_Module {
         if (!self::is_page()) { return; }
         wp_enqueue_style('elev8-os-conversations', ELEV8_OS_URL . 'assets/css/conversations.css', [], ELEV8_OS_VERSION);
         wp_enqueue_style('elev8-workspace-button', ELEV8_OS_URL . 'assets/css/workspace.css', [], ELEV8_OS_VERSION);
+        wp_enqueue_script('elev8-os-conversations', ELEV8_OS_URL . 'assets/js/conversations.js', [], ELEV8_OS_VERSION, true);
     }
 
     public static function shortcode(): string {
         if (!is_user_logged_in()) { return '<p>' . esc_html__('Please sign in to view conversations.', 'elev8-os') . '</p>'; }
-        $user = wp_get_current_user();
+        $user = self::effective_user();
         if (!Elev8_OS_Access_Service::user_can('view_conversations', $user)) { return '<p>' . esc_html__('You do not have permission to view conversations.', 'elev8-os') . '</p>'; }
 
         ob_start();
@@ -74,46 +76,98 @@ final class Elev8_OS_Conversations_Module {
         if (!$thread instanceof WP_Post) { return; }
         $status = (string) get_post_meta($thread_id, '_elev8_conversation_status', true) ?: 'open';
         echo '<section class="elev8-conversation-thread"><div class="elev8-conversation-thread__nav"><a class="elev8-conversation-thread__back" href="' . esc_url(self::url()) . '">← ' . esc_html__('All conversations', 'elev8-os') . '</a>' . (class_exists('Elev8_OS_Workspace_Service') ? '<a class="elev8-open-workspace" href="' . esc_url(Elev8_OS_Workspace_Service::url('conversation', $thread_id)) . '">' . esc_html__('Open Workspace', 'elev8-os') . '</a>' : '') . '</div><header><div><span>' . esc_html(ucfirst($status)) . '</span><h2>' . esc_html(get_the_title($thread)) . '</h2><p>' . esc_html(self::participant_names($thread_id, 0)) . '</p></div>';
+        echo '<div class="elev8-conversation-thread__actions">';
+        if (Elev8_OS_Access_Service::user_can('manage_business_memory', $user)) {
+            $memory_id = Elev8_OS_Conversation_Service::pinned_memory_id($thread_id);
+            if ($memory_id > 0) {
+                echo '<span class="elev8-conversation-pinned">📌 ' . esc_html__('Pinned to Business Memory', 'elev8-os') . '</span>';
+            } else {
+                echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'; wp_nonce_field('elev8_pin_conversation_' . $thread_id); echo '<input type="hidden" name="action" value="elev8_os_pin_conversation"><input type="hidden" name="thread_id" value="' . $thread_id . '"><button class="is-secondary">📌 ' . esc_html__('Pin to Business Memory', 'elev8-os') . '</button></form>';
+            }
+        }
         if ($status === 'open' && ((int) $thread->post_author === $user->ID || Elev8_OS_Access_Service::user_can('manage_conversations', $user))) {
             echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'; wp_nonce_field('elev8_close_conversation_' . $thread_id); echo '<input type="hidden" name="action" value="elev8_os_close_conversation"><input type="hidden" name="thread_id" value="' . $thread_id . '"><button>' . esc_html__('Close Conversation', 'elev8-os') . '</button></form>';
         }
+        echo '</div>';
         echo '</header><div class="elev8-conversation-thread__messages">';
         foreach (Elev8_OS_Conversation_Service::messages($thread_id) as $message) {
             $author = get_userdata((int) $message->post_author);
-            echo '<article class="elev8-conversation-message' . ((int) $message->post_author === $user->ID ? ' is-mine' : '') . '"><div class="elev8-conversation-message__head"><strong>' . esc_html($author instanceof WP_User ? $author->display_name : __('Former user', 'elev8-os')) . '</strong><time>' . esc_html(get_the_date('M j, Y g:i a', $message)) . '</time></div><div>' . wp_kses_post(wpautop($message->post_content)) . '</div></article>';
+            echo '<article class="elev8-conversation-message' . ((int) $message->post_author === $user->ID ? ' is-mine' : '') . '"><div class="elev8-conversation-message__head"><strong>' . esc_html($author instanceof WP_User ? $author->display_name : __('Former user', 'elev8-os')) . '</strong><time>' . esc_html(get_the_date('M j, Y g:i a', $message)) . '</time></div><div>' . wp_kses_post(wpautop($message->post_content)) . '</div>';
+            $attachments = Elev8_OS_Conversation_Service::message_attachments((int) $message->ID);
+            if ($attachments) { echo '<div class="elev8-conversation-attachments">'; foreach ($attachments as $attachment_id) { $url = wp_get_attachment_url($attachment_id); if (!$url) { continue; } echo '<a href="' . esc_url($url) . '" target="_blank" rel="noopener">📎 ' . esc_html(get_the_title($attachment_id) ?: __('Attachment', 'elev8-os')) . '</a>'; } echo '</div>'; }
+            echo '</article>';
         }
         echo '</div>';
         if ($status === 'open') {
-            echo '<form class="elev8-conversation-reply" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">'; wp_nonce_field('elev8_reply_conversation_' . $thread_id); echo '<input type="hidden" name="action" value="elev8_os_reply_conversation"><input type="hidden" name="thread_id" value="' . $thread_id . '"><label>' . esc_html__('Reply', 'elev8-os') . '<textarea name="message" rows="4" required placeholder="' . esc_attr__('Write a reply. Use @username to include another Elev8 OS user.', 'elev8-os') . '"></textarea></label><button>' . esc_html__('Send Reply', 'elev8-os') . '</button></form>';
+            echo '<form class="elev8-conversation-reply" method="post" enctype="multipart/form-data" action="' . esc_url(admin_url('admin-post.php')) . '">'; wp_nonce_field('elev8_reply_conversation_' . $thread_id); echo '<input type="hidden" name="action" value="elev8_os_reply_conversation"><input type="hidden" name="thread_id" value="' . $thread_id . '"><label>' . esc_html__('Reply', 'elev8-os') . '<textarea name="message" rows="4" required placeholder="' . esc_attr__('Write a reply. Use @username to include another Elev8 OS user.', 'elev8-os') . '"></textarea></label><label>' . esc_html__('Attachments', 'elev8-os') . '<input type="file" name="attachments[]" multiple accept="image/*,.pdf,.doc,.docx,.txt"></label><button>' . esc_html__('Send Reply', 'elev8-os') . '</button></form>';
         }
         echo '</section>';
     }
 
     private static function render_create_form(WP_User $user): void {
-        echo '<section class="elev8-conversations__create" id="new-conversation"><h2>' . esc_html__('Start a Conversation', 'elev8-os') . '</h2><p>' . esc_html__('Use a conversation for a question or decision that should remain visible and searchable.', 'elev8-os') . '</p><form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
-        wp_nonce_field('elev8_create_conversation'); echo '<input type="hidden" name="action" value="elev8_os_create_conversation"><label>' . esc_html__('Subject', 'elev8-os') . '<input name="subject" required maxlength="160"></label><label>' . esc_html__('People', 'elev8-os') . '<select name="participant_user_ids[]" multiple size="6">';
-        foreach (Elev8_OS_Access_Service::assignment_users_grouped() as $group => $users) { echo '<optgroup label="' . esc_attr($group) . '">'; foreach ($users as $person) { if ($person->ID === $user->ID) { continue; } echo '<option value="' . (int) $person->ID . '">' . esc_html($person->display_name) . '</option>'; } echo '</optgroup>'; }
-        echo '</select><small>' . esc_html__('Hold Ctrl or Command to select more than one person.', 'elev8-os') . '</small></label><label>' . esc_html__('Message', 'elev8-os') . '<textarea name="message" rows="5" required></textarea></label><button>' . esc_html__('Start Conversation', 'elev8-os') . '</button></form></section>';
+        $groups = Elev8_OS_Conversation_Service::recipient_groups();
+        echo '<section class="elev8-conversations__create" id="new-conversation"><h2>' . esc_html__('Start a Conversation', 'elev8-os') . '</h2><p>' . esc_html__('Search for one person, several people, or select an entire team.', 'elev8-os') . '</p><form method="post" enctype="multipart/form-data" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        wp_nonce_field('elev8_create_conversation');
+        echo '<input type="hidden" name="action" value="elev8_os_create_conversation"><label>' . esc_html__('Subject', 'elev8-os') . '<input name="subject" required maxlength="160"></label>';
+        echo '<div class="elev8-recipient-picker" data-elev8-recipient-picker><label>' . esc_html__('People and teams', 'elev8-os') . '<input type="search" class="elev8-recipient-search" placeholder="' . esc_attr__('Search Steve, Nick, Glass Team…', 'elev8-os') . '"></label><div class="elev8-recipient-selected" aria-live="polite"></div>';
+        foreach ($groups as $group => $people) {
+            echo '<section class="elev8-recipient-group" data-group="' . esc_attr(strtolower((string) $group)) . '"><header><strong>' . esc_html($group) . '</strong><button type="button" class="elev8-select-team">' . esc_html__('Select team', 'elev8-os') . '</button></header><div class="elev8-recipient-options">';
+            foreach ($people as $person) {
+                if (!$person instanceof WP_User || $person->ID === $user->ID) { continue; }
+                $label = trim($person->display_name . ' ' . $person->user_email . ' ' . $person->user_login);
+                echo '<label class="elev8-recipient-option" data-search="' . esc_attr(strtolower($label . ' ' . $group)) . '"><input type="checkbox" name="participant_user_ids[]" value="' . (int) $person->ID . '"><span><strong>' . esc_html($person->display_name) . '</strong><small>' . esc_html($person->user_email) . '</small></span></label>';
+            }
+            echo '</div></section>';
+        }
+        echo '</div><label>' . esc_html__('Message', 'elev8-os') . '<textarea name="message" rows="5" required></textarea></label><label>' . esc_html__('Attachments', 'elev8-os') . '<input type="file" name="attachments[]" multiple accept="image/*,.pdf,.doc,.docx,.txt"></label><button>' . esc_html__('Start Conversation', 'elev8-os') . '</button></form></section>';
     }
 
     public static function create(): void {
-        $user = wp_get_current_user();
+        $user = self::effective_user();
         if (!Elev8_OS_Access_Service::user_can('view_conversations', $user)) { wp_die(esc_html__('Permission denied.', 'elev8-os')); }
         check_admin_referer('elev8_create_conversation');
         $thread_id = Elev8_OS_Conversation_Service::create_thread(['subject' => wp_unslash($_POST['subject'] ?? ''), 'message' => wp_unslash($_POST['message'] ?? ''), 'participant_user_ids' => (array) ($_POST['participant_user_ids'] ?? []), 'creator_user_id' => $user->ID]);
+        if ($thread_id && !empty($_FILES['attachments'])) { $ids = self::upload_attachments((array) $_FILES['attachments'], $thread_id); if ($ids) { $messages = Elev8_OS_Conversation_Service::messages($thread_id); $first = $messages ? reset($messages) : null; if ($first instanceof WP_Post) { update_post_meta($first->ID, Elev8_OS_Conversation_Service::META_ATTACHMENTS, $ids); } } }
         wp_safe_redirect($thread_id ? add_query_arg('conversation', $thread_id, self::url()) : self::url()); exit;
     }
 
     public static function reply(): void {
         $thread_id = absint($_POST['thread_id'] ?? 0); check_admin_referer('elev8_reply_conversation_' . $thread_id);
-        Elev8_OS_Conversation_Service::add_message($thread_id, wp_unslash($_POST['message'] ?? ''), get_current_user_id());
+        $user = self::effective_user();
+        $attachments = !empty($_FILES['attachments']) ? self::upload_attachments((array) $_FILES['attachments'], $thread_id) : [];
+        Elev8_OS_Conversation_Service::add_message($thread_id, wp_unslash($_POST['message'] ?? ''), $user->ID, $attachments);
         wp_safe_redirect(add_query_arg('conversation', $thread_id, self::url())); exit;
     }
 
     public static function close(): void {
         $thread_id = absint($_POST['thread_id'] ?? 0); check_admin_referer('elev8_close_conversation_' . $thread_id);
-        Elev8_OS_Conversation_Service::close($thread_id, wp_get_current_user());
+        Elev8_OS_Conversation_Service::close($thread_id, self::effective_user());
         wp_safe_redirect(add_query_arg('conversation', $thread_id, self::url())); exit;
+    }
+
+    public static function pin(): void {
+        $thread_id = absint($_POST['thread_id'] ?? 0);
+        check_admin_referer('elev8_pin_conversation_' . $thread_id);
+        Elev8_OS_Conversation_Service::pin_to_business_memory($thread_id, self::effective_user());
+        wp_safe_redirect(add_query_arg('conversation', $thread_id, self::url())); exit;
+    }
+
+    /** @return array<int,int> */
+    private static function upload_attachments(array $files, int $parent_id): array {
+        if (empty($files['name']) || !is_array($files['name'])) { return []; }
+        require_once ABSPATH . 'wp-admin/includes/file.php'; require_once ABSPATH . 'wp-admin/includes/media.php'; require_once ABSPATH . 'wp-admin/includes/image.php';
+        $ids = []; $count = min(8, count($files['name']));
+        for ($i=0; $i<$count; $i++) {
+            if ((int) ($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) { continue; }
+            $_FILES['elev8_conversation_attachment'] = ['name'=>$files['name'][$i],'type'=>$files['type'][$i],'tmp_name'=>$files['tmp_name'][$i],'error'=>$files['error'][$i],'size'=>$files['size'][$i]];
+            $id = media_handle_upload('elev8_conversation_attachment', $parent_id, [], ['test_form'=>false]); if (!is_wp_error($id)) { $ids[]=(int)$id; }
+        }
+        unset($_FILES['elev8_conversation_attachment']); return $ids;
+    }
+
+    private static function effective_user(): WP_User {
+        if (class_exists('Elev8_OS_Preview_Service')) { $user = Elev8_OS_Preview_Service::effective_user(); if ($user instanceof WP_User && $user->ID > 0) { return $user; } }
+        return wp_get_current_user();
     }
 
     public static function command(array $commands, WP_User $user): array {

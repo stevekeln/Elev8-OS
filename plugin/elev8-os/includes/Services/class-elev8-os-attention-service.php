@@ -30,6 +30,7 @@ final class Elev8_OS_Attention_Service {
         $items = array_merge($items, self::work_items($user));
         $items = array_merge($items, self::reservation_items($user));
         $items = array_merge($items, self::event_application_items($user));
+        $items = array_merge($items, self::conversation_items($user));
 
         usort($items, [__CLASS__, 'sort_items']);
 
@@ -170,6 +171,15 @@ final class Elev8_OS_Attention_Service {
 
         return $count > 0
             ? [self::aggregate_item('reservations:attention', 'normal', __('Reservations needing attention', 'elev8-os'), $count, Elev8_OS_Bingo_Reservations_Module::admin_url(), 'tickets-alt')]
+            : [];
+    }
+
+    /** @return array<int,array<string,mixed>> */
+    private static function conversation_items(WP_User $user): array {
+        if (!class_exists('Elev8_OS_Conversation_Service') || !class_exists('Elev8_OS_Conversations_Module') || !Elev8_OS_Access_Service::user_can('view_conversations', $user)) { return []; }
+        $count = Elev8_OS_Conversation_Service::unread_count((int) $user->ID);
+        return $count > 0
+            ? [self::aggregate_item('conversations:unread', 'high', __('Unread conversations', 'elev8-os'), $count, Elev8_OS_Conversations_Module::url(), 'format-chat')]
             : [];
     }
 

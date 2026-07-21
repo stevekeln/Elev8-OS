@@ -1,3 +1,14 @@
+## 13.8.0 — Team Communications & Smart Conversations
+
+- Added a searchable recipient picker with multi-person selection and one-click team selection.
+- Ensured owners and conversation managers such as Steve remain available as recipients even when they are not in a normal assignment group.
+- Made Conversations respect Role Preview identity so previewing Becca, Jeff, Scott, Nick, or another role shows the recipients that person can actually message.
+- Added file attachments to new conversations and replies, stored through the WordPress Media Library.
+- Added conversation pinning to Business Memory for authorized managers and owners.
+- Added unread Conversations to the shared Attention Center so CEO and manager dashboards can surface messages needing review.
+- Preserved threaded replies, mentions, read/unread tracking, workspace links, and close-conversation controls.
+- Kept notification delivery suppressed during Preview Mode.
+
 ## 13.7.1 — Role-Aware Teaching Calendar Hotfix
 
 - Fixed Role Preview so My Classes uses the previewed Elev8 OS identity instead of the authenticated owner account.
