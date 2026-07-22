@@ -100,6 +100,7 @@ final class Elev8_OS {
             Elev8_OS_Opportunity_Module::activate();
         }
         if (class_exists('Elev8_OS_Class_Approval_Service')) { Elev8_OS_Class_Approval_Service::activate(); }
+        if (class_exists('Elev8_OS_Business_Blueprint_Module')) { Elev8_OS_Business_Blueprint_Module::activate(); }
         self::add_rewrite_rules();
         flush_rewrite_rules();
     }
@@ -185,6 +186,7 @@ final class Elev8_OS {
             'elev8-production-catalog' => 82,
             'elev8-glass-operations' => 84,
             'elev8-business-intelligence' => 90,
+            'elev8-business-blueprint' => 92,
             'elev8-content-studio'   => 100,
             'elev8-print-center'     => 110,
             'elev8-print-identity'   => 120,

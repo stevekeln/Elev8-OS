@@ -1,3 +1,21 @@
+## 16.0.0 - Business Blueprint Engine Foundation
+
+### Added
+- Added the canonical repository-level `BUSINESS_BLUEPRINT.md` governing Elev8 OS architecture and development.
+- Added the Platform Constitution, engine registry, Business Graph registry, workflow registry, architecture decisions, roadmap, technical debt, open questions, and session protocol.
+- Added a CEO-facing Business Blueprint workspace with section navigation, architecture summary, command-palette access, and Blueprint download.
+- Added a bundled read-only Blueprint copy for installed plugin environments while keeping the repository file authoritative during development.
+
+### Architecture
+- Knowledge Engine: introduced the Blueprint as durable platform and development knowledge.
+- Intelligence Engine: future architectural recommendations must consult the Blueprint before proposing implementation.
+- Business Graph: connected Engines, Business Objects, Workflows, Architecture Decisions, Roadmap items, Technical Debt, and Development Sessions through one governing Knowledge object.
+- Every development session must begin by reading the Blueprint and end by updating it.
+
+### Open Questions
+- Structured in-app editing and repository synchronization remain intentionally postponed.
+- The canonical multi-business Organization Engine model is the next architectural milestone.
+
 ## 15.0.3 - Site-Wide Mobile Layout Guard
 
 ### Fixed
