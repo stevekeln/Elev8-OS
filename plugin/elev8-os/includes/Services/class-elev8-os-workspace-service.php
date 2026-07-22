@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Workspace_Service {
     public static function types(): array {
-        return [
+        $types = [
             'work' => __('Work Item', 'elev8-os'),
             'conversation' => __('Conversation', 'elev8-os'),
             'manager_log' => __('Manager Log', 'elev8-os'),
@@ -19,6 +19,12 @@ final class Elev8_OS_Workspace_Service {
             'person' => __('Person', 'elev8-os'),
             'organization' => __('Organization Unit', 'elev8-os'),
         ];
+        if (class_exists('Elev8_OS_Business_Graph_Registry_Service')) {
+            foreach (Elev8_OS_Business_Graph_Registry_Service::objects() as $type => $definition) {
+                $types[$type] = (string) ($definition['label'] ?? ucfirst(str_replace('_', ' ', $type)));
+            }
+        }
+        return (array) apply_filters('elev8_os_workspace_types', $types);
     }
 
     public static function normalize_type(string $type): string {
@@ -32,7 +38,8 @@ final class Elev8_OS_Workspace_Service {
             'org_unit' => 'organization',
             'elev8_org_unit' => 'organization',
         ];
-        return $aliases[$type] ?? $type;
+        $type = $aliases[$type] ?? $type;
+        return class_exists('Elev8_OS_Business_Graph_Registry_Service') ? Elev8_OS_Business_Graph_Registry_Service::normalize_object_type($type) : $type;
     }
 
     public static function url(string $type, int $id): string {
@@ -137,8 +144,8 @@ final class Elev8_OS_Workspace_Service {
             return sanitize_textarea_field((string) ($profile['bio'] ?? ''));
         }
         $post = get_post($id);
-        if (!$post instanceof WP_Post) { return ''; }
-        return wp_kses_post((string) $post->post_content);
+        $details = $post instanceof WP_Post ? wp_kses_post((string) $post->post_content) : '';
+        return (string) apply_filters('elev8_os_workspace_source_details', $details, $type, $id);
     }
 
     public static function activities(string $type, int $id, int $limit = 50): array {
@@ -237,7 +244,7 @@ final class Elev8_OS_Workspace_Service {
         $type = self::normalize_type($type);
         if ($type === 'organization' && class_exists('Elev8_OS_Organization_Service')) {
             $unit = Elev8_OS_Organization_Service::get_unit($id);
-            return wp_kses_post((string) ($unit['description'] ?? ''));
+            return [];
         }
         if ($type === 'person') {
             $profile = class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::get($id) : [];

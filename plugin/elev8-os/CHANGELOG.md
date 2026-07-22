@@ -1,3 +1,40 @@
+# Elev8 OS Changelog
+
+## 16.3.0 — Integration Engine Adapters & Organization Reliability
+
+### Fixed
+- Fixed the Organization Workspace fatal error caused by the organization file provider returning text instead of an attachment array.
+- Organization workspaces now open safely and display assigned people through the shared Workspace Engine.
+- Added a searchable organization person selector that filters WordPress users by display name, email address, or username.
+
+### Added
+- Added the first read-only Integration Engine adapters for WooCommerce products and orders.
+- Added the first read-only Integration Engine adapters for Amelia bookings and classes.
+- Added an Integration Engine diagnostics workspace showing connection status and authoritative record counts.
+- Products, orders, bookings, and classes can now participate in Universal Workspaces as stable references without copying authoritative source data.
+- Added organization-scope extension points for connected authoritative records.
+
+### Architecture
+- WooCommerce remains authoritative for products and orders.
+- Amelia remains authoritative for appointments, services, and customer bookings.
+- Elev8 OS owns only relationships, work, conversations, intelligence, and operational follow-through around those records.
+
+## 16.2.0 — Business Graph Registry & Ownership Enforcement
+
+- Added a canonical Business Graph object registry declaring owning engine, authoritative system, source type, organization scope, and architectural notes.
+- Added a relationship registry defining permitted source and target object types for explicit graph links.
+- Added a CEO-facing Business Graph workspace with object, engine, authority, and relationship diagnostics.
+- Enforced the registry when new explicit relationships are created, preventing unregistered or invalid graph links.
+- Added engine, authority, and organization-scope metadata to new relationship records without copying source records.
+- Connected Workspace type labels and normalization to the shared Business Graph registry.
+- Updated the Business Blueprint with ADR-0009 and the 16.2.0 development session.
+
+## 16.1.1 — Organization Add-Unit Hotfix
+
+- Fixed the Organization workspace Add Organization Unit button after an existing organization is selected.
+- Added an explicit new-unit mode so creating another business, brand, location, department, or team never reopens the selected unit's edit form.
+- Preserved existing organization records, assignments, hierarchy, and scoped access behavior.
+
 # Elev8 OS 16.1.0 — Organization Engine Foundation
 
 - Added configurable Business, Brand, Location, Department, and Team organization units.

@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.1  
+**Blueprint version:** 1.3  
 **Established:** 2026-07-22  
-**Platform release:** 16.1.0  
+**Platform release:** 16.3.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -200,12 +200,19 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 **Decision:** Businesses, brands, locations, departments, teams, and person responsibilities are Organization Engine records and relationships. WordPress remains authoritative for user identity.  
 **Consequence:** Operational engines may scope access and responsibility through Organization assignments without duplicating users or hardcoding a single-business hierarchy.
 
+
+### ADR-0009 — Business Graph Ownership Is Explicit and Enforced
+
+**Status:** Accepted  
+**Decision:** Every Business Graph object type declares one owning engine, one authoritative system, its organization-scope behavior, and the relationship types it may participate in. New explicit relationships must pass the shared Business Graph Registry before storage.  
+**Consequence:** Engines may extend the registry through documented filters, but they may not invent unregistered object ownership or persist invalid graph links. Elev8 OS links authoritative records and records relationship context without cloning source data.
+
 ## Roadmap by Engine
 
 | Engine | Current Foundation | Next Architectural Focus |
 |---|---|---|
 | Knowledge | Business Memory, Employee Guides, Business Blueprint | Structured SOP execution and knowledge relationships |
-| Organization | Organization units, hierarchy, scoped person assignments, CEO company map | Scoped responsibilities, shared resources, and organization-aware engine access |
+| Organization | Organization units, hierarchy, scoped person assignments, CEO company map | Shared resources and organization-aware engine access across registered graph objects |
 | Operations | Glass production, repairs, memorials, daily operations | General reusable service operations and Workbench execution |
 | Communication | Conversations, alerts, mentions | Unified delivery, preferences, escalation, and customer communication |
 | Booking | Amelia calendar and approval center | General booking orchestration and staffing rules |
@@ -219,7 +226,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 
 - The current Site Layout Guard was introduced as an OS-level response to a likely theme/footer issue. Theme ownership must be resolved before expanding that guard.
 - Some legacy modules still contain presentation and routing assumptions that should move into shared engine services.
-- Existing engine boundaries are partly implicit in class names and must be progressively documented and enforced.
+- Existing engine boundaries are now declared in the Business Graph Registry, but legacy modules must progressively register their concrete source adapters and organization scope.
 - The Blueprint is initially repository-backed and read-oriented; structured synchronization and controlled editing are future work.
 
 ## Open Questions
@@ -228,7 +235,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 2. Which accounting system will be authoritative for ledgers, reconciliation, and payroll export?
 3. How should Elev8 OS synchronize the repository Blueprint with structured in-app architecture records without creating two sources of truth?
 4. Which existing modules should be renamed or consolidated as engine capabilities?
-5. What minimum Business Graph relationship API must every engine use?
+5. Which legacy modules should be migrated first to concrete registered object adapters beyond the current Workspace types?
 
 ## Development Session Protocol
 
@@ -280,3 +287,60 @@ Every build response and Blueprint update must include:
 **Architectural decisions:** Accepted ADR-0008. WordPress users remain authoritative Person identities; Organization Engine owns only their organizational relationships.  
 **Open questions:** Shared-resource scoping and inheritance rules remain intentionally postponed.  
 **Next recommended session:** Build the Business Graph Registry and relationship enforcement layer so engines can declare object ownership and organization scope consistently.
+### 2026-07-22 — Release 16.1.1
+
+**Purpose:** Correct the Organization Engine creation workflow discovered during initial company-map testing.
+
+**Architecture updates:** Organization creation and organization editing now use explicit interface modes. Selecting an existing organization no longer prevents the owner from starting a separate organization record.
+
+**Engines changed:** Organization Engine.
+
+**Business Graph changes:** None. The fix changes only the creation workflow for existing Organization Unit objects.
+
+**Architectural decision:** Creation actions must navigate to an explicit clean creation state rather than relying on an anchor that may not exist in an edit-state view.
+
+**Open questions:** None introduced.
+
+**Next recommended session:** Continue with the Business Graph Registry and Ownership Enforcement Layer after validating creation of multiple businesses and child organization units.
+
+
+
+### 2026-07-22 — Elev8 OS 16.2.0 — Business Graph Registry & Ownership Enforcement
+
+**What changed:** Added a canonical runtime registry for Business Graph objects, owning engines, authoritative systems, organization scope, and permitted relationship types. Added a CEO Business Graph workspace and enforced registry validation when explicit relationships are created. New relationship records preserve engine, authority, and organization-scope context without copying source records.
+
+**Why:** The Organization Engine established the company structure, but the platform still needed one enforceable contract defining who owns each object and which links are architecturally valid. This prevents future engines from creating duplicate ownership or disconnected relationship models.
+
+**Engines changed:** Organization, Workflow, Identity, Knowledge, and Integrations. All engines now have a shared registry contract.
+
+**Business Graph changes:** Registered the initial canonical object types and relationship types. Added ownership, authority, and organization-scope metadata to newly created explicit graph relationships.
+
+**Architectural decision:** Accepted ADR-0009.
+
+**Open questions:** Concrete adapters for WooCommerce orders/products, Amelia bookings/classes, production jobs, repairs, memorial cases, and financial obligations must be progressively connected to the registry without duplicating those records.
+
+**Next development session:** Build the first Integration Engine adapters for WooCommerce and Amelia so authoritative Commerce and Booking records participate in the Business Graph through stable references and organization scope.
+
+
+### ADR-0010 — External Records Participate Through Read-Only Adapters
+
+**Status:** Accepted  
+**Decision:** WooCommerce products and orders and Amelia bookings and classes participate in the Business Graph through stable read-only adapter references. Elev8 OS may attach relationships, work, communication, organization scope, and intelligence, but it must not copy or replace authoritative source records.  
+**Consequence:** Integration adapters must degrade to **Unavailable** when a source system or record cannot be verified.
+
+## Development Session — 16.3.0
+
+### Architecture Updates
+Introduced the first Integration Engine adapters and repaired the Organization Workspace boundary. Organization assignments remain Identity-to-Organization relationships, while connected WooCommerce and Amelia records remain source-owned references.
+
+### Engines Changed
+Primary: Integrations. Supporting: Organization, Commerce, Booking, Identity, Workflow.
+
+### Business Graph Updates
+Product, Order, Booking, and Class can now resolve a trusted workspace summary from their authoritative systems. No source records were duplicated.
+
+### Open Questions
+The organization unit attached to each WooCommerce or Amelia record still needs configurable mapping rules by business, location, department, service, and sales channel.
+
+### Next Development Session
+Build configurable Integration Scope Mapping so WooCommerce stores/products/orders and Amelia services/locations/providers resolve into the correct Business, Brand, Location, and Department nodes.

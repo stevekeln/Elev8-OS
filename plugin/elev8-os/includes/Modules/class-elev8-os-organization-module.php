@@ -46,10 +46,10 @@ final class Elev8_OS_Organization_Module {
     public static function application_shell(bool $show): bool { return $show || is_page(absint(get_option(self::OPTION_PAGE_ID))) || is_page(self::SLUG); }
 
     public static function assets(): void {
-        if (is_page(absint(get_option(self::OPTION_PAGE_ID))) || is_page(self::SLUG)) { wp_enqueue_style('elev8-organization', ELEV8_OS_URL . 'assets/css/organization.css', [], ELEV8_OS_VERSION); }
+        if (is_page(absint(get_option(self::OPTION_PAGE_ID))) || is_page(self::SLUG)) { wp_enqueue_style('elev8-organization', ELEV8_OS_URL . 'assets/css/organization.css', [], ELEV8_OS_VERSION); wp_enqueue_script('elev8-organization-user-search', ELEV8_OS_URL . 'assets/js/organization-user-search.js', [], ELEV8_OS_VERSION, true); }
     }
     public static function admin_assets(string $hook): void {
-        if ($hook === 'elev8-os_page_elev8-organization') { wp_enqueue_style('elev8-organization', ELEV8_OS_URL . 'assets/css/organization.css', [], ELEV8_OS_VERSION); }
+        if ($hook === 'elev8-os_page_elev8-organization') { wp_enqueue_style('elev8-organization', ELEV8_OS_URL . 'assets/css/organization.css', [], ELEV8_OS_VERSION); wp_enqueue_script('elev8-organization-user-search', ELEV8_OS_URL . 'assets/js/organization-user-search.js', [], ELEV8_OS_VERSION, true); }
     }
 
     public static function shortcode(): string {
@@ -68,7 +68,8 @@ final class Elev8_OS_Organization_Module {
         $stats = Elev8_OS_Organization_Service::stats();
         $effective_user = class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user();
         $hierarchy = $effective_user instanceof WP_User ? Elev8_OS_Organization_Service::hierarchy_for_user($effective_user, 'active') : [];
-        $selected_id = absint($_GET['unit_id'] ?? 0);
+        $mode = sanitize_key((string) ($_GET['org_mode'] ?? ''));
+        $selected_id = $mode === 'new' ? 0 : absint($_GET['unit_id'] ?? 0);
         $selected = $selected_id ? Elev8_OS_Organization_Service::get_unit($selected_id) : [];
         if ($selected && !$can_manage && (!$effective_user instanceof WP_User || !Elev8_OS_Organization_Service::user_in_scope((int) $effective_user->ID, $selected_id))) { $selected = []; $selected_id = 0; }
         $assignments = $selected ? Elev8_OS_Organization_Service::assignments_for_unit($selected_id, false) : [];
@@ -78,7 +79,7 @@ final class Elev8_OS_Organization_Module {
             <?php if ($notice) : ?><div class="elev8-org__notice"><?php echo esc_html(self::notice_text($notice)); ?></div><?php endif; ?>
             <header class="elev8-org__hero">
                 <div><p class="elev8-org__eyebrow"><?php esc_html_e('Organization Engine', 'elev8-os'); ?></p><h1><?php esc_html_e('Company Map', 'elev8-os'); ?></h1><p><?php esc_html_e('Businesses, brands, locations, departments, teams, and people connected through one configurable organization graph.', 'elev8-os'); ?></p></div>
-                <?php if ($can_manage) : ?><a class="button button-primary" href="#new-organization-unit"><?php esc_html_e('Add Organization Unit', 'elev8-os'); ?></a><?php endif; ?>
+                <?php if ($can_manage) : ?><a class="button button-primary" href="<?php echo esc_url(self::url(['org_mode' => 'new']) . '#new-organization-unit'); ?>"><?php esc_html_e('Add Organization Unit', 'elev8-os'); ?></a><?php endif; ?>
             </header>
             <section class="elev8-org__stats">
                 <article><strong><?php echo esc_html((string) $stats['counts']['business']); ?></strong><span><?php esc_html_e('Businesses', 'elev8-os'); ?></span></article>
@@ -150,7 +151,7 @@ final class Elev8_OS_Organization_Module {
             <form id="assign-person" class="elev8-org__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="elev8_os_save_org_assignment"><?php wp_nonce_field('elev8_os_save_org_assignment'); ?><input type="hidden" name="unit_id" value="<?php echo esc_attr((string) $selected['id']); ?>">
                 <h2><?php esc_html_e('Assign Person', 'elev8-os'); ?></h2>
-                <label><?php esc_html_e('Person', 'elev8-os'); ?><select required name="user_id"><option value=""><?php esc_html_e('Choose a WordPress user', 'elev8-os'); ?></option><?php foreach ($users as $user) : ?><option value="<?php echo esc_attr((string) $user->ID); ?>"><?php echo esc_html($user->display_name . ' — ' . $user->user_email); ?></option><?php endforeach; ?></select></label>
+                <label class="is-wide"><?php esc_html_e('Find person', 'elev8-os'); ?><input type="search" data-elev8-org-user-search placeholder="<?php esc_attr_e('Type a name, email, or username…', 'elev8-os'); ?>" autocomplete="off"></label><label><?php esc_html_e('Person', 'elev8-os'); ?><select required name="user_id" data-elev8-org-user-select><option value=""><?php esc_html_e('Choose a WordPress user', 'elev8-os'); ?></option><?php foreach ($users as $user) : ?><option value="<?php echo esc_attr((string) $user->ID); ?>" data-search="<?php echo esc_attr(strtolower($user->display_name . ' ' . $user->user_email . ' ' . $user->user_login)); ?>"><?php echo esc_html($user->display_name . ' — ' . $user->user_email); ?></option><?php endforeach; ?></select></label>
                 <label><?php esc_html_e('Assignment type', 'elev8-os'); ?><select name="assignment_type"><?php foreach (Elev8_OS_Organization_Service::assignment_types() as $key => $label) : ?><option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option><?php endforeach; ?></select></label>
                 <label class="is-wide"><?php esc_html_e('Responsibility', 'elev8-os'); ?><input name="responsibility" placeholder="<?php esc_attr_e('Example: Production QC, class approvals, store opening', 'elev8-os'); ?>"></label>
                 <label><input type="checkbox" name="is_primary" value="1"> <?php esc_html_e('Primary assignment', 'elev8-os'); ?></label><input type="hidden" name="active" value="1">

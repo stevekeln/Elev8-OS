@@ -59,6 +59,13 @@ final class Elev8_OS_Relationship_Service {
         $kind = sanitize_key($kind);
         if (!$from_type || !$to_type || $from_id < 1 || $to_id < 1 || ($from_type === $to_type && $from_id === $to_id)) { return 0; }
         if (!isset(self::kinds()[$kind])) { $kind = 'related_to'; }
+        if (class_exists('Elev8_OS_Business_Graph_Registry_Service')) {
+            $validation = Elev8_OS_Business_Graph_Registry_Service::validate_connection($from_type, $to_type, $kind);
+            if (empty($validation['valid'])) {
+                do_action('elev8_os_business_graph_relationship_rejected', $from_type, $from_id, $to_type, $to_id, $kind, $validation);
+                return 0;
+            }
+        }
         if (!Elev8_OS_Workspace_Service::can_view($from_type, $from_id) || !Elev8_OS_Workspace_Service::can_view($to_type, $to_id)) { return 0; }
 
         $existing = self::find_exact($from_type, $from_id, $to_type, $to_id, $kind);
@@ -85,6 +92,11 @@ final class Elev8_OS_Relationship_Service {
             '_elev8_relation_kind' => $kind,
             '_elev8_relation_note' => sanitize_textarea_field($note),
             '_elev8_relation_created_by' => get_current_user_id(),
+            '_elev8_relation_from_engine' => class_exists('Elev8_OS_Business_Graph_Registry_Service') ? Elev8_OS_Business_Graph_Registry_Service::owning_engine($from_type) : '',
+            '_elev8_relation_to_engine' => class_exists('Elev8_OS_Business_Graph_Registry_Service') ? Elev8_OS_Business_Graph_Registry_Service::owning_engine($to_type) : '',
+            '_elev8_relation_from_authority' => class_exists('Elev8_OS_Business_Graph_Registry_Service') ? Elev8_OS_Business_Graph_Registry_Service::authoritative_system($from_type) : '',
+            '_elev8_relation_to_authority' => class_exists('Elev8_OS_Business_Graph_Registry_Service') ? Elev8_OS_Business_Graph_Registry_Service::authoritative_system($to_type) : '',
+            '_elev8_relation_organization_unit_id' => class_exists('Elev8_OS_Business_Graph_Registry_Service') ? (Elev8_OS_Business_Graph_Registry_Service::organization_scope_for($from_type, $from_id) ?: Elev8_OS_Business_Graph_Registry_Service::organization_scope_for($to_type, $to_id)) : 0,
         ];
         foreach ($meta as $key => $value) { update_post_meta((int) $relation_id, $key, $value); }
 
