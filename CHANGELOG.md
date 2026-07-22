@@ -1,5 +1,27 @@
 # Elev8 OS Changelog
 
+## 18.6.0 — Executive Brief Delivery & Attention Governance
+
+### Added
+- Configurable personal Executive Brief email delivery through the shared Communication Engine notification boundary.
+- Daily or weekday delivery schedules with a configurable local delivery hour.
+- Manual test delivery from the Executive Intelligence workspace.
+- Executive attention acknowledgement, deferral, resolution, and reopening controls.
+- Stable attention keys connecting governance decisions to the underlying Pattern or Recommendation.
+- Executive decision timeline with user, date, status, notes, and defer-until evidence.
+- Hourly reconciliation that delivers each enabled user no more than one brief per scheduled day.
+
+### Architecture
+- Accepted ADR-0025: executive attention governance is evidence about a leader's response to a read-model item; it does not rewrite the underlying intelligence.
+- Scheduled summaries use the Communication Engine boundary and preserve Intelligence as the source of ranked evidence.
+- Deferred and resolved items are removed from the actionable brief while their decision history remains auditable.
+- Delivery policies are configurable per user and do not hardcode business names, recipients, or delivery times.
+
+### Database changes
+- Added hidden `elev8_exec_attention` posts for durable attention governance and decision timelines.
+- Added user metadata for Executive Brief delivery preferences and last successful delivery time.
+
+
 ## 18.5.0 — Executive Intelligence
 
 ### Added

@@ -14,6 +14,9 @@ final class Elev8_OS_Observation_Registry_Module {
         add_action('admin_post_elev8_os_promote_pattern', [__CLASS__, 'promote_pattern']);
         add_action('admin_post_elev8_os_decide_recommendation', [__CLASS__, 'decide_recommendation']);
         add_action('admin_post_elev8_os_record_recommendation_outcome', [__CLASS__, 'record_recommendation_outcome']);
+        add_action('admin_post_elev8_os_govern_executive_attention', [__CLASS__, 'govern_executive_attention']);
+        add_action('admin_post_elev8_os_save_executive_brief_settings', [__CLASS__, 'save_executive_brief_settings']);
+        add_action('admin_post_elev8_os_send_executive_brief', [__CLASS__, 'send_executive_brief']);
         add_filter('elev8_os_application_shell_frontend', [__CLASS__, 'shell_page']);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
     }
@@ -94,8 +97,14 @@ final class Elev8_OS_Observation_Registry_Module {
         echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><div style="display:flex;justify-content:space-between;gap:20px;align-items:flex-start"><div><p style="margin:0;font-size:12px;text-transform:uppercase;font-weight:700">'.esc_html__('BEST USE OF EXECUTIVE ATTENTION','elev8-os').'</p><h2 style="margin:6px 0">'.esc_html__('What deserves attention now','elev8-os').'</h2></div><strong>'.esc_html((string)($confidence['label']??'Low')).' '.esc_html__('confidence','elev8-os').'</strong></div>';
         $attention=(array)($report['attention']??[]);
         if(!$attention){echo '<p>'.esc_html__('No governed intelligence currently requires executive attention.','elev8-os').'</p>';}
-        foreach($attention as $index=>$item){$target=(string)($item['target']??'patterns');$url=add_query_arg('view',$target,self::url());echo '<article style="border-top:1px solid #eee;padding:14px 0"><div style="display:flex;gap:12px"><strong style="min-width:28px">'.(int)($index+1).'.</strong><div><a href="'.esc_url($url).'" style="font-weight:800;text-decoration:none">'.esc_html((string)($item['title']??'')).'</a><p style="margin:5px 0 0">'.esc_html((string)($item['reason']??'')).'</p><small>'.esc_html(ucwords((string)($item['kind']??'attention'))).'</small></div></div></article>';}
+        foreach($attention as $index=>$item){
+            $target=(string)($item['target']??'patterns');$url=add_query_arg('view',$target,self::url());$governance=(array)($item['governance']??[]);
+            echo '<article style="border-top:1px solid #eee;padding:14px 0"><div style="display:flex;gap:12px"><strong style="min-width:28px">'.(int)($index+1).'.</strong><div style="flex:1"><a href="'.esc_url($url).'" style="font-weight:800;text-decoration:none">'.esc_html((string)($item['title']??'')).'</a><p style="margin:5px 0 0">'.esc_html((string)($item['reason']??'')).'</p><small>'.esc_html(ucwords((string)($item['kind']??'attention'))).' · '.esc_html(ucfirst((string)($governance['status']??'open'))).'</small>';
+            echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">';wp_nonce_field('elev8_govern_executive_attention');
+            echo '<input type="hidden" name="action" value="elev8_os_govern_executive_attention"><input type="hidden" name="item_key" value="'.esc_attr((string)($item['item_key']??'')).'"><select name="attention_status"><option value="acknowledged">'.esc_html__('Acknowledge','elev8-os').'</option><option value="deferred">'.esc_html__('Defer','elev8-os').'</option><option value="resolved">'.esc_html__('Resolve','elev8-os').'</option><option value="open">'.esc_html__('Reopen','elev8-os').'</option></select><input type="date" name="defer_until" value="'.esc_attr((string)($governance['defer_until']??'')).'"><input name="attention_notes" placeholder="'.esc_attr__('Decision note','elev8-os').'"><button>'.esc_html__('Save','elev8-os').'</button></form></div></div></article>';}
         echo '<p style="margin-bottom:0"><small>'.esc_html((string)($confidence['explanation']??'')).'</small></p></section>';
+        self::executive_delivery_settings();
+        self::executive_decision_timeline();
         echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px">';
         self::executive_pattern_section(__('Highest-priority risks','elev8-os'),(array)($report['top_risks']??[]),'risk');
         self::executive_pattern_section(__('Strongest opportunities','elev8-os'),(array)($report['top_opportunities']??[]),'opportunity');
@@ -185,6 +194,45 @@ final class Elev8_OS_Observation_Registry_Module {
         echo '</select><select name="owner_user_id"><option value="0">'.esc_html__('Unassigned','elev8-os').'</option>';
         foreach(get_users(['orderby'=>'display_name','order'=>'ASC','fields'=>['ID','display_name']]) as $user){echo '<option value="'.(int)$user->ID.'" '.selected((int)$item['suggested_owner_user_id'],(int)$user->ID,false).'>'.esc_html($user->display_name).'</option>';}
         echo '</select><input name="decision_notes" placeholder="'.esc_attr__('Decision note (optional)','elev8-os').'" style="min-width:260px"><button>'.esc_html__('Save decision','elev8-os').'</button></form></article>';
+    }
+
+
+    private static function executive_delivery_settings(): void {
+        if (!class_exists('Elev8_OS_Executive_Brief_Delivery_Service')) { return; }
+        $settings=Elev8_OS_Executive_Brief_Delivery_Service::settings(get_current_user_id());
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><h2>'.esc_html__('Executive Brief delivery','elev8-os').'</h2><p>'.esc_html__('Receive a governed summary through the Communication Engine. Delivery settings are personal and configurable.','elev8-os').'</p>';
+        echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">';wp_nonce_field('elev8_save_executive_brief_settings');
+        echo '<input type="hidden" name="action" value="elev8_os_save_executive_brief_settings"><label><input type="checkbox" name="delivery_enabled" value="1" '.checked(!empty($settings['enabled']),true,false).'> '.esc_html__('Email my Executive Brief','elev8-os').'</label><label>'.esc_html__('Delivery hour','elev8-os').' <select name="delivery_hour">';
+        for($hour=0;$hour<24;$hour++){echo '<option value="'.$hour.'" '.selected((int)$settings['hour'],$hour,false).'>'.esc_html(wp_date(get_option('time_format'),mktime($hour,0))).'</option>';}
+        echo '</select></label><select name="delivery_days"><option value="daily" '.selected((string)$settings['days'],'daily',false).'>'.esc_html__('Every day','elev8-os').'</option><option value="weekdays" '.selected((string)$settings['days'],'weekdays',false).'>'.esc_html__('Weekdays','elev8-os').'</option></select><button>'.esc_html__('Save delivery settings','elev8-os').'</button></form>';
+        echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="margin-top:10px">';wp_nonce_field('elev8_send_executive_brief');echo '<input type="hidden" name="action" value="elev8_os_send_executive_brief"><button>'.esc_html__('Send me a test brief now','elev8-os').'</button></form></section>';
+    }
+
+    private static function executive_decision_timeline(): void {
+        if (!class_exists('Elev8_OS_Executive_Attention_Governance_Service')) { return; }
+        $events=Elev8_OS_Executive_Attention_Governance_Service::timeline(20);
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><h2>'.esc_html__('Executive decision timeline','elev8-os').'</h2>';
+        if(!$events){echo '<p>'.esc_html__('No attention decisions have been recorded yet.','elev8-os').'</p>';}
+        foreach($events as $event){$user=get_userdata((int)($event['user_id']??0));echo '<div style="border-top:1px solid #eee;padding:10px 0"><strong>'.esc_html(ucfirst((string)($event['status']??'open'))).'</strong> <span>'.esc_html((string)($event['item_key']??'')).'</span><br><small>'.esc_html((string)($event['occurred_at']??'')).($user?' · '.esc_html($user->display_name):'').(!empty($event['defer_until'])?' · '.esc_html(sprintf(__('Deferred until %s','elev8-os'),$event['defer_until'])):'').'</small>';if(!empty($event['notes'])){echo '<p style="margin:4px 0 0">'.esc_html((string)$event['notes']).'</p>';}echo '</div>';}
+        echo '</section>';
+    }
+
+    public static function govern_executive_attention(): void {
+        check_admin_referer('elev8_govern_executive_attention');if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        $result=Elev8_OS_Executive_Attention_Governance_Service::decide((string)($_POST['item_key']??''),(string)($_POST['attention_status']??'open'),get_current_user_id(),wp_unslash((string)($_POST['attention_notes']??'')),(string)($_POST['defer_until']??''));
+        if(is_wp_error($result)){wp_die(esc_html($result->get_error_message()));}wp_safe_redirect(add_query_arg('view','executive',self::url()));exit;
+    }
+
+    public static function save_executive_brief_settings(): void {
+        check_admin_referer('elev8_save_executive_brief_settings');if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        Elev8_OS_Executive_Brief_Delivery_Service::save_settings(get_current_user_id(),['enabled'=>!empty($_POST['delivery_enabled']),'hour'=>(int)($_POST['delivery_hour']??7),'days'=>(string)($_POST['delivery_days']??'daily')]);
+        wp_safe_redirect(add_query_arg(['view'=>'executive','delivery'=>'saved'],self::url()));exit;
+    }
+
+    public static function send_executive_brief(): void {
+        check_admin_referer('elev8_send_executive_brief');if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        $sent=Elev8_OS_Executive_Brief_Delivery_Service::deliver(wp_get_current_user());
+        wp_safe_redirect(add_query_arg(['view'=>'executive','delivery'=>$sent?'sent':'failed'],self::url()));exit;
     }
 
     public static function promote_pattern(): void {

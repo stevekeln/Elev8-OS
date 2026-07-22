@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.3.0  
+**Platform release:** 18.6.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -242,7 +242,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Commerce | WooCommerce integration | Order-to-operation orchestration |
 | Sales | Opportunities foundation | Reusable pipeline and sales operating home |
 | Marketing | Content and marketing foundations | Campaign engine and attribution |
-| Intelligence | Observation Engine, Observation Review, Pattern Detection, Recommendation Promotion, Outcome Tracking, Executive Intelligence, Executive Brief, and workspace health | Configurable classification, ROI adapters, scheduled delivery, and forecasting |
+| Intelligence | Observation Engine, Observation Review, Pattern Detection, Recommendation Promotion, Outcome Tracking, Executive Intelligence, scheduled Executive Brief delivery, attention governance, and workspace health | Configurable classification, ROI adapters, decision follow-through, and forecasting |
 
 ## Technical Debt and Risks
 
@@ -625,3 +625,25 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Organization-specific executive weighting, department comparisons, financial ROI adapters, attention-item snoozing, and scheduled executive delivery remain intentionally postponed.
 
 **Next development session:** Build the Executive Brief delivery and attention governance layer so leaders can receive a scheduled summary, acknowledge or defer attention items, and retain a decision timeline without changing the underlying intelligence evidence.
+
+### ADR-0025 — Executive Attention Decisions Are Governed Evidence
+
+**Status:** Accepted  
+**Decision:** A leader may acknowledge, defer, resolve, or reopen an Executive Intelligence attention item without changing the Pattern, Recommendation, Observation, Work Item, Outcome, or authoritative source that produced it. Each decision is stored as durable governance evidence with a stable attention key, user, timestamp, optional note, and defer-until date. Executive Brief delivery uses the Communication Engine boundary and configurable per-user policies.
+
+**Consequence:** The executive attention queue can support reminders and scheduled summaries without becoming a second task system. Deferred and resolved items leave the actionable queue while preserving a complete decision timeline. Delivery never changes intelligence evidence or approves operational execution.
+
+### 2026-07-22 — Elev8 OS 18.6.0 — Executive Brief Delivery & Attention Governance
+
+**What changed:** Added configurable Executive Brief email delivery, daily or weekday schedules, manual test delivery, stable attention-item governance, acknowledge/defer/resolve/reopen controls, actionable-queue filtering, and an executive decision timeline.
+
+**Why:** Executive Intelligence could rank what deserved attention, but it could not preserve how a leader responded or deliver that governed view on a useful schedule. This release closes that operational gap without turning the executive read model into a competing task or notification system.
+
+**Engines changed:** Intelligence (primary); Communication, Automation, Organization, Identity, Analytics, Operations, and Workflow (supporting).
+
+**Business Graph changes:** Added Executive Attention Decision as governance evidence connected by a stable key to a Pattern or Recommendation attention projection. Added Executive Brief Delivery as a Communication event derived from the current governed read model. No authoritative Intelligence object changes ownership.
+
+**Open questions:** Organization-scoped recipient policies, multi-channel delivery, digest localization, escalation recipients, and delivery analytics remain intentionally postponed.
+
+**Next development session:** Build the Executive Decision Follow-through layer so acknowledged attention can intentionally become a decision record, delegated review, or approved operational action while preserving the existing Recommendation and Work Item governance boundaries.
+

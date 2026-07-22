@@ -36,6 +36,8 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-outcome-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-score-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-intelligence-read-model-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-attention-governance-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-brief-delivery-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-cross-engine-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-blueprint-service.php';
@@ -177,6 +179,8 @@ final class Elev8_OS_Loader {
         Elev8_OS_Pattern_Detection_Service::init();
         Elev8_OS_Intelligence_Recommendation_Service::init();
         Elev8_OS_Recommendation_Outcome_Service::init();
+        Elev8_OS_Executive_Attention_Governance_Service::init();
+        Elev8_OS_Executive_Brief_Delivery_Service::init();
         Elev8_OS_Daily_Operations_Observation_Contributor::init();
         Elev8_OS_Cross_Engine_Observation_Contributor::init();
         Elev8_OS_Workflow_Service::init();
