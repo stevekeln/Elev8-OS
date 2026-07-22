@@ -916,3 +916,30 @@ Focus policy and feedback are presentation governance only. They do not change W
 
 **Next milestone:** Build Team Coordination as a shared Operations and Workflow capability for workload visibility, Work Item dependencies, waiting-on relationships, bottleneck detection, and governed handoff recommendations.
 
+## Development History — 19.5.0
+
+### Team Coordination and Work Dependencies
+
+Team Coordination is now a shared Operations and Workflow capability over Universal Work Items. Leaders can see active workload distribution, overdue and urgent pressure, open dependency chains, downstream work being blocked, and recent assignment handoffs. Individual contributors see coordination evidence around the work they are permitted to access.
+
+Work Dependencies are governed waiting-on relationships between canonical Work Items. Work Handoffs preserve the transfer from one accountable owner to another while the original Work Item remains authoritative. Bottleneck scores are explainable read-model projections based on open dependencies, downstream dependents, urgency, and overdue state; they do not modify operational priority or source-system data.
+
+**Primary engine:** Operations.
+
+**Supporting engines:** Workflow, Organization, Identity, Communication, Automation, Analytics, and Intelligence.
+
+**Business Graph changes:** Added Work Dependency relationships between Work Items and Work Handoff evidence connected to the Work Item, previous owner, new owner, actor, timestamp, and note. Added a non-authoritative Team Coordination projection for workload and bottleneck visibility. No duplicate project, task, ticket, or team record was introduced.
+
+### ADR-0038 — Team Coordination Extends Universal Work
+
+**Status:** Accepted  
+**Decision:** Team coordination must reuse Universal Work Items, Organization scope, centralized assignment eligibility, and Workflow relationships. Dependencies and handoffs may add governed relationships and evidence, but they may not create a second task or project-management system.
+
+**Consequence:** Every operational contributor can participate in cross-team coordination without custom handoff logic. Future automation and intelligence can reason over the same Work Item graph.
+
+**Technical debt:** The first release manages direct Work Item dependencies. Dependency templates, milestone grouping, visual dependency graphs, capacity thresholds, and automated notifications remain future work.
+
+**Open questions:** Whether Organization Units should define workload-capacity targets, when a blocked Work Item should automatically suggest reassignment, and which handoffs require acknowledgement remain intentionally postponed.
+
+**Next milestone:** Build Team Capacity and Handoff Governance with configurable capacity targets, handoff acknowledgement, dependency notifications, and explainable reassignment suggestions without automatic assignment changes.
+

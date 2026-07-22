@@ -1,3 +1,17 @@
+## 19.5.0 — Team Coordination & Work Dependencies
+
+### Added
+- A managed Team Coordination portal workspace for workload visibility, waiting-on relationships, bottleneck detection, and recent handoffs.
+- Governed Work Item dependency relationships with circular-dependency protection and open-dependency detection.
+- Explicit Work Item handoffs that reuse the canonical Operations owner field while preserving assignment-transfer evidence and notes.
+- Explainable bottleneck scoring based on open dependencies, blocked downstream work, urgency, and overdue state.
+- Role-aware coordination visibility: operational leaders see their permitted team scope while other users see coordination around their own assigned work.
+
+### Architecture
+- Accepted ADR-0038: Team Coordination extends Universal Work Items rather than creating a separate project-management system.
+- Workflow owns Work Dependency relationships; Operations owns assignment and Handoff evidence.
+- Dependencies, workload projections, and bottleneck scores do not rewrite authoritative source records or automatically complete work.
+
 ## 19.4.0 — Focus Intelligence & Organization Policy Governance
 
 ### Added
