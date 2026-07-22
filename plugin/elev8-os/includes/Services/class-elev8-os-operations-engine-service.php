@@ -99,6 +99,14 @@ final class Elev8_OS_Operations_Engine_Service {
             'source_id' => absint(get_post_meta($id, '_elev8_work_source_id', true)),
             'started_at' => (string) get_post_meta($id, self::META_STARTED_AT, true),
             'completed_at' => (string) get_post_meta($id, self::META_COMPLETED_AT, true),
+            'contributor_key' => (string) get_post_meta($id, '_elev8_work_contributor_key', true),
+            'checklist' => (array) get_post_meta($id, '_elev8_work_checklist', true),
+            'required_approvals' => (array) get_post_meta($id, '_elev8_work_required_approvals', true),
+            'completion_rules' => (array) get_post_meta($id, '_elev8_work_completion_rules', true),
+            'escalation' => (array) get_post_meta($id, '_elev8_work_escalation', true),
+            'source_status' => (string) get_post_meta($id, '_elev8_work_source_status', true),
+            'last_synced_at' => (string) get_post_meta($id, '_elev8_work_last_synced_at', true),
+            'execution' => class_exists('Elev8_OS_SOP_Execution_Service') ? Elev8_OS_SOP_Execution_Service::execution($id) : ['checklist'=>[],'approvals'=>[],'timeline'=>[],'ready'=>true],
             'workspace_url' => class_exists('Elev8_OS_Workspace_Service') ? Elev8_OS_Workspace_Service::url('work', $id) : '',
         ];
     }
@@ -179,10 +187,15 @@ final class Elev8_OS_Operations_Engine_Service {
         return $signals;
     }
 
-    public static function update_status(int $id, string $status): bool {
+    public static function update_status(int $id, string $status) {
+        $status = sanitize_key($status);
+        if ($status === 'completed' && class_exists('Elev8_OS_SOP_Execution_Service')) {
+            $ready = Elev8_OS_SOP_Execution_Service::validate_completion($id);
+            if (is_wp_error($ready)) { return $ready; }
+        }
         $before = (string) get_post_meta($id, '_elev8_work_status', true);
         $result = Elev8_OS_Work_Service::update($id, ['status' => $status]);
-        if (is_wp_error($result)) { return false; }
+        if (is_wp_error($result)) { return $result; }
         if ($status === 'in_progress' && $before !== 'in_progress' && !get_post_meta($id, self::META_STARTED_AT, true)) {
             update_post_meta($id, self::META_STARTED_AT, current_time('mysql'));
         }

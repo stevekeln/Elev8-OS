@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.4  
+**Blueprint version:** 1.6  
 **Established:** 2026-07-22  
-**Platform release:** 17.0.0  
+**Platform release:** 17.2.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -370,3 +370,48 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Existing production jobs, repairs, memorial cases, class decisions, events, and recurring procedures still need explicit contributor adapters that create or expose Work Items without duplicating source state.
 
 **Next development session:** Build Operations Contributor Adapters and SOP Execution so authoritative engine records can generate standardized work, checklists, approvals, and completion conditions through the shared Operations Engine.
+
+### ADR-0012 — Operational Sources Contribute Work Through Adapters
+
+**Status:** Accepted  
+**Decision:** Authoritative operational systems contribute execution requirements to the Operations Engine through registered contributor adapters. Adapters create or synchronize stable Work Items, checklists, approvals, completion rules, due dates, assignments, escalation contracts, and timeline-ready source context while the source system continues to own its record and state.  
+**Consequence:** Modules must not create parallel task systems for operational work. Contributor synchronization must be idempotent, source-referenced, and safe when source records are unavailable.
+
+### 2026-07-22 — Elev8 OS 17.1.0 — Operations Contributor Adapter Foundation
+
+**Architecture Updates:** Added the reusable Operations Contributor registry and synchronization service. Added the first adapter for Glass Production, Repairs, and Memorials. Glass job creation and updates now publish source-change events that synchronize one canonical Work Item instead of creating duplicate operational records.
+
+**Why:** Production jobs, repairs, and memorial cases already contain authoritative operational state, but managers and contributors still need those records to appear automatically in the Universal Work Inbox with a clear execution contract.
+
+**Engines Changed:** Operations (primary). Workflow, Assets, Financial, Organization, Identity, Communication, Automation, and Glass Operations (supporting).
+
+**Business Graph Updates:** Added Operations Contributor as a registered graph object. Added stable relationships from Glass Job → contributed Work Item through source type, source ID, contributor key, workflow key, and step key. Work Items now expose checklist, approval, completion-rule, escalation, source-status, and last-synchronized context.
+
+**Architectural Decisions:** Accepted ADR-0012. Source systems retain ownership; contributor adapters own translation into executable work. Synchronization is idempotent and closes contributed work when the source is completed or cancelled.
+
+**Open Questions:** Organization-unit mapping for glass jobs remains intentionally postponed until configurable location/department scope mapping is available. Checklist item completion state and approval evidence need a reusable SOP Execution model rather than module-specific fields. Existing historical glass jobs are not automatically backfilled in this release.
+
+**Next Development Session:** Build SOP Execution and checklist evidence for contributed Work Items, then add the Class Approval contributor adapter using Amelia references without duplicating bookings.
+
+### ADR-0013 — Execution Contracts and Evidence Are Separate
+
+**Status:** Accepted  
+**Decision:** Operations Contributor adapters define immutable execution requirements, while the Workflow Engine records checklist completion, approval evidence, actor identity, timestamps, and audit history against the canonical Work Item. Source systems continue to own operational state.  
+**Consequence:** Contributor synchronization may revise the current contract but must preserve compatible evidence. A Work Item cannot complete until its current execution contract is satisfied.
+
+### 2026-07-22 — Elev8 OS 17.2.0 — SOP Execution & Completion Evidence
+
+**Architecture Updates:** Added a reusable SOP Execution service for contributed Work Items. Execution contracts now produce persistent checklist progress, approval evidence, approval notes, actor identity, timestamps, and timeline entries. Contributor synchronization reconciles contracts without discarding compatible evidence. Completion is blocked when required evidence is incomplete.
+
+**Why:** Version 17.1.0 could describe required work but could not prove it happened. A shared execution layer eliminates module-specific checklist fields and creates auditable operational completion across production, repairs, memorials, classes, maintenance, inventory, and events.
+
+**Engines Changed:** Workflow (primary execution mechanics) and Operations (canonical Work Item lifecycle). Supporting engines: Knowledge, Identity, Communication, Automation, Assets, and Glass Operations.
+
+**Business Graph Updates:** Added SOP Execution as a registered graph object linked to one canonical Work Item. Checklist evidence and approvals now carry actor and time context without duplicating the authoritative Glass Job, Repair, Memorial Case, or future source record.
+
+**Architectural Decisions:** Accepted ADR-0013. Execution requirements and proof of execution are separate. Contributor adapters declare requirements; SOP Execution records evidence; Operations controls completion.
+
+**Open Questions:** Approval authority is currently validated through Work Item access rather than per-approval capability policies. File/photo evidence and reusable SOP templates remain intentionally postponed. Historical contributed work can be reconciled when next synchronized but is not bulk-backfilled automatically.
+
+**Next Development Session:** Add the Amelia-backed Class Approval Operations Contributor so pending class decisions automatically create synchronized approval and follow-through work without copying Amelia booking data.
+

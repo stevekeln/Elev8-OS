@@ -72,6 +72,7 @@ final class Elev8_OS_Operations_Engine_Module {
         $organizations = self::organization_options($user);
         ob_start(); ?>
         <main class="elev8-operations-engine">
+            <?php if(!empty($_GET['error'])):?><div class="elev8-operations-engine__notice is-error"><?php echo esc_html(wp_unslash((string)$_GET['error'])); ?></div><?php elseif(!empty($_GET['saved'])):?><div class="elev8-operations-engine__notice is-success"><?php esc_html_e('Work and execution evidence saved.','elev8-os'); ?></div><?php endif;?>
             <header class="elev8-operations-engine__hero">
                 <div><p><?php esc_html_e('OPERATIONS ENGINE','elev8-os'); ?></p><h1><?php esc_html_e('What needs to happen next?','elev8-os'); ?></h1><span><?php esc_html_e('One Work Inbox for assignments, approvals, production, repairs, teaching, maintenance, routes, inventory, events, and future operational work.','elev8-os'); ?></span></div>
                 <nav><a class="<?php echo $view==='mine'?'is-active':''; ?>" href="<?php echo esc_url(self::url()); ?>"><?php esc_html_e('My Work','elev8-os'); ?></a><?php if($manage):?><a class="<?php echo $view==='team'?'is-active':''; ?>" href="<?php echo esc_url(self::url(['view'=>'team'])); ?>"><?php esc_html_e('Team Work','elev8-os'); ?></a><?php endif;?></nav>
@@ -129,7 +130,15 @@ final class Elev8_OS_Operations_Engine_Module {
             <header><div><span><?php echo esc_html($item['type_label']); ?></span><h3><?php echo esc_html($item['title']); ?></h3></div><strong><?php echo esc_html(Elev8_OS_Work_Service::statuses()[$status]??ucfirst($status)); ?></strong></header>
             <?php if($item['description']):?><p><?php echo esc_html(wp_trim_words(wp_strip_all_tags($item['description']),35)); ?></p><?php endif;?>
             <dl><div><dt><?php esc_html_e('Owner','elev8-os'); ?></dt><dd><?php echo esc_html($item['owner_name']); ?></dd></div><div><dt><?php esc_html_e('Due','elev8-os'); ?></dt><dd><?php echo esc_html($item['due_date']?:__('Unavailable','elev8-os')); ?></dd></div><div><dt><?php esc_html_e('Priority','elev8-os'); ?></dt><dd><?php echo esc_html(Elev8_OS_Work_Service::priorities()[$priority]??ucfirst($priority)); ?></dd></div><div><dt><?php esc_html_e('Organization','elev8-os'); ?></dt><dd><?php echo esc_html(Elev8_OS_Operations_Engine_Service::organization_label((int)$item['organization_unit_id'])); ?></dd></div></dl>
-            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+            <?php $execution = is_array($item['execution'] ?? null) ? $item['execution'] : ['checklist'=>[],'approvals'=>[],'ready'=>true]; ?>
+            <?php if(!empty($execution['checklist']) || !empty($execution['approvals'])): ?>
+            <section class="elev8-operations-engine__execution">
+                <header><div><h4><?php esc_html_e('Execution evidence','elev8-os'); ?></h4><p><?php esc_html_e('Complete the required procedure and approvals before closing this work item.','elev8-os'); ?></p></div><strong class="<?php echo !empty($execution['ready'])?'is-ready':'is-pending'; ?>"><?php echo esc_html(!empty($execution['ready'])?__('Ready to complete','elev8-os'):__('Evidence required','elev8-os')); ?></strong></header>
+                <?php if(!empty($execution['checklist'])):?><fieldset><legend><?php esc_html_e('Procedure checklist','elev8-os'); ?></legend><?php foreach($execution['checklist'] as $step):?><label class="elev8-execution-check"><input form="elev8-work-form-<?php echo (int)$item['id']; ?>" type="checkbox" name="execution_checklist[]" value="<?php echo esc_attr($step['id']); ?>" <?php checked(!empty($step['completed'])); ?>><span><?php echo esc_html($step['label']); ?></span></label><?php endforeach;?></fieldset><?php endif;?>
+                <?php if(!empty($execution['approvals'])):?><fieldset><legend><?php esc_html_e('Required approvals','elev8-os'); ?></legend><?php foreach($execution['approvals'] as $approval):?><div class="elev8-execution-approval"><label class="elev8-execution-check"><input form="elev8-work-form-<?php echo (int)$item['id']; ?>" type="checkbox" name="execution_approvals[]" value="<?php echo esc_attr($approval['id']); ?>" <?php checked(!empty($approval['approved'])); ?>><span><?php echo esc_html($approval['label']); ?></span></label><input form="elev8-work-form-<?php echo (int)$item['id']; ?>" name="execution_approval_notes[<?php echo esc_attr($approval['id']); ?>]" value="<?php echo esc_attr((string)($approval['note']??'')); ?>" placeholder="<?php esc_attr_e('Approval note or evidence','elev8-os'); ?>"></div><?php endforeach;?></fieldset><?php endif;?>
+            </section>
+            <?php endif; ?>
+            <form id="elev8-work-form-<?php echo (int)$item['id']; ?>" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <?php wp_nonce_field('elev8_operations_update_'.$item['id']); ?><input type="hidden" name="action" value="elev8_os_operations_update"><input type="hidden" name="work_id" value="<?php echo (int)$item['id']; ?>"><input type="hidden" name="view" value="<?php echo esc_attr($view); ?>">
                 <label><?php esc_html_e('Status','elev8-os'); ?><select name="status"><?php foreach(Elev8_OS_Work_Service::statuses() as $key=>$label):?><option value="<?php echo esc_attr($key); ?>" <?php selected($status,$key); ?>><?php echo esc_html($label); ?></option><?php endforeach;?></select></label>
                 <label><?php esc_html_e('Notes','elev8-os'); ?><input name="notes" placeholder="<?php esc_attr_e('Progress, decision, or completion note','elev8-os'); ?>"></label>
@@ -177,9 +186,18 @@ final class Elev8_OS_Operations_Engine_Module {
         $user=class_exists('Elev8_OS_Preview_Service')?Elev8_OS_Preview_Service::effective_user():wp_get_current_user();
         $can=Elev8_OS_Access_Service::user_can('manage_operations',$user)||Elev8_OS_Access_Service::user_can('manage_work',$user)||((int)$item['owner_user_id']===$user->ID&&Elev8_OS_Access_Service::user_can('view_operations',$user));
         if(!$can)wp_die(esc_html__('Permission denied.','elev8-os'));
-        Elev8_OS_Operations_Engine_Service::update_status($id,sanitize_key((string)($_POST['status']??'requested')));
+        if (class_exists('Elev8_OS_SOP_Execution_Service')) {
+            Elev8_OS_SOP_Execution_Service::save($id, [
+                'checklist' => (array)($_POST['execution_checklist'] ?? []),
+                'approvals' => (array)($_POST['execution_approvals'] ?? []),
+                'approval_notes' => (array)($_POST['execution_approval_notes'] ?? []),
+            ], $user->ID);
+        }
+        $result=Elev8_OS_Operations_Engine_Service::update_status($id,sanitize_key((string)($_POST['status']??'requested')));
         if(isset($_POST['notes']))Elev8_OS_Work_Service::update($id,['notes'=>wp_unslash($_POST['notes'])]);
-        wp_safe_redirect(self::url(!empty($_POST['view'])&&$_POST['view']==='team'?['view'=>'team']:[])); exit;
+        $args=!empty($_POST['view'])&&$_POST['view']==='team'?['view'=>'team']:[];
+        if(is_wp_error($result)){$args['error']=$result->get_error_message();}else{$args['saved']=1;}
+        wp_safe_redirect(self::url($args)); exit;
     }
 
     public static function command(array $commands, WP_User $user): array {

@@ -158,7 +158,11 @@ final class Elev8_OS_Glass_Operations_Service {
             'created_by'=>get_current_user_id(), 'created_at'=>$now, 'updated_at'=>$now,
         ];
         $ok=$wpdb->insert($t['jobs'],$row);
-        return $ok ? (int)$wpdb->insert_id : new WP_Error('glass_job_save','The glass job could not be saved.');
+        if (!$ok) { return new WP_Error('glass_job_save','The glass job could not be saved.'); }
+        $job_id = (int)$wpdb->insert_id;
+        $row['id'] = $job_id;
+        do_action('elev8_os_glass_job_saved', $job_id, $row);
+        return $job_id;
     }
 
     public static function workflow_statuses(): array {
@@ -252,7 +256,12 @@ final class Elev8_OS_Glass_Operations_Service {
         if(isset($data['assigned_user_id'])) $allowed['assigned_user_id']=absint($data['assigned_user_id']);
         if(isset($data['due_date'])) $allowed['due_date']=self::date_or_null($data['due_date']);
         $allowed['updated_at']=current_time('mysql');
-        return false !== $wpdb->update($t['jobs'],$allowed,['id'=>$id]);
+        $updated = false !== $wpdb->update($t['jobs'],$allowed,['id'=>$id]);
+        if ($updated) {
+            $job = self::job($id);
+            if ($job) { do_action('elev8_os_glass_job_updated', $id, $job); }
+        }
+        return $updated;
     }
 
     public static function jobs(array $args=[]): array {

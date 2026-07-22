@@ -1,5 +1,22 @@
 # Elev8 OS Changelog
 
+## 17.2.0 — SOP Execution & Completion Evidence
+
+### Added
+- Added a reusable SOP Execution service attached to canonical Work Items.
+- Added stable checklist completion state, approval evidence, approval notes, actor identity, timestamps, and an execution audit timeline.
+- Added execution controls directly to the Universal Work Inbox for contributed operational work.
+- Added contract reconciliation so contributor updates preserve compatible completion evidence instead of erasing operational history.
+
+### Changed
+- Contributed Work Items cannot be marked complete until every required checklist step and approval is satisfied.
+- Work Item responses now expose a normalized execution state and completion readiness signal.
+
+### Architecture
+- Operations continues to own the Work Item; Workflow owns reusable SOP execution mechanics and evidence.
+- Authoritative source records remain unchanged and are never copied into execution evidence.
+- Added ADR-0013: execution contracts and execution evidence are separate architectural concerns.
+
 ## 17.0.0 — Operations Engine & Universal Work Inbox
 
 ### Added
@@ -1072,3 +1089,22 @@
 - Added **Open Workspace** actions to frontend Work and Conversation experiences.
 - Added a Workspace command to Universal Search / Command Palette.
 - Preserved existing dashboards, Action Center, Conversations, Business Memory, and source-record workspaces.
+
+## 17.1.0 — Operations Contributor Adapter Foundation
+
+### Added
+- Reusable Operations Contributor registry and source synchronization service.
+- First contributor adapter for Glass Production, Repairs, and Memorials.
+- Standard execution contracts for checklists, required approvals, completion rules, and escalations.
+- Source status and synchronization timestamps on contributed Work Items.
+
+### Changed
+- Glass job creation and updates now publish source-change events to the Operations Engine.
+- Universal Work Item summaries now expose contributor execution context.
+
+### Architecture
+- Accepted ADR-0012: authoritative operational records contribute work through idempotent adapters and remain the owners of source state.
+- No duplicate production, repair, memorial, commerce, booking, or identity records are created.
+
+### Database changes
+- None. Contributor contracts use existing Work Item post metadata.

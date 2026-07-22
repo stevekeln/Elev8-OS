@@ -1,5 +1,22 @@
 # Elev8 OS Changelog
 
+## 17.2.0 — SOP Execution & Completion Evidence
+
+### Added
+- Added a reusable SOP Execution service attached to canonical Work Items.
+- Added stable checklist completion state, approval evidence, approval notes, actor identity, timestamps, and an execution audit timeline.
+- Added execution controls directly to the Universal Work Inbox for contributed operational work.
+- Added contract reconciliation so contributor updates preserve compatible completion evidence instead of erasing operational history.
+
+### Changed
+- Contributed Work Items cannot be marked complete until every required checklist step and approval is satisfied.
+- Work Item responses now expose a normalized execution state and completion readiness signal.
+
+### Architecture
+- Operations continues to own the Work Item; Workflow owns reusable SOP execution mechanics and evidence.
+- Authoritative source records remain unchanged and are never copied into execution evidence.
+- Added ADR-0013: execution contracts and execution evidence are separate architectural concerns.
+
 ## 17.0.0 — Operations Engine & Universal Work Inbox
 
 ### Added
@@ -797,3 +814,9 @@
 - Preserves normal WordPress behavior for administrators and users who are not linked to an Amelia artist/provider.
 - Adds redirect-loop protections and keeps the public Artist Dashboard as the single artist home.
 - No database changes.
+
+## 17.1.0 — Operations Contributor Adapter Foundation
+- Added the reusable Operations Contributor registry and Glass Operations adapter.
+- Glass Production, Repair, and Memorial records now contribute synchronized Work Items with execution contracts.
+- Added checklist, approval, completion-rule, escalation, source-status, and sync metadata.
+- No database schema changes and no authoritative source duplication.
