@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 18.9.0 — Decision Learning & Confidence Calibration
+
+- Added an explainable Decision Learning service that calibrates Recommendation confidence from measured Recommendation Outcomes and Executive Decision Outcomes.
+- Calibration is organization-specific and classification-specific, requires at least three comparable measured outcomes, and is capped at ±15 confidence points.
+- Preserved the original Pattern-derived confidence as the base score while exposing the calibrated score and a plain-language explanation in Intelligence Review.
+- Excluded unknown and unmeasured outcomes from learning and prevented confidence history from authorizing work or rewriting source evidence.
+- Registered the Business Graph relationship from measured outcomes to future Recommendation confidence.
+
 ## 18.8.0 — Executive Follow-through Completion & Decision Effectiveness
 
 ### Added

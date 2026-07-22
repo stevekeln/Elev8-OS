@@ -115,13 +115,21 @@ final class Elev8_OS_Intelligence_Recommendation_Service {
         if (!$post instanceof WP_Post || $post->post_type !== self::POST_TYPE) { return []; }
         $owner_id = absint(get_post_meta($id,self::META_SUGGESTED_OWNER,true));
         $owner = $owner_id ? get_user_by('id',$owner_id) : false;
+        $organization_unit_id = absint(get_post_meta($id,self::META_ORGANIZATION,true));
+        $classification = (string)get_post_meta($id,self::META_CLASSIFICATION,true);
+        $base_confidence = absint(get_post_meta($id,self::META_CONFIDENCE,true));
+        $calibration = class_exists('Elev8_OS_Decision_Learning_Service')
+            ? Elev8_OS_Decision_Learning_Service::calibrate($base_confidence, $classification, $organization_unit_id)
+            : ['base_confidence'=>$base_confidence,'calibrated_confidence'=>$base_confidence,'adjustment'=>0,'sample_size'=>0,'status'=>'unavailable','explanation'=>__('Decision learning is unavailable.', 'elev8-os')];
         return [
             'id'=>$id,'title'=>get_the_title($id),'summary'=>(string)$post->post_content,
             'pattern_id'=>absint(get_post_meta($id,self::META_PATTERN_ID,true)),
-            'organization_unit_id'=>absint(get_post_meta($id,self::META_ORGANIZATION,true)),
-            'classification'=>(string)get_post_meta($id,self::META_CLASSIFICATION,true),
+            'organization_unit_id'=>$organization_unit_id,
+            'classification'=>$classification,
             'severity'=>(string)get_post_meta($id,self::META_SEVERITY,true) ?: 'normal',
-            'confidence'=>absint(get_post_meta($id,self::META_CONFIDENCE,true)),
+            'base_confidence'=>$base_confidence,
+            'confidence'=>absint($calibration['calibrated_confidence'] ?? $base_confidence),
+            'confidence_calibration'=>$calibration,
             'expected_benefit'=>(string)get_post_meta($id,self::META_EXPECTED_BENEFIT,true),
             'suggested_action'=>(string)get_post_meta($id,self::META_SUGGESTED_ACTION,true),
             'suggested_owner_user_id'=>$owner_id,

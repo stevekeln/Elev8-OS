@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Elev8 OS
  * Description: The business operating system for creative studios, artists, and makers.
- * Version: 18.8.0
+ * Version: 18.9.0
  * Author: Elev8 Arts
  * Requires at least: 6.0
  * Requires PHP: 7.4
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('ELEV8_OS_VERSION', '18.8.0');
+define('ELEV8_OS_VERSION', '18.9.0');
 define('ELEV8_OS_FILE', __FILE__);
 define('ELEV8_OS_DIR', plugin_dir_path(__FILE__));
 define('ELEV8_OS_URL', plugin_dir_url(__FILE__));

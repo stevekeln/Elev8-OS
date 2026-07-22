@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.8.0  
+**Platform release:** 18.9.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -688,4 +688,24 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Decision-effectiveness reminder timing, financial ROI adapters, attachment evidence, organization-specific effectiveness measures, and confidence recalibration remain intentionally postponed.
 
 **Next development session:** Build Decision Learning and Confidence Calibration so measured Recommendation Outcomes and Executive Decision Outcomes can influence future recommendation confidence through transparent organization-specific evidence rather than opaque AI scoring.
+
+### ADR-0028 — Confidence Calibration Uses Measured Comparable Outcomes
+
+**Decision:** Recommendation confidence may be adjusted only by measured Recommendation Outcomes and Executive Decision Outcomes that share the same organization scope and intelligence classification. The original Pattern-derived confidence remains preserved as the base score. Calibration requires at least three comparable measured outcomes, excludes unknown results, and is capped at plus or minus 15 points.
+
+**Consequence:** Elev8 OS learns from the business's own measured history without opaque scoring. A calibrated confidence score remains advisory evidence only; it cannot approve a Recommendation, create a Work Item, alter an Observation or Pattern, or rewrite an Outcome.
+
+### 2026-07-22 — Elev8 OS 18.9.0 — Decision Learning & Confidence Calibration
+
+**What changed:** Added organization-specific and classification-specific outcome learning, transparent confidence adjustment, minimum evidence thresholds, bounded calibration, and visible confidence explanations in the Recommendation workspace.
+
+**Why:** Elev8 OS could measure results but could not yet use those results to improve future intelligence. This release closes that learning loop while preserving human governance and explainability.
+
+**Engines changed:** Primary: Intelligence. Supporting: Analytics, Organization, Operations, Workflow.
+
+**Business Graph changes:** Added measured Recommendation Outcome and Executive Decision Outcome evidence as a governed calibration input for future Recommendations. No new authoritative object or duplicate scoring ledger was introduced.
+
+**Open questions:** Whether future calibration should incorporate time decay, location-level scope, financial value, or configurable evidence weights remains intentionally postponed until enough real outcome history exists.
+
+**Next development session:** Build the Executive Learning Dashboard and calibration health controls so leaders can inspect evidence coverage, identify where outcomes are missing, and understand which recommendation classes have enough history to support dependable learning.
 
