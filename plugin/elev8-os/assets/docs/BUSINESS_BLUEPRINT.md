@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.2.0  
+**Platform release:** 18.3.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -242,7 +242,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Commerce | WooCommerce integration | Order-to-operation orchestration |
 | Sales | Opportunities foundation | Reusable pipeline and sales operating home |
 | Marketing | Content and marketing foundations | Campaign engine and attribution |
-| Intelligence | Observation Engine, Observation Review workspace, cross-engine contributors, Executive Brief, and workspace health | Pattern detection, configurable classification, recommendations, and forecasting |
+| Intelligence | Observation Engine, Observation Review workspace, cross-engine contributors, Pattern Detection, Recommendation Promotion, Executive Brief, and workspace health | Configurable classification, recommendation outcome measurement, ranking, and forecasting |
 
 ## Technical Debt and Risks
 
@@ -566,3 +566,21 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Configurable thresholds, semantic topic grouping, cross-organization comparisons, pattern-to-recommendation promotion rules, and AI-assisted pattern naming remain intentionally postponed.
 
 **Next development session:** Build the Recommendation Promotion layer so acknowledged Patterns can produce explainable, evidence-linked recommendations without automatically creating Work Items or changing authoritative records.
+
+### ADR-0022 — Recommendations Require Explicit Promotion and Execution Approval
+
+**Decision:** An acknowledged Pattern may be promoted into one stable Recommendation containing supporting Observation evidence, confidence, expected benefit, a suggested owner, and a suggested next action. A Recommendation remains an Intelligence object until a leader explicitly approves execution. Approval creates one linked Operations Work Item; rejection creates no work and changes no source record.
+
+**Consequence:** Elev8 OS preserves a governed chain from fact to action: authoritative record → Observation → human review → Pattern → acknowledgement → Recommendation → execution approval → Work Item. Intelligence may explain and propose, but Operations acts only after explicit authorization.
+
+### 2026-07-22 — Elev8 OS 18.3.0 — Recommendation Promotion & Governed Execution
+
+**What changed:** Added the canonical Recommendation object, stable promotion from acknowledged Patterns, evidence-linked action and benefit explanations, suggested ownership, a Recommendations view in the Intelligence workspace, and explicit approve/reject governance. Approved Recommendations create one Operations Work Item without duplication.
+
+**Engines changed:** Intelligence (primary); Operations, Workflow, Organization, Analytics, and Automation (supporting).
+
+**Business Graph changes:** Added Pattern → Recommendation and Recommendation → Work Item relationships. Recommendations preserve supporting Observation IDs and do not alter Patterns or authoritative records.
+
+**Open questions:** Configurable recommendation templates, organization-specific approval policies, owner suggestion rules, financial value estimates, and recommendation expiration remain intentionally postponed.
+
+**Next development session:** Build Recommendation outcome tracking so Elev8 OS can compare approved actions with completed work and measured results before introducing automated recommendation ranking.

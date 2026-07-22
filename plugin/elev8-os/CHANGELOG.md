@@ -1,5 +1,22 @@
 # Elev8 OS Changelog
 
+## 18.3.0 — Recommendation Promotion & Governed Execution
+
+### Added
+- Canonical Intelligence Engine Recommendation object promoted from an acknowledged Pattern.
+- Explainable recommendation evidence, confidence, expected benefit, suggested action, and suggested owner.
+- Recommendations tab in the Intelligence Review workspace.
+- Explicit leader decisions to keep proposed, approve execution, or reject.
+- One linked Operations Work Item created only after approval; repeated approvals do not duplicate work.
+
+### Architecture
+- Accepted ADR-0022: Recommendations require explicit promotion and execution approval.
+- Patterns, Recommendations, and Work Items remain separate Business Graph objects with distinct ownership.
+- Approval never modifies the Pattern, supporting Observations, or authoritative source records.
+
+### Database changes
+- None. Recommendations use a private WordPress post type and post metadata.
+
 
 ## 18.2.0 — Cross-Source Pattern Detection
 - Added the canonical Pattern object and stable cross-source detection service.
