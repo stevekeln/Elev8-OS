@@ -242,7 +242,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Commerce | WooCommerce integration | Order-to-operation orchestration |
 | Sales | Opportunities foundation | Reusable pipeline and sales operating home |
 | Marketing | Content and marketing foundations | Campaign engine and attribution |
-| Intelligence | Observation Engine, Observation Review workspace, cross-engine contributors, Pattern Detection, Recommendation Promotion, Executive Brief, and workspace health | Configurable classification, recommendation outcome measurement, ranking, and forecasting |
+| Intelligence | Observation Engine, Observation Review, Pattern Detection, Recommendation Promotion, Outcome Tracking, Executive Intelligence, Executive Brief, and workspace health | Configurable classification, ROI adapters, scheduled delivery, and forecasting |
 
 ## Technical Debt and Risks
 
@@ -604,3 +604,24 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 **Next development session:** Build the Executive Intelligence layer so leaders can see the highest-priority risks, strongest opportunities, recommendation performance, and the best use of executive attention from governed Business Graph evidence.
 
+
+### ADR-0024 — Executive Attention Is a Governed Read Model
+
+**Status:** Accepted  
+**Decision:** Executive Intelligence ranks existing governed Observations, Patterns, Recommendations, Work Items, and measured Outcomes into an explainable attention view. It is not an authoritative system and may not create facts, approve execution, infer success, or rewrite source records. Ranking uses transparent factors including severity, recurrence, trend, confidence, governance status, and whether a decision or outcome is still waiting.
+
+**Consequence:** Leaders receive a prioritized view of where attention is most valuable without introducing another dashboard-owned business system. Every executive item remains traceable to the governed Business Graph evidence that produced it.
+
+### 2026-07-22 — Elev8 OS 18.5.0 — Executive Intelligence
+
+**What changed:** Added an Executive Intelligence view to the Intelligence workspace, explainable risk and opportunity ranking, a best-use-of-attention queue, Recommendation decision and outcome-measurement visibility, recommendation-performance scoring, and confidence explanations.
+
+**Why:** Elev8 OS could govern facts, detect repetition, recommend action, execute approved work, and measure results, but leaders still had to review each intelligence layer separately. Executive Intelligence unifies those governed layers into a decision-ready read model without creating a competing source of truth.
+
+**Engines changed:** Intelligence (primary); Analytics, Operations, Workflow, Organization, Communication, and Financial (supporting).
+
+**Business Graph changes:** No new authoritative object was introduced. Added an executive read path across Observation → Pattern → Recommendation → Work Item → Recommendation Outcome while preserving every existing ownership boundary.
+
+**Open questions:** Organization-specific executive weighting, department comparisons, financial ROI adapters, attention-item snoozing, and scheduled executive delivery remain intentionally postponed.
+
+**Next development session:** Build the Executive Brief delivery and attention governance layer so leaders can receive a scheduled summary, acknowledge or defer attention items, and retain a decision timeline without changing the underlying intelligence evidence.

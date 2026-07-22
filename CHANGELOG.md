@@ -1,5 +1,23 @@
 # Elev8 OS Changelog
 
+## 18.5.0 — Executive Intelligence
+
+### Added
+- Executive Intelligence view inside the governed Intelligence workspace.
+- Explainable ranking of active risks and opportunities using severity, recurrence, trend, confidence, and governance state.
+- Executive attention queue combining urgent Patterns, proposed Recommendations, and Outcomes awaiting measurement.
+- Recommendation performance score and supporting explanations in the executive view.
+- Executive Intelligence command-palette destination.
+
+### Architecture
+- Accepted ADR-0024: Executive attention is a ranked view over governed Business Graph evidence, not a new source of truth.
+- Executive Intelligence does not create Observations, Patterns, Recommendations, Work Items, or Outcomes.
+- Ranking never changes authoritative records or bypasses human review and approval.
+
+### Database changes
+- None. Executive Intelligence is a read model assembled from existing governed Intelligence objects.
+
+
 ## 18.4.0 — Recommendation Outcome Tracking
 
 ### Added

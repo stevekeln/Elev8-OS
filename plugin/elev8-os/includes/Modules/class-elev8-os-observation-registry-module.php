@@ -24,6 +24,7 @@ final class Elev8_OS_Observation_Registry_Module {
         $user = wp_get_current_user();
         if (!self::can_review($user)) { return '<p>'.esc_html__('You do not have permission to review intelligence.', 'elev8-os').'</p>'; }
         $view = sanitize_key((string)($_GET['view'] ?? 'observations'));
+        if ($view === 'executive') { return self::executive_view(); }
         if ($view === 'patterns') { return self::patterns_view(); }
         if ($view === 'recommendations') { return self::recommendations_view(); }
         $filters = [
@@ -64,12 +65,56 @@ final class Elev8_OS_Observation_Registry_Module {
     private static function tabs(string $active): void {
         $base = self::url();
         echo '<nav style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0">';
-        foreach (['observations'=>__('Observations','elev8-os'),'patterns'=>__('Patterns','elev8-os'),'recommendations'=>__('Recommendations','elev8-os')] as $key=>$label) {
+        foreach (['executive'=>__('Executive Intelligence','elev8-os'),'observations'=>__('Observations','elev8-os'),'patterns'=>__('Patterns','elev8-os'),'recommendations'=>__('Recommendations','elev8-os')] as $key=>$label) {
             $url = $key === 'observations' ? $base : add_query_arg('view',$key,$base);
             $style = $active === $key ? 'background:#5b21b6;color:#fff;' : 'background:#fff;color:#2d1b55;';
             echo '<a href="'.esc_url($url).'" style="'.esc_attr($style).'border:1px solid #d8c8ff;border-radius:999px;padding:9px 14px;text-decoration:none;font-weight:700">'.esc_html($label).'</a>';
         }
         echo '</nav>';
+    }
+
+    private static function executive_view(): string {
+        if (!class_exists('Elev8_OS_Executive_Intelligence_Read_Model_Service')) { return '<p>'.esc_html__('Executive Intelligence is unavailable.','elev8-os').'</p>'; }
+        $report=Elev8_OS_Executive_Intelligence_Read_Model_Service::report();
+        $patterns=(array)($report['pattern_summary']??[]);
+        $recommendations=(array)($report['recommendation_summary']??[]);
+        $performance=(array)($report['performance']??[]);
+        $confidence=(array)($report['confidence']??[]);
+        ob_start();
+        echo '<div class="elev8-observation-registry"><header><p>'.esc_html__('INTELLIGENCE ENGINE','elev8-os').'</p><h1>'.esc_html__('Executive Intelligence','elev8-os').'</h1><span>'.esc_html__('A governed view of the risks, opportunities, decisions, and measured outcomes that deserve executive attention.','elev8-os').'</span></header>';
+        self::tabs('executive');
+        echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:20px 0">';
+        self::metric_card(__('Active risks','elev8-os'),(int)($patterns['risks']??0),__('Confirmed recurring risks','elev8-os'));
+        self::metric_card(__('Opportunities','elev8-os'),(int)($patterns['opportunities']??0),__('Confirmed recurring opportunities','elev8-os'));
+        self::metric_card(__('Decisions waiting','elev8-os'),(int)($recommendations['proposed']??0),__('Proposed Recommendations','elev8-os'));
+        self::metric_card(__('Outcomes waiting','elev8-os'),(int)($recommendations['awaiting_outcome']??0),__('Approved actions needing measurement','elev8-os'));
+        $score=!empty($performance['available'])?(string)((int)($performance['score']??0)).'%':'—';
+        self::metric_card(__('Recommendation performance','elev8-os'),$score,(string)($performance['label']??__('Awaiting outcomes','elev8-os')));
+        echo '</div>';
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><div style="display:flex;justify-content:space-between;gap:20px;align-items:flex-start"><div><p style="margin:0;font-size:12px;text-transform:uppercase;font-weight:700">'.esc_html__('BEST USE OF EXECUTIVE ATTENTION','elev8-os').'</p><h2 style="margin:6px 0">'.esc_html__('What deserves attention now','elev8-os').'</h2></div><strong>'.esc_html((string)($confidence['label']??'Low')).' '.esc_html__('confidence','elev8-os').'</strong></div>';
+        $attention=(array)($report['attention']??[]);
+        if(!$attention){echo '<p>'.esc_html__('No governed intelligence currently requires executive attention.','elev8-os').'</p>';}
+        foreach($attention as $index=>$item){$target=(string)($item['target']??'patterns');$url=add_query_arg('view',$target,self::url());echo '<article style="border-top:1px solid #eee;padding:14px 0"><div style="display:flex;gap:12px"><strong style="min-width:28px">'.(int)($index+1).'.</strong><div><a href="'.esc_url($url).'" style="font-weight:800;text-decoration:none">'.esc_html((string)($item['title']??'')).'</a><p style="margin:5px 0 0">'.esc_html((string)($item['reason']??'')).'</p><small>'.esc_html(ucwords((string)($item['kind']??'attention'))).'</small></div></div></article>';}
+        echo '<p style="margin-bottom:0"><small>'.esc_html((string)($confidence['explanation']??'')).'</small></p></section>';
+        echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px">';
+        self::executive_pattern_section(__('Highest-priority risks','elev8-os'),(array)($report['top_risks']??[]),'risk');
+        self::executive_pattern_section(__('Strongest opportunities','elev8-os'),(array)($report['top_opportunities']??[]),'opportunity');
+        echo '</div>';
+        if(!empty($performance['explanations'])){echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-top:18px"><h2>'.esc_html__('Why this performance score?','elev8-os').'</h2><ul>';foreach((array)$performance['explanations'] as $line){echo '<li>'.esc_html((string)$line).'</li>';}echo '</ul></section>';}
+        echo '</div>';
+        return (string)ob_get_clean();
+    }
+
+    private static function metric_card(string $label, $value, string $detail): void {
+        echo '<div style="background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px"><strong style="display:block;font-size:26px">'.esc_html((string)$value).'</strong><div style="font-weight:800">'.esc_html($label).'</div><small>'.esc_html($detail).'</small></div>';
+    }
+
+    /** @param array<int,array<string,mixed>> $items */
+    private static function executive_pattern_section(string $title,array $items,string $kind): void {
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px"><h2>'.esc_html($title).'</h2>';
+        if(!$items){echo '<p>'.esc_html($kind==='risk'?__('No active confirmed risk Patterns.','elev8-os'):__('No active confirmed opportunity Patterns.','elev8-os')).'</p>';}
+        foreach($items as $item){echo '<article style="border-top:1px solid #eee;padding:12px 0"><a href="'.esc_url(add_query_arg('view','patterns',self::url())).'" style="font-weight:800;text-decoration:none">'.esc_html((string)($item['title']??'')).'</a><p style="margin:4px 0">'.esc_html((string)($item['summary']??'')).'</p><small>'.sprintf(esc_html__('%1$d observations · %2$s severity · %3$s trend · %4$d%% confidence','elev8-os'),(int)($item['occurrence_count']??0),(string)($item['severity']??'normal'),(string)($item['trend']??'stable'),(int)($item['confidence']??0)).'</small></article>';}
+        echo '</section>';
     }
 
     private static function patterns_view(): string {
@@ -180,7 +225,7 @@ final class Elev8_OS_Observation_Registry_Module {
         Elev8_OS_Observation_Service::review($id, (string)($_POST['review_status']??''), get_current_user_id(), wp_unslash((string)($_POST['review_notes']??'')));
         wp_safe_redirect(self::url()); exit;
     }
-    public static function command(array $commands, WP_User $user): array { if (self::can_review($user)) { $commands[]=['id'=>'observation-review','label'=>__('Observation Review','elev8-os'),'description'=>__('Review verified facts, risks, and opportunities.','elev8-os'),'url'=>self::url(),'group'=>'intelligence','icon'=>'🧠','type'=>'command']; } return $commands; }
+    public static function command(array $commands, WP_User $user): array { if (self::can_review($user)) { $commands[]=['id'=>'executive-intelligence','label'=>__('Executive Intelligence','elev8-os'),'description'=>__('Review governed risks, opportunities, recommendations, and outcomes.','elev8-os'),'url'=>add_query_arg('view','executive',self::url()),'group'=>'intelligence','icon'=>'🧠','type'=>'command']; } return $commands; }
     public static function shell_page(bool $render): bool { return $render || self::is_page(); }
     public static function is_page(): bool { return is_page(self::page_id()) || is_page(self::SLUG); }
     public static function url(): string { $id=self::page_id(); return $id ? (string)get_permalink($id) : home_url('/'.self::SLUG.'/'); }

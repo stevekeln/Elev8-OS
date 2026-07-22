@@ -35,6 +35,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-intelligence-recommendation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-outcome-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-score-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-intelligence-read-model-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-cross-engine-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-blueprint-service.php';
