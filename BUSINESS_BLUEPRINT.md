@@ -467,3 +467,26 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open Questions:** Organization assignment type-to-communication-group policies remain configurable future work. Scheduled event records beyond applications still need a canonical event object adapter. Event inventory reservations and financial outcome reconciliation remain intentionally postponed.
 
 **Next Development Session:** Build the Inventory Operations Contributor and define canonical stock-exception workflows for low stock, receiving, cycle counts, and event reservations without duplicating WooCommerce product data.
+
+### ADR-0017 — Inventory Authority and Inventory Execution Are Separate
+
+**Status:** Accepted  
+**Decision:** WooCommerce or another configured inventory provider remains authoritative for product identity and quantity. Elev8 OS owns canonical Inventory Signals for exceptions that require human action, and those signals contribute execution through the shared Operations and SOP architecture.  
+**Consequence:** Low stock, receiving, cycle counts, discrepancies, and event reservations use one execution model without cloning product records or creating a parallel stock ledger.
+
+### 2026-07-22 — Elev8 OS 17.5.0 — Inventory Operations Contributor
+
+**Architecture Updates:** Added the Inventory Signal service and Inventory Operations Contributor. WooCommerce stock changes and a daily reconciliation scan create, update, or resolve stable low-stock signals. The same signal model supports receiving, cycle counts, discrepancies, and event inventory reservations through a public service API.
+
+**Why:** Inventory exceptions previously appeared only as notes or future recommendations. Managers need those exceptions to become assigned, auditable work while WooCommerce continues to own product and stock data.
+
+**Engines Changed:** Inventory (primary); Commerce, Integrations, Operations, Workflow, Organization, Identity, Communication, Automation, and Events (supporting).
+
+**Business Graph Updates:** Added Inventory Signal as a canonical Elev8 OS graph object. Added WooCommerce Product → Inventory Signal → Work Item. Event reservations may connect an Event reference to the same Inventory Signal without copying the Event or Product.
+
+**Architectural Decisions:** Accepted ADR-0017. Inventory data authority and inventory execution are separate. Product quantity remains in the configured authority; exception state, assignment, checklist evidence, approval, escalation, and timeline belong to Elev8 OS.
+
+**Open Questions:** A configurable inventory-provider registry is still needed for businesses that do not use WooCommerce stock. Location-specific stock requires an authoritative multi-location provider before location quantities can be automated. The first release exposes receiving, cycle-count, discrepancy, and event-reservation creation through the Inventory Signal service; dedicated management screens remain intentionally postponed.
+
+**Next Development Session:** Build the Maintenance Operations Contributor so assets, equipment, facilities, recurring inspections, repair requests, and preventive maintenance contribute work through the same Operations and SOP execution architecture.
+

@@ -1,5 +1,14 @@
 # Elev8 OS Changelog
 
+## 17.5.0 — 2026-07-22
+
+- Added the Inventory Signal service as the canonical Elev8 OS record for operational inventory exceptions.
+- Added automatic WooCommerce low-stock and out-of-stock signal synchronization without copying product or stock authority.
+- Added the Inventory Operations Contributor for low stock, receiving, cycle counts, discrepancies, and event inventory reservations.
+- Added daily low-stock reconciliation and immediate synchronization when WooCommerce stock changes.
+- Added shared execution contracts, approvals, escalation, and completion rules for inventory work.
+- Added ADR-0017: inventory authority and inventory execution remain separate.
+
 ## 17.4.0 — 2026-07-22
 
 - Fixed the shared recipient directory so active Organization Engine employees appear under Shop Employees even when their WordPress role has not yet received the legacy assignment capability.
