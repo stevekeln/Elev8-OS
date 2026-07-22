@@ -1,5 +1,19 @@
 # Elev8 OS Changelog
 
+## 19.3.0 — IT Support Operations Capability
+
+### Added
+- A configurable IT Support workspace for reporting computers, internet, printers, devices, account access, software, security, setup, installation, website/email, and recurring technology issues.
+- Configurable IT Support assignment without requiring a formal IT department.
+- Technology incidents implemented as specialized Maintenance Records that automatically contribute Work Items, SOP evidence, escalation, service history, Observations, and Daily Assistant focus.
+- Critical operational-impact handling for checkout, payments, internet, security, and other essential systems.
+- Reporter and IT queue views, assignment email through the Communication Engine boundary, resolution evidence, and organization/location context.
+
+### Architecture
+- Accepted ADR-0036: IT Support is a configurable Operations capability, not a new Engine or parallel ticketing system.
+- Reused Assets, Maintenance, Operations, Workflow, Communication, Organization, Automation, and Intelligence boundaries.
+- Preserved Maintenance Record authority for service lifecycle and Universal Work Item authority for execution.
+
 ## 19.2.0 — Daily Assistant Preferences & Delivery Governance
 
 ### Added

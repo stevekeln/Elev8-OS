@@ -862,4 +862,30 @@ The delivery layer stores only personal preferences and delivery timestamps. It 
 **Open questions:** Whether users should choose Today as their optional landing page, whether mobile push should become a supported Communication channel, and how usefulness feedback should influence presentation remain intentionally postponed.
 
 **Next milestone:** Build Daily Assistant usefulness feedback and focus-policy governance so users and organizations can improve ranking transparently before any language-model summarization is introduced.
+## Development History — 19.3.0
+
+### IT Support Operations Capability
+
+IT Support is now a configurable business capability and role-based workspace over the existing Operations architecture. It does not create an IT Engine, formal department requirement, or parallel ticket system. Technology incidents are specialized Maintenance Records connected to an affected technology asset or system, organization scope, location, reporter, assigned support person, Work Item, SOP evidence, resolution, and service history.
+
+Critical incidents affecting checkout, payments, internet, security, or essential operations receive urgent priority and immediate escalation rules. Assigned support users receive the same Work Inbox and Daily Assistant experience as every other operational owner, while leaders retain visibility through Operations and Intelligence.
+
+**Primary engine:** Operations.
+
+**Supporting engines:** Assets, Organization, Communication, Workflow, Knowledge, Automation, and Intelligence.
+
+**Business Graph changes:** Added the IT Incident projection over the authoritative Maintenance Record and relationships to technology Asset, Location/Organization Unit, reporter, assigned support person, Work Item, SOP Evidence, Observation, Pattern, and service history. No duplicate asset, maintenance, ticket, or task record was introduced.
+
+### ADR-0036 — IT Support Is a Configurable Operations Capability
+
+**Status:** Accepted  
+**Decision:** IT Support must reuse Asset, Maintenance, Operations, Workflow, Communication, Automation, and Intelligence services. A business may assign one person or several people to IT Support without creating a formal department.
+
+**Consequence:** Technology incidents enter the same accountable execution and intelligence architecture as other operational conditions. Future IT dashboards, asset replacement planning, knowledge articles, and automation can extend the shared records without creating a silo.
+
+**Technical debt:** Asset selection currently accepts a technology label and optional existing asset identifier. A dedicated technology-asset picker, software/license relationships, provider outage adapters, attachment evidence, and account-access security workflow remain future work.
+
+**Open questions:** Whether critical incidents should support SMS or push delivery, how secrets and privileged credentials should be handled without storing them in incident notes, and which external monitoring providers should contribute automatic incidents remain intentionally postponed.
+
+**Next milestone:** Build Daily Assistant usefulness feedback and organization focus-policy governance, including transparent ranking feedback and organizational priority rules, while allowing IT incidents to participate through existing Work and Coaching evidence.
 

@@ -29,6 +29,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'elev8-actions',
                 'shortcode' => 'elev8_action_center',
             ],
+            'it_support' => [
+                'option' => 'elev8_os_it_support_page_id',
+                'title' => __('IT Support', 'elev8-os'),
+                'slug' => 'elev8-it-support',
+                'shortcode' => 'elev8_it_support',
+            ],
             'today' => [
                 'option' => 'elev8_os_daily_assistant_page_id',
                 'title' => __('Today', 'elev8-os'),

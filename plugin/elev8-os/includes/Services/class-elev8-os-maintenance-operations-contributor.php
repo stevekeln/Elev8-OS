@@ -49,6 +49,7 @@ final class Elev8_OS_Maintenance_Operations_Contributor {
             'location_label' => sanitize_text_field((string)($record['location_label'] ?? '')),
             'description' => sanitize_textarea_field((string)($record['description'] ?? '')),
             'recurrence_days' => absint($record['recurrence_days'] ?? 0),
+            'context' => is_array($record['context'] ?? null) ? $record['context'] : [],
         ];
     }
 
@@ -138,7 +139,26 @@ final class Elev8_OS_Maintenance_Operations_Contributor {
                 'escalation' => ['after_days' => 0, 'priority' => 'urgent', 'notify_capability' => 'manage_operations'],
             ],
         ];
-        $definition = $definitions[$type] ?? $definitions['maintenance_request'];
+        $context = is_array($source['context'] ?? null) ? $source['context'] : [];
+        if (($context['capability'] ?? '') === 'it_support') {
+            $critical = !empty($context['critical_operations']);
+            $definition = [
+                'title' => sprintf(__('Resolve technology incident — %s', 'elev8-os'), $label),
+                'description' => self::description($source, __('Restore the affected technology service and preserve troubleshooting and resolution evidence.', 'elev8-os')),
+                'checklist' => [
+                    __('Confirm the affected device, system, user, and location', 'elev8-os'),
+                    __('Assess operational impact and apply a safe workaround when possible', 'elev8-os'),
+                    __('Diagnose hardware, software, network, access, or provider cause', 'elev8-os'),
+                    __('Complete or coordinate the fix and record changes made', 'elev8-os'),
+                    __('Test with the reporter and document the final result', 'elev8-os'),
+                ],
+                'required_approvals' => [__('Reporter or responsible lead confirms service is restored', 'elev8-os')],
+                'completion_rules' => [__('Resolution, workaround, replacement decision, or documented disposition is recorded', 'elev8-os')],
+                'escalation' => ['after_days' => $critical ? 0 : 1, 'priority' => 'urgent', 'notify_capability' => 'manage_operations'],
+            ];
+        } else {
+            $definition = $definitions[$type] ?? $definitions['maintenance_request'];
+        }
         return ['execution' => array_merge($base, $definition)];
     }
 

@@ -135,6 +135,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-inventory-signal-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-inventory-operations-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-maintenance-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-it-support-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-maintenance-operations-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-action-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-service.php';
@@ -163,6 +164,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-observation-registry-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-coaching-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-proactive-daily-assistant-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-it-support-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ceo-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
 
@@ -186,6 +188,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Inventory_Signal_Service::init();
         Elev8_OS_Inventory_Operations_Contributor::init();
         Elev8_OS_Maintenance_Service::init();
+        Elev8_OS_IT_Support_Service::init();
         Elev8_OS_Maintenance_Operations_Contributor::init();
         Elev8_OS_Observation_Service::init();
         Elev8_OS_Pattern_Detection_Service::init();
@@ -264,6 +267,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Observation_Registry_Module::init();
         Elev8_OS_Business_Coaching_Module::init();
         Elev8_OS_Proactive_Daily_Assistant_Module::init();
+        Elev8_OS_IT_Support_Module::init();
         Elev8_OS_CEO_Dashboard_Module::init();
         Elev8_OS_Growth_Center_Module::init();
         Elev8_OS_Artist_Growth_Studio_Module::init();
