@@ -44,6 +44,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-learning-health-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-coaching-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-proactive-daily-assistant-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-focus-policy-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-assistant-delivery-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-cross-engine-observation-contributor.php';

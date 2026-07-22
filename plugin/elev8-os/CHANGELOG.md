@@ -1,3 +1,16 @@
+## 19.4.0 — Focus Intelligence & Organization Policy Governance
+
+### Added
+- Explainable Focus Scores in the Today workspace with a visible breakdown of source evidence, severity, organization policy, and personal presentation feedback.
+- Per-user usefulness feedback for focus items: Helpful, Already handled, and Not relevant.
+- Organization Unit focus-policy weights for Work, Attention, Coaching, Conversations, severity, overdue work, due-today work, executive attention, and Pattern evidence.
+- Stable, bounded presentation scoring that never changes the priority or state of authoritative source records.
+
+### Architecture
+- Accepted ADR-0037: focus ranking must be explainable and governed as a read-model policy.
+- Organization policies and user feedback influence presentation only; they cannot close Work Items, dismiss Recommendations, or alter source evidence.
+- Reused Organization, Intelligence, Operations, Communication, Analytics, and Experience boundaries without creating a new Engine.
+
 # Elev8 OS Changelog
 
 ## 19.3.0 — IT Support Operations Capability

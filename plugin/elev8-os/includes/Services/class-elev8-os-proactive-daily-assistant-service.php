@@ -36,7 +36,7 @@ final class Elev8_OS_Proactive_Daily_Assistant_Service {
             'role_label' => $role_label,
             'generated_at' => current_time('mysql'),
             'greeting' => self::greeting(),
-            'focus' => self::focus_items($attention, $coaching),
+            'focus' => self::focus_items($attention, $coaching, $user),
             'attention' => array_slice($attention, 0, 6),
             'coaching' => array_slice($coaching, 0, 5),
             'work' => $work,
@@ -64,7 +64,7 @@ final class Elev8_OS_Proactive_Daily_Assistant_Service {
     }
 
     /** @param array<int,array<string,mixed>> $attention @param array<int,array<string,mixed>> $coaching @return array<int,array<string,mixed>> */
-    private static function focus_items(array $attention, array $coaching): array {
+    private static function focus_items(array $attention, array $coaching, WP_User $user): array {
         $items = [];
         foreach ($attention as $item) {
             $severity = sanitize_key((string) ($item['severity'] ?? 'normal'));
@@ -75,7 +75,9 @@ final class Elev8_OS_Proactive_Daily_Assistant_Service {
                 'summary' => (string) ($item['summary'] ?? ''),
                 'severity' => $severity,
                 'url' => (string) ($item['url'] ?? ''),
-                'score' => self::severity_score($severity) + 20,
+                'base_score' => self::severity_score($severity) + 20,
+                'executive' => true,
+                'pattern' => !empty($item['pattern_id']),
             ];
         }
         foreach ($coaching as $card) {
@@ -88,8 +90,15 @@ final class Elev8_OS_Proactive_Daily_Assistant_Service {
                 'summary' => (string) ($card['suggested_action'] ?? ''),
                 'severity' => $severity,
                 'url' => (string) ($card['url'] ?? ''),
-                'score' => (int) ($card['priority_score'] ?? self::severity_score($severity)) + ($state === 'follow_up' ? 25 : ($state === 'pinned' ? 18 : 0)),
+                'base_score' => (int) ($card['priority_score'] ?? self::severity_score($severity)) + ($state === 'follow_up' ? 25 : ($state === 'pinned' ? 18 : 0)),
+                'pattern' => !empty($card['pattern_id']),
             ];
+        }
+        if (class_exists('Elev8_OS_Focus_Policy_Service')) {
+            $items = array_map(static fn(array $item): array => Elev8_OS_Focus_Policy_Service::score($item, $user), $items);
+        } else {
+            foreach ($items as &$item) { $item['score'] = (int) ($item['base_score'] ?? 0); $item['focus_reasons'] = []; }
+            unset($item);
         }
         $seen = [];
         $unique = [];

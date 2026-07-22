@@ -889,3 +889,30 @@ Critical incidents affecting checkout, payments, internet, security, or essentia
 
 **Next milestone:** Build Daily Assistant usefulness feedback and organization focus-policy governance, including transparent ranking feedback and organizational priority rules, while allowing IT incidents to participate through existing Work and Coaching evidence.
 
+## Development History — 19.4.0
+
+### Focus Intelligence and Organization Policy Governance
+
+The Proactive Daily Assistant now ranks focus items through an explainable Focus Projection. Every displayed score retains a visible breakdown of source evidence, severity, due-state, executive or Pattern context, Organization Unit policy, and the current user's presentation feedback. Leaders may configure bounded focus weights for an Organization Unit, while users may mark an item Helpful, Already handled, or Not relevant.
+
+Focus policy and feedback are presentation governance only. They do not change Work Item priority or status, alter Conversations, dismiss Recommendations, modify Patterns, or rewrite authoritative business facts.
+
+**Primary engine:** Intelligence.
+
+**Supporting engines:** Organization, Operations, Communication, Workflow, Analytics, and Experience.
+
+**Business Graph changes:** Added a non-authoritative Focus Projection relationship from Work, Conversation, Attention Projection, Coaching Projection, and Organization Policy to the Daily Assistant. No duplicate task, priority, fact, or recommendation object was introduced.
+
+### ADR-0037 — Focus Ranking Must Be Explainable
+
+**Status:** Accepted  
+**Decision:** Every Daily Assistant focus score must be traceable to governed evidence and bounded Organization Unit policy. Personal usefulness feedback may influence only the user's future presentation. No opaque score may determine operational priority, and Focus Intelligence may not modify authoritative records.
+
+**Consequence:** Elev8 OS can improve daily relevance without creating hidden automation or allowing presentation preferences to become business truth.
+
+**Technical debt:** The first policy model uses numeric weights. Future releases should add named policy templates, inherited Organization policies, calibration reporting, and controlled experimentation before language-model summarization.
+
+**Open questions:** Whether Organization policies should inherit through parent units, whether feedback should expire, and whether aggregate usefulness should be visible to leaders remain intentionally postponed.
+
+**Next milestone:** Build Team Coordination as a shared Operations and Workflow capability for workload visibility, Work Item dependencies, waiting-on relationships, bottleneck detection, and governed handoff recommendations.
+

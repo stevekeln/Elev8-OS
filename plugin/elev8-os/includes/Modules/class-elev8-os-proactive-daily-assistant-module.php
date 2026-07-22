@@ -8,8 +8,11 @@ final class Elev8_OS_Proactive_Daily_Assistant_Module {
     public static function init(): void {
         Elev8_OS_Proactive_Daily_Assistant_Service::init();
         Elev8_OS_Daily_Assistant_Delivery_Service::init();
+        Elev8_OS_Focus_Policy_Service::init();
         add_action('admin_post_elev8_save_daily_assistant_preferences', [__CLASS__, 'save_preferences']);
         add_action('admin_post_elev8_send_daily_assistant_test', [__CLASS__, 'send_test']);
+        add_action('admin_post_elev8_save_focus_feedback', [__CLASS__, 'save_focus_feedback']);
+        add_action('admin_post_elev8_save_focus_policy', [__CLASS__, 'save_focus_policy']);
         add_shortcode(self::SHORTCODE, [__CLASS__, 'shortcode']);
         add_action('admin_menu', [__CLASS__, 'register_menu'], 33);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
@@ -76,7 +79,10 @@ final class Elev8_OS_Proactive_Daily_Assistant_Module {
                     <div style="display:grid;gap:12px">
                         <?php foreach ((array) $brief['focus'] as $index=>$item): ?>
                             <article style="border:1px solid #e2e2e2;border-radius:14px;padding:16px">
-                                <div style="display:flex;gap:12px;align-items:flex-start"><strong style="font-size:24px"><?php echo esc_html((string) ((int) $index + 1)); ?></strong><div style="flex:1"><span style="font-size:12px;font-weight:700;text-transform:uppercase"><?php echo esc_html((string) $item['source'].' · '.(string) $item['severity']); ?></span><h3 style="margin:5px 0 6px"><?php echo esc_html((string) $item['title']); ?></h3><p style="margin:0 0 10px"><?php echo esc_html((string) $item['summary']); ?></p><?php if (!empty($item['url'])): ?><a class="button" href="<?php echo esc_url((string) $item['url']); ?>"><?php echo esc_html__('Open', 'elev8-os'); ?></a><?php endif; ?></div></div>
+                                <div style="display:flex;gap:12px;align-items:flex-start"><strong style="font-size:24px"><?php echo esc_html((string) ((int) $index + 1)); ?></strong><div style="flex:1"><span style="font-size:12px;font-weight:700;text-transform:uppercase"><?php echo esc_html((string) $item['source'].' · '.(string) $item['severity']); ?></span><h3 style="margin:5px 0 6px"><?php echo esc_html((string) $item['title']); ?></h3><p style="margin:0 0 10px"><?php echo esc_html((string) $item['summary']); ?></p>
+                                <details style="margin:8px 0 12px"><summary style="cursor:pointer;font-weight:600"><?php echo esc_html__('Why is this ranked here?', 'elev8-os'); ?></summary><ul><?php foreach ((array) ($item['focus_reasons'] ?? []) as $reason): ?><li><?php echo esc_html((string) ($reason['label'] ?? '')); ?>: <?php echo esc_html(((int) ($reason['points'] ?? 0) >= 0 ? '+' : '').(string) ((int) ($reason['points'] ?? 0))); ?></li><?php endforeach; ?><li><strong><?php echo esc_html(sprintf(__('Total focus score: %d', 'elev8-os'), (int) ($item['score'] ?? 0))); ?></strong></li></ul></details>
+                                <div style="display:flex;gap:8px;flex-wrap:wrap"><?php if (!empty($item['url'])): ?><a class="button" href="<?php echo esc_url((string) $item['url']); ?>"><?php echo esc_html__('Open', 'elev8-os'); ?></a><?php endif; ?>
+                                <?php foreach (['helpful'=>__('Helpful','elev8-os'),'handled'=>__('Already handled','elev8-os'),'not_relevant'=>__('Not relevant','elev8-os')] as $feedback_key=>$feedback_label): ?><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="display:inline"><input type="hidden" name="action" value="elev8_save_focus_feedback"><input type="hidden" name="item_key" value="<?php echo esc_attr((string) $item['key']); ?>"><input type="hidden" name="feedback" value="<?php echo esc_attr($feedback_key); ?>"><?php wp_nonce_field('elev8_focus_feedback'); ?><button class="button<?php echo (($item['feedback_state'] ?? '') === $feedback_key) ? ' button-primary' : ''; ?>" type="submit"><?php echo esc_html($feedback_label); ?></button></form><?php endforeach; ?></div></div></div>
                             </article>
                         <?php endforeach; ?>
                     </div>
@@ -99,11 +105,49 @@ final class Elev8_OS_Proactive_Daily_Assistant_Module {
                 <h2 style="margin-top:0"><?php echo esc_html__('Quick access', 'elev8-os'); ?></h2>
                 <div style="display:flex;gap:10px;flex-wrap:wrap"><?php foreach ((array) $brief['quick_links'] as $link): ?><a class="button" href="<?php echo esc_url((string) $link['url']); ?>"><?php echo esc_html((string) $link['icon'].' '.(string) $link['label']); ?></a><?php endforeach; ?></div>
             </section>
+            <?php self::focus_policy($user); ?>
             <?php self::preferences($user, $settings); ?>
             <p style="margin-top:20px;color:#555"><?php echo esc_html__('The Daily Assistant is a personal read model. It does not create work, approve recommendations, or alter conversations or source records.', 'elev8-os'); ?></p>
         </main>
         <?php
         return (string) ob_get_clean();
+    }
+
+
+    public static function save_focus_feedback(): void {
+        if (!is_user_logged_in()) { wp_die(esc_html__('Please sign in.', 'elev8-os')); }
+        check_admin_referer('elev8_focus_feedback');
+        Elev8_OS_Focus_Policy_Service::save_feedback(get_current_user_id(), sanitize_text_field((string) ($_POST['item_key'] ?? '')), sanitize_key((string) ($_POST['feedback'] ?? '')));
+        wp_safe_redirect(self::url());
+        exit;
+    }
+
+    public static function save_focus_policy(): void {
+        if (!is_user_logged_in() || !Elev8_OS_Organization_Service::can_manage(wp_get_current_user())) { wp_die(esc_html__('You do not have permission to manage focus policy.', 'elev8-os')); }
+        check_admin_referer('elev8_focus_policy');
+        Elev8_OS_Focus_Policy_Service::save_policy(absint($_POST['unit_id'] ?? 0), (array) ($_POST['weights'] ?? []));
+        wp_safe_redirect(add_query_arg('focus_policy_saved', '1', self::url()));
+        exit;
+    }
+
+    private static function focus_policy(WP_User $user): void {
+        if (!class_exists('Elev8_OS_Organization_Service') || !Elev8_OS_Organization_Service::can_manage($user)) { return; }
+        $units = Elev8_OS_Organization_Service::units(['status'=>'active']);
+        if (!$units) { return; }
+        $unit_id = absint($_GET['focus_unit'] ?? ($units[0]['id'] ?? 0));
+        $policy = Elev8_OS_Focus_Policy_Service::policy_for_unit($unit_id);
+        ?>
+        <section style="background:#fff;border:1px solid #ddd;border-radius:18px;padding:22px;margin-top:18px">
+            <h2 style="margin-top:0"><?php echo esc_html__('Organization focus policy', 'elev8-os'); ?></h2>
+            <p><?php echo esc_html__('Adjust how governed evidence is presented for people assigned to an Organization Unit. These weights never change source priorities or Work Items.', 'elev8-os'); ?></p>
+            <?php if (isset($_GET['focus_policy_saved'])): ?><div class="notice notice-success inline"><p><?php echo esc_html__('Focus policy saved.', 'elev8-os'); ?></p></div><?php endif; ?>
+            <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_save_focus_policy"><?php wp_nonce_field('elev8_focus_policy'); ?>
+                <p><label><?php echo esc_html__('Organization Unit', 'elev8-os'); ?> <select name="unit_id"><?php foreach ($units as $unit): ?><option value="<?php echo esc_attr((string) $unit['id']); ?>" <?php selected($unit_id, (int) $unit['id']); ?>><?php echo esc_html((string) $unit['name']); ?></option><?php endforeach; ?></select></label></p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px"><?php foreach (Elev8_OS_Focus_Policy_Service::default_weights() as $key=>$default): ?><label><?php echo esc_html(ucwords(str_replace('_',' ', $key))); ?><input style="display:block;width:100%" type="number" min="-50" max="50" name="weights[<?php echo esc_attr($key); ?>]" value="<?php echo esc_attr((string) ($policy[$key] ?? $default)); ?>"></label><?php endforeach; ?></div>
+                <p><button class="button button-primary" type="submit"><?php echo esc_html__('Save focus policy', 'elev8-os'); ?></button></p>
+            </form>
+        </section>
+        <?php
     }
 
     public static function save_preferences(): void {
