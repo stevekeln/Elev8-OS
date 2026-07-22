@@ -1,3 +1,11 @@
+
+## 20.2.3 — Embedded Conversation Usability
+- Added per-thread unread message counts and clear purple unread cards; read threads remain white.
+- Conversation cards now show unread counts instead of total historical message counts.
+- Added a first-unread divider, automatic jump to first unread, and a Jump to newest control.
+- Made the message history a bounded scroll region and kept the reply composer accessible near the newest discussion.
+- Added a persistent My Dashboard control inside conversation threads for reliable mobile return navigation.
+- Preserved Conversations as the authoritative communication record while preparing it for embedded workspace panels.
 ## 20.2.2 — Materials Quick Add & Production Navigation Fixes
 
 - Rebuilt the Production Catalog Materials screen around a prominent, always-visible **Add Material** workflow.

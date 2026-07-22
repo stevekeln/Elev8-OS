@@ -1264,3 +1264,26 @@ A production workspace may simplify creation and editing of material definitions
 ### Next Development Session
 
 Continue Production Workspace testing and use observed Glass Manager workflows to prioritize the next visible production capability.
+
+## Development Update — 20.2.3 Embedded Conversation Usability
+
+### Architecture Updates
+
+Conversation remains owned by the Communication Engine, but its presentation is now optimized as an embedded-capability experience: unread state is calculated per user from message evidence, conversation history is navigable without page-length scrolling, and the user always has a stable return to the role-based dashboard.
+
+### Engines Changed
+
+**Primary engine:** Communication  
+**Supporting engines:** Identity, Organization, Experience, Business Memory, and Workflow.
+
+### Business Graph Updates
+
+No new authoritative object was introduced. Per-user read position remains presentation evidence attached to the existing Conversation relationship.
+
+### ADR-0049 — Conversation Read State Is Personal Presentation Evidence
+
+Unread counts, first-unread positioning, and message-history navigation may improve the user experience without changing shared messages or creating a second inbox. Conversations remain attachable to Business Graph objects; the standalone Conversation Center remains the searchable cross-business view.
+
+### Next Development Session
+
+Add reusable embedded conversation panels to Production, Work Item, Asset, and other object workspaces using the same Conversation authority and per-user read evidence.

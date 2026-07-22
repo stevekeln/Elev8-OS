@@ -178,6 +178,22 @@ final class Elev8_OS_Conversation_Service {
         return $count;
     }
 
+    public static function last_read_at(int $thread_id, int $user_id): string {
+        if ($thread_id < 1 || $user_id < 1) { return ''; }
+        return (string) get_post_meta($thread_id, '_elev8_conversation_read_' . $user_id, true);
+    }
+
+    public static function unread_messages_count(int $thread_id, int $user_id): int {
+        if ($thread_id < 1 || $user_id < 1) { return 0; }
+        $read = self::last_read_at($thread_id, $user_id);
+        $count = 0;
+        foreach (self::messages($thread_id) as $message) {
+            if ((int) $message->post_author === $user_id) { continue; }
+            if ($read === '' || strtotime((string) $message->post_date) > strtotime($read)) { $count++; }
+        }
+        return $count;
+    }
+
     public static function close(int $thread_id, WP_User $user): bool {
         if (!self::can_view($thread_id, $user)) { return false; }
         $creator = (int) get_post_field('post_author', $thread_id);

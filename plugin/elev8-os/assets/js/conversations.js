@@ -57,3 +57,5 @@
     refreshSelected();
   });
 })();
+
+(function(){'use strict';document.querySelectorAll('[data-elev8-conversation-thread]').forEach(function(thread){var list=thread.querySelector('[data-elev8-message-list]');if(!list){return;}var first=thread.querySelector('[data-elev8-first-unread]');var latest=thread.querySelector('[data-elev8-latest-message]');function jump(el){if(!el){return;}el.scrollIntoView({behavior:'smooth',block:'center'});}var newButton=thread.querySelector('[data-elev8-jump-new]');var latestButton=thread.querySelector('[data-elev8-jump-latest]');if(newButton){newButton.hidden=!first;newButton.addEventListener('click',function(){jump(first);});}if(latestButton){latestButton.addEventListener('click',function(){jump(latest);});}window.setTimeout(function(){jump(first||latest);},120);});})();
