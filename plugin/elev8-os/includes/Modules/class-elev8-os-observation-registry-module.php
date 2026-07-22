@@ -17,6 +17,7 @@ final class Elev8_OS_Observation_Registry_Module {
         add_action('admin_post_elev8_os_govern_executive_attention', [__CLASS__, 'govern_executive_attention']);
         add_action('admin_post_elev8_os_save_executive_brief_settings', [__CLASS__, 'save_executive_brief_settings']);
         add_action('admin_post_elev8_os_send_executive_brief', [__CLASS__, 'send_executive_brief']);
+        add_action('admin_post_elev8_os_create_executive_follow_through', [__CLASS__, 'create_executive_follow_through']);
         add_filter('elev8_os_application_shell_frontend', [__CLASS__, 'shell_page']);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
     }
@@ -101,10 +102,13 @@ final class Elev8_OS_Observation_Registry_Module {
             $target=(string)($item['target']??'patterns');$url=add_query_arg('view',$target,self::url());$governance=(array)($item['governance']??[]);
             echo '<article style="border-top:1px solid #eee;padding:14px 0"><div style="display:flex;gap:12px"><strong style="min-width:28px">'.(int)($index+1).'.</strong><div style="flex:1"><a href="'.esc_url($url).'" style="font-weight:800;text-decoration:none">'.esc_html((string)($item['title']??'')).'</a><p style="margin:5px 0 0">'.esc_html((string)($item['reason']??'')).'</p><small>'.esc_html(ucwords((string)($item['kind']??'attention'))).' · '.esc_html(ucfirst((string)($governance['status']??'open'))).'</small>';
             echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">';wp_nonce_field('elev8_govern_executive_attention');
-            echo '<input type="hidden" name="action" value="elev8_os_govern_executive_attention"><input type="hidden" name="item_key" value="'.esc_attr((string)($item['item_key']??'')).'"><select name="attention_status"><option value="acknowledged">'.esc_html__('Acknowledge','elev8-os').'</option><option value="deferred">'.esc_html__('Defer','elev8-os').'</option><option value="resolved">'.esc_html__('Resolve','elev8-os').'</option><option value="open">'.esc_html__('Reopen','elev8-os').'</option></select><input type="date" name="defer_until" value="'.esc_attr((string)($governance['defer_until']??'')).'"><input name="attention_notes" placeholder="'.esc_attr__('Decision note','elev8-os').'"><button>'.esc_html__('Save','elev8-os').'</button></form></div></div></article>';}
+            echo '<input type="hidden" name="action" value="elev8_os_govern_executive_attention"><input type="hidden" name="item_key" value="'.esc_attr((string)($item['item_key']??'')).'"><select name="attention_status"><option value="acknowledged">'.esc_html__('Acknowledge','elev8-os').'</option><option value="deferred">'.esc_html__('Defer','elev8-os').'</option><option value="resolved">'.esc_html__('Resolve','elev8-os').'</option><option value="open">'.esc_html__('Reopen','elev8-os').'</option></select><input type="date" name="defer_until" value="'.esc_attr((string)($governance['defer_until']??'')).'"><input name="attention_notes" placeholder="'.esc_attr__('Decision note','elev8-os').'"><button>'.esc_html__('Save','elev8-os').'</button></form>';
+            if((string)($governance['status']??'open')==='acknowledged'){self::executive_follow_through_form($item);}
+            echo '</div></div></article>';}
         echo '<p style="margin-bottom:0"><small>'.esc_html((string)($confidence['explanation']??'')).'</small></p></section>';
         self::executive_delivery_settings();
         self::executive_decision_timeline();
+        self::executive_follow_through_timeline();
         echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px">';
         self::executive_pattern_section(__('Highest-priority risks','elev8-os'),(array)($report['top_risks']??[]),'risk');
         self::executive_pattern_section(__('Strongest opportunities','elev8-os'),(array)($report['top_opportunities']??[]),'opportunity');
@@ -197,6 +201,26 @@ final class Elev8_OS_Observation_Registry_Module {
     }
 
 
+
+    private static function executive_follow_through_form(array $item): void {
+        $source_type=sanitize_key((string)($item['source_type']??''));$source_id=absint($item['source_id']??0);
+        echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fafafa">';wp_nonce_field('elev8_create_executive_follow_through');
+        echo '<input type="hidden" name="action" value="elev8_os_create_executive_follow_through"><input type="hidden" name="item_key" value="'.esc_attr((string)($item['item_key']??'')).'"><input type="hidden" name="source_type" value="'.esc_attr($source_type).'"><input type="hidden" name="source_id" value="'.$source_id.'"><input type="hidden" name="follow_title" value="'.esc_attr((string)($item['title']??'')).'">';
+        echo '<select name="follow_kind"><option value="formal_decision">'.esc_html__('Record formal decision','elev8-os').'</option><option value="delegated_review">'.esc_html__('Delegate review','elev8-os').'</option>';
+        if($source_type==='recommendation'){echo '<option value="approved_action">'.esc_html__('Approve operational action','elev8-os').'</option>';}
+        echo '<option value="scheduled_followup">'.esc_html__('Schedule follow-up','elev8-os').'</option></select><select name="owner_user_id"><option value="0">'.esc_html__('Unassigned','elev8-os').'</option>';
+        foreach(get_users(['orderby'=>'display_name','order'=>'ASC','fields'=>['ID','display_name']]) as $user){echo '<option value="'.(int)$user->ID.'">'.esc_html($user->display_name).'</option>';}
+        echo '</select><input type="date" name="follow_due_date"><input name="follow_notes" placeholder="'.esc_attr__('Decision, delegation, or follow-up instructions','elev8-os').'"><button>'.esc_html__('Create follow-through','elev8-os').'</button></form>';
+    }
+
+    private static function executive_follow_through_timeline(): void {
+        if(!class_exists('Elev8_OS_Executive_Decision_Follow_Through_Service')){return;}$items=Elev8_OS_Executive_Decision_Follow_Through_Service::timeline(20);
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><h2>'.esc_html__('Executive follow-through','elev8-os').'</h2>';
+        if(!$items){echo '<p>'.esc_html__('No executive follow-through records have been created yet.','elev8-os').'</p>';}
+        foreach($items as $item){echo '<div style="border-top:1px solid #eee;padding:10px 0"><strong>'.esc_html(ucwords(str_replace('_',' ',(string)$item['kind']))).': '.esc_html((string)$item['title']).'</strong><br><small>'.esc_html((string)$item['created_at']).' · '.esc_html((string)$item['owner_name']).(!empty($item['due_date'])?' · '.esc_html(sprintf(__('Due %s','elev8-os'),$item['due_date'])):'').(!empty($item['work_item_id'])?' · '.esc_html(sprintf(__('Work Item #%d','elev8-os'),$item['work_item_id'])):'').'</small>';if(!empty($item['notes'])){echo '<p style="margin:4px 0 0">'.esc_html((string)$item['notes']).'</p>';}echo '</div>';}
+        echo '</section>';
+    }
+
     private static function executive_delivery_settings(): void {
         if (!class_exists('Elev8_OS_Executive_Brief_Delivery_Service')) { return; }
         $settings=Elev8_OS_Executive_Brief_Delivery_Service::settings(get_current_user_id());
@@ -215,6 +239,19 @@ final class Elev8_OS_Observation_Registry_Module {
         if(!$events){echo '<p>'.esc_html__('No attention decisions have been recorded yet.','elev8-os').'</p>';}
         foreach($events as $event){$user=get_userdata((int)($event['user_id']??0));echo '<div style="border-top:1px solid #eee;padding:10px 0"><strong>'.esc_html(ucfirst((string)($event['status']??'open'))).'</strong> <span>'.esc_html((string)($event['item_key']??'')).'</span><br><small>'.esc_html((string)($event['occurred_at']??'')).($user?' · '.esc_html($user->display_name):'').(!empty($event['defer_until'])?' · '.esc_html(sprintf(__('Deferred until %s','elev8-os'),$event['defer_until'])):'').'</small>';if(!empty($event['notes'])){echo '<p style="margin:4px 0 0">'.esc_html((string)$event['notes']).'</p>';}echo '</div>';}
         echo '</section>';
+    }
+
+
+    public static function create_executive_follow_through(): void {
+        check_admin_referer('elev8_create_executive_follow_through');if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        $result=Elev8_OS_Executive_Decision_Follow_Through_Service::create([
+            'item_key'=>(string)($_POST['item_key']??''),'source_type'=>(string)($_POST['source_type']??''),'source_id'=>absint($_POST['source_id']??0),
+            'kind'=>(string)($_POST['follow_kind']??'formal_decision'),'title'=>wp_unslash((string)($_POST['follow_title']??'')),
+            'notes'=>wp_unslash((string)($_POST['follow_notes']??'')),'owner_user_id'=>absint($_POST['owner_user_id']??0),
+            'due_date'=>(string)($_POST['follow_due_date']??''),'created_by_user_id'=>get_current_user_id(),
+        ]);
+        if(is_wp_error($result)){wp_die(esc_html($result->get_error_message()));}
+        wp_safe_redirect(add_query_arg(['view'=>'executive','follow'=>'created'],self::url()));exit;
     }
 
     public static function govern_executive_attention(): void {

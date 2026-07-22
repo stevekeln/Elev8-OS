@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.6.0  
+**Platform release:** 18.7.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -647,3 +647,23 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 **Next development session:** Build the Executive Decision Follow-through layer so acknowledged attention can intentionally become a decision record, delegated review, or approved operational action while preserving the existing Recommendation and Work Item governance boundaries.
 
+### ADR-0026 — Executive Follow-through Reuses Existing Governance Boundaries
+
+**Status:** Accepted  
+**Decision:** An acknowledged Executive Intelligence attention item may intentionally become a formal decision record, delegated review, approved operational action, or scheduled follow-up. Formal decisions remain governance evidence. Delegated reviews and scheduled follow-ups create standard Operations Work Items. Approved operational actions are available only for governed Recommendations and must route through the existing Recommendation approval service.
+
+**Consequence:** Executive Intelligence can move from attention to accountable follow-through without creating a second task, approval, or decision system. Every follow-through record retains a stable connection to the attention projection and underlying Pattern or Recommendation, while Operations and Recommendation services remain authoritative for execution.
+
+### 2026-07-22 — Elev8 OS 18.7.0 — Executive Decision Follow-through
+
+**What changed:** Added durable Executive Decision Follow-through records, formal decision capture, delegated reviews, scheduled follow-ups, approved Recommendation actions, duplicate protection, linked Work Items, and a follow-through timeline inside Executive Intelligence.
+
+**Why:** Executive attention governance could preserve acknowledgement, deferral, and resolution, but it could not intentionally convert leadership attention into accountable follow-through. This release closes that gap while reusing the existing Recommendation and Operations boundaries.
+
+**Engines changed:** Intelligence (primary); Operations, Workflow, Organization, Identity, Communication, and Automation (supporting).
+
+**Business Graph changes:** Added Executive Decision Follow-through as governance evidence connected to a Pattern or Recommendation attention projection. Added an optional relationship from Executive Decision Follow-through to Work Item for delegated review and scheduled follow-up. Approved operational actions continue to use Recommendation → Work Item.
+
+**Open questions:** Follow-through completion synchronization, organization-specific decision templates, escalation rules, decision attachments, and meeting or calendar integration remain intentionally postponed.
+
+**Next development session:** Build Executive Follow-through Completion and Decision Effectiveness so completed delegated reviews and scheduled follow-ups can close their governance records and feed measurable executive decision outcomes without duplicating Work Item or Recommendation Outcome data.

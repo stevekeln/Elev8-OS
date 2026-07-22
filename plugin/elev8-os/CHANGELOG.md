@@ -1,5 +1,24 @@
 # Elev8 OS Changelog
 
+## 18.7.0 — Executive Decision Follow-through
+
+### Added
+- Governed Executive Decision Follow-through records for acknowledged attention items.
+- Four intentional follow-through paths: formal decision, delegated review, approved operational action, and scheduled follow-up.
+- Delegated reviews and scheduled follow-ups create normal Operations Work Items with assignment, due date, and source traceability.
+- Approved operational actions route through the existing Recommendation approval boundary and reuse its duplicate-protected Work Item.
+- Executive follow-through timeline in the Executive Intelligence workspace.
+
+### Architecture
+- Accepted ADR-0026: executive attention may become follow-through only through an explicit leader action.
+- Formal decisions remain governance evidence and do not create work.
+- Delegated review and scheduled follow-up reuse the Operations Engine rather than creating a second task system.
+- Recommendation execution continues to require the existing Recommendation approval path.
+
+### Database changes
+- Added hidden `elev8_exec_follow` posts for durable Executive Decision Follow-through records.
+
+
 ## 18.6.0 — Executive Brief Delivery & Attention Governance
 
 ### Added
