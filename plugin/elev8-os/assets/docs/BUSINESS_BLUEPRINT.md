@@ -995,3 +995,31 @@ Availability and skill evidence remains advisory. It does not alter WordPress ac
 **Open questions:** Whether skills should require manager verification, whether Amelia or a future native Booking Engine should contribute working availability, and whether availability should expire automatically beyond an optional end date remain intentionally postponed.
 
 **Next milestone:** Build Team Availability Calendar and Skill Verification governance, including recurring availability windows, manager-confirmed skills, and conflict-aware suggestions without replacing the future native Booking Engine or creating an HR system.
+
+## Development History — 19.8.0
+
+### Team Availability Calendar and Skill Verification Governance
+
+Team Coordination now supports recurring weekly coordination windows and manager-confirmed skill evidence. A person may record the days and time ranges when they are normally available for operational handoffs. When a Work Item has a due date, explainable reassignment suggestions check whether the proposed recipient has a recurring window on that day. Missing or conflicting recurring availability is surfaced as coordination evidence rather than silently ignored.
+
+Declared skills remain owned by the person as advisory capability relationships. Authorized operational leaders may now record separate verification evidence for those declared skills, including the reviewer, timestamp, and note. Verified required skills improve the explainable fit score, but do not grant permissions, certify professional competence, or move work automatically.
+
+**Primary engine:** Operations.
+
+**Supporting engines:** Organization, Workflow, Identity, Communication, Analytics, and Intelligence.
+
+**Business Graph changes:** Added Work Availability Window and Skill Verification Evidence relationships connected to Person, Work Item due-date context, declared skills, Organization assignments, and handoff-fit projections. No duplicate schedule, attendance, leave, certification, employee, or staffing object was introduced.
+
+### ADR-0041 — Availability Calendars and Skill Verification Are Bounded Coordination Evidence
+
+**Status:** Accepted  
+**Decision:** Recurring availability windows may identify scheduling conflicts for coordination suggestions, and operational leaders may verify declared skills for handoff-fit evidence. Neither capability may replace attendance, payroll, leave, Amelia or native Booking availability, professional certification, WordPress access, or human handoff acknowledgement.
+
+**Consequence:** Elev8 OS can make safer and more explainable cross-team suggestions while preserving authoritative ownership boundaries and avoiding an HR or scheduling subsystem.
+
+**Technical debt:** The first calendar uses weekly day-and-time windows and Work Item due dates. Date exceptions, holidays, approved time off, timezone-per-person support, skill proficiency levels, expiration, formal credentials, and Booking Engine calendar adapters remain future work.
+
+**Open questions:** Whether Organization Units should publish inherited default windows, which skill types require expiration or document evidence, and how future native Booking availability should contribute without becoming authoritative for employment schedules remain intentionally postponed.
+
+**Next milestone:** Build Team Coordination Exceptions and Credential Evidence, including date-specific availability exceptions, optional skill-expiration governance, and document-reference boundaries without storing credentials insecurely or creating an HR system.
+

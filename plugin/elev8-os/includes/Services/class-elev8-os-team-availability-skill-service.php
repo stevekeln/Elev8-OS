@@ -90,6 +90,13 @@ final class Elev8_OS_Team_Availability_Skill_Service {
         $matched = array_values(array_intersect($required, $candidate_skills));
         $missing = array_values(array_diff($required, $candidate_skills));
         $availability = self::availability($candidate_user_id);
+        $calendar = class_exists('Elev8_OS_Team_Availability_Calendar_Service')
+            ? Elev8_OS_Team_Availability_Calendar_Service::work_availability($candidate_user_id, $work_id)
+            : ['eligible' => $availability['state'] !== 'unavailable', 'explanation' => __('No recurring availability calendar service is available.', 'elev8-os')];
+        $verified_skills = class_exists('Elev8_OS_Team_Availability_Calendar_Service')
+            ? Elev8_OS_Team_Availability_Calendar_Service::verified_skills($candidate_user_id)
+            : [];
+        $verified_matched = array_values(array_intersect($required, $verified_skills));
         $candidate_units = self::organization_units($candidate_user_id);
         $owner_units = $current_owner_id ? self::organization_units($current_owner_id) : [];
         $shared_units = array_values(array_intersect($candidate_units, $owner_units));
@@ -99,11 +106,14 @@ final class Elev8_OS_Team_Availability_Skill_Service {
         if ($availability['state'] === 'available') { $score += 30; $reasons[] = __('currently available', 'elev8-os'); }
         elseif ($availability['state'] === 'limited') { $score += 10; $reasons[] = __('available with limits', 'elev8-os'); }
         else { $score -= 100; $reasons[] = __('marked unavailable', 'elev8-os'); }
+        if (!empty($calendar['eligible'])) { $score += 15; $reasons[] = (string) ($calendar['explanation'] ?? __('recurring availability does not conflict', 'elev8-os')); }
+        else { $score -= 100; $reasons[] = (string) ($calendar['explanation'] ?? __('recurring availability conflicts with the Work Item', 'elev8-os')); }
 
         if ($required) {
             $skill_score = (int) round((count($matched) / count($required)) * 50);
             $score += $skill_score;
             $reasons[] = sprintf(__('%1$d of %2$d required skills matched', 'elev8-os'), count($matched), count($required));
+            if ($verified_matched) { $score += min(20, count($verified_matched) * 5); $reasons[] = sprintf(_n('%d required skill is manager-confirmed', '%d required skills are manager-confirmed', count($verified_matched), 'elev8-os'), count($verified_matched)); }
         } else {
             $score += 20;
             $reasons[] = __('no explicit skill requirement is recorded', 'elev8-os');
@@ -112,8 +122,10 @@ final class Elev8_OS_Team_Availability_Skill_Service {
 
         return [
             'score' => $score,
-            'eligible' => $availability['state'] !== 'unavailable' && !$missing,
+            'eligible' => $availability['state'] !== 'unavailable' && !empty($calendar['eligible']) && !$missing,
             'availability' => $availability,
+            'calendar' => $calendar,
+            'verified_matched_skills' => $verified_matched,
             'required_skills' => $required,
             'matched_skills' => $matched,
             'missing_skills' => $missing,

@@ -1,3 +1,17 @@
+## 19.8.0 — Team Availability Calendar & Skill Verification Governance
+
+### Added
+- Recurring weekly coordination availability windows using explicit day and time ranges.
+- Conflict-aware handoff suggestions that compare Work Item due dates with recurring availability evidence.
+- Manager-confirmed skill evidence for declared coordination skills, including reviewer, timestamp, and note.
+- Verified-skill boosts in explainable handoff-fit scoring while preserving declared skills as separate evidence.
+- Team Coordination controls for personal recurring calendars and operational-leader skill verification.
+
+### Architecture
+- Accepted ADR-0041: recurring availability and skill verification are bounded coordination evidence, not attendance, payroll, leave, booking availability, access control, or professional certification.
+- Reused Universal Work Items, Organization assignments, Team Capacity, and acknowledgement-based handoffs.
+- No HR, scheduling, certification, staffing, or automatic assignment system was introduced.
+
 ## 19.7.0 — Team Availability & Skill-Aware Coordination
 
 ### Added
