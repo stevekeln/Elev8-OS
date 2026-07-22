@@ -1,5 +1,19 @@
 # Elev8 OS Changelog
 
+## 19.2.0 — Daily Assistant Preferences & Delivery Governance
+
+### Added
+- Personal Daily Assistant delivery preferences for enabled state, delivery hour, weekdays or every day, focus categories, reminder emphasis, and permitted channels.
+- Governed hourly delivery scheduling through WordPress Cron and the existing Communication Engine email boundary.
+- In-app delivery timestamps and optional email delivery without creating duplicate tasks, decisions, or business facts.
+- A test-delivery control and visible last-delivery status inside the Today workspace.
+- Preference-aware Daily Assistant projections that can include or exclude Work, Conversations, Attention, and Coaching.
+
+### Architecture
+- Accepted ADR-0035: Daily Assistant delivery is personal preference governance over a read model, not a notification, task, or automation authority.
+- Reused the Communication Engine for email transport and Automation scheduling for delivery timing.
+- Preserved all Operations, Intelligence, Conversation, Coaching, and source-record ownership boundaries.
+
 ## 19.1.0 — Proactive Daily Assistant
 
 ### Added

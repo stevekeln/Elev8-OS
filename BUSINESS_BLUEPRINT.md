@@ -836,4 +836,30 @@ The Daily Assistant is intentionally different from the Executive Brief. The Exe
 **Open questions:** Whether Today should optionally become a user-selected landing page, whether reminders should be delivered through the Communication Engine, and how often the briefing should refresh automatically remain intentionally postponed.
 
 **Next milestone:** Build Daily Assistant preferences and delivery governance so users can choose permitted delivery timing, focus categories, and notification channels without turning the assistant into an automatic task or decision system.
+## Development History — 19.2.0
+
+### Daily Assistant Preferences and Delivery Governance
+
+The Proactive Daily Assistant now supports personal delivery preferences for timing, weekdays or daily cadence, permitted focus categories, reminder emphasis, and in-app or email channels. Scheduled delivery uses WordPress Cron through the Automation boundary and email uses the shared Communication Engine notification service. The Today workspace remains available on demand regardless of delivery settings.
+
+The delivery layer stores only personal preferences and delivery timestamps. It does not create Work Items, change Conversations, alter Coaching, approve Recommendations, or copy source evidence. Preference-aware briefing generation filters the existing Daily Assistant projection rather than creating a second briefing model.
+
+**Primary engine:** Intelligence.
+
+**Supporting engines:** Communication, Automation, Operations, Organization, Identity, Workflow, Analytics, and Experience.
+
+**Business Graph changes:** Added a governed projection relationship from Daily Assistant Projection to Communication Delivery. Delivery timing and channel records remain personal governance evidence and do not become authoritative business objects.
+
+### ADR-0035 — Daily Assistant Delivery Is Personal Preference Governance
+
+**Status:** Accepted  
+**Decision:** Daily Assistant delivery may schedule and transport a user-permitted briefing through existing Automation and Communication boundaries. It may not create actions, escalate source evidence, modify shared records, or infer that a delivered briefing was read or acted upon.
+
+**Consequence:** Every role can receive a useful briefing at a chosen time without introducing a parallel notification or workflow system. Email transport remains replaceable through the Notification Service, including future AWS SES integration.
+
+**Technical debt:** Delivery currently uses hourly WordPress Cron resolution. Future infrastructure adapters may provide more precise scheduling and delivery telemetry without changing the preference contract.
+
+**Open questions:** Whether users should choose Today as their optional landing page, whether mobile push should become a supported Communication channel, and how usefulness feedback should influence presentation remain intentionally postponed.
+
+**Next milestone:** Build Daily Assistant usefulness feedback and focus-policy governance so users and organizations can improve ranking transparently before any language-model summarization is introduced.
 

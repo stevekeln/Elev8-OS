@@ -15,16 +15,17 @@ final class Elev8_OS_Proactive_Daily_Assistant_Service {
     }
 
     /** @return array<string,mixed> */
-    public static function briefing(?WP_User $user = null): array {
+    public static function briefing(?WP_User $user = null, array $categories = []): array {
         $user = $user ?: (class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user());
         if (!$user instanceof WP_User || !$user->ID) { return []; }
 
         $role_key = class_exists('Elev8_OS_Workspace_Resolver_Service') ? Elev8_OS_Workspace_Resolver_Service::role_key($user) : 'team';
         $role_label = class_exists('Elev8_OS_Workspace_Resolver_Service') ? Elev8_OS_Workspace_Resolver_Service::role_label($user) : __('Team Member', 'elev8-os');
-        $attention = class_exists('Elev8_OS_Attention_Service') ? Elev8_OS_Attention_Service::items($user, 12) : [];
-        $coaching = class_exists('Elev8_OS_Business_Coaching_Service') ? Elev8_OS_Business_Coaching_Service::cards($user) : [];
-        $work = self::work_summary($user, $role_key);
-        $unread_conversations = class_exists('Elev8_OS_Conversation_Service') && Elev8_OS_Access_Service::user_can('view_conversations', $user)
+        $categories = $categories ?: ['work','conversations','attention','coaching'];
+        $attention = in_array('attention', $categories, true) && class_exists('Elev8_OS_Attention_Service') ? Elev8_OS_Attention_Service::items($user, 12) : [];
+        $coaching = in_array('coaching', $categories, true) && class_exists('Elev8_OS_Business_Coaching_Service') ? Elev8_OS_Business_Coaching_Service::cards($user) : [];
+        $work = in_array('work', $categories, true) ? self::work_summary($user, $role_key) : ['open'=>0,'due_today'=>0,'overdue'=>0,'unassigned'=>0];
+        $unread_conversations = in_array('conversations', $categories, true) && class_exists('Elev8_OS_Conversation_Service') && Elev8_OS_Access_Service::user_can('view_conversations', $user)
             ? Elev8_OS_Conversation_Service::unread_count((int) $user->ID)
             : 0;
 
