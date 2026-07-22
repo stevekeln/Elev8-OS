@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+
+## 18.2.0 — Cross-Source Pattern Detection
+- Added the canonical Pattern object and stable cross-source detection service.
+- Added daily, event-driven, and manual scans over confirmed/corrected Observations.
+- Added Pattern Review to the Intelligence workspace with acknowledgement, dismissal, and resolution controls.
+- Added occurrence, date range, confidence, severity, trend, and supporting-observation evidence.
+- No authoritative source records are duplicated or modified, and Patterns do not create Work Items automatically.
+
 ## 18.1.0 — Intelligence Review & Cross-Engine Observations
 
 - Added the frontend Observation Review workspace inside the shared Elev8 OS portal shell.

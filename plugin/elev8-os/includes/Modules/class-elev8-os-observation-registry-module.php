@@ -9,6 +9,8 @@ final class Elev8_OS_Observation_Registry_Module {
         add_shortcode('elev8_os_observation_registry', [__CLASS__, 'shortcode']);
         add_action('admin_init', [__CLASS__, 'ensure_page_for_admin']);
         add_action('admin_post_elev8_os_review_observation', [__CLASS__, 'review']);
+        add_action('admin_post_elev8_os_review_pattern', [__CLASS__, 'review_pattern']);
+        add_action('admin_post_elev8_os_scan_patterns', [__CLASS__, 'scan_patterns']);
         add_filter('elev8_os_application_shell_frontend', [__CLASS__, 'shell_page']);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
     }
@@ -18,6 +20,8 @@ final class Elev8_OS_Observation_Registry_Module {
         if (!is_user_logged_in()) { return '<p>'.esc_html__('Please sign in.', 'elev8-os').'</p>'; }
         $user = wp_get_current_user();
         if (!self::can_review($user)) { return '<p>'.esc_html__('You do not have permission to review intelligence.', 'elev8-os').'</p>'; }
+        $view = sanitize_key((string)($_GET['view'] ?? 'observations'));
+        if ($view === 'patterns') { return self::patterns_view(); }
         $filters = [
             'classification'=>sanitize_key((string)($_GET['classification'] ?? '')),
             'severity'=>sanitize_key((string)($_GET['severity'] ?? '')),
@@ -29,6 +33,7 @@ final class Elev8_OS_Observation_Registry_Module {
         $summary = Elev8_OS_Observation_Service::summary();
         ob_start();
         echo '<div class="elev8-observation-registry"><header><p>'.esc_html__('INTELLIGENCE ENGINE', 'elev8-os').'</p><h1>'.esc_html__('Observation Review', 'elev8-os').'</h1><span>'.esc_html__('Confirm, correct, or dismiss verified facts before they drive higher-level recommendations.', 'elev8-os').'</span></header>';
+        self::tabs('observations');
         echo '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:20px 0">';
         foreach (['total'=>'Total','risk'=>'Risks','opportunity'=>'Opportunities','critical'=>'Critical'] as $key=>$label) { echo '<div style="background:#fff;border:1px solid #ddd;border-radius:12px;padding:14px 18px"><strong style="font-size:24px">'.(int)($summary[$key]??0).'</strong><div>'.esc_html($label).'</div></div>'; }
         echo '</div><form method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><select name="review_status"><option value="">'.esc_html__('All review states','elev8-os').'</option>';
@@ -51,6 +56,56 @@ final class Elev8_OS_Observation_Registry_Module {
         foreach (['confirmed'=>'Confirm','corrected'=>'Mark corrected','dismissed'=>'Dismiss','unreviewed'=>'Return to unreviewed'] as $v=>$l) { echo '<option value="'.esc_attr($v).'">'.esc_html($l).'</option>'; }
         echo '</select><input name="review_notes" placeholder="'.esc_attr__('Review note (optional)','elev8-os').'" style="min-width:260px"><button>'.esc_html__('Save review','elev8-os').'</button></form></article>';
     }
+
+    private static function tabs(string $active): void {
+        $base = self::url();
+        echo '<nav style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0">';
+        foreach (['observations'=>__('Observations','elev8-os'),'patterns'=>__('Patterns','elev8-os')] as $key=>$label) {
+            $url = $key === 'patterns' ? add_query_arg('view','patterns',$base) : $base;
+            $style = $active === $key ? 'background:#5b21b6;color:#fff;' : 'background:#fff;color:#2d1b55;';
+            echo '<a href="'.esc_url($url).'" style="'.esc_attr($style).'border:1px solid #d8c8ff;border-radius:999px;padding:9px 14px;text-decoration:none;font-weight:700">'.esc_html($label).'</a>';
+        }
+        echo '</nav>';
+    }
+
+    private static function patterns_view(): string {
+        if (!class_exists('Elev8_OS_Pattern_Detection_Service')) { return '<p>'.esc_html__('Pattern Detection is unavailable.','elev8-os').'</p>'; }
+        $filters=['classification'=>sanitize_key((string)($_GET['classification']??'')),'severity'=>sanitize_key((string)($_GET['severity']??'')),'status'=>sanitize_key((string)($_GET['status']??'active')),'posts_per_page'=>200];
+        $items=Elev8_OS_Pattern_Detection_Service::query($filters);
+        ob_start();
+        echo '<div class="elev8-observation-registry"><header><p>'.esc_html__('INTELLIGENCE ENGINE','elev8-os').'</p><h1>'.esc_html__('Pattern Detection','elev8-os').'</h1><span>'.esc_html__('Repeated confirmed observations are grouped into human-governed patterns. Patterns never create work automatically.','elev8-os').'</span></header>';
+        self::tabs('patterns');
+        echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="margin:0 0 18px">'; wp_nonce_field('elev8_scan_patterns'); echo '<input type="hidden" name="action" value="elev8_os_scan_patterns"><button>'.esc_html__('Run pattern scan now','elev8-os').'</button></form>';
+        echo '<form method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"><input type="hidden" name="view" value="patterns"><select name="status"><option value="">'.esc_html__('All states','elev8-os').'</option>';
+        foreach(['active'=>'Active','acknowledged'=>'Acknowledged','dismissed'=>'Dismissed','resolved'=>'Resolved'] as $v=>$l){echo '<option value="'.esc_attr($v).'" '.selected($filters['status'],$v,false).'>'.esc_html($l).'</option>';}
+        echo '</select><select name="classification"><option value="">'.esc_html__('All classifications','elev8-os').'</option>';
+        foreach(['risk','opportunity','achievement','follow_up'] as $v){echo '<option value="'.esc_attr($v).'" '.selected($filters['classification'],$v,false).'>'.esc_html(ucwords(str_replace('_',' ',$v))).'</option>';}
+        echo '</select><select name="severity"><option value="">'.esc_html__('All severity','elev8-os').'</option>';
+        foreach(['low','normal','high','critical'] as $v){echo '<option value="'.esc_attr($v).'" '.selected($filters['severity'],$v,false).'>'.esc_html(ucfirst($v)).'</option>';}
+        echo '</select><button>'.esc_html__('Filter','elev8-os').'</button></form>';
+        if(!$items){echo '<div style="background:#fff;border:1px solid #ddd;border-radius:12px;padding:24px"><strong>'.esc_html__('No patterns match these filters. Confirm at least two related observations, then run the scan.','elev8-os').'</strong></div>';}
+        foreach($items as $item){self::pattern_card($item);} echo '</div>'; return (string)ob_get_clean();
+    }
+
+    private static function pattern_card(array $item): void {
+        echo '<article style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin:0 0 14px"><div style="display:flex;justify-content:space-between;gap:20px"><div><div style="font-size:12px;text-transform:uppercase">'.esc_html($item['classification'].' · '.$item['severity'].' · '.$item['trend']).'</div><h3 style="margin:6px 0">'.esc_html($item['title']).'</h3><p>'.esc_html($item['summary']).'</p><small>'.sprintf(esc_html__('%1$d supporting observations · %2$d%% confidence','elev8-os'),(int)$item['occurrence_count'],(int)$item['confidence']).'</small></div><strong>'.esc_html(ucfirst($item['status'])).'</strong></div>';
+        echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">'; wp_nonce_field('elev8_review_pattern_'.$item['id']);
+        echo '<input type="hidden" name="action" value="elev8_os_review_pattern"><input type="hidden" name="pattern_id" value="'.(int)$item['id'].'"><select name="pattern_status">';
+        foreach(['active'=>'Keep active','acknowledged'=>'Acknowledge','dismissed'=>'Dismiss','resolved'=>'Resolve'] as $v=>$l){echo '<option value="'.esc_attr($v).'">'.esc_html($l).'</option>';}
+        echo '</select><input name="review_notes" placeholder="'.esc_attr__('Pattern note (optional)','elev8-os').'" style="min-width:260px"><button>'.esc_html__('Save pattern','elev8-os').'</button></form></article>';
+    }
+
+    public static function review_pattern(): void {
+        $id=absint($_POST['pattern_id']??0); check_admin_referer('elev8_review_pattern_'.$id); if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        Elev8_OS_Pattern_Detection_Service::review($id,(string)($_POST['pattern_status']??''),get_current_user_id(),wp_unslash((string)($_POST['review_notes']??'')));
+        wp_safe_redirect(add_query_arg('view','patterns',self::url())); exit;
+    }
+
+    public static function scan_patterns(): void {
+        check_admin_referer('elev8_scan_patterns'); if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        Elev8_OS_Pattern_Detection_Service::scan(); wp_safe_redirect(add_query_arg('view','patterns',self::url())); exit;
+    }
+
     public static function review(): void {
         $id=absint($_POST['observation_id']??0); check_admin_referer('elev8_review_observation_'.$id);
         if (!self::can_review(wp_get_current_user())) { wp_die(esc_html__('Permission denied.','elev8-os')); }

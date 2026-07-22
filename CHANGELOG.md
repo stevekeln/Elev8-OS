@@ -1,5 +1,24 @@
 # Elev8 OS Changelog
 
+
+## 18.2.0 — Cross-Source Pattern Detection
+
+### Added
+- Canonical Intelligence Engine Pattern object.
+- Daily and on-demand pattern scans using confirmed and corrected Observations.
+- Stable pattern fingerprints grouped by shared Business Graph object, meaningful tag, organization scope, and classification.
+- Pattern frequency, first and last occurrence, confidence, severity, and trend metadata.
+- Pattern Review tab inside the Intelligence Review workspace.
+- Human controls to acknowledge, dismiss, resolve, or reactivate a Pattern.
+
+### Architecture
+- Accepted ADR-0021: Patterns summarize confirmed facts without becoming actions.
+- Patterns retain supporting Observation IDs and never rewrite authoritative source records.
+- Pattern detection does not automatically create Work Items.
+
+### Database changes
+- None. Patterns use a private WordPress post type and post metadata.
+
 ## 18.1.0 — Intelligence Review & Cross-Engine Observations
 
 - Added the frontend Observation Review workspace inside the shared Elev8 OS portal shell.

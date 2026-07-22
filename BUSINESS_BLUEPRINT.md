@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.9  
+**Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.1.0  
+**Platform release:** 18.2.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -548,3 +548,21 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 - Connected Inventory, Maintenance, Events, Booking, and Communication as verified Observation contributors.
 - Preserved source authority and stable source keys to prevent duplicate facts.
 
+
+### ADR-0021 — Patterns Summarize Confirmed Facts Without Becoming Actions
+
+**Decision:** The Intelligence Engine may detect a Pattern only from confirmed or corrected Observations. A Pattern stores the supporting Observation relationships, frequency, time range, confidence, severity, and trend. Patterns do not modify authoritative source records and do not create Work Items automatically.  
+**Why:** Repetition is useful intelligence, but automatically converting repetition into execution would bypass human governance and create task overload.  
+**Consequence:** Leaders acknowledge, dismiss, or resolve Patterns in the Intelligence Review workspace before future recommendation or automation layers use them.
+
+### 2026-07-22 — Elev8 OS 18.2.0 — Cross-Source Pattern Detection
+
+**What changed:** Added the canonical Pattern object, a daily and on-demand detector, stable pattern fingerprints, grouping by shared Business Graph object, meaningful tag, or source type, and a Pattern Review view inside the Intelligence workspace. Patterns show supporting occurrence count, first and last occurrence, confidence, severity, trend, and review state.
+
+**Engines changed:** Intelligence (primary), Analytics, Organization, Inventory, Operations, Events, Booking, Communication, and Workflow (supporting).
+
+**Business Graph changes:** Added Observation → Pattern evidence relationships. Authoritative records remain the source of facts; Observations remain the verified interpretation layer; Patterns summarize repetition across those facts.
+
+**Open questions:** Configurable thresholds, semantic topic grouping, cross-organization comparisons, pattern-to-recommendation promotion rules, and AI-assisted pattern naming remain intentionally postponed.
+
+**Next development session:** Build the Recommendation Promotion layer so acknowledged Patterns can produce explainable, evidence-linked recommendations without automatically creating Work Items or changing authoritative records.

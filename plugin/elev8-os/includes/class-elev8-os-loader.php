@@ -31,6 +31,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-observation-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-pattern-detection-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-cross-engine-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-blueprint-service.php';
@@ -169,6 +170,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Maintenance_Service::init();
         Elev8_OS_Maintenance_Operations_Contributor::init();
         Elev8_OS_Observation_Service::init();
+        Elev8_OS_Pattern_Detection_Service::init();
         Elev8_OS_Daily_Operations_Observation_Contributor::init();
         Elev8_OS_Cross_Engine_Observation_Contributor::init();
         Elev8_OS_Workflow_Service::init();
