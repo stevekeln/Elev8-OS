@@ -1,0 +1,1338 @@
+{
+    "product":  "Elev8 OS",
+    "version":  "20.2.6",
+    "build":  "20260722-165139",
+    "builtAtUtc":  "2026-07-22T22:51:39Z",
+    "package":  "elev8-os-20.2.6-20260722-165139.zip",
+    "git":  {
+                "branch":  "develop",
+                "commit":  "7a53befe8d973e3874c7efe7b6b9995792aa6ccd",
+                "workingTreeDirty":  true
+            },
+    "validation":  {
+                       "phpSyntax":  "PASS",
+                       "phpFileCount":  188,
+                       "phpExecutable":  "C:\\Users\\skeln\\AppData\\Local\\Programs\\Local\\resources\\extraResources\\lightning-services\\php-8.2.29+0\\bin\\win64\\php.exe"
+                   },
+    "packageContents":  {
+                            "fileCount":  264,
+                            "totalBytesBeforeManifest":  3642141
+                        },
+    "files":  [
+                  {
+                      "path":  "assets/css/action-center.css",
+                      "bytes":  1511,
+                      "sha256":  "eefd0e4a9b3e25a07643f9093581e27c7d9ea1e3b368f182ddbcd70ad8163d8d"
+                  },
+                  {
+                      "path":  "assets/css/admin.css",
+                      "bytes":  20531,
+                      "sha256":  "88529b10efbc503ddd6ee2566e07c526b274c8824a0d688342ea1a99c2aac46e"
+                  },
+                  {
+                      "path":  "assets/css/app-install.css",
+                      "bytes":  5099,
+                      "sha256":  "f3adf4f9d14a4d6e57d91d565fa1f937603cfd573d64c60cebc6e36ad30fcfec"
+                  },
+                  {
+                      "path":  "assets/css/application-shell.css",
+                      "bytes":  10524,
+                      "sha256":  "aeaef8f94814f26bbf31a253dff694c91975eed9a1ee4a1d997f8554af38f6dd"
+                  },
+                  {
+                      "path":  "assets/css/artist-artwork.css",
+                      "bytes":  8387,
+                      "sha256":  "904f756fa51a1beadbc1f44a32c3e145aab393291daa63bf7a1d2d30ef333047"
+                  },
+                  {
+                      "path":  "assets/css/artist-classes.css",
+                      "bytes":  9587,
+                      "sha256":  "4de36ea0c6adc8caa30f6ffec8dec957659099bb25821b4047383b0829f50be5"
+                  },
+                  {
+                      "path":  "assets/css/artist-dashboard.css",
+                      "bytes":  48366,
+                      "sha256":  "75bba225b53aa9a851dba1f2dae8b53b50d6aad98d68c4f7052c9f1718ec8f37"
+                  },
+                  {
+                      "path":  "assets/css/artist-growth-studio.css",
+                      "bytes":  7802,
+                      "sha256":  "2fe1b7b77a0ad7bcb1d48d00580dc26ba165b5b5726fd24d46b37392663c0327"
+                  },
+                  {
+                      "path":  "assets/css/artist-growth-tools.css",
+                      "bytes":  1708,
+                      "sha256":  "3521c8e726e7f8833ecf9b40a8485134b9b9b600eedac337921be52329c88bdc"
+                  },
+                  {
+                      "path":  "assets/css/artist-marketing.css",
+                      "bytes":  3841,
+                      "sha256":  "c9a5917f17fa64efc3ffd01911bac5fe4336260a5d28909fa8a826dc74b1ff0a"
+                  },
+                  {
+                      "path":  "assets/css/artist-portal.css",
+                      "bytes":  18060,
+                      "sha256":  "74900a161c034c9b0773e5349a321d357d6f4dc1771ba0423cd290139a892157"
+                  },
+                  {
+                      "path":  "assets/css/artist-shortcut-launcher.css",
+                      "bytes":  4331,
+                      "sha256":  "e128037a4b1dde2d1dd1d1b4ff8cf6822bdaf00431b3e368017afb081cef16a3"
+                  },
+                  {
+                      "path":  "assets/css/artist-students.css",
+                      "bytes":  12729,
+                      "sha256":  "00bdfd240e2ba8b365c8b3c6e747a3fac177e45184d5a520eaa488fc22d35b71"
+                  },
+                  {
+                      "path":  "assets/css/artist-waitlist.css",
+                      "bytes":  12453,
+                      "sha256":  "7af882c0ca1923bdc68d2667a6e366aa20950d8578970329b89257121c48630c"
+                  },
+                  {
+                      "path":  "assets/css/bingo-reservations.css",
+                      "bytes":  3621,
+                      "sha256":  "cb17b5649be80bde8b13028f3fad4e5a65de58896b0861cb4ce428865c06ea7f"
+                  },
+                  {
+                      "path":  "assets/css/business-blueprint.css",
+                      "bytes":  2615,
+                      "sha256":  "e2e8f7e8faef85c7ee18ce1831ee1ea664816fbe32fbd712920d3aabf3b3a2c6"
+                  },
+                  {
+                      "path":  "assets/css/business-graph.css",
+                      "bytes":  2889,
+                      "sha256":  "786bfe6a0677aef677d77646a620b1f0fcf6dbd675e03343784840465dd48d0e"
+                  },
+                  {
+                      "path":  "assets/css/business-intelligence-dashboard.css",
+                      "bytes":  26767,
+                      "sha256":  "0d551752786649cec6093787cf35778c4249328802091d007cf22a4600727618"
+                  },
+                  {
+                      "path":  "assets/css/business-memory.css",
+                      "bytes":  3309,
+                      "sha256":  "c3938deb03d46aadf68bec9a2a2373ae75a55614d47bcba9f051bc360a320970"
+                  },
+                  {
+                      "path":  "assets/css/checkin-center.css",
+                      "bytes":  5845,
+                      "sha256":  "890e89b0684953a7d9b86c48cc4a488377c3735a41c0d0a594268b5fbf9201d3"
+                  },
+                  {
+                      "path":  "assets/css/class-approvals.css",
+                      "bytes":  2334,
+                      "sha256":  "dec54980996c0658df701a87581510c468417be9472a565ff4eac2615e8dbbf7"
+                  },
+                  {
+                      "path":  "assets/css/class-demand.css",
+                      "bytes":  1394,
+                      "sha256":  "be8dac0a2884110e0f690572b840bd127ac2279168499dc25ee572b7df4a3bcb"
+                  },
+                  {
+                      "path":  "assets/css/class-demand-manager.css",
+                      "bytes":  4993,
+                      "sha256":  "a5a0b030636f64717143b694117c6152f92c8841244a501ec17ccdfc48433ff4"
+                  },
+                  {
+                      "path":  "assets/css/class-idea-center.css",
+                      "bytes":  5385,
+                      "sha256":  "ecc5123748e6a2fa6ae77853ccb2ccd037945da6ebf2b9ce61bb513964e38a15"
+                  },
+                  {
+                      "path":  "assets/css/community-outreach.css",
+                      "bytes":  2885,
+                      "sha256":  "0b5099bf0cc99b80ca75e6629469a8e4ef51918cf3f812cc77ccd3d13b00a382"
+                  },
+                  {
+                      "path":  "assets/css/content-studio.css",
+                      "bytes":  13651,
+                      "sha256":  "cef19ee3c2e4891105f4f03b759167806e66cb1d746c81ccf0ad768bf2184a44"
+                  },
+                  {
+                      "path":  "assets/css/conversations.css",
+                      "bytes":  11691,
+                      "sha256":  "6c30cdc0790fdfffc3620a6c1d2bc56f7599c6be09a30b4611f1c678e86554d2"
+                  },
+                  {
+                      "path":  "assets/css/daily-operations.css",
+                      "bytes":  1202,
+                      "sha256":  "0469e8494d4da790414e2f5273c03f3b19c79ccbb629e710eca7b83e5793badc"
+                  },
+                  {
+                      "path":  "assets/css/employee-mapping.css",
+                      "bytes":  1289,
+                      "sha256":  "28e9b4fd67bab878176ef7cdee4bf2cbae53dc894343f7621d7d0f0f671118a9"
+                  },
+                  {
+                      "path":  "assets/css/event-applications.css",
+                      "bytes":  2859,
+                      "sha256":  "f19fb84f371782700d67c2ceba77a510b5b46322fce1a2016279fb8e253b995d"
+                  },
+                  {
+                      "path":  "assets/css/experience-engine.css",
+                      "bytes":  1335,
+                      "sha256":  "17eb15c478ff45cfff239edcba9d4d3558b1c4fee1547a30ea146574c94a4e28"
+                  },
+                  {
+                      "path":  "assets/css/gallery-operations.css",
+                      "bytes":  5783,
+                      "sha256":  "9b0799fd30b77191fbfe7bba0eb1dfc67456d3ab491e63714a117692fec518bc"
+                  },
+                  {
+                      "path":  "assets/css/glass-manager-suite.css",
+                      "bytes":  2269,
+                      "sha256":  "692af491a23a48aefec96eec906d11422e01fd0543ff182f7fc06ccd57ec09e7"
+                  },
+                  {
+                      "path":  "assets/css/glass-operations.css",
+                      "bytes":  15695,
+                      "sha256":  "c29e7916a3e8810fa62ae1bbf52dd25e3945b734afec931c2461bf6a829a7c52"
+                  },
+                  {
+                      "path":  "assets/css/integration-engine.css",
+                      "bytes":  1156,
+                      "sha256":  "f76546f68dd450e001abc5d986407e047cac3e5353043f9bc895341031f5e27b"
+                  },
+                  {
+                      "path":  "assets/css/knowledge-base.css",
+                      "bytes":  1542,
+                      "sha256":  "1ec64a32b59253d70c1f32efabc556a5bc49a83150c2ab85bda4a1d61e9cd97a"
+                  },
+                  {
+                      "path":  "assets/css/mobile-home.css",
+                      "bytes":  3955,
+                      "sha256":  "1d941817292e8e3439df71a7ed82d9df909bd12d949417ee238e24184f303dff"
+                  },
+                  {
+                      "path":  "assets/css/operations-engine.css",
+                      "bytes":  6523,
+                      "sha256":  "c03c46769622cd54865f25a13f1fc8c3502b2e01a9201b1b45c9cf4c314ca3b2"
+                  },
+                  {
+                      "path":  "assets/css/opportunities.css",
+                      "bytes":  702,
+                      "sha256":  "f8df76f6faf3bdf69535ac8190fe58a8f36106726a579381cdda107c2427527d"
+                  },
+                  {
+                      "path":  "assets/css/organization.css",
+                      "bytes":  4241,
+                      "sha256":  "361f16715c5d5aad1aaa032778ef6dbc9ea7fa523c56c5a0b70f40bd2244efab"
+                  },
+                  {
+                      "path":  "assets/css/production-catalog.css",
+                      "bytes":  14212,
+                      "sha256":  "f62efa6ab11197202085277bcc4eccfbae60529ac8fdadc6bc022bce420e8eb4"
+                  },
+                  {
+                      "path":  "assets/css/public-profiles.css",
+                      "bytes":  10207,
+                      "sha256":  "0a4f512979d9afc943b969fe6fe09a8f3cac4a373fcc011b8cad2a37cc5ba43e"
+                  },
+                  {
+                      "path":  "assets/css/role-preview.css",
+                      "bytes":  1995,
+                      "sha256":  "c2edde635fa17dceceb6a89b4309c2050c0baf21ae77cd0ba446720d0132d2d3"
+                  },
+                  {
+                      "path":  "assets/css/site-layout-guard.css",
+                      "bytes":  3252,
+                      "sha256":  "4da913cd9eb3eb5efb2c686a7e42b4a6e1c3df3e017058c61480b332c9324d15"
+                  },
+                  {
+                      "path":  "assets/css/system-inspector.css",
+                      "bytes":  2137,
+                      "sha256":  "61923c34032e6dbb2af674de80da47e739de53db023aa2d7d08035020efec4ee"
+                  },
+                  {
+                      "path":  "assets/css/unified-intake.css",
+                      "bytes":  3690,
+                      "sha256":  "e30acd3084101c89723da1b7b3b454ad80b6dc1a7864062badb7aaa3c558e22b"
+                  },
+                  {
+                      "path":  "assets/css/work-management.css",
+                      "bytes":  1978,
+                      "sha256":  "a9adc42ec7eaa1ffb0b3abfb00ade55239abc75694b2deb358c7a62f07e60c0f"
+                  },
+                  {
+                      "path":  "assets/css/workspace.css",
+                      "bytes":  9979,
+                      "sha256":  "9c4472525078735dc4b62b02c2e5b3bfad7d508ac2d1047b074490715fee3ef6"
+                  },
+                  {
+                      "path":  "assets/data/glass-production-catalog-migration.json",
+                      "bytes":  266721,
+                      "sha256":  "6bdd6e1d326cc5527c51518bfb7be26eb899b30cf089af1a062b5312c2f6d68f"
+                  },
+                  {
+                      "path":  "assets/docs/BUSINESS_BLUEPRINT.md",
+                      "bytes":  114611,
+                      "sha256":  "0bb76efaf5a26f8f2740f04d2cffcbd7ec1c13eb917659029377a0b1af052468"
+                  },
+                  {
+                      "path":  "assets/docs/elev8-os-staff-quick-start.pdf",
+                      "bytes":  12706,
+                      "sha256":  "3caf3d34fe58473530306f2388e905cb2dd52e15af5b3616123629c80f337bc5"
+                  },
+                  {
+                      "path":  "assets/js/admin.js",
+                      "bytes":  44,
+                      "sha256":  "c624aaeb370e0fdcf11903bca31f818b9808a637695645b071c9996c1d17cc7d"
+                  },
+                  {
+                      "path":  "assets/js/app-install.js",
+                      "bytes":  8239,
+                      "sha256":  "de9ffa397e1ae1eb0f35b463b7ee42c6c0ef3688167cc79fc2d954034f507a55"
+                  },
+                  {
+                      "path":  "assets/js/application-shell.js",
+                      "bytes":  5625,
+                      "sha256":  "37feb66344d47c11ec294a420331c87c226fec4c04f26d0dcc8c4c7d965b4cce"
+                  },
+                  {
+                      "path":  "assets/js/artist-classes.js",
+                      "bytes":  529,
+                      "sha256":  "d1119c5bc1f178bf007fb39081cc13bc084112ac6b028c82848e32b939a33314"
+                  },
+                  {
+                      "path":  "assets/js/artist-marketing-preview.js",
+                      "bytes":  1108,
+                      "sha256":  "afd527b6f44743a858dbb71e597160646e7c6ea257ced3889a527a1802812310"
+                  },
+                  {
+                      "path":  "assets/js/artist-shortcut-launcher.js",
+                      "bytes":  2125,
+                      "sha256":  "bf49388e4f49af9ee0c51227337b4c88f744c554e203efc31158b35d521cd8d9"
+                  },
+                  {
+                      "path":  "assets/js/artist-website-live-preview.js",
+                      "bytes":  3205,
+                      "sha256":  "9ac21c05cddfef75d1453a4c964236e60650ca6d20f85eda4f87f571aa136c28"
+                  },
+                  {
+                      "path":  "assets/js/asset-polish.js",
+                      "bytes":  684,
+                      "sha256":  "04806f8d2f33354018dc85b954e9993a3bb9cc3550ea11f78ab8423e6176a9a2"
+                  },
+                  {
+                      "path":  "assets/js/browser-notifications.js",
+                      "bytes":  238,
+                      "sha256":  "29b63f79ed1cb0d3216c25d1820f3f64de974e14da26613c39150e01efa0d824"
+                  },
+                  {
+                      "path":  "assets/js/checkin-center.js",
+                      "bytes":  536,
+                      "sha256":  "8b4f59e9fa86b7f9e605733da04cc57cecb05285bce18f8ac4a3b3802ded51b4"
+                  },
+                  {
+                      "path":  "assets/js/class-approvals.js",
+                      "bytes":  1988,
+                      "sha256":  "40e413b7dce897f46e14fbe1cb85d0070ad5ae1113b2ed7bf19a1998cc8fd22d"
+                  },
+                  {
+                      "path":  "assets/js/content-studio.js",
+                      "bytes":  3256,
+                      "sha256":  "820442af91b172e7a5c554ffe3204bfc2074a91f4da82e68c1cc504ff2507615"
+                  },
+                  {
+                      "path":  "assets/js/conversations.js",
+                      "bytes":  3360,
+                      "sha256":  "36373ed17aeb55275f5738f6baa28a2b38714c41c2851bd158e66dea1ba54477"
+                  },
+                  {
+                      "path":  "assets/js/glass-fast-pay.js",
+                      "bytes":  7547,
+                      "sha256":  "1ab7d127d4ca996e981f70aaf15b5491ffa9e1b7d1974f46cb81f7fef791488c"
+                  },
+                  {
+                      "path":  "assets/js/glass-production-board.js",
+                      "bytes":  2828,
+                      "sha256":  "224192f13f04308918e8b89f9371242d6290ccb293fd7b188c278a8ec5a04566"
+                  },
+                  {
+                      "path":  "assets/js/organization-user-search.js",
+                      "bytes":  450,
+                      "sha256":  "8cb4da8592c994fab69b16303c0e0a773534ed0aaf53f440430a85869d006f99"
+                  },
+                  {
+                      "path":  "assets/js/production-catalog.js",
+                      "bytes":  3723,
+                      "sha256":  "a6554bf0e68c79da49b1efd6258caa12884947534e711dc9826ae97a413de4e2"
+                  },
+                  {
+                      "path":  "assets/js/public-profiles.js",
+                      "bytes":  1834,
+                      "sha256":  "d2491216094188e1727ee7bcc896588383d0deb701e8f4a39fb80cb10c31250d"
+                  },
+                  {
+                      "path":  "assets/js/searchable-user-select.js",
+                      "bytes":  2107,
+                      "sha256":  "906540248b2c3cabd7abf3e83932df731e0e501e0b5899ce706b695396cfffc2"
+                  },
+                  {
+                      "path":  "CHANGELOG.md",
+                      "bytes":  87575,
+                      "sha256":  "abd0cf2b72ae90d41b08ed5cbdde051fc0a98b2770f8bf55465a4ed60bb46455"
+                  },
+                  {
+                      "path":  "elev8-os.php",
+                      "bytes":  640,
+                      "sha256":  "b142d7869ec9c8e148750745383dfb83c80937a66fb2c0a30092c14821f20b87"
+                  },
+                  {
+                      "path":  "GIT-SUMMARY.txt",
+                      "bytes":  286,
+                      "sha256":  "460dd1c2b0a15cbec25c5b9d8da94111decf213977300b5298f762a136d047e9"
+                  },
+                  {
+                      "path":  "includes/class-elev8-os.php",
+                      "bytes":  186056,
+                      "sha256":  "63cd6c1e81b0a3ed485fa8858b3cfb01f37f11d98accec742bc6c0ddd5746270"
+                  },
+                  {
+                      "path":  "includes/class-elev8-os-loader.php",
+                      "bytes":  23600,
+                      "sha256":  "901e8d6e85a274b53e58c637d513f692dad64d70fe94b375df0e9733a2713860"
+                  },
+                  {
+                      "path":  "includes/Data/community-outreach-seed.php",
+                      "bytes":  12298,
+                      "sha256":  "cc351cb383a8cc8bb5cea7aebbb2942d0e4d3dd3c61d0222f2aec8fe1b674344"
+                  },
+                  {
+                      "path":  "includes/Data/community-vendor-seed.php",
+                      "bytes":  51651,
+                      "sha256":  "4e573b609059018066099468c4d8e879873f35d743d4864aba3d5561c8e4fe03"
+                  },
+                  {
+                      "path":  "includes/Integrations/class-elev8-os-amelia.php",
+                      "bytes":  298,
+                      "sha256":  "0da89292db5c360162962f6b3705e3ea00a854620849da2e4a7c3b3bdfb806d3"
+                  },
+                  {
+                      "path":  "includes/Integrations/class-elev8-os-woocommerce.php",
+                      "bytes":  10732,
+                      "sha256":  "372d25e4afafb7480f417f4586e6ce2e2e34a60f2ad7e4992a8adeb3bb21706c"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-action-center-module.php",
+                      "bytes":  6909,
+                      "sha256":  "17d14b7b89546b4b09777da7f8664856137d7ee416e53568ef0137589958951d"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-app-install-module.php",
+                      "bytes":  8101,
+                      "sha256":  "4ef47746a3d41062fd9a54591dc903a6dcd2eda0dc8d793fcd93d4f34271bf70"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-application-shell-module.php",
+                      "bytes":  19037,
+                      "sha256":  "286252a75c3fda1968dc6f438132b795445d61e133cf34838c1734cd818812a1"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-artist-growth-studio-module.php",
+                      "bytes":  8075,
+                      "sha256":  "9453d1e4c1bb0042d043feeaaa6e7b1323b6c651702335d10c5875627cf42cb2"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-artist-portal-module.php",
+                      "bytes":  59330,
+                      "sha256":  "106b69529319c74fd339fc5ece9561eb409b0cb52aa0d263f2001605eeebcef7"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-artist-print-center-module.php",
+                      "bytes":  15434,
+                      "sha256":  "b829f19cb33aa7a2ec402a95a7870a14e91d6f87ffe09f2b13665f193d5e3a5a"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-artist-success-module.php",
+                      "bytes":  4609,
+                      "sha256":  "6ed921e547a7a930efe4fea616e1f24cfe74638872a6b7cd7546eb3764009094"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-bingo-reservations-module.php",
+                      "bytes":  33201,
+                      "sha256":  "dd122d5473a341d40607df3e394b1e79829dc00a35fe613099ecedca9eeebdfa"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-browser-notification-module.php",
+                      "bytes":  2484,
+                      "sha256":  "4e74dc49b6c1c561a3c5999a0b469475c73c6b0bb514bf8afc9013165a3217f9"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-business-blueprint-module.php",
+                      "bytes":  7655,
+                      "sha256":  "9e0bf97002ea57761993ad760e67e95819b59d49b4c5a48d3a026929ceb98d0c"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-business-coaching-module.php",
+                      "bytes":  7098,
+                      "sha256":  "125feff4493846c84282a31da8f041849b048c8083492ecd6f5ef49aded3e13d"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-business-gps-module.php",
+                      "bytes":  6838,
+                      "sha256":  "18335275fdae1c7feb93c408a354ff4b5a05613b65b15ab38c8a47ca9826cc75"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-business-graph-module.php",
+                      "bytes":  9505,
+                      "sha256":  "28288a96129eb280dd75105d9a41ab489fe2aab79803b4c925ad3fa81f8ae13a"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php",
+                      "bytes":  20297,
+                      "sha256":  "8cbb5a96bd2970e4ffd1dfe99dacd51a162682c1d72f83cf59346432fc040126"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-business-memory-module.php",
+                      "bytes":  11814,
+                      "sha256":  "7c89217d4e52059af1cbf726b054e6b4637e909088c7cb1b8515ba125ba76f5f"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-ceo-dashboard-module.php",
+                      "bytes":  43146,
+                      "sha256":  "67ae87291c51f991b9cd224334325c03b0035d751ff129aa8444e759ac8e3406"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-checkin-center-module.php",
+                      "bytes":  15631,
+                      "sha256":  "aae1b60ab4d87492c83c5302706c9dd79e4f12f1a1cd663fc88eeab4cffba142"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-class-approval-module.php",
+                      "bytes":  5915,
+                      "sha256":  "e8bce10b123e35579d12ae4e74a2bf496cf409f4a6862761a8f1135abb224360"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-class-demand-manager-module.php",
+                      "bytes":  36400,
+                      "sha256":  "0a8ba869aa666f19996ca3aa91bc6890e9376d0b96701baaa702513bc37467c0"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-class-demand-module.php",
+                      "bytes":  10793,
+                      "sha256":  "548428b2e15cde86a7ef2d5d25d252bea899c6011f206bc3e9ba131d9b69cf36"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-class-idea-center-module.php",
+                      "bytes":  22100,
+                      "sha256":  "012f5bb4728a7e868afd21a12a717fcc8acf18c1e647e6b74edf0c30d2e738f7"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-community-outreach-module.php",
+                      "bytes":  25950,
+                      "sha256":  "ed548aedccde68a132b109e5a07a84859c72f83b8df73b40153a0cb0b55dea63"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-content-studio-module.php",
+                      "bytes":  39018,
+                      "sha256":  "22f08bba28cf7b111e8015f846d2cb979abfe999e557d7410a2cb03b53f4baa9"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-conversations-module.php",
+                      "bytes":  19340,
+                      "sha256":  "9b42240934bfc2281ab059e9139c59acdc1dc8656bcdcdb08d453813ca0c1be7"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-crm-module.php",
+                      "bytes":  143,
+                      "sha256":  "46523c271ca5fa4cbadf7b2b67ff8be3366f363fa6e24592289a38fe386a8461"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-daily-operations-module.php",
+                      "bytes":  20282,
+                      "sha256":  "04f28dfe6e065807c0669e6191ceeaba4656791831366ac22b5b853006c9d391"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-dashboard-module.php",
+                      "bytes":  69851,
+                      "sha256":  "6bc3cb4e64f25f337bad203ca5d278425d957b5b77e1f6f81fb78e3d785dc388"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-employee-mapping-module.php",
+                      "bytes":  14335,
+                      "sha256":  "49f93c5fd3cc3b8acb03045f936d493f00209df6a607d36228ffa6706e538784"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-event-applications-module.php",
+                      "bytes":  24710,
+                      "sha256":  "d4e9e4c075855374692fd422740490ada4102f324c2c633dca5d272258d2bd79"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-experience-engine-module.php",
+                      "bytes":  2379,
+                      "sha256":  "d65a1e090d49a31c3b2c2ed7519bf1cc31724e9fb7ccf24be20c3f49fe64a7a2"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-gallery-operations-module.php",
+                      "bytes":  20422,
+                      "sha256":  "00941f66f2927a1a66b9274b3e97c65914e88583207aa5e575c689fa689fb4f0"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-glassblower-dashboard-module.php",
+                      "bytes":  4509,
+                      "sha256":  "c8c380e818c2f8d52b22fce37fa13fe1b61643f508fed7df055ccda355ef3330"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-glass-manager-suite-module.php",
+                      "bytes":  9414,
+                      "sha256":  "5370fc76dce68ffb6766e669147dfb9d6f339f19f2e59cb68222f9019bdfbc05"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-glass-operations-module.php",
+                      "bytes":  68760,
+                      "sha256":  "c6a27220b0e4a1820fb1b778cd84b031b4bfe1792cb268d59e4a8b51cc98806f"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-glass-workbench-module.php",
+                      "bytes":  3403,
+                      "sha256":  "2d0dfa9eea406784870f4ee00ab6ce8d7b6da48a0d2777f8cd7798d9055ca5d4"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-growth-center-module.php",
+                      "bytes":  5689,
+                      "sha256":  "c54b4a15f4b4bb402cab958f0823853900acc0b6855fb14c7a509d4a919cc0a6"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-integration-engine-module.php",
+                      "bytes":  5596,
+                      "sha256":  "7ea2926c250d3c60654559823fd1a4e45dfdba4e5a86963dad2bcdd841014ae2"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-it-support-module.php",
+                      "bytes":  8773,
+                      "sha256":  "e26063e085ba4c91178cb78979f141cdd2c3707327ee4e3a8ab0bbae35a75793"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-knowledge-base-module.php",
+                      "bytes":  5329,
+                      "sha256":  "562a9a8ff78966ba0ccd92f8ed9e2ace9f4167dca03afb36778c89da33efa999"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-marketing-module.php",
+                      "bytes":  17383,
+                      "sha256":  "4d9a7b5e27875dccc12128b3171eb4862b0b794fe941c49a7a0908150db90f2b"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-mobile-home-module.php",
+                      "bytes":  14980,
+                      "sha256":  "0952cbd5f29393a5749a6ace1be239917f328405c3b1035e51634faea1e5eba8"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-my-artwork-module.php",
+                      "bytes":  28821,
+                      "sha256":  "327cd85e813e4a653ad9cdb07e4547607170b5ca1790a8a145e751a6ddcb22e4"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-my-classes-module.php",
+                      "bytes":  56323,
+                      "sha256":  "acb3aedd5f053c140bae8992eaddd2d89a4896252bfc031b0e1b25038ce8e72e"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-observation-registry-module.php",
+                      "bytes":  50817,
+                      "sha256":  "4c13a9f806bb49feda7ea9fd3f5408d7a5374f1b0e1e5c4b73c2557feb6b0145"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-operations-engine-module.php",
+                      "bytes":  22431,
+                      "sha256":  "dd0c1ce464627eec8fa4482096877e96071b4d2cabed6271cab22054c611de4f"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-opportunity-module.php",
+                      "bytes":  8658,
+                      "sha256":  "d5240ee63c6e426fb372c39f25fcd33d6919ebbf58ce719eba78910b56c49278"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-organization-module.php",
+                      "bytes":  21816,
+                      "sha256":  "19410931d3dd446acbdbec8aaf69706ff0b416169d72b8d962959eec91443456"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-platform-compatibility-module.php",
+                      "bytes":  23028,
+                      "sha256":  "feb4ea30d91916dce451e5dcb77c07ff2e8cc54d8c10834da533200f9f1ed0bb"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-proactive-daily-assistant-module.php",
+                      "bytes":  18785,
+                      "sha256":  "8eb8b06515bbd4b32a90b10d8cd27359ceda04316d14dbca5f3fe4295416102f"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-production-catalog-module.php",
+                      "bytes":  59380,
+                      "sha256":  "9ccbb5f80b9289379cc896c0eb3206fd3ae5049b869634aec1f17f2cf00d2b33"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-production-workspace-module.php",
+                      "bytes":  28968,
+                      "sha256":  "1cd95f1f663312a3a0e2bda7abb97bc1eb7524cd6dcd6050d9ccc568e9cab397"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-public-profiles-module.php",
+                      "bytes":  21213,
+                      "sha256":  "413701199676be756f58393318bbc6c7d139c441b1f05735ff6196089ea9414c"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-role-preview-module.php",
+                      "bytes":  8219,
+                      "sha256":  "525326bf4aa776e6a0eef91a51f914ffd05c53b2b037eeaa76596ad42724d40c"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-site-layout-guard-module.php",
+                      "bytes":  1259,
+                      "sha256":  "10da01f17d5bfd7bd8e9369d2a6144e43b5a39ed2cd3d3631c3bb15bbbd69718"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-students-module.php",
+                      "bytes":  16887,
+                      "sha256":  "4891aefbc5e74a70b67a593b05b8221dc723333dbfeb2e5a49afda9cd1b43ef6"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-system-inspector-module.php",
+                      "bytes":  24165,
+                      "sha256":  "a623c30a7185143fb78ee3edf467ecc7ca3660f694b32b7b2866c52690805cbb"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-team-coordination-module.php",
+                      "bytes":  35115,
+                      "sha256":  "9781027fbad5a86cccc972d21bbcdc70900b520ad779f6f3102c39281ee6061f"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-unified-intake-module.php",
+                      "bytes":  11932,
+                      "sha256":  "911edd697ac41580020306ff703e6c4cbd27af83c450c7a08dda593e20d7e39f"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-waitlist-module.php",
+                      "bytes":  39343,
+                      "sha256":  "862700281a41adaece4327ac5e6ee573eed0bf540139c8fda8f14e65ae676329"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-work-module.php",
+                      "bytes":  11746,
+                      "sha256":  "0725030bf27297411e7310a1b3e32ad10d20362b1123872d908b67de4e67b349"
+                  },
+                  {
+                      "path":  "includes/Modules/class-elev8-os-workspace-module.php",
+                      "bytes":  25986,
+                      "sha256":  "b97b2f54a95d4697f9a6ab7fdc57cb4b8ff159622ba1695739bf9d68866d276b"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-access-service.php",
+                      "bytes":  16553,
+                      "sha256":  "a02c86678ba46ef0e76d8d1aab424a284cc0d69ba2bb7f0153b785527349d806"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-achievement-service.php",
+                      "bytes":  1767,
+                      "sha256":  "b7d5b2a9cd61d40b0a5ca0dd25446ccf1e780240f0b361dbda992dd5cd04e3cd"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-action-service.php",
+                      "bytes":  1267,
+                      "sha256":  "133d4f93cc8ed4fe68e3aa2eab8dd28c2e0203d40fa661fe433b8c2b0941be55"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-activity-service.php",
+                      "bytes":  4526,
+                      "sha256":  "a6a73f3e7b2eeb7299553035bab0a4f0ca4f165eb0267e11bdb3e15af5faf5b0"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-artist-business-service.php",
+                      "bytes":  5550,
+                      "sha256":  "e867598d5b26f00328b1695c7236faf7a3839289d5d070021eb50bb8e55b0c52"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-artist-success-service.php",
+                      "bytes":  7320,
+                      "sha256":  "6e79cd608bed75a090b1ed6d887853fa85bff13852830cb9566309f35ab54b28"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-asset-sale-notification-service.php",
+                      "bytes":  10192,
+                      "sha256":  "816a40c0141a0625dff1cf17c636349d715d00f238f03655cce8f8a704498f32"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-asset-service.php",
+                      "bytes":  17750,
+                      "sha256":  "96b4bd68357548972313b26bc6ecd965114d59d3ff8883ffc1397eb0dc5b052f"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-attention-service.php",
+                      "bytes":  9080,
+                      "sha256":  "c45382018bdbcf0fb3620527649f572d3754ac0c37e6aeeda563e41db54e347a"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-automation-service.php",
+                      "bytes":  8391,
+                      "sha256":  "48d1f5f526a10cd8df630eb6f3c2d431212c0369ac1939b58efce601d2867c85"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-brand-service.php",
+                      "bytes":  4819,
+                      "sha256":  "2aee4f76a1164031ac4894ff67362521a39162ea8c5b98194b5261bd831f32d9"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-blueprint-service.php",
+                      "bytes":  5048,
+                      "sha256":  "7b8d8110e2ffab30225c50b97a6a31e2dda83f3e5d75dc9a0a0b741c600ca478"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-coaching-service.php",
+                      "bytes":  13496,
+                      "sha256":  "accdbba07d42f0a585a2a18ff9215360f7e034b12c21c081b53f603b0cfc7c2c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-event-service.php",
+                      "bytes":  1341,
+                      "sha256":  "a8b72e75f0db654de7b48f43f7bd818afe4514a55cfebcc586886b991d1542d6"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-gps-service.php",
+                      "bytes":  2031,
+                      "sha256":  "9e53bb598318f69cd9fc894536a85767fb747b142e0b920c365ede227313096c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-graph-registry-service.php",
+                      "bytes":  13622,
+                      "sha256":  "e388d07c3c3303820a1095a3b6178dfa85ab17c7f280f511f3454a0f29380e28"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-intelligence.php",
+                      "bytes":  30980,
+                      "sha256":  "87513d833961b319a6e54bc7d6fb80b45ebca40c662791ea8b22bd80d1cf0351"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-memory-service.php",
+                      "bytes":  6998,
+                      "sha256":  "6704df63afa5f580008f33f29e5f8d93b098af7e9c064d30e154ad2f623fdc66"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-score-engine.php",
+                      "bytes":  1307,
+                      "sha256":  "b92a048ebf08bfb532d71b560ffdff5253a6005aa9eb040f382a65348a313d18"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-business-score-service.php",
+                      "bytes":  1991,
+                      "sha256":  "66cb72f40849e26cce142642560963891771a749dfb6ac70459c6a332a7eaf48"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-class-approval-contributor.php",
+                      "bytes":  5205,
+                      "sha256":  "37914a4aa8911bd8b476e00d5b60e46bd96e0b762b2c457c471e59a7ee2324a1"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-class-approval-service.php",
+                      "bytes":  16486,
+                      "sha256":  "d35ee85fb4988c3217b28842aead849d1887fa905046935f94874ffa0ba7a669"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-class-discovery.php",
+                      "bytes":  18497,
+                      "sha256":  "8ce1121ffac88efe3c12b3521748a4aa407a9585f25755b5dae6d920628a751d"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-coaching-service.php",
+                      "bytes":  14902,
+                      "sha256":  "e56a3fed1f6ad74691e18d5a38d98944addd1d9667223c756730a50c734f4725"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-command-center-service.php",
+                      "bytes":  6108,
+                      "sha256":  "a99d3258a9fd6de14f25b6a160e1614dda70c8f65e8816324d23cd4d301cdabc"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-command-palette-service.php",
+                      "bytes":  10128,
+                      "sha256":  "2fcacf4c1a8071f750fae43fc6c8249878e1ae0391cd618763b6ae74aa148bbb"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-content-calendar-service.php",
+                      "bytes":  2064,
+                      "sha256":  "95109d994f6cf94cf0699c2df3a6bd510aa86299eb751991bbed3dee53270e38"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-content-studio-service.php",
+                      "bytes":  21982,
+                      "sha256":  "201886b03e024a6ffd3dfd3cfbf3fdedbc98ce508b315ae082f3cbaaf59146c8"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-conversation-governance-service.php",
+                      "bytes":  9989,
+                      "sha256":  "88d1c17fabc42ad356eddafbc47e274a3ce3b8764a45b79a6de462ba113ccdcb"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-conversation-service.php",
+                      "bytes":  14201,
+                      "sha256":  "914903d5259b1e07fd42f78a4db8d36d8c87f5647548a02376b0ba44e0afcca2"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-credential-workflow-service.php",
+                      "bytes":  7380,
+                      "sha256":  "42096045e53f8414686bf9050bed1e7c8c688d59eb993c47b01f331f9b02a0a0"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-cross-engine-observation-contributor.php",
+                      "bytes":  5314,
+                      "sha256":  "180afc0251f8d00185c7983c9fc26d3cd80f1975d9e0715d5475518dcbe488dc"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-daily-assistant-delivery-service.php",
+                      "bytes":  7966,
+                      "sha256":  "baff516cb0d279989b5ac52667f9bcee2cc389ca785b1a8d498543699c88679c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-daily-brief-service.php",
+                      "bytes":  16484,
+                      "sha256":  "f17cb8edf88725d4a9ea5d07990f2ee1d4196974fca49a3f501065767a1befe7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-daily-operations-observation-contributor.php",
+                      "bytes":  7132,
+                      "sha256":  "f40447a8fbcdc699bf681d8764e8c8d59b1d909d082949c1ae64d62b3faba9f1"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-daily-operations-service.php",
+                      "bytes":  25732,
+                      "sha256":  "86cb4962a72af095382914a0766bcf0910bbe203a348584bf97236c5eecf791b"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-dashboard-service.php",
+                      "bytes":  5387,
+                      "sha256":  "e017d295f82b371ab17308e81376c8cf91ca7b09ae1188f7cf9b74d95d8633a7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-decision-learning-service.php",
+                      "bytes":  9767,
+                      "sha256":  "e046e7642b6eb57fe19eb28a0c55bda18aa2d1982f0203c24fc9dc01cbcc73c8"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-embedded-conversation-service.php",
+                      "bytes":  13714,
+                      "sha256":  "19e7d97b4d2203125a66788f28ee7b5a946f0fe1d92a4e416c1d5696274edcb9"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-event-host-dashboard-service.php",
+                      "bytes":  5628,
+                      "sha256":  "0d593fe3673931d4ebeb6a3141cfc74910b53922f6dab47753c9a091707059df"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-event-operations-contributor.php",
+                      "bytes":  5977,
+                      "sha256":  "70117339adfc8b0ea42f565931ba6b39711cb477d76da855150aee6e1dc8875b"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-attention-governance-service.php",
+                      "bytes":  6751,
+                      "sha256":  "a46acf73a0912a820dbcb67016d59795d523597caed1ad02736cc6eb8ca010c7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-brief-delivery-service.php",
+                      "bytes":  5951,
+                      "sha256":  "407a2c37c03404ab498affb92eb6d4ff628d699fe079fb7fc7f9975e96964225"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-decision-effectiveness-service.php",
+                      "bytes":  11796,
+                      "sha256":  "d4522d570dd5543dfb91556566ceb8aa8d9d23b2b66075ec21f763ec6241b98c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-decision-follow-through-service.php",
+                      "bytes":  10780,
+                      "sha256":  "45a52a42d678dba5eb8e48cb358df4851da61d6c1d2e76f989694c13d25d0b97"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-intelligence-read-model-service.php",
+                      "bytes":  7102,
+                      "sha256":  "e47d7168170fe399fe53db13dfce63cc72c517d1ed5f740bbaf20362f82951ec"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-intelligence-service.php",
+                      "bytes":  9637,
+                      "sha256":  "f1da6c7d8bacfbaa57735afc23802cbe05fba31ba262d5afc4ac4f47cbdea568"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-executive-learning-health-service.php",
+                      "bytes":  13681,
+                      "sha256":  "83b9a903ea508b7d5db360b8469efcdf2f43b35a99fc878b767800eabbdc3109"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-experience-service.php",
+                      "bytes":  4872,
+                      "sha256":  "59f7945ebf4234940cc4ca35eb8e1d9d9310e999f8bb2623d233368b3d7516d6"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-explanation-service.php",
+                      "bytes":  1563,
+                      "sha256":  "e756e1c551539d4b58d158baa7e42630b796ead35de7ccdaa9df87a7ab062a42"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-focus-policy-service.php",
+                      "bytes":  6771,
+                      "sha256":  "add88b74307fdc8bcf166fa01ca07a05c56f38688503f832340218e5ce74b84c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-gallery-operations-service.php",
+                      "bytes":  25087,
+                      "sha256":  "77ca93f876c48bac888b4890d503ade8179db44c7c18930d4d70ab6f5517f768"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-glass-catalog-import-service.php",
+                      "bytes":  44107,
+                      "sha256":  "3ddf0debd2ac4513cc1befde8531832348c374547afd2e7edd777c9124e97d79"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-glass-manager-brief-service.php",
+                      "bytes":  9070,
+                      "sha256":  "10d53550937e8f429a379d34bf089dc8e3edd5776c83a3fbc352bf12f879fef3"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-glass-operations-contributor.php",
+                      "bytes":  5429,
+                      "sha256":  "f205ee96f5294fed39110ced134dafd8371e4c3ebe20cdc1fbfb08e2052c7dca"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-glass-operations-service.php",
+                      "bytes":  38335,
+                      "sha256":  "98fac02b392abdd69a72427798e315b3395a7aacfb08ddc5ec1922376600d25e"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-growth-plan-service.php",
+                      "bytes":  2791,
+                      "sha256":  "a7b7beeab51975acde257c5623ff4d210a014ab3359f276852eb3f2aec3e30b0"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-identity-service.php",
+                      "bytes":  4503,
+                      "sha256":  "d0934fb98b3493af4329085c02b78c46c42466b3398f0ee25915dda9e2533326"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-install-helper-service.php",
+                      "bytes":  1292,
+                      "sha256":  "b5d86bfce632ca48ea34500cac514f4c048583c1a4d38ae94155e38e99d8a206"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-integration-adapter-service.php",
+                      "bytes":  9280,
+                      "sha256":  "3b652c259988e190b21961139094035336528999b995bc379778f62ea23ba50d"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-intelligence-recommendation-service.php",
+                      "bytes":  14859,
+                      "sha256":  "e05e3bffd5a50d687341ee9cafc6d4d09d3bab59c3305844d575402bd684bbe4"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-inventory-operations-contributor.php",
+                      "bytes":  9630,
+                      "sha256":  "ea1554be4f8dfcf01384977172bd39272c50646611ecf0ff466f7d7fd53fc992"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-inventory-signal-service.php",
+                      "bytes":  11401,
+                      "sha256":  "e653dbd07f7e58d8f2a7b0444d5cfaa3a8bfdee6eace9c26fc237649d44d68c7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-it-support-service.php",
+                      "bytes":  6370,
+                      "sha256":  "ed16cf9ab2d07552e8c45528bff9928cfc0042709cc388262ff8d76191afdc40"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-maintenance-operations-contributor.php",
+                      "bytes":  12089,
+                      "sha256":  "84dac83856b0dd9a779c9d1d11da9b52c9d6fc6dfe8072d041777c66c24f9a0f"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-maintenance-service.php",
+                      "bytes":  16225,
+                      "sha256":  "7258a2d9bd516668c645ba8ddf8cecb4a929547e931616793593e55d93fe1544"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-manager-dashboard-service.php",
+                      "bytes":  7126,
+                      "sha256":  "227c083e5d7bf897069f4049f69994ac028452a6c84aeccf604b02bd16c1d943"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-marketing-launcher.php",
+                      "bytes":  1919,
+                      "sha256":  "9de18a82daaaad494d5d1010992e27c5c1417148e6e5b2fcb0cfdf4f9119d3a7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-marketing-service.php",
+                      "bytes":  14871,
+                      "sha256":  "8d8dd01e384d07ef8c8420ca1c3a106c4433d890c27cb60f9d462ff8c4a32eb8"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-notification-service.php",
+                      "bytes":  1052,
+                      "sha256":  "84197686134ea50db6da9c5d04ab4d04e09c8ae2824163503eb08cdc8fd35f67"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-observation-service.php",
+                      "bytes":  13922,
+                      "sha256":  "b6bc3d1bdef56b4f52dde3f695bc48597c008391a83814a0e3eff87537d92a48"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-operations-contributor-service.php",
+                      "bytes":  9385,
+                      "sha256":  "fe3f3f19cabd8ed248cdb4c8be9cf144d44915b6ba0448cb0411b71eab077df1"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-operations-engine-service.php",
+                      "bytes":  13200,
+                      "sha256":  "6640fd81e5abd050c49bdb7d42ecd8102d84937add60d9a9dc19f9ce18e6c2f7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-operations-intelligence-service.php",
+                      "bytes":  3371,
+                      "sha256":  "914e4bc88e736cd4feb20de7f1d8c5559bff66538e32c7636f50a1c46a7c36e7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-opportunity-activity-service.php",
+                      "bytes":  3621,
+                      "sha256":  "8e71cff6da3cdd84a027db4427c8cce0744a82d5d7effe85ea53ab0a747415f7"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-opportunity-engine.php",
+                      "bytes":  3268,
+                      "sha256":  "0f260c9cc0d99dca5069534dea0ac13e3a4003a5b24a59d20e1b8895ac414834"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-opportunity-gateway.php",
+                      "bytes":  1669,
+                      "sha256":  "2196a5a1402a1f8eb18b1a41463016741ae72eae0cc058ef863331ecfbc05058"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-opportunity-participation-service.php",
+                      "bytes":  4193,
+                      "sha256":  "0ad25a40039e9680de696ba190389ba0239ebf26323fe762faad858d2a8f9ca9"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-opportunity-service.php",
+                      "bytes":  12772,
+                      "sha256":  "7d029277ed733103aea6839ec5924ec087520fa937df06564b1b1740451edc03"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-organization-service.php",
+                      "bytes":  19306,
+                      "sha256":  "c996daa3ab99b6b3659af1bfd1ec41cd82dac12093fe61c5d3cbbb32f32ec133"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-pattern-detection-service.php",
+                      "bytes":  16022,
+                      "sha256":  "38a7a6ced863f24c8a2a13f0465c87ad724f22fac1e542c7c85a2a8bd0e2a137"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-person-service.php",
+                      "bytes":  3568,
+                      "sha256":  "c2e3bdabe5ba74ee8037a30d41d4069740e50b063fa15471ec3635d9842bb7cc"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-plugin-migration-plan-service.php",
+                      "bytes":  10861,
+                      "sha256":  "026562c80d1427d2308090ec9043828b32aa0998901ed11cbc138003d2828348"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-plugin-usage-discovery-service.php",
+                      "bytes":  18318,
+                      "sha256":  "a82efa2d842b1a296122bd911fc0411d58bf21a937f5f35bd89e78c1469de20a"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-portal-page-manager.php",
+                      "bytes":  14341,
+                      "sha256":  "2d63aa0e488c4767e2ad55243ec4089ee3f1c0fd82298ee964cef1d7bd3ef6f0"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-predictive-scheduling-service.php",
+                      "bytes":  1717,
+                      "sha256":  "fe2aa9f167fe9a689f2eb3480c3b72e7a1b33a215308525a456bb058a54c2f0d"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-preview-service.php",
+                      "bytes":  11123,
+                      "sha256":  "bc4736ae79b2dc3afd291f147e0b60825d309247f83bf035ca16c76a3ee96f0e"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-print-service.php",
+                      "bytes":  19699,
+                      "sha256":  "e7b26eda74cd48120f9d93e3c0d4481289f34357e42e8c09ebffac798916953f"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-proactive-daily-assistant-service.php",
+                      "bytes":  9227,
+                      "sha256":  "4f0be88f76d4d80c70a9b0631eeff900723a63a4753f9e0fc929adfcd8c1d086"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-production-catalog-service.php",
+                      "bytes":  41861,
+                      "sha256":  "7f8c27b5de716241682880d2c8867de6a2a71ab8ec087cbc76bf324e9c371ca6"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-production-coordination-service.php",
+                      "bytes":  13121,
+                      "sha256":  "b3a541ca0523cf136988ab9cb4bf441e8b0a77c9cb50b513cf55aac730570dde"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-production-workspace-service.php",
+                      "bytes":  10749,
+                      "sha256":  "d3900e0408dd2ac5430e339f48db28fb713bf2d69f24456a7e2dc63525396020"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-public-profile-service.php",
+                      "bytes":  17053,
+                      "sha256":  "e5df36ece5068bfc9926d3cb6628be83e85759bc861560c5f62210a5cf1032c1"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-recommendation-engine.php",
+                      "bytes":  2490,
+                      "sha256":  "e4044421d89526cb950e5e4d9378563adfcd16e327be89eb0002ce5c9de36416"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-recommendation-outcome-service.php",
+                      "bytes":  9029,
+                      "sha256":  "789d2fee79d4917c99cde9bf2fff4c481930f724254f6d21a999e2b817c99d2c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-recommendation-service.php",
+                      "bytes":  17228,
+                      "sha256":  "41e9539195b10fbd0073f7900e068e0ce57ebfba86d074a8e42bfd9cf2d8bf3c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-recommendation-state-service.php",
+                      "bytes":  6914,
+                      "sha256":  "844205a22d00832479fb237e8586fa81b3c2aeba48123fa5637f927054f42b95"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-relationship-service.php",
+                      "bytes":  12774,
+                      "sha256":  "aebb0f4d2c2b39f51c99f3320775922fc5f7addb3ab46e27746c4c587541aabb"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-release-information-service.php",
+                      "bytes":  3319,
+                      "sha256":  "5fd565fcd42a47dafe0ada692930717573d2ae9af4a7d82dac4f634f1ee7c08c"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-repair-memorial-service.php",
+                      "bytes":  17053,
+                      "sha256":  "365483659508bac2aed35654336e2d71b6d8c1509d9e9be29d3792a3cf466d6b"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-report-engine.php",
+                      "bytes":  3252,
+                      "sha256":  "8824ad96642ad8121c877e4a63cba8bb5f2c4f0889ce96b27d5b58b2324f14fd"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-settings-service.php",
+                      "bytes":  786,
+                      "sha256":  "1f46fdd0e6e60ccf9992ee942507128e096219ebf428bf2c61074fb8936a18c4"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-sop-execution-service.php",
+                      "bytes":  8930,
+                      "sha256":  "08687fef563440c38fba40483f8025a319a384a8e49b6bcae2205b3584bcf874"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-student-relationship-service.php",
+                      "bytes":  15282,
+                      "sha256":  "6e2bccf3f62e2bd99cb402fe63a156bf58951618e9f2dd809cf7b2ac84f58ca1"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-team-availability-calendar-service.php",
+                      "bytes":  9757,
+                      "sha256":  "8fb3cc76ba56fb882930cd0cc8167bdf1fa5394e24798773c47515d1468ac683"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-team-availability-skill-service.php",
+                      "bytes":  9443,
+                      "sha256":  "ee03eb5884c22fce1d8bb7e0e617181fe9ea97fa7e6d0899c7cb44324c8b8bce"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-team-capacity-service.php",
+                      "bytes":  12883,
+                      "sha256":  "d495a41cbbbafb86c94879506bfc537be154d2acb9ddb5ba803c2fea1b595057"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-team-coordination-evidence-service.php",
+                      "bytes":  11250,
+                      "sha256":  "1aa7be8d7f92835df8528a45ad9adcee662deac04c3862c0fb32464f2ab19b66"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-team-coordination-service.php",
+                      "bytes":  10290,
+                      "sha256":  "18182822b4cb51b513e8b054f8154172eccf47f1490f6bd97d80ce9e68b4479e"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-template-renderer.php",
+                      "bytes":  10826,
+                      "sha256":  "ac47dec421478958267efee256183d913545c0e9d9e0a218f05c2b6df56cb237"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-unified-intake-service.php",
+                      "bytes":  14881,
+                      "sha256":  "cf0011a0747da1fa213a9ddc5d4837a2ef16190a4aac1174224200b175d04299"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-user-search-component.php",
+                      "bytes":  6738,
+                      "sha256":  "6e5986009be520027ffd2f7225b95e3886c53f8be410054fbb9e7cda57115303"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-workflow-service.php",
+                      "bytes":  10978,
+                      "sha256":  "04c1c6cd34be1c6302fd71036a2ee7cdf03e0387365eb7ebc8f6cef76afba219"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-work-service.php",
+                      "bytes":  11890,
+                      "sha256":  "02d619c7be5a494dba263f5514fc65624c5623d13198c432e598ccc43836f867"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-workspace-intelligence-service.php",
+                      "bytes":  10253,
+                      "sha256":  "d28651a7c8cdbb49ae711ff202dbe4e12acc6e9db655d28ef5cdfbe3a46c3998"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-workspace-resolver-service.php",
+                      "bytes":  10065,
+                      "sha256":  "6d4bc3d85af384b0876e860d3509830319fd1395c886084ae60fa76309748325"
+                  },
+                  {
+                      "path":  "includes/Services/class-elev8-os-workspace-service.php",
+                      "bytes":  16550,
+                      "sha256":  "6da9f32f653144117b236d73ef58e89c34c0978268a49c945cc48d6f28362112"
+                  },
+                  {
+                      "path":  "includes/Support/class-elev8-os-logger.php",
+                      "bytes":  315,
+                      "sha256":  "da0b4239d85b499241a53a767a310d9fc0d792ef42cb83ecda63ef872abaed27"
+                  },
+                  {
+                      "path":  "INSTALL.txt",
+                      "bytes":  406,
+                      "sha256":  "94e809795af24f54161f8e6a3fa218ebcc75eb7b27424530dc91117bd7d0f40b"
+                  },
+                  {
+                      "path":  "README.txt",
+                      "bytes":  2717,
+                      "sha256":  "ca394de0460c6a3bc3705c59b7aab13f7751567aabac83422dce69a1cd1194d8"
+                  },
+                  {
+                      "path":  "SOURCE-UPDATE-INSTRUCTIONS.txt",
+                      "bytes":  408,
+                      "sha256":  "a31b8308a17a8346ccd4af49b1adc19fae3a440d9a3c4690b6d2309f4f7b573d"
+                  },
+                  {
+                      "path":  "templates/artist-dashboard.php",
+                      "bytes":  109,
+                      "sha256":  "384184d97da69bf6b464258904f09ec9985c8dcdb644de620df37d0e4bfb66cc"
+                  },
+                  {
+                      "path":  "templates/public-profile.php",
+                      "bytes":  107,
+                      "sha256":  "3182e2f5ecbfaa1d86d0737a7831a20db78c5d5e83f64bb2290c6305af93665b"
+                  }
+              ]
+}

@@ -145,6 +145,12 @@ final class Elev8_OS_Operations_Engine_Module {
                 <button><?php esc_html_e('Save','elev8-os'); ?></button>
                 <?php if($item['workspace_url']):?><a href="<?php echo esc_url($item['workspace_url']); ?>"><?php esc_html_e('Open Workspace','elev8-os'); ?></a><?php endif;?>
             </form>
+            <?php if (class_exists('Elev8_OS_Embedded_Conversation_Service')): ?>
+                <details class="elev8-work-conversation" <?php echo absint($_GET['elev8_work_conversation'] ?? 0) === (int)$item['id'] ? 'open' : ''; ?>>
+                    <summary><?php esc_html_e('Conversation','elev8-os'); ?><?php $work_unread = Elev8_OS_Embedded_Conversation_Service::unread_count('work_item', (int)$item['id']); if ($work_unread > 0): ?> <span class="elev8-work-conversation__badge"><?php echo esc_html((string)$work_unread); ?></span><?php endif; ?></summary>
+                    <?php echo Elev8_OS_Embedded_Conversation_Service::render('work_item', (int)$item['id'], ['title' => sprintf(__('Work: %s','elev8-os'), $item['title']), 'return_url' => self::url($view === 'team' ? ['view'=>'team','elev8_work_conversation'=>(int)$item['id']] : ['elev8_work_conversation'=>(int)$item['id']]), 'participant_user_ids' => [(int)$item['owner_user_id']]]); ?>
+                </details>
+            <?php endif; ?>
         </article>
         <?php
     }

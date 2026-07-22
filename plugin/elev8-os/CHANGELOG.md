@@ -1,3 +1,13 @@
+# 20.2.6 — Easy Production Catalog Input
+
+- Replaced decimal production-time entry with separate minutes and seconds UI controls.
+- Stores production duration as total seconds and derives decimal minutes only for accurate costing.
+- Displays durations in human-readable form such as `8m 44s`.
+- Updated Fast Pay duration entry to use minutes and seconds while preserving decimal-minute calculations for payroll.
+- Added inline `+ Add material` creation from the product editor with automatic dropdown selection.
+- Expanded training resources with primary and supporting videos, SOP, media reference, revision, required skill level, and production instructions.
+- Migrates legacy M.SS duration values into normalized seconds while preserving catalog history.
+
 ## 20.2.4 — Embedded Conversation Panels
 - Added a reusable Business Graph conversation panel that keeps users inside the workspace where the work is happening.
 - Embedded production-job conversations directly into the Production Queue with unread counts, thread lists, first-unread navigation, replies, and a full-conversation escape hatch.
@@ -1257,3 +1267,7 @@
 - Added date-specific availability exceptions and credential/training evidence governance to Team Coordination.
 - Added renewal reminders through the shared Communication boundary and optional skill-verification expiration.
 - Added secure evidence boundaries that prohibit passwords, keys, codes, and full credential numbers.
+
+## 20.2.5 — Work Item Conversations & Governed Follow-up Capture
+- Embedded authoritative Conversation panels in Universal Work Items.
+- Added governed summaries and explicit follow-up Work Item creation.

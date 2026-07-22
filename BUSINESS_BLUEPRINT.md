@@ -1328,3 +1328,78 @@ Business Graph workspaces may render context-specific Conversation panels, but a
 ### Next Development Session
 
 Extend the reusable embedded panel to Universal Work Items and Assets, then add governed conversation summaries and explicit follow-up extraction without silently creating Work Items.
+
+## Development Update — 20.2.5 Work Item Conversations & Governed Follow-up Capture
+
+### Architecture Updates
+
+The reusable embedded Conversation capability now extends to Universal Work Items. Team members can discuss accountable work inside the Operations workspace without leaving the Work Inbox, while the Communication Engine remains authoritative for threads and messages.
+
+Conversation threads now support a human-maintained governed summary and an explicit follow-up promotion action. Summary evidence records objective decisions, risks, and next steps. Follow-up promotion creates a Universal Work Item only when a permitted user deliberately submits the form; no message is silently converted into work.
+
+### Engines Changed
+
+**Primary engine:** Communication  
+**Supporting engines:** Operations, Workflow, Organization, Identity, Knowledge, Business Memory, and Experience.
+
+### Business Graph Updates
+
+```text
+Universal Work Item
+    ↓
+Conversation Context Relationship
+    ↓
+Conversation Thread
+```
+
+```text
+Conversation Thread
+    ↓
+Governed Summary Evidence
+```
+
+```text
+Conversation Thread
+    ↓ explicit human promotion
+Follow-up Work Item
+```
+
+### ADR-0051 — Conversation Summaries and Follow-ups Require Explicit Governance
+
+A Conversation may store a human-maintained summary and may intentionally contribute follow-up work. Summaries must remain attributed evidence, and follow-up Work Items may only be created through an explicit user action. The Communication Engine may not silently interpret ordinary messages as operational commitments.
+
+### Intentionally Postponed
+
+- AI-generated summaries.
+- Automatic action-item extraction.
+- Embedded Asset and Customer panels.
+- Message-specific follow-up selection.
+- Voice notes and embedded attachments.
+
+### Next Development Session
+
+Extend embedded Conversations to Asset and Memorial workspaces, then add message-specific decision and follow-up references while preserving explicit human approval.
+
+## Development Update — 20.2.6 Easy Production Catalog Input
+
+### Architecture Updates
+The Production Catalog now treats human input and stored calculation data as separate boundaries. People enter durations as minutes and seconds; the catalog stores total seconds and derives fractional minutes only for calculations. Materials can be created inline while editing a production product, but remain canonical shared Material definitions. Training resources extend the authoritative Production Product rather than creating a separate training record system.
+
+### Engines Changed
+- Primary: Operations
+- Supporting: Knowledge, Financial, Inventory, Workflow
+
+### Business Graph Updates
+- Production Product → Material Definition → Cost Snapshot
+- Production Product → Training Resource References
+- Production Product → Normalized Duration Evidence
+
+### ADR-0052 — Human-Friendly Input, Normalized Storage
+All user-entered operational values should use clear UI controls. Time is stored as total seconds, money remains normalized decimal currency data, and human-readable formatting is applied only at the experience boundary. Shared materials remain canonical definitions even when created inline from a product.
+
+### Open Questions
+- Whether future training media should use WordPress Media IDs or an external document provider adapter.
+- Whether duration estimates should later support ranges and observed actual time.
+
+### Next Development Session
+Add observed production-time capture and variance reporting so estimated time can be compared with actual work without changing the catalog definition.

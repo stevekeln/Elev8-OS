@@ -113,6 +113,7 @@ final class Elev8_OS_Embedded_Conversation_Service {
         }
         echo '<div data-elev8-latest-message></div></div>';
         Elev8_OS_Conversation_Service::mark_read($thread_id, (int)$user->ID);
+        if (class_exists('Elev8_OS_Conversation_Governance_Service')) { echo Elev8_OS_Conversation_Governance_Service::render($thread_id, $return_url, $context_type, $context_id, $user); }
         echo '<form class="elev8-embedded-conversation__reply" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         wp_nonce_field('elev8_reply_context_conversation_' . $thread_id);
         echo '<input type="hidden" name="action" value="elev8_reply_context_conversation"><input type="hidden" name="thread_id" value="' . esc_attr((string)$thread_id) . '"><input type="hidden" name="return_url" value="' . esc_attr($return_url) . '"><input type="hidden" name="context_type" value="' . esc_attr($context_type) . '"><input type="hidden" name="context_id" value="' . esc_attr((string)$context_id) . '"><textarea name="message" rows="3" required placeholder="' . esc_attr__('Write a reply…', 'elev8-os') . '"></textarea><button class="button button-primary">' . esc_html__('Send reply', 'elev8-os') . '</button></form>';

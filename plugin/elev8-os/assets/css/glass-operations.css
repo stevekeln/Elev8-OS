@@ -24,3 +24,6 @@
 .elev8-pay-advanced{border:1px solid #ddd4ea;border-radius:10px;padding:8px 12px;background:#faf8fc}
 .elev8-pay-advanced summary{cursor:pointer;font-weight:700;color:#5a397e}
 .elev8-pay-advanced p{max-width:560px;color:#6b6372}
+
+/* 20.2.6 human-friendly duration inputs */
+.quick-duration,.pay-duration{border:1px solid #d8d0ea;border-radius:10px;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}.quick-duration legend,.pay-duration legend{font-weight:800}.quick-duration label,.pay-duration label{display:flex;flex-direction:column;gap:3px}.pay-duration small{grid-column:1/-1;color:#655c70}

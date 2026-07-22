@@ -2,7 +2,7 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Production_Catalog_Service {
-    const DB_VERSION = '1.2.0';
+    const DB_VERSION = '1.3.0';
     const OPTION_IGNORED_SOURCES = 'elev8_os_glass_catalog_ignored_sources';
     const OPTION_DB_VERSION = 'elev8_os_production_catalog_db_version';
 
@@ -62,6 +62,10 @@ final class Elev8_OS_Production_Catalog_Service {
             source_total_cost decimal(14,2) NOT NULL DEFAULT 0.00,
             instructions longtext NOT NULL,
             training_video_url text NOT NULL,
+            training_supporting_videos longtext NOT NULL,
+            training_sop_url text NOT NULL,
+            training_media_url text NOT NULL,
+            training_revision varchar(40) NOT NULL DEFAULT '',
             source_sheet varchar(190) NOT NULL DEFAULT '',
             source_column varchar(20) NOT NULL DEFAULT '',
             alternate_source_columns text NOT NULL,
@@ -76,7 +80,8 @@ final class Elev8_OS_Production_Catalog_Service {
             piecework_unit varchar(30) NOT NULL DEFAULT 'piece',
             effective_date date NULL,
             manager_approval_required tinyint(1) NOT NULL DEFAULT 1,
-            estimated_minutes decimal(10,2) NOT NULL DEFAULT 0.00,
+            estimated_minutes decimal(10,4) NOT NULL DEFAULT 0.0000,
+            estimated_seconds int(10) unsigned NOT NULL DEFAULT 0,
             costing_hourly_rate decimal(12,2) NOT NULL DEFAULT 0.00,
             consumable_cost decimal(12,2) NOT NULL DEFAULT 0.00,
             packaging_cost decimal(12,2) NOT NULL DEFAULT 0.00,
@@ -159,6 +164,15 @@ final class Elev8_OS_Production_Catalog_Service {
 
         // Preserve legacy inactive records as archived when the lifecycle column is first introduced.
         $wpdb->query("UPDATE {$t['products']} SET lifecycle_status='archived' WHERE active=0 AND lifecycle_status='active'");
+        // Normalize legacy duration values into whole seconds. Legacy imports used M.SS-style values (8.44 = 8m 44s).
+        $legacy_rows = $wpdb->get_results("SELECT id, estimated_minutes FROM {$t['products']} WHERE estimated_seconds=0 AND estimated_minutes>0", ARRAY_A) ?: [];
+        foreach ($legacy_rows as $legacy_row) {
+            $seconds = self::legacy_duration_to_seconds((float) $legacy_row['estimated_minutes']);
+            $wpdb->update($t['products'], [
+                'estimated_seconds' => $seconds,
+                'estimated_minutes' => self::seconds_to_decimal_minutes($seconds),
+            ], ['id' => (int) $legacy_row['id']]);
+        }
         update_option(self::OPTION_DB_VERSION, self::DB_VERSION, false);
     }
 
@@ -189,7 +203,7 @@ final class Elev8_OS_Production_Catalog_Service {
             $out[]=[
                 'id'=>(int)$product['id'],'name'=>(string)$product['product_name'],'code'=>(string)$product['product_code'],
                 'category'=>(string)$product['category'],'method'=>$method,'piecework_rate'=>(float)$product['piecework_rate'],
-                'piecework_unit'=>(string)$product['piecework_unit'],'estimated_minutes'=>(float)$product['estimated_minutes'],
+                'piecework_unit'=>(string)$product['piecework_unit'],'estimated_minutes'=>self::seconds_to_decimal_minutes(self::product_duration_seconds($product)),'estimated_seconds'=>self::product_duration_seconds($product),'estimated_time'=>self::format_duration(self::product_duration_seconds($product)),
                 'aliases'=>(string)($product['search_aliases']??''),'actual_retail'=>(float)($product['actual_retail']??0),
                 'actual_wholesale'=>(float)($product['actual_wholesale']??0),'source_family'=>(string)($product['source_family']??''),
                 'source_subtype'=>(string)($product['source_subtype']??''),'source_variant'=>(string)($product['source_variant']??''),
@@ -211,7 +225,7 @@ final class Elev8_OS_Production_Catalog_Service {
             'active'=>1,'skill_level'=>'standard','department'=>'Glass Operations','compensation_method'=>$method,
             'piecework_rate'=>$data['piecework_rate']??0,'piecework_unit'=>$data['piecework_unit']??'piece',
             'effective_date'=>$data['effective_date']??current_time('Y-m-d'),'manager_approval_required'=>1,
-            'estimated_minutes'=>$data['estimated_minutes']??0,'costing_hourly_rate'=>0,'consumable_cost'=>0,'packaging_cost'=>0,'other_cost'=>0,
+            'estimated_seconds'=>$data['estimated_seconds']??0,'estimated_minutes'=>$data['estimated_minutes']??0,'costing_hourly_rate'=>0,'consumable_cost'=>0,'packaging_cost'=>0,'other_cost'=>0,
         ]);
     }
 
@@ -220,6 +234,8 @@ final class Elev8_OS_Production_Catalog_Service {
         $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['products']} WHERE id=%d", $id), ARRAY_A);
         if (!$row) { return null; }
         $row['materials'] = self::product_materials($id);
+        $row['estimated_seconds'] = self::product_duration_seconds($row);
+        $row['estimated_minutes'] = self::seconds_to_decimal_minutes((int) $row['estimated_seconds']);
         return $row;
     }
 
@@ -239,6 +255,7 @@ final class Elev8_OS_Production_Catalog_Service {
             $status = empty($data['active']) ? 'archived' : 'active';
         }
         if (!in_array($status, ['active','draft','archived'], true)) { $status = 'draft'; }
+        $duration_seconds = self::duration_seconds_from_input($data);
         $row = [
             'product_code' => $code,
             'product_name' => $name,
@@ -261,6 +278,10 @@ final class Elev8_OS_Production_Catalog_Service {
             'source_total_cost' => max(0, (float)($data['source_total_cost'] ?? ($data['total_cost'] ?? 0))),
             'instructions' => sanitize_textarea_field($data['instructions'] ?? ''),
             'training_video_url' => esc_url_raw($data['training_video_url'] ?? ($data['video_url'] ?? '')),
+            'training_supporting_videos' => sanitize_textarea_field($data['training_supporting_videos'] ?? ''),
+            'training_sop_url' => esc_url_raw($data['training_sop_url'] ?? ''),
+            'training_media_url' => esc_url_raw($data['training_media_url'] ?? ''),
+            'training_revision' => sanitize_text_field($data['training_revision'] ?? ''),
             'source_sheet' => sanitize_text_field($data['source_sheet'] ?? ''),
             'source_column' => sanitize_text_field($data['source_column'] ?? ''),
             'alternate_source_columns' => sanitize_text_field($data['alternate_source_columns'] ?? ''),
@@ -275,7 +296,8 @@ final class Elev8_OS_Production_Catalog_Service {
             'piecework_unit' => $unit,
             'effective_date' => self::date_or_null($data['effective_date'] ?? ''),
             'manager_approval_required' => empty($data['manager_approval_required']) ? 0 : 1,
-            'estimated_minutes' => max(0, (float)($data['estimated_minutes'] ?? 0)),
+            'estimated_minutes' => self::seconds_to_decimal_minutes($duration_seconds),
+            'estimated_seconds' => $duration_seconds,
             'costing_hourly_rate' => max(0, (float)($data['costing_hourly_rate'] ?? 0)),
             'consumable_cost' => max(0, (float)($data['consumable_cost'] ?? 0)),
             'packaging_cost' => max(0, (float)($data['packaging_cost'] ?? 0)),
@@ -301,6 +323,12 @@ final class Elev8_OS_Production_Catalog_Service {
         self::save_product_materials($id, $data['materials'] ?? []);
         self::record_version($id);
         return $id;
+    }
+
+    public static function material(int $id): ?array {
+        global $wpdb; $t = self::tables();
+        $row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$t['materials']} WHERE id=%d", $id), ARRAY_A);
+        return $row ?: null;
     }
 
     public static function materials(): array {
@@ -359,6 +387,43 @@ final class Elev8_OS_Production_Catalog_Service {
         return $ok===false?new WP_Error('production_profile_save','The compensation profile could not be saved.'):$id;
     }
 
+    public static function duration_seconds_from_input(array $data): int {
+        if (array_key_exists('estimated_time_minutes', $data) || array_key_exists('estimated_time_seconds', $data)) {
+            $minutes = max(0, absint($data['estimated_time_minutes'] ?? 0));
+            $seconds = max(0, absint($data['estimated_time_seconds'] ?? 0));
+            return ($minutes * 60) + $seconds;
+        }
+        if (isset($data['estimated_seconds'])) {
+            return max(0, absint($data['estimated_seconds']));
+        }
+        return self::legacy_duration_to_seconds((float) ($data['estimated_minutes'] ?? 0));
+    }
+
+    public static function legacy_duration_to_seconds(float $legacy): int {
+        if ($legacy <= 0) { return 0; }
+        $minutes = (int) floor($legacy);
+        $seconds = (int) round(($legacy - $minutes) * 100);
+        return max(0, ($minutes * 60) + $seconds);
+    }
+
+    public static function seconds_to_decimal_minutes(int $seconds): float {
+        return round(max(0, $seconds) / 60, 4);
+    }
+
+    public static function product_duration_seconds(array $product): int {
+        $seconds = absint($product['estimated_seconds'] ?? 0);
+        if ($seconds > 0) { return $seconds; }
+        return self::legacy_duration_to_seconds((float) ($product['estimated_minutes'] ?? 0));
+    }
+
+    public static function format_duration(int $seconds): string {
+        $seconds = max(0, $seconds);
+        $minutes = intdiv($seconds, 60);
+        $remaining = $seconds % 60;
+        if ($minutes === 0) { return $remaining . 's'; }
+        return $minutes . 'm ' . $remaining . 's';
+    }
+
     public static function product_materials(int $product_id): array {
         global $wpdb; $t=self::tables();
         return $wpdb->get_results($wpdb->prepare("SELECT pm.*,m.material_name,m.material_code,m.unit FROM {$t['product_materials']} pm LEFT JOIN {$t['materials']} m ON m.id=pm.material_id WHERE pm.product_id=%d ORDER BY pm.sort_order,pm.id",$product_id),ARRAY_A)?:[];
@@ -385,7 +450,7 @@ final class Elev8_OS_Production_Catalog_Service {
         $materials=0.0;
         foreach(($product['materials']??[]) as $m){$materials+=(float)$m['calculated_cost'];}
         $labor=0.0;
-        if(in_array($product['compensation_method'],['hourly','either'],true)){$labor=((float)$product['estimated_minutes']/60)*(float)$product['costing_hourly_rate'];}
+        if(in_array($product['compensation_method'],['hourly','either'],true)){$labor=(self::product_duration_seconds($product)/3600)*(float)$product['costing_hourly_rate'];}
         elseif($product['compensation_method']==='piecework'){$labor=(float)$product['piecework_rate'];}
         return [
             'materials'=>round($materials,2),'labor'=>round($labor,2),'consumables'=>(float)$product['consumable_cost'],
@@ -465,7 +530,7 @@ final class Elev8_OS_Production_Catalog_Service {
                 'compensation_method'=>$record['compensation_method'] ?? 'piecework',
                 'piecework_rate'=>$record['blower_pay'] ?? 0,
                 'piecework_unit'=>$record['piecework_unit'] ?? 'piece',
-                'estimated_minutes'=>$record['estimated_minutes'] ?? 0,
+                'estimated_seconds'=>self::legacy_duration_to_seconds((float) ($record['estimated_minutes'] ?? 0)),
                 'actual_retail'=>$record['actual_retail'] ?? 0,
                 'dist_profit_at_retail'=>$record['dist_profit_at_retail'] ?? 0,
                 'dist_additional_cost'=>$record['dist_additional_cost'] ?? 0,
@@ -542,7 +607,7 @@ final class Elev8_OS_Production_Catalog_Service {
             'search_aliases'=>$record['search_aliases']??'','source_family'=>$record['family']??'',
             'source_subtype'=>$record['subtype']??'','source_variant'=>$record['variant']??'',
             'compensation_method'=>$record['compensation_method']??'piecework','piecework_rate'=>$record['blower_pay']??0,
-            'piecework_unit'=>$record['piecework_unit']??'piece','estimated_minutes'=>$record['estimated_minutes']??0,
+            'piecework_unit'=>$record['piecework_unit']??'piece','estimated_seconds'=>self::legacy_duration_to_seconds((float)($record['estimated_minutes']??0)),
             'actual_retail'=>$record['actual_retail']??0,'dist_profit_at_retail'=>$record['dist_profit_at_retail']??0,
             'dist_additional_cost'=>$record['dist_additional_cost']??0,'suggested_retail'=>$record['suggested_retail']??0,
             'dist_profit_wholesale'=>$record['dist_profit_wholesale']??0,'premier_profit'=>$record['premier_profit']??0,
