@@ -1,3 +1,17 @@
+## 19.10.0 — Credential Requirement and Renewal Workflow Governance
+
+### Added
+- Credential and training evidence requirements on canonical Universal Work Items.
+- Explainable owner-readiness checks showing matched, missing, and expired evidence.
+- Duplicate-protected credential renewal Work Items created through the shared Operations Engine.
+- Expired evidence receives urgent renewal priority while upcoming expiration uses high priority.
+- Safe evidence boundaries that prohibit passwords, secret keys, access codes, license keys, and full credential numbers.
+
+### Architecture
+- Accepted ADR-0043: credential requirements are Workflow evidence, not permission or professional licensing authority.
+- Reused bounded Credential Evidence References and Universal Work rather than creating an HR, certification, or parallel task system.
+- Preserved human assignment and handoff acknowledgement boundaries.
+
 ## 19.8.0 — Team Availability Calendar & Skill Verification Governance
 
 ### Added

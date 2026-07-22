@@ -1052,3 +1052,13 @@ Skill-verification evidence can now include an optional expiration date. Expired
 **Open questions:** Which credential types should require an attachment reference, which renewals should contribute Work Items rather than reminders, and whether Organization Units should define inherited credential policies remain intentionally postponed.
 
 **Next milestone:** Build Credential Requirement and Renewal Workflow Governance, allowing selected Work Item types to declare credential requirements and intentionally create renewal follow-up through shared Operations without turning credentials into access control or an HR system.
+
+## Development History — 19.10.0
+
+### Credential Requirement and Renewal Workflow Governance
+
+Universal Work Items may declare bounded credential or training evidence requirements. Active evidence is matched for explainable readiness only, while expiring evidence can contribute one duplicate-protected renewal Work Item through Operations.
+
+### ADR-0043 — Credential Requirements Are Workflow Evidence, Not Permission
+
+Credential requirements may inform coordination and renewal follow-up, but cannot grant access, certify legal competence, or automatically assign work. Universal Work remains the only execution system.

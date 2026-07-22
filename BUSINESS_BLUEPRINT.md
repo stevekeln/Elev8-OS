@@ -1052,3 +1052,30 @@ Skill-verification evidence can now include an optional expiration date. Expired
 **Open questions:** Which credential types should require an attachment reference, which renewals should contribute Work Items rather than reminders, and whether Organization Units should define inherited credential policies remain intentionally postponed.
 
 **Next milestone:** Build Credential Requirement and Renewal Workflow Governance, allowing selected Work Item types to declare credential requirements and intentionally create renewal follow-up through shared Operations without turning credentials into access control or an HR system.
+
+## Development History — 19.10.0
+
+### Credential Requirement and Renewal Workflow Governance
+
+Selected Universal Work Items can now declare credential or training evidence requirements. The requirements are matched against active, bounded credential evidence for the current Work Item owner and are displayed as explainable readiness guidance. They do not grant WordPress access, certify legal competence, or automatically change assignment.
+
+Expiring or expired credential evidence can now contribute one stable renewal Work Item through the shared Operations Engine. The renewal workflow uses duplicate-protected source references, the credential holder as the initial owner, the credential expiration date as the due date, and urgent priority for expired evidence. The renewal record stores only safe evidence references and explicitly prohibits passwords, secret keys, access codes, license keys, and full credential numbers.
+
+**Primary engine:** Workflow.
+
+**Supporting engines:** Operations, Organization, Knowledge, Communication, Automation, Identity, and Intelligence.
+
+**Business Graph changes:** Added Work Credential Requirement and Credential Renewal Workflow relationships connecting canonical Work Items, People, bounded Credential Evidence References, and Universal Work follow-up. No permission, HR, licensing, certification, or parallel task system was introduced.
+
+### ADR-0043 — Credential Requirements Are Workflow Evidence, Not Permission
+
+**Status:** Accepted  
+**Decision:** A Work Item may declare the credential or training evidence useful or required for coordination. Matching evidence may inform readiness and handoff guidance, but cannot grant access, certify legal authority, or automatically assign work. Expiring evidence may intentionally contribute duplicate-protected renewal work through Operations.
+
+**Consequence:** Elev8 OS can surface credential gaps and create accountable renewal follow-up while preserving WordPress access control, external credential authorities, human assignment governance, and Universal Work as the only task system.
+
+**Technical debt:** Requirement matching is initially text-based across credential title, related skill, and issuer. Organization credential catalogs, formal credential types, inherited policies, secure document-provider adapters, approval-specific rules, and richer renewal checklists remain future work.
+
+**Open questions:** Which Work Item types should inherit Organization credential policies, which credential categories should require attachments or external verification, and when renewal work should be assigned to a manager rather than the credential holder remain intentionally postponed.
+
+**Next milestone:** Build Organization Credential Policy and Requirement Catalog governance so common Work Item types can inherit bounded credential requirements without hardcoding business-specific rules.
