@@ -1,5 +1,23 @@
 # Elev8 OS Changelog
 
+## 18.4.0 — Recommendation Outcome Tracking
+
+### Added
+- Canonical Recommendation Outcome object linked to one approved Recommendation and its completed Work Item.
+- Automatic outcome creation when recommendation execution reaches Completed.
+- Human-governed outcome states: successful, partially successful, no measurable change, unsuccessful, and unknown.
+- Optional before/after metric evidence and outcome notes in the Intelligence workspace.
+- Explainable recommendation-performance score derived only from measured outcomes.
+
+### Architecture
+- Accepted ADR-0023: Intelligence learns from governed outcomes, not from assumed success.
+- Recommendations, Work Items, and Outcomes remain separate Business Graph objects.
+- Completing work records that execution occurred; a leader still determines whether the business result was successful.
+
+### Database changes
+- None. Outcomes use a private WordPress post type and post metadata.
+
+
 ## 18.3.0 — Recommendation Promotion & Governed Execution
 
 ### Added

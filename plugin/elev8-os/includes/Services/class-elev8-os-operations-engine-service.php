@@ -200,6 +200,7 @@ final class Elev8_OS_Operations_Engine_Service {
             update_post_meta($id, self::META_STARTED_AT, current_time('mysql'));
         }
         if ($status === 'completed' && $before !== 'completed') { update_post_meta($id, self::META_COMPLETED_AT, current_time('mysql')); }
+        do_action('elev8_os_operations_work_status_changed', $id, $status, $before);
         return true;
     }
 

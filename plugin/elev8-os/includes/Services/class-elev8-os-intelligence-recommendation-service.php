@@ -132,6 +132,7 @@ final class Elev8_OS_Intelligence_Recommendation_Service {
             'decided_at'=>(string)get_post_meta($id,self::META_DECIDED_AT,true),
             'decision_notes'=>(string)get_post_meta($id,self::META_DECISION_NOTES,true),
             'work_item_id'=>absint(get_post_meta($id,self::META_WORK_ID,true)),
+            'outcome'=>class_exists('Elev8_OS_Recommendation_Outcome_Service') ? Elev8_OS_Recommendation_Outcome_Service::get_for_recommendation($id) : [],
         ];
     }
 

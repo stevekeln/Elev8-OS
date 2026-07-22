@@ -584,3 +584,23 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Configurable recommendation templates, organization-specific approval policies, owner suggestion rules, financial value estimates, and recommendation expiration remain intentionally postponed.
 
 **Next development session:** Build Recommendation outcome tracking so Elev8 OS can compare approved actions with completed work and measured results before introducing automated recommendation ranking.
+### ADR-0023 — Intelligence Learns From Governed Outcomes
+
+**Status:** Accepted  
+**Decision:** Completing an approved Recommendation's Work Item proves execution, but it does not prove business success. Elev8 OS creates one Recommendation Outcome when execution completes, then requires a leader to record the measured result and optional before/after evidence. Recommendation performance scores use only measured Outcomes.  
+**Consequence:** Intelligence can learn from organizational history without assuming that completed work was effective or rewriting the supporting Pattern, Observations, Recommendation, or authoritative source records.
+
+### 2026-07-22 — Elev8 OS 18.4.0 — Recommendation Outcome Tracking
+
+**What changed:** Added the canonical Recommendation Outcome object, automatic creation after linked Work Item completion, human-governed outcome evaluation, optional before/after metric evidence, and an explainable recommendation-performance score service.
+
+**Why:** The intelligence chain could identify facts, detect Patterns, propose Recommendations, and authorize execution, but it could not distinguish completed activity from an effective business result. Outcome tracking closes that loop without allowing Intelligence to invent success.
+
+**Engines changed:** Intelligence (primary); Analytics, Operations, Workflow, Organization, and Financial (supporting).
+
+**Business Graph changes:** Added Recommendation → Recommendation Outcome and Recommendation Outcome → Work Item evidence relationships. Outcomes preserve the measured result while the Work Item remains the execution record.
+
+**Open questions:** Automatic metric-provider adapters, financial ROI calculation, outcome review reminders, and confidence recalibration remain intentionally postponed until enough measured history exists.
+
+**Next development session:** Build the Executive Intelligence layer so leaders can see the highest-priority risks, strongest opportunities, recommendation performance, and the best use of executive attention from governed Business Graph evidence.
+
