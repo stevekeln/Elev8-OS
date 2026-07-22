@@ -2,12 +2,13 @@
 if (!defined('ABSPATH')) { exit; }
 
 final class Elev8_OS_Glass_Operations_Service {
-    const DB_VERSION = '2.2.0';
+    const DB_VERSION = '2.4.0';
     const OPTION_DB_VERSION = 'elev8_os_glass_ops_db_version';
 
     public static function init(): void {
         add_action('init', [__CLASS__, 'maybe_install'], 7);
         add_action('init', [__CLASS__, 'ensure_foundation_blowers'], 12);
+        add_action('elev8_os_glass_job_updated', [__CLASS__, 'maybe_sync_completed_job_compensation'], 20, 2);
     }
 
     public static function activate(): void { self::install(); }
@@ -54,6 +55,15 @@ final class Elev8_OS_Glass_Operations_Service {
             source_id bigint(20) unsigned NOT NULL DEFAULT 0,
             created_by bigint(20) unsigned NOT NULL DEFAULT 0,
             created_at datetime NOT NULL,
+            qc_status varchar(30) NOT NULL DEFAULT 'not_reviewed',
+            qc_notes text NOT NULL,
+            qc_reviewed_by bigint(20) unsigned NOT NULL DEFAULT 0,
+            qc_reviewed_at datetime NULL,
+            fulfillment_status varchar(30) NOT NULL DEFAULT 'not_ready',
+            fulfillment_method varchar(30) NOT NULL DEFAULT '',
+            fulfillment_notes text NOT NULL,
+            fulfilled_by bigint(20) unsigned NOT NULL DEFAULT 0,
+            fulfilled_at datetime NULL,
             updated_at datetime NOT NULL,
             PRIMARY KEY (id),
             KEY status_due (status,due_date),
@@ -250,10 +260,47 @@ final class Elev8_OS_Glass_Operations_Service {
         return true;
     }
 
+
+    public static function quality_statuses(): array {
+        return ['not_reviewed'=>'Not reviewed','passed'=>'Passed','changes_required'=>'Changes required','rejected'=>'Rejected'];
+    }
+
+    public static function fulfillment_statuses(): array {
+        return ['not_ready'=>'Not ready','ready'=>'Ready','handed_off'=>'Handed off','completed'=>'Completed'];
+    }
+
+    public static function review_quality(int $job_id, string $qc_status, string $notes): bool|WP_Error {
+        if (!array_key_exists($qc_status, self::quality_statuses())) { return new WP_Error('glass_qc_status', 'Choose a valid quality result.'); }
+        $job = self::job($job_id);
+        if (!$job) { return new WP_Error('glass_qc_job', 'Production job not found.'); }
+        $data = ['qc_status'=>$qc_status,'qc_notes'=>$notes,'qc_reviewed_by'=>get_current_user_id(),'qc_reviewed_at'=>current_time('mysql')];
+        if ($qc_status === 'passed' && $job['status'] === 'quality_control') { $data['status'] = 'ready_to_ship'; }
+        if ($qc_status === 'changes_required' || $qc_status === 'rejected') { $data['status'] = 'in_production'; }
+        if (!self::update_job($job_id, $data)) { return new WP_Error('glass_qc_update', 'Quality review could not be saved.'); }
+        do_action('elev8_os_glass_quality_reviewed', $job_id, $qc_status, $data);
+        return true;
+    }
+
+    public static function record_fulfillment(int $job_id, string $status, string $method, string $notes): bool|WP_Error {
+        if (!array_key_exists($status, self::fulfillment_statuses())) { return new WP_Error('glass_fulfillment_status', 'Choose a valid handoff status.'); }
+        if (!in_array($method, ['pickup','shipping','internal',''], true)) { return new WP_Error('glass_fulfillment_method', 'Choose a valid handoff method.'); }
+        $job = self::job($job_id);
+        if (!$job) { return new WP_Error('glass_fulfillment_job', 'Production job not found.'); }
+        $data = ['fulfillment_status'=>$status,'fulfillment_method'=>$method,'fulfillment_notes'=>$notes];
+        if (in_array($status,['handed_off','completed'],true)) { $data['fulfilled_by']=get_current_user_id(); $data['fulfilled_at']=current_time('mysql'); }
+        if ($status === 'completed') { $data['status']='completed'; }
+        elseif ($status === 'ready') { $data['status']=$method === 'pickup' ? 'ready_for_pickup' : 'ready_to_ship'; }
+        if (!self::update_job($job_id, $data)) { return new WP_Error('glass_fulfillment_update', 'Production handoff could not be saved.'); }
+        do_action('elev8_os_glass_fulfillment_updated', $job_id, $status, $data);
+        return true;
+    }
+
     public static function update_job(int $id,array $data): bool {
         global $wpdb; $t=self::tables(); $allowed=[];
-        foreach(['status','priority','ashes_status'] as $k) if(isset($data[$k])) $allowed[$k]=sanitize_key($data[$k]);
-        if(isset($data['assigned_user_id'])) $allowed['assigned_user_id']=absint($data['assigned_user_id']);
+        foreach(['status','priority','ashes_status','qc_status','fulfillment_status','fulfillment_method'] as $k) if(isset($data[$k])) $allowed[$k]=sanitize_key($data[$k]);
+        foreach(['qc_notes','fulfillment_notes'] as $k) if(isset($data[$k])) $allowed[$k]=sanitize_textarea_field($data[$k]);
+        foreach(['assigned_user_id','qc_reviewed_by','fulfilled_by'] as $k) if(isset($data[$k])) $allowed[$k]=absint($data[$k]);
+        foreach(['qc_reviewed_at','fulfilled_at'] as $k) if(array_key_exists($k,$data)) $allowed[$k]=$data[$k] ? sanitize_text_field($data[$k]) : null;
         if(isset($data['due_date'])) $allowed['due_date']=self::date_or_null($data['due_date']);
         $allowed['updated_at']=current_time('mysql');
         $updated = false !== $wpdb->update($t['jobs'],$allowed,['id'=>$id]);
@@ -501,7 +548,63 @@ final class Elev8_OS_Glass_Operations_Service {
             'payroll_approved' => empty($data['payroll_approved']) ? 0 : 1,
             'updated_at' => current_time('mysql'),
         ];
-        return false !== $wpdb->update($t['job_lines'], $allowed, ['id' => $id]);
+        $updated = false !== $wpdb->update($t['job_lines'], $allowed, ['id' => $id]);
+        if ($updated && !empty($allowed['manager_approved'])) {
+            $job_id = (int)$wpdb->get_var($wpdb->prepare("SELECT job_id FROM {$t['job_lines']} WHERE id=%d", $id));
+            $job = $job_id ? self::job($job_id) : null;
+            if ($job && ($job['status'] ?? '') === 'completed') { self::sync_completed_job_compensation($job_id); }
+        }
+        return $updated;
+    }
+
+
+    /**
+     * Create pending compensation evidence from approved completed production lines.
+     * Existing work-entry rows remain authoritative for payout approval and export.
+     */
+    public static function maybe_sync_completed_job_compensation(int $job_id, array $job = []): void {
+        if (!$job) { $job = self::job($job_id) ?: []; }
+        if (($job['status'] ?? '') !== 'completed') { return; }
+        self::sync_completed_job_compensation($job_id);
+    }
+
+    /** @return array<string,int>|WP_Error */
+    public static function sync_completed_job_compensation(int $job_id): array|WP_Error {
+        global $wpdb;
+        $t = self::tables();
+        $job = self::job($job_id);
+        if (!$job) { return new WP_Error('glass_comp_job', __('Production job not found.', 'elev8-os')); }
+        if (($job['status'] ?? '') !== 'completed') {
+            return new WP_Error('glass_comp_status', __('Complete the production job before creating compensation evidence.', 'elev8-os'));
+        }
+        $blower_id = absint($job['assigned_user_id'] ?? 0);
+        if (!$blower_id) { return new WP_Error('glass_comp_owner', __('Assign the completed job to a glassblower first.', 'elev8-os')); }
+        $lines = self::job_lines($job_id);
+        $created = 0; $existing = 0; $skipped = 0;
+        foreach ($lines as $line) {
+            if (empty($line['manager_approved']) || (float)($line['quantity_completed'] ?? 0) <= 0) { $skipped++; continue; }
+            $found = (int)$wpdb->get_var($wpdb->prepare(
+                "SELECT id FROM {$t['entries']} WHERE job_line_id=%d AND blower_user_id=%d LIMIT 1",
+                (int)$line['id'], $blower_id
+            ));
+            if ($found) { $existing++; continue; }
+            $result = self::save_entry([
+                'job_id' => $job_id,
+                'job_line_id' => (int)$line['id'],
+                'production_product_id' => (int)$line['production_product_id'],
+                'blower_user_id' => $blower_id,
+                'item_name' => (string)$line['item_name'],
+                'quantity' => (float)$line['quantity_completed'],
+                'minutes' => (float)$line['actual_minutes'],
+                'pay_method' => (string)$line['compensation_method'],
+                'work_date' => !empty($job['updated_at']) ? substr((string)$job['updated_at'], 0, 10) : current_time('Y-m-d'),
+                'approval_status' => 'pending',
+                'notes' => __('Created from manager-approved completed production evidence.', 'elev8-os'),
+            ]);
+            if (is_wp_error($result)) { $skipped++; continue; }
+            $created++;
+        }
+        return ['created'=>$created,'existing'=>$existing,'skipped'=>$skipped];
     }
 
     public static function blower_pay_summary(int $user_id, string $start = '', string $end = ''): array {

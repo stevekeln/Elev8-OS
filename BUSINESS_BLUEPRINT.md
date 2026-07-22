@@ -1120,3 +1120,99 @@ Production coordinates authoritative records owned by existing Engines and sourc
 ### Next Development Session
 
 Build the Glass Production configuration deeper: memorial/custom/stock filters, quality-review evidence, shipping handoff, and manager daily brief while keeping all records authoritative in their existing engines.
+## Development Update — 20.1.0 Glass Production Configuration
+
+### Architecture Updates
+
+The reusable Production Operations Workspace now provides its first deeper industry configuration for glass production. The workspace adds filtering, manager exception briefing, quality-review evidence, and fulfillment handoff while continuing to submit all state changes through the authoritative Glass Operations service.
+
+### Engines Changed
+
+**Primary engine:** Operations  
+**Supporting engines:** Workflow, Communication, Organization, Intelligence, and Glass Operations.
+
+### Business Graph Updates
+
+```text
+Glass Production Job
+    ↓
+Quality Review Evidence
+    ↓
+Pickup / Shipping Handoff Evidence
+```
+
+The Production Workspace remains a read-and-command projection. It does not own a parallel production job, quality record, or shipment record.
+
+### ADR-0045 — Quality and Fulfillment Evidence Extend the Authoritative Production Record
+
+Production quality review and final handoff are lifecycle evidence belonging to the authoritative production source. A configurable Production Workspace may collect and display that evidence, but must not create competing quality-control or fulfillment systems.
+
+### Intentionally Postponed
+
+- Completion-photo and attachment evidence.
+- Configurable workstation and kiln scheduling.
+- Carrier integrations and tracking-number automation.
+- Material requirement planning.
+- Compensation and payout calculation from completed production.
+
+### Next Development Session
+
+Build configurable workstations and kiln/annealing coordination, then connect completed production evidence to the Compensation and Payout architecture.
+## Development Update — 20.2.0 Workstation, Kiln Coordination & Compensation Evidence
+
+### Architecture Updates
+
+The Production Operations Workspace now coordinates configurable workstations and time-bounded production cycles. Glass jobs may be allocated to a bench, kiln, annealer, cold-working station, packing area, quality station, or another configured workstation without moving authoritative job ownership out of Glass Operations.
+
+Completed production can now contribute duplicate-protected compensation evidence into the existing Glass Operations payout architecture. Only manager-approved completed job lines are eligible, and generated entries remain pending until the existing payout approval process confirms them.
+
+### Engines Changed
+
+**Primary engine:** Operations  
+**Supporting engines:** Assets, Workflow, Organization, Financial, Intelligence, Communication, and Glass Operations.
+
+### Business Graph Updates
+
+```text
+Glass Production Job
+    ↓
+Production Allocation
+    ↓
+Workstation
+    ↓
+Production Cycle
+```
+
+```text
+Manager-Approved Completed Job Line
+    ↓
+Compensation Evidence
+    ↓
+Pending Payout Entry
+```
+
+The Production Allocation and Cycle are coordination evidence. The workstation may reference an Asset, but does not replace the Asset record. The payout entry remains authoritative in Glass Operations compensation tables.
+
+### ADR-0046 — Production Coordination and Compensation Reuse Existing Authorities
+
+Production workstations and cycles coordinate where and when work occurs. They cannot become physical-asset authorities or separate production jobs. Completed production may contribute compensation evidence only through the existing payout architecture, with duplicate protection and existing approval governance.
+
+### Intentionally Postponed
+
+- Drag-and-drop cycle loading.
+- Temperature-program templates and equipment-provider integrations.
+- Automatic workstation capacity enforcement.
+- Completion-photo and file evidence.
+- Generalized Compensation and Incentive Engine beyond existing glass payout architecture.
+- Material requirement planning.
+
+### Open Questions
+
+- Organization and location scope should be inherited from future configurable production profiles rather than hardcoded.
+- Workstation Asset selection should become a searchable Asset Engine picker when the Asset registry interface is available.
+- Compensation generation currently requires one assigned glassblower per completed job; team production allocation needs an explicit line-level contributor model.
+
+### Next Development Session
+
+Build the Production Manager compensation review and production-line completion experience, then generalize the reusable Compensation and Incentive architecture for manager pay, production bonuses, teaching revenue, commissions, and profit-sharing policies.
+

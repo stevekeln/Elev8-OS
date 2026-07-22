@@ -1,3 +1,19 @@
+## 20.2.0 — Workstation, Kiln Coordination & Compensation Evidence
+
+- Added configurable production workstations with optional Asset and Organization references.
+- Added kiln, annealing, and other production-cycle scheduling with running and cooling visibility.
+- Added governed job-to-workstation and job-to-cycle allocation evidence without creating a second production ledger.
+- Added duplicate-protected compensation synchronization from completed, manager-approved production lines into pending Glass Operations payout entries.
+- Preserved Glass Operations as the authoritative job and payout source, Assets as the physical-equipment authority, and Production as a configurable workspace.
+
+## 20.1.0 — Glass Production Configuration
+
+- Added production-type and source filters for stock, custom, memorial, cremation, and repair work.
+- Added durable quality-review evidence to authoritative Glass Operations jobs.
+- Added governed pickup, shipping, and internal handoff evidence.
+- Added a manager daily production brief showing late, blocked, quality, fulfillment, and unassigned exceptions.
+- Preserved Glass Operations as the authoritative production source; the Production Workspace remains a configurable projection.
+
 
 ## 20.0.0 - Production Operations Workspace Foundation
 

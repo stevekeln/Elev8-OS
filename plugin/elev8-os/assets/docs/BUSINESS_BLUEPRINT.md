@@ -1057,11 +1057,28 @@ Skill-verification evidence can now include an optional expiration date. Expired
 
 ### Credential Requirement and Renewal Workflow Governance
 
-Universal Work Items may declare bounded credential or training evidence requirements. Active evidence is matched for explainable readiness only, while expiring evidence can contribute one duplicate-protected renewal Work Item through Operations.
+Selected Universal Work Items can now declare credential or training evidence requirements. The requirements are matched against active, bounded credential evidence for the current Work Item owner and are displayed as explainable readiness guidance. They do not grant WordPress access, certify legal competence, or automatically change assignment.
+
+Expiring or expired credential evidence can now contribute one stable renewal Work Item through the shared Operations Engine. The renewal workflow uses duplicate-protected source references, the credential holder as the initial owner, the credential expiration date as the due date, and urgent priority for expired evidence. The renewal record stores only safe evidence references and explicitly prohibits passwords, secret keys, access codes, license keys, and full credential numbers.
+
+**Primary engine:** Workflow.
+
+**Supporting engines:** Operations, Organization, Knowledge, Communication, Automation, Identity, and Intelligence.
+
+**Business Graph changes:** Added Work Credential Requirement and Credential Renewal Workflow relationships connecting canonical Work Items, People, bounded Credential Evidence References, and Universal Work follow-up. No permission, HR, licensing, certification, or parallel task system was introduced.
 
 ### ADR-0043 — Credential Requirements Are Workflow Evidence, Not Permission
 
-Credential requirements may inform coordination and renewal follow-up, but cannot grant access, certify legal competence, or automatically assign work. Universal Work remains the only execution system.
+**Status:** Accepted  
+**Decision:** A Work Item may declare the credential or training evidence useful or required for coordination. Matching evidence may inform readiness and handoff guidance, but cannot grant access, certify legal authority, or automatically assign work. Expiring evidence may intentionally contribute duplicate-protected renewal work through Operations.
+
+**Consequence:** Elev8 OS can surface credential gaps and create accountable renewal follow-up while preserving WordPress access control, external credential authorities, human assignment governance, and Universal Work as the only task system.
+
+**Technical debt:** Requirement matching is initially text-based across credential title, related skill, and issuer. Organization credential catalogs, formal credential types, inherited policies, secure document-provider adapters, approval-specific rules, and richer renewal checklists remain future work.
+
+**Open questions:** Which Work Item types should inherit Organization credential policies, which credential categories should require attachments or external verification, and when renewal work should be assigned to a manager rather than the credential holder remain intentionally postponed.
+
+**Next milestone:** Build Organization Credential Policy and Requirement Catalog governance so common Work Item types can inherit bounded credential requirements without hardcoding business-specific rules.
 
 
 ## Development Update — 20.0.0 Production Operations Workspace
@@ -1103,3 +1120,99 @@ Production coordinates authoritative records owned by existing Engines and sourc
 ### Next Development Session
 
 Build the Glass Production configuration deeper: memorial/custom/stock filters, quality-review evidence, shipping handoff, and manager daily brief while keeping all records authoritative in their existing engines.
+## Development Update — 20.1.0 Glass Production Configuration
+
+### Architecture Updates
+
+The reusable Production Operations Workspace now provides its first deeper industry configuration for glass production. The workspace adds filtering, manager exception briefing, quality-review evidence, and fulfillment handoff while continuing to submit all state changes through the authoritative Glass Operations service.
+
+### Engines Changed
+
+**Primary engine:** Operations  
+**Supporting engines:** Workflow, Communication, Organization, Intelligence, and Glass Operations.
+
+### Business Graph Updates
+
+```text
+Glass Production Job
+    ↓
+Quality Review Evidence
+    ↓
+Pickup / Shipping Handoff Evidence
+```
+
+The Production Workspace remains a read-and-command projection. It does not own a parallel production job, quality record, or shipment record.
+
+### ADR-0045 — Quality and Fulfillment Evidence Extend the Authoritative Production Record
+
+Production quality review and final handoff are lifecycle evidence belonging to the authoritative production source. A configurable Production Workspace may collect and display that evidence, but must not create competing quality-control or fulfillment systems.
+
+### Intentionally Postponed
+
+- Completion-photo and attachment evidence.
+- Configurable workstation and kiln scheduling.
+- Carrier integrations and tracking-number automation.
+- Material requirement planning.
+- Compensation and payout calculation from completed production.
+
+### Next Development Session
+
+Build configurable workstations and kiln/annealing coordination, then connect completed production evidence to the Compensation and Payout architecture.
+## Development Update — 20.2.0 Workstation, Kiln Coordination & Compensation Evidence
+
+### Architecture Updates
+
+The Production Operations Workspace now coordinates configurable workstations and time-bounded production cycles. Glass jobs may be allocated to a bench, kiln, annealer, cold-working station, packing area, quality station, or another configured workstation without moving authoritative job ownership out of Glass Operations.
+
+Completed production can now contribute duplicate-protected compensation evidence into the existing Glass Operations payout architecture. Only manager-approved completed job lines are eligible, and generated entries remain pending until the existing payout approval process confirms them.
+
+### Engines Changed
+
+**Primary engine:** Operations  
+**Supporting engines:** Assets, Workflow, Organization, Financial, Intelligence, Communication, and Glass Operations.
+
+### Business Graph Updates
+
+```text
+Glass Production Job
+    ↓
+Production Allocation
+    ↓
+Workstation
+    ↓
+Production Cycle
+```
+
+```text
+Manager-Approved Completed Job Line
+    ↓
+Compensation Evidence
+    ↓
+Pending Payout Entry
+```
+
+The Production Allocation and Cycle are coordination evidence. The workstation may reference an Asset, but does not replace the Asset record. The payout entry remains authoritative in Glass Operations compensation tables.
+
+### ADR-0046 — Production Coordination and Compensation Reuse Existing Authorities
+
+Production workstations and cycles coordinate where and when work occurs. They cannot become physical-asset authorities or separate production jobs. Completed production may contribute compensation evidence only through the existing payout architecture, with duplicate protection and existing approval governance.
+
+### Intentionally Postponed
+
+- Drag-and-drop cycle loading.
+- Temperature-program templates and equipment-provider integrations.
+- Automatic workstation capacity enforcement.
+- Completion-photo and file evidence.
+- Generalized Compensation and Incentive Engine beyond existing glass payout architecture.
+- Material requirement planning.
+
+### Open Questions
+
+- Organization and location scope should be inherited from future configurable production profiles rather than hardcoded.
+- Workstation Asset selection should become a searchable Asset Engine picker when the Asset registry interface is available.
+- Compensation generation currently requires one assigned glassblower per completed job; team production allocation needs an explicit line-level contributor model.
+
+### Next Development Session
+
+Build the Production Manager compensation review and production-line completion experience, then generalize the reusable Compensation and Incentive architecture for manager pay, production bonuses, teaching revenue, commissions, and profit-sharing policies.
+
