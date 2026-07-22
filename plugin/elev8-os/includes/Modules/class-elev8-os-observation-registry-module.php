@@ -18,6 +18,7 @@ final class Elev8_OS_Observation_Registry_Module {
         add_action('admin_post_elev8_os_save_executive_brief_settings', [__CLASS__, 'save_executive_brief_settings']);
         add_action('admin_post_elev8_os_send_executive_brief', [__CLASS__, 'send_executive_brief']);
         add_action('admin_post_elev8_os_create_executive_follow_through', [__CLASS__, 'create_executive_follow_through']);
+        add_action('admin_post_elev8_os_record_executive_decision_effectiveness', [__CLASS__, 'record_executive_decision_effectiveness']);
         add_filter('elev8_os_application_shell_frontend', [__CLASS__, 'shell_page']);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
     }
@@ -217,8 +218,33 @@ final class Elev8_OS_Observation_Registry_Module {
         if(!class_exists('Elev8_OS_Executive_Decision_Follow_Through_Service')){return;}$items=Elev8_OS_Executive_Decision_Follow_Through_Service::timeline(20);
         echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><h2>'.esc_html__('Executive follow-through','elev8-os').'</h2>';
         if(!$items){echo '<p>'.esc_html__('No executive follow-through records have been created yet.','elev8-os').'</p>';}
-        foreach($items as $item){echo '<div style="border-top:1px solid #eee;padding:10px 0"><strong>'.esc_html(ucwords(str_replace('_',' ',(string)$item['kind']))).': '.esc_html((string)$item['title']).'</strong><br><small>'.esc_html((string)$item['created_at']).' · '.esc_html((string)$item['owner_name']).(!empty($item['due_date'])?' · '.esc_html(sprintf(__('Due %s','elev8-os'),$item['due_date'])):'').(!empty($item['work_item_id'])?' · '.esc_html(sprintf(__('Work Item #%d','elev8-os'),$item['work_item_id'])):'').'</small>';if(!empty($item['notes'])){echo '<p style="margin:4px 0 0">'.esc_html((string)$item['notes']).'</p>';}echo '</div>';}
+        foreach($items as $item){
+            echo '<div style="border-top:1px solid #eee;padding:12px 0"><div style="display:flex;justify-content:space-between;gap:12px"><strong>'.esc_html(ucwords(str_replace('_',' ',(string)$item['kind']))).': '.esc_html((string)$item['title']).'</strong><span>'.esc_html(ucfirst((string)$item['status'])).'</span></div><small>'.esc_html((string)$item['created_at']).' · '.esc_html((string)$item['owner_name']).(!empty($item['due_date'])?' · '.esc_html(sprintf(__('Due %s','elev8-os'),$item['due_date'])):'').(!empty($item['work_item_id'])?' · '.esc_html(sprintf(__('Work Item #%d','elev8-os'),$item['work_item_id'])):'').(!empty($item['completed_at'])?' · '.esc_html(sprintf(__('Completed %s','elev8-os'),$item['completed_at'])):'').'</small>';
+            if(!empty($item['notes'])){echo '<p style="margin:4px 0 0">'.esc_html((string)$item['notes']).'</p>';}
+            self::executive_effectiveness_panel($item);
+            echo '</div>';
+        }
         echo '</section>';
+    }
+
+    private static function executive_effectiveness_panel(array $item): void {
+        if ((string)($item['status']??'open') !== 'completed') { return; }
+        $kind=(string)($item['kind']??'');$source_type=(string)($item['source_type']??'');$source_id=absint($item['source_id']??0);
+        if ($kind==='approved_action' && $source_type==='recommendation' && class_exists('Elev8_OS_Recommendation_Outcome_Service')) {
+            $outcome=Elev8_OS_Recommendation_Outcome_Service::get_for_recommendation($source_id);
+            echo '<div style="margin-top:10px;padding:10px;border-radius:8px;background:#f5f3ff"><strong>'.esc_html__('Measured through Recommendation Outcome','elev8-os').'</strong><p style="margin:4px 0 0">'.esc_html(ucwords(str_replace('_',' ',(string)($outcome['result']??'unknown')))).'</p></div>';
+            return;
+        }
+        if (!class_exists('Elev8_OS_Executive_Decision_Effectiveness_Service')) { return; }
+        $outcome=Elev8_OS_Executive_Decision_Effectiveness_Service::get_for_follow_through((int)$item['id']);
+        if(!$outcome){return;}
+        echo '<div style="margin-top:10px;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fafafa"><strong>'.esc_html__('Decision effectiveness','elev8-os').': '.esc_html(ucwords(str_replace('_',' ',(string)($outcome['result']??'unknown')))).'</strong>';
+        if(!empty($outcome['metric_name'])){echo '<p style="margin:4px 0">'.esc_html((string)$outcome['metric_name']).': '.esc_html((string)$outcome['metric_before']).' → '.esc_html((string)$outcome['metric_after']).'</p>';}
+        if(!empty($outcome['notes'])){echo '<p style="margin:4px 0">'.esc_html((string)$outcome['notes']).'</p>';}
+        echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:8px">';wp_nonce_field('elev8_record_executive_decision_effectiveness_'.(int)$item['id']);
+        echo '<input type="hidden" name="action" value="elev8_os_record_executive_decision_effectiveness"><input type="hidden" name="follow_through_id" value="'.(int)$item['id'].'"><select name="effectiveness_result">';
+        foreach(['unknown'=>'Unknown','effective'=>'Effective','partial'=>'Partially effective','no_change'=>'No measurable change','ineffective'=>'Ineffective'] as $v=>$l){echo '<option value="'.esc_attr($v).'" '.selected((string)($outcome['result']??'unknown'),$v,false).'>'.esc_html($l).'</option>';}
+        echo '</select><input name="metric_name" value="'.esc_attr((string)($outcome['metric_name']??'')).'" placeholder="'.esc_attr__('Metric name','elev8-os').'"><input name="metric_before" value="'.esc_attr((string)($outcome['metric_before']??'')).'" placeholder="'.esc_attr__('Before','elev8-os').'"><input name="metric_after" value="'.esc_attr((string)($outcome['metric_after']??'')).'" placeholder="'.esc_attr__('After','elev8-os').'"><input name="effectiveness_notes" value="'.esc_attr((string)($outcome['notes']??'')).'" placeholder="'.esc_attr__('Effectiveness evidence or notes','elev8-os').'"><button>'.esc_html__('Save effectiveness','elev8-os').'</button></form></div>';
     }
 
     private static function executive_delivery_settings(): void {
@@ -252,6 +278,13 @@ final class Elev8_OS_Observation_Registry_Module {
         ]);
         if(is_wp_error($result)){wp_die(esc_html($result->get_error_message()));}
         wp_safe_redirect(add_query_arg(['view'=>'executive','follow'=>'created'],self::url()));exit;
+    }
+
+    public static function record_executive_decision_effectiveness(): void {
+        $id=absint($_POST['follow_through_id']??0);check_admin_referer('elev8_record_executive_decision_effectiveness_'.$id);if(!self::can_review(wp_get_current_user())){wp_die(esc_html__('Permission denied.','elev8-os'));}
+        $result=Elev8_OS_Executive_Decision_Effectiveness_Service::record($id,(string)($_POST['effectiveness_result']??'unknown'),get_current_user_id(),wp_unslash((string)($_POST['effectiveness_notes']??'')),wp_unslash((string)($_POST['metric_name']??'')),wp_unslash((string)($_POST['metric_before']??'')),wp_unslash((string)($_POST['metric_after']??'')));
+        if(is_wp_error($result)){wp_die(esc_html($result->get_error_message()));}
+        wp_safe_redirect(add_query_arg(['view'=>'executive','effectiveness'=>'saved'],self::url()));exit;
     }
 
     public static function govern_executive_attention(): void {

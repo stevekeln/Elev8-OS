@@ -154,7 +154,10 @@ final class Elev8_OS_Executive_Decision_Follow_Through_Service {
                 'owner_name' => $owner instanceof WP_User ? $owner->display_name : __('Unassigned', 'elev8-os'),
                 'due_date' => (string) get_post_meta($post->ID, '_elev8_due_date', true),
                 'work_item_id' => absint(get_post_meta($post->ID, '_elev8_work_item_id', true)),
+                'source_type' => (string) get_post_meta($post->ID, '_elev8_source_type', true),
+                'source_id' => absint(get_post_meta($post->ID, '_elev8_source_id', true)),
                 'created_at' => (string) get_post_meta($post->ID, '_elev8_created_at', true),
+                'completed_at' => (string) get_post_meta($post->ID, '_elev8_completed_at', true),
             ];
         }
         return $items;

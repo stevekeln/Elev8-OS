@@ -1,5 +1,23 @@
 # Elev8 OS Changelog
 
+## 18.8.0 — Executive Follow-through Completion & Decision Effectiveness
+
+### Added
+- Automatic completion synchronization from delegated-review and scheduled-follow-up Work Items back to their Executive Decision Follow-through records.
+- Governed Executive Decision Outcome records for measuring effective, partially effective, unchanged, ineffective, or unknown results.
+- Optional before/after metric evidence and executive effectiveness notes.
+- Decision-effectiveness controls and completion state in the Executive Intelligence follow-through timeline.
+- Executive decision effectiveness summary service for future scoring and learning.
+
+### Architecture
+- Accepted ADR-0027: execution completion and decision effectiveness are separate evidence.
+- Recommendation-backed actions continue to use the existing Recommendation Outcome object rather than creating duplicate executive outcomes.
+- Work Items remain authoritative for execution completion; Executive Decision Outcomes measure the leadership result.
+
+### Database changes
+- Added hidden `elev8_exec_outcome` posts for decision effectiveness not already governed by Recommendation Outcome.
+
+
 ## 18.7.0 — Executive Decision Follow-through
 
 ### Added

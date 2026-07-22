@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.7.0  
+**Platform release:** 18.8.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -667,3 +667,25 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Follow-through completion synchronization, organization-specific decision templates, escalation rules, decision attachments, and meeting or calendar integration remain intentionally postponed.
 
 **Next development session:** Build Executive Follow-through Completion and Decision Effectiveness so completed delegated reviews and scheduled follow-ups can close their governance records and feed measurable executive decision outcomes without duplicating Work Item or Recommendation Outcome data.
+
+### ADR-0027 — Execution Completion and Decision Effectiveness Are Separate Evidence
+
+**Status:** Accepted  
+**Decision:** Completion of a delegated review or scheduled executive follow-up closes its Executive Decision Follow-through record because the Operations Work Item is authoritative for execution. Elev8 OS then creates one Executive Decision Outcome awaiting leader measurement. Approved Recommendation actions continue to use Recommendation Outcome and may not create a duplicate Executive Decision Outcome.
+
+**Consequence:** Leadership can distinguish whether assigned follow-through was completed from whether the executive decision was effective. The Work Item remains execution evidence, Recommendation Outcome remains authoritative for Recommendation-backed actions, and Executive Decision Outcome measures only follow-through that has no existing governed outcome object.
+
+### 2026-07-22 — Elev8 OS 18.8.0 — Executive Follow-through Completion & Decision Effectiveness
+
+**What changed:** Added automatic Work Item completion synchronization, completed follow-through states, governed Executive Decision Outcomes, before/after metric evidence, effectiveness review controls, and effectiveness summaries.
+
+**Why:** Executive follow-through could create accountable work, but completing that work did not close the governance record or establish whether the leadership decision produced the intended result. This release closes the loop without equating completed activity with business effectiveness.
+
+**Engines changed:** Intelligence (primary); Operations, Workflow, Analytics, Organization, and Automation (supporting).
+
+**Business Graph changes:** Added Executive Decision Follow-through → Executive Decision Outcome and Executive Decision Outcome → Work Item evidence relationships. Recommendation-backed actions continue to use Recommendation → Recommendation Outcome → Work Item.
+
+**Open questions:** Decision-effectiveness reminder timing, financial ROI adapters, attachment evidence, organization-specific effectiveness measures, and confidence recalibration remain intentionally postponed.
+
+**Next development session:** Build Decision Learning and Confidence Calibration so measured Recommendation Outcomes and Executive Decision Outcomes can influence future recommendation confidence through transparent organization-specific evidence rather than opaque AI scoring.
+
