@@ -757,3 +757,29 @@ Automated discovery can identify visible dependencies and reduce audit effort, b
 
 **Next milestone:** Build administrator-confirmed dependency ownership and migration-plan records, then add Local-only retirement rehearsals with validation checklists and rollback evidence.
 
+## Development History — 18.12.0
+
+### Administrator-Confirmed Dependency Ownership and Migration Plans
+
+The Integrations Engine now stores durable Plugin Migration Plan records for installed plugins. Administrators can confirm the current capability owner, authoritative data boundary, intended Elev8 OS replacement Engine, required migration, pages and workflows to test, external dependencies, retirement blockers, Local rehearsal evidence, validation results, rollback instructions, and final approval notes.
+
+Dependency discovery remains read-only evidence. The new plan is governed human documentation layered over that evidence. Neither a discovery result nor a complete plan can activate, deactivate, update, delete, or configure a plugin.
+
+**Primary engine:** Integrations.
+
+**Supporting engines:** Organization, Identity, Booking, Commerce, Communication, Inventory, Knowledge, Workflow, Automation, Analytics, and every Engine selected as a planned replacement owner.
+
+**Business Graph changes:** Added the governed Plugin Migration Plan object and relationships from Installed Plugin to Confirmed Capability Owner, Authoritative Data Boundary, Replacement Engine, Migration Evidence, Local Rehearsal, Rollback Plan, and Final Approval.
+
+### ADR-0032 — Administrator Confirmation Governs Plugin Ownership and Retirement Planning
+
+**Status:** Accepted  
+**Decision:** Automated dependency discovery may suggest evidence, but an administrator must explicitly document capability ownership, authoritative data, replacement responsibility, migration steps, test scope, blockers, Local rehearsal, rollback, and approval before retirement can be considered. A plan record is evidence and authorization history; it is not an execution mechanism.
+
+**Consequence:** Elev8 OS gains a durable, auditable migration boundary without becoming a plugin manager. Retirement remains a separate intentional action performed only after successful Local validation.
+
+**Technical debt:** Migration plans currently use administrator-entered evidence. Future integration adapters should declare their ownership boundaries and migration capabilities so plans can be prefilled without becoming automatically approved.
+
+**Open questions:** Whether final retirement approval should require two people, whether Local and Live environments should be cryptographically linked, and how multisite network plugins should be governed remain intentionally postponed.
+
+**Next milestone:** Build Local-only retirement rehearsal governance with required validation checklists, environment confirmation, before-and-after evidence, and rollback verification.

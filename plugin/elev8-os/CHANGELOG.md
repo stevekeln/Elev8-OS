@@ -1,5 +1,20 @@
 # Elev8 OS Changelog
 
+## 18.12.0 — Administrator-Confirmed Migration Plans
+
+### Added
+- Durable hidden Plugin Migration Plan records managed from Elev8 OS → Compatibility.
+- Administrator-confirmed ownership states for external authority, shared boundaries, Elev8 OS replacement plans, and retirement candidates.
+- Migration-plan fields for capability ownership, authoritative data, target Elev8 OS Engine, data migration, pages and workflows, external dependencies, retirement blockers, Local rehearsal evidence, validation results, rollback instructions, and final approval notes.
+- Migration stages from discovery through ownership confirmation, Local rehearsal, final approval, and retirement.
+- Plan-completeness guidance and per-plugin links from dependency discovery.
+- Migration plans included in the exported compatibility JSON report.
+
+### Architecture
+- Accepted ADR-0032: administrator confirmation governs plugin ownership and retirement planning.
+- Preserved the read-only plugin boundary; this release cannot activate, deactivate, update, delete, or configure plugins.
+- Reused the Integrations Engine compatibility workspace instead of creating a parallel migration system.
+
 ## 18.11.0 — Plugin Usage Discovery & Migration Readiness
 
 ### Added
