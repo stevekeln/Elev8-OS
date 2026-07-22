@@ -142,31 +142,47 @@ final class Elev8_OS_Team_Capacity_Service {
             $load['capacity'] = self::capacity_projection($load);
             $loads[(int) ($load['user_id'] ?? 0)] = $load;
         }
-        $available = array_values(array_filter($loads, static fn(array $load): bool => ($load['capacity']['state'] ?? '') === 'available' && !empty($load['user_id'])));
-        usort($available, static fn(array $a, array $b): int => ((int) $a['capacity']['percent']) <=> ((int) $b['capacity']['percent']));
+        $available = array_values(array_filter($loads, static function(array $load): bool {
+            if (($load['capacity']['state'] ?? '') !== 'available' || empty($load['user_id'])) { return false; }
+            if (!class_exists('Elev8_OS_Team_Availability_Skill_Service')) { return true; }
+            return Elev8_OS_Team_Availability_Skill_Service::availability((int) $load['user_id'])['state'] !== 'unavailable';
+        }));
         $suggestions = [];
         foreach ((array) ($snapshot['items'] ?? []) as $item) {
             $owner_id = (int) ($item['owner_user_id'] ?? 0);
             if (!$owner_id || empty($loads[$owner_id]) || ($loads[$owner_id]['capacity']['state'] ?? '') !== 'over_capacity') { continue; }
+            $ranked = [];
             foreach ($available as $candidate) {
                 if ((int) $candidate['user_id'] === $owner_id) { continue; }
-                $suggestions[] = [
-                    'work_id' => (int) $item['id'],
-                    'work_title' => (string) $item['title'],
-                    'from_user_id' => $owner_id,
-                    'from_name' => (string) $loads[$owner_id]['name'],
-                    'to_user_id' => (int) $candidate['user_id'],
-                    'to_name' => (string) $candidate['name'],
-                    'reason' => sprintf(
-                        __('%1$s is at %2$d%% of the configured capacity target while %3$s is at %4$d%%. This is a suggestion only; ownership will not change without a governed handoff.', 'elev8-os'),
-                        (string) $loads[$owner_id]['name'],
-                        (int) $loads[$owner_id]['capacity']['percent'],
-                        (string) $candidate['name'],
-                        (int) $candidate['capacity']['percent']
-                    ),
-                ];
-                break;
+                $match = class_exists('Elev8_OS_Team_Availability_Skill_Service')
+                    ? Elev8_OS_Team_Availability_Skill_Service::match((int) $item['id'], (int) $candidate['user_id'], $owner_id)
+                    : ['score' => 0, 'eligible' => true, 'explanation' => __('No availability or skill profile is available.', 'elev8-os')];
+                if (empty($match['eligible'])) { continue; }
+                $ranked[] = ['candidate' => $candidate, 'match' => $match];
             }
+            usort($ranked, static function(array $a, array $b): int {
+                $match = ((int) $b['match']['score']) <=> ((int) $a['match']['score']);
+                return $match !== 0 ? $match : ((int) $a['candidate']['capacity']['percent']) <=> ((int) $b['candidate']['capacity']['percent']);
+            });
+            if (!$ranked) { continue; }
+            $best = $ranked[0]; $candidate = $best['candidate']; $match = $best['match'];
+            $suggestions[] = [
+                'work_id' => (int) $item['id'],
+                'work_title' => (string) $item['title'],
+                'from_user_id' => $owner_id,
+                'from_name' => (string) $loads[$owner_id]['name'],
+                'to_user_id' => (int) $candidate['user_id'],
+                'to_name' => (string) $candidate['name'],
+                'match_score' => (int) $match['score'],
+                'reason' => sprintf(
+                    __('%1$s is at %2$d%% capacity while %3$s is at %4$d%%. Fit evidence: %5$s Ownership will not change without a governed handoff.', 'elev8-os'),
+                    (string) $loads[$owner_id]['name'],
+                    (int) $loads[$owner_id]['capacity']['percent'],
+                    (string) $candidate['name'],
+                    (int) $candidate['capacity']['percent'],
+                    (string) $match['explanation']
+                ),
+            ];
             if (count($suggestions) >= 10) { break; }
         }
         return $suggestions;

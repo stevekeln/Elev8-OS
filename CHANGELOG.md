@@ -1,3 +1,17 @@
+## 19.7.0 — Team Availability & Skill-Aware Coordination
+
+### Added
+- Personal coordination availability states with optional end dates and notes.
+- Configurable skill relationships for assignment-eligible people without changing WordPress roles or permissions.
+- Work Item skill requirements used only to explain handoff fit.
+- Skill-, availability-, Organization-assignment-, and capacity-aware reassignment suggestions.
+- Transparent fit scores and explanations while preserving acknowledgement-based handoffs.
+
+### Architecture
+- Accepted ADR-0040: availability and skills are advisory Organization evidence, not scheduling, certification, permission, or automatic assignment.
+- Reused Universal Work Items, Organization assignments, capacity projections, and governed handoff requests.
+- No separate staffing, scheduling, employee, or project-management system was introduced.
+
 ## 19.6.0 — Team Capacity & Handoff Governance
 
 ### Added

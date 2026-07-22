@@ -12,6 +12,8 @@ final class Elev8_OS_Team_Coordination_Module {
         add_action('admin_post_elev8_request_work_handoff', [__CLASS__, 'request_handoff']);
         add_action('admin_post_elev8_decide_work_handoff', [__CLASS__, 'decide_handoff']);
         add_action('admin_post_elev8_save_capacity_target', [__CLASS__, 'save_capacity_target']);
+        add_action('admin_post_elev8_save_coordination_profile', [__CLASS__, 'save_coordination_profile']);
+        add_action('admin_post_elev8_save_work_skills', [__CLASS__, 'save_work_skills']);
         add_filter('elev8_os_command_palette_commands', [__CLASS__, 'command'], 10, 2);
     }
 
@@ -42,6 +44,13 @@ final class Elev8_OS_Team_Coordination_Module {
         $snapshot = Elev8_OS_Team_Coordination_Service::snapshot($user);
         $users = Elev8_OS_Team_Coordination_Service::assignable_users();
         $pending_for_user = [];
+        $coordination_profiles = [];
+        foreach ($users as $assignable_user) {
+            $coordination_profiles[(int) $assignable_user->ID] = [
+                'availability' => Elev8_OS_Team_Availability_Skill_Service::availability((int) $assignable_user->ID),
+                'skills' => Elev8_OS_Team_Availability_Skill_Service::skills((int) $assignable_user->ID),
+            ];
+        }
         foreach ($snapshot['items'] as $item) {
             $pending = Elev8_OS_Team_Capacity_Service::pending_request((int) $item['id']);
             if ($pending && ((int) ($pending['to_user_id'] ?? 0) === (int) $user->ID || Elev8_OS_Team_Coordination_Service::can_coordinate($user))) {
@@ -84,9 +93,17 @@ final class Elev8_OS_Team_Coordination_Module {
                 </div>
             </section>
 
+            <section style="background:#fff;border:1px solid #ddd;border-radius:18px;padding:20px;margin-bottom:18px"><h2 style="margin-top:0"><?php esc_html_e('Availability and skills', 'elev8-os'); ?></h2><p><?php esc_html_e('Availability and skills improve handoff suggestions only. They do not grant permissions, certify a person, or automatically assign work.', 'elev8-os'); ?></p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+                <?php foreach ($users as $assignable): $profile=$coordination_profiles[(int)$assignable->ID]; $can_edit=((int)$assignable->ID===(int)$user->ID)||Elev8_OS_Team_Coordination_Service::can_coordinate($user); ?>
+                    <article style="border:1px solid #ddd;border-radius:14px;padding:15px"><strong><?php echo esc_html($assignable->display_name); ?></strong><p><?php echo esc_html(ucfirst((string)$profile['availability']['state'])); ?><?php if (!empty($profile['availability']['until'])): ?> · <?php echo esc_html(sprintf(__('until %s','elev8-os'),$profile['availability']['until'])); ?><?php endif; ?></p><p><?php echo esc_html($profile['skills'] ? implode(', ',$profile['skills']) : __('No skills recorded yet.','elev8-os')); ?></p>
+                    <?php if ($can_edit): ?><details><summary><?php esc_html_e('Edit coordination profile','elev8-os'); ?></summary><form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_save_coordination_profile"><input type="hidden" name="user_id" value="<?php echo esc_attr((string)$assignable->ID); ?>"><?php wp_nonce_field('elev8_save_coordination_profile_'.$assignable->ID); ?><label><?php esc_html_e('Availability','elev8-os'); ?><select name="availability_state" style="display:block"><option value="available" <?php selected($profile['availability']['state'],'available'); ?>><?php esc_html_e('Available','elev8-os'); ?></option><option value="limited" <?php selected($profile['availability']['state'],'limited'); ?>><?php esc_html_e('Limited','elev8-os'); ?></option><option value="unavailable" <?php selected($profile['availability']['state'],'unavailable'); ?>><?php esc_html_e('Unavailable','elev8-os'); ?></option></select></label><label><?php esc_html_e('Until','elev8-os'); ?><input type="date" name="availability_until" value="<?php echo esc_attr((string)$profile['availability']['until']); ?>" style="display:block"></label><label><?php esc_html_e('Skills','elev8-os'); ?><textarea name="skills" rows="2" style="display:block;width:100%" placeholder="inventory, glass repair, networking"><?php echo esc_textarea(implode(', ',$profile['skills'])); ?></textarea></label><label><?php esc_html_e('Availability note','elev8-os'); ?><textarea name="availability_note" rows="2" style="display:block;width:100%"><?php echo esc_textarea((string)$profile['availability']['note']); ?></textarea></label><p><button class="button" type="submit"><?php esc_html_e('Save profile','elev8-os'); ?></button></p></form></details><?php endif; ?></article>
+                <?php endforeach; ?></div>
+            </section>
+
             <?php if ($snapshot['team_view'] && $snapshot['reassignment_suggestions']): ?>
             <section style="background:#eef7ff;border:1px solid #9cc7e8;border-radius:18px;padding:20px;margin-bottom:18px"><h2 style="margin-top:0"><?php esc_html_e('Explainable reassignment suggestions', 'elev8-os'); ?></h2><p><?php esc_html_e('Suggestions never change ownership. Use a governed handoff request when a reassignment makes sense.', 'elev8-os'); ?></p>
-                <?php foreach ($snapshot['reassignment_suggestions'] as $suggestion): ?><article style="border-top:1px solid #c8dfef;padding:12px 0"><strong><?php echo esc_html($suggestion['work_title']); ?></strong><p><?php echo esc_html(sprintf(__('%1$s → consider %2$s', 'elev8-os'), $suggestion['from_name'], $suggestion['to_name'])); ?></p><p style="color:#555"><?php echo esc_html($suggestion['reason']); ?></p></article><?php endforeach; ?>
+                <?php foreach ($snapshot['reassignment_suggestions'] as $suggestion): ?><article style="border-top:1px solid #c8dfef;padding:12px 0"><strong><?php echo esc_html($suggestion['work_title']); ?></strong><p><?php echo esc_html(sprintf(__('%1$s → consider %2$s', 'elev8-os'), $suggestion['from_name'], $suggestion['to_name'])); ?></p><p style="color:#555"><?php echo esc_html($suggestion['reason']); ?></p><p><strong><?php echo esc_html(sprintf(__('Fit score: %d','elev8-os'),(int)($suggestion['match_score']??0))); ?></strong></p></article><?php endforeach; ?>
             </section>
             <?php endif; ?>
 
@@ -95,6 +112,7 @@ final class Elev8_OS_Team_Coordination_Module {
                 <?php if (Elev8_OS_Team_Coordination_Service::can_change_work((int)$item['id'],$user)): ?><details><summary><?php esc_html_e('Manage dependencies or request handoff', 'elev8-os'); ?></summary>
                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="margin:12px 0"><input type="hidden" name="action" value="elev8_save_work_dependencies"><input type="hidden" name="work_id" value="<?php echo esc_attr((string)$item['id']); ?>"><?php wp_nonce_field('elev8_save_work_dependencies_'.$item['id']); ?><label><?php esc_html_e('Waiting on Work Items', 'elev8-os'); ?><select name="dependency_ids[]" multiple size="5" style="display:block;min-width:320px;max-width:100%">
                     <?php foreach ($snapshot['items'] as $candidate): if ((int)$candidate['id']===(int)$item['id']) continue; ?><option value="<?php echo esc_attr((string)$candidate['id']); ?>" <?php selected(in_array((int)$candidate['id'],Elev8_OS_Team_Coordination_Service::dependencies((int)$item['id']),true)); ?>><?php echo esc_html($candidate['title'].' — '.$candidate['owner_name']); ?></option><?php endforeach; ?></select></label><p><button class="button" type="submit"><?php esc_html_e('Save waiting-on relationships', 'elev8-os'); ?></button></p></form>
+                    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="margin:12px 0"><input type="hidden" name="action" value="elev8_save_work_skills"><input type="hidden" name="work_id" value="<?php echo esc_attr((string)$item['id']); ?>"><?php wp_nonce_field('elev8_save_work_skills_'.$item['id']); ?><label><?php esc_html_e('Required skills for handoff fit','elev8-os'); ?><textarea name="required_skills" rows="2" style="display:block;width:100%" placeholder="customer service, inventory, networking"><?php echo esc_textarea(implode(', ',Elev8_OS_Team_Availability_Skill_Service::required_skills((int)$item['id']))); ?></textarea></label><p><button class="button" type="submit"><?php esc_html_e('Save skill requirements','elev8-os'); ?></button></p></form>
                     <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>"><input type="hidden" name="action" value="elev8_request_work_handoff"><input type="hidden" name="work_id" value="<?php echo esc_attr((string)$item['id']); ?>"><?php wp_nonce_field('elev8_request_work_handoff_'.$item['id']); ?><label><?php esc_html_e('Propose handoff to', 'elev8-os'); ?> <select name="to_user_id"><?php foreach ($users as $assignable): ?><option value="<?php echo esc_attr((string)$assignable->ID); ?>"><?php echo esc_html($assignable->display_name); ?></option><?php endforeach; ?></select></label><label style="display:block;margin-top:8px"><?php esc_html_e('Handoff note', 'elev8-os'); ?><textarea name="note" rows="2" style="display:block;width:100%"></textarea></label><p><button class="button button-primary" type="submit"><?php esc_html_e('Request acknowledgement', 'elev8-os'); ?></button></p></form>
                 </details><?php endif; ?></article><?php endforeach; ?>
             <?php if (!$snapshot['bottlenecks']): ?><p><?php esc_html_e('No dependency bottlenecks are currently visible in your scope.', 'elev8-os'); ?></p><?php endif; ?></section>
@@ -124,6 +142,22 @@ final class Elev8_OS_Team_Coordination_Module {
     public static function save_capacity_target(): void {
         $user_id=absint($_POST['user_id']??0); check_admin_referer('elev8_save_capacity_target_'.$user_id);
         self::redirect(Elev8_OS_Team_Capacity_Service::set_target($user_id,absint($_POST['target']??0)));
+    }
+
+    public static function save_coordination_profile(): void {
+        $user_id=absint($_POST['user_id']??0); check_admin_referer('elev8_save_coordination_profile_'.$user_id);
+        self::redirect(Elev8_OS_Team_Availability_Skill_Service::save_profile(
+            $user_id,
+            sanitize_key((string)($_POST['availability_state']??'available')),
+            sanitize_text_field(wp_unslash((string)($_POST['availability_until']??''))),
+            sanitize_textarea_field(wp_unslash((string)($_POST['availability_note']??''))),
+            [(string)wp_unslash($_POST['skills']??'')]
+        ));
+    }
+
+    public static function save_work_skills(): void {
+        $work_id=absint($_POST['work_id']??0); check_admin_referer('elev8_save_work_skills_'.$work_id);
+        self::redirect(Elev8_OS_Team_Availability_Skill_Service::save_required_skills($work_id,[(string)wp_unslash($_POST['required_skills']??'')]));
     }
 
     private static function redirect($result): void {

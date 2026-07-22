@@ -969,3 +969,29 @@ A proposed handoff no longer changes Work Item ownership immediately. The propos
 
 **Next milestone:** Build Team Availability and Skill-Aware Coordination, using Organization assignments, working availability, and configurable skill relationships to improve handoff suggestions without automatic assignment.
 
+## Development History — 19.7.0
+
+### Team Availability and Skill-Aware Coordination
+
+Team Coordination now considers personal working availability, configurable skill relationships, active Organization assignments, and existing capacity evidence when explaining possible handoffs. People may maintain their own availability and skills; authorized operational leaders may maintain these profiles for assignment-eligible users. Work Items may declare required skills specifically for coordination fit.
+
+Availability and skill evidence remains advisory. It does not alter WordPress access, create certifications, replace schedules, represent attendance, or move work automatically. Suggested recipients must be available, satisfy explicit Work Item skill requirements, and still accept a governed handoff before ownership changes.
+
+**Primary engine:** Operations.
+
+**Supporting engines:** Organization, Workflow, Identity, Communication, Analytics, and Intelligence.
+
+**Business Graph changes:** Added Work Availability and Person Skill Relationship evidence connected to Person, Organization assignments, Work Item requirements, and handoff-fit projections. No duplicate employee, schedule, certification, task, or staffing record was introduced.
+
+### ADR-0040 — Availability and Skills Are Advisory Coordination Evidence
+
+**Status:** Accepted  
+**Decision:** Availability and skill relationships may improve explainable handoff suggestions, but cannot grant access, certify competence, replace scheduling, or automatically assign work. Active Organization assignments remain the authoritative scope relationship, and accepted handoffs remain the only path to ownership change.
+
+**Consequence:** Elev8 OS can make safer, more relevant coordination suggestions while preserving human accountability and existing engine ownership boundaries.
+
+**Technical debt:** Availability is currently a simple available, limited, or unavailable state. Recurring schedules, time-off integrations, skill verification, proficiency levels, and inherited Organization skill catalogs remain future work.
+
+**Open questions:** Whether skills should require manager verification, whether Amelia or a future native Booking Engine should contribute working availability, and whether availability should expire automatically beyond an optional end date remain intentionally postponed.
+
+**Next milestone:** Build Team Availability Calendar and Skill Verification governance, including recurring availability windows, manager-confirmed skills, and conflict-aware suggestions without replacing the future native Booking Engine or creating an HR system.
