@@ -1,3 +1,18 @@
+## 18.0.0 — Observation Engine & Daily Operations Intelligence Foundation
+
+### Added
+- Canonical Observation service owned by the Intelligence Engine.
+- Stable source references, classifications, severity, confidence, organization scope, tags, and related-object context.
+- Daily Operations Log contributor that separates facts from explicit follow-up work.
+- Observation summaries in the Daily Executive Brief.
+
+### Architecture
+- Accepted ADR-0019: Facts Precede Actions. Observations preserve verified facts; Work Items represent execution only.
+- No Daily Operations Log, WordPress identity, WooCommerce, or Amelia source record is duplicated.
+
+### Database changes
+- None. Observations use a private WordPress post type and post metadata.
+
 # Elev8 OS Changelog
 
 ## 17.6.0 — 2026-07-22

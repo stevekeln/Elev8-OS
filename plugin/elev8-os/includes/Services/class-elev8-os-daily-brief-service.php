@@ -20,17 +20,18 @@ final class Elev8_OS_Daily_Brief_Service {
         $work = self::work_activity_summary($activities);
         $attention = is_array($summary['attention'] ?? null) ? $summary['attention'] : [];
         $pulse = self::pulse($attention);
+        $observations = self::observation_summary($yesterday['start'], $yesterday['end']);
 
         return [
             'generated_at' => current_time('mysql'),
             'greeting' => self::greeting($user),
             'date_label' => wp_date(get_option('date_format'), current_time('timestamp')),
             'pulse' => $pulse,
-            'yesterday' => self::yesterday_items($operations, $work, $activities),
+            'yesterday' => self::yesterday_items($operations, $work, $activities, $observations),
             'attention' => self::attention_items($attention),
             'wins' => self::wins($operations, $work, $activities, $attention, $metrics),
-            'risks' => self::risks($summary),
-            'opportunities' => self::opportunities($summary, $metrics),
+            'risks' => self::risks($summary, $observations),
+            'opportunities' => self::opportunities($summary, $metrics, $observations),
             'focus' => self::focus($attention),
             'timeline' => self::timeline($activities),
             'confidence' => self::confidence($activities, $operations, $summary),
@@ -104,6 +105,13 @@ final class Elev8_OS_Daily_Brief_Service {
         return ['created' => $created, 'completed' => $completed, 'updated' => $updated];
     }
 
+
+    /** @return array<string,int> */
+    private static function observation_summary(string $start, string $end): array {
+        if (!class_exists('Elev8_OS_Observation_Service')) { return ['total'=>0,'risk'=>0,'opportunity'=>0,'decision'=>0,'achievement'=>0,'follow_up'=>0,'critical'=>0,'high'=>0]; }
+        return Elev8_OS_Observation_Service::summary($start, $end);
+    }
+
     /** @return array<string,string|int> */
     private static function pulse(array $attention): array {
         $critical = (int) ($attention['critical'] ?? 0);
@@ -119,7 +127,7 @@ final class Elev8_OS_Daily_Brief_Service {
     }
 
     /** @return array<int,string> */
-    private static function yesterday_items(array $operations, array $work, array $activities): array {
+    private static function yesterday_items(array $operations, array $work, array $activities, array $observations): array {
         $items = [];
         if (!empty($operations['available'])) {
             $manager = (int) ($operations['manager'] ?? 0);
@@ -129,6 +137,7 @@ final class Elev8_OS_Daily_Brief_Service {
         }
         if ((int) ($work['completed'] ?? 0) > 0) { $items[] = sprintf(_n('%d work item was completed.', '%d work items were completed.', (int) $work['completed'], 'elev8-os'), (int) $work['completed']); }
         if ((int) ($work['created'] ?? 0) > 0) { $items[] = sprintf(_n('%d new work item was created.', '%d new work items were created.', (int) $work['created'], 'elev8-os'), (int) $work['created']); }
+        if ((int)($observations['total'] ?? 0) > 0) { $items[] = sprintf(_n('%d verified observation was captured.', '%d verified observations were captured.', (int)$observations['total'], 'elev8-os'), (int)$observations['total']); }
         if (!$items && $activities) { $items[] = sprintf(_n('%d verified business activity was recorded.', '%d verified business activities were recorded.', count($activities), 'elev8-os'), count($activities)); }
         if (!$items) { $items[] = __('No verified activity summary is available for yesterday.', 'elev8-os'); }
         return array_slice($items, 0, 5);
@@ -161,7 +170,7 @@ final class Elev8_OS_Daily_Brief_Service {
     }
 
     /** @return array<int,string> */
-    private static function risks(array $summary): array {
+    private static function risks(array $summary, array $observations = []): array {
         $risks = [];
         $team = is_array($summary['team_work'] ?? null) ? $summary['team_work'] : [];
         if (!empty($team['available']) && (int) ($team['overdue'] ?? 0) > 0) { $risks[] = sprintf(_n('%d team work item is overdue.', '%d team work items are overdue.', (int) $team['overdue'], 'elev8-os'), (int) $team['overdue']); }
@@ -169,17 +178,19 @@ final class Elev8_OS_Daily_Brief_Service {
         if (!empty($reservations['available']) && (int) ($reservations['attention'] ?? 0) > 0) { $risks[] = sprintf(_n('%d reservation needs follow-up.', '%d reservations need follow-up.', (int) $reservations['attention'], 'elev8-os'), (int) $reservations['attention']); }
         $applications = is_array($summary['applications'] ?? null) ? $summary['applications'] : [];
         if (!empty($applications['available']) && (int) ($applications['awaiting_agreement'] ?? 0) > 0) { $risks[] = sprintf(_n('%d event application is waiting on an agreement.', '%d event applications are waiting on agreements.', (int) $applications['awaiting_agreement'], 'elev8-os'), (int) $applications['awaiting_agreement']); }
+        if ((int)($observations['risk'] ?? 0) > 0) { $risks[] = sprintf(_n('%d verified risk observation was recorded yesterday.', '%d verified risk observations were recorded yesterday.', (int)$observations['risk'], 'elev8-os'), (int)$observations['risk']); }
         if (!$risks) { $risks[] = __('No verified operational risks are currently identified.', 'elev8-os'); }
         return array_slice($risks, 0, 4);
     }
 
     /** @return array<int,array<string,string>> */
-    private static function opportunities(array $summary, array $metrics): array {
+    private static function opportunities(array $summary, array $metrics, array $observations = []): array {
         $items = [];
         $applications = is_array($summary['applications'] ?? null) ? $summary['applications'] : [];
         if (!empty($applications['available']) && (int) ($applications['attention'] ?? 0) > 0) { $items[] = ['title' => __('Move event applications forward', 'elev8-os'), 'url' => class_exists('Elev8_OS_Event_Applications_Module') ? Elev8_OS_Event_Applications_Module::admin_url() : '']; }
         $change = is_array($metrics['booked_value_change'] ?? null) ? $metrics['booked_value_change'] : [];
         if (!empty($change['available']) && is_numeric($change['value'] ?? null) && (float) $change['value'] > 0) { $items[] = ['title' => __('Review what is driving booking growth', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-business-intelligence')]; }
+        if ((int)($observations['opportunity'] ?? 0) > 0) { $items[] = ['title' => sprintf(_n('Review %d verified opportunity observation', 'Review %d verified opportunity observations', (int)$observations['opportunity'], 'elev8-os'), (int)$observations['opportunity']), 'url' => admin_url('admin.php?page=elev8-ceo-dashboard&view=opportunities')]; }
         if (!$items) { $items[] = ['title' => __('Review captured growth opportunities', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-ceo-dashboard&view=opportunities')]; }
         return array_slice($items, 0, 3);
     }

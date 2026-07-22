@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.7  
+**Blueprint version:** 1.8  
 **Established:** 2026-07-22  
-**Platform release:** 17.6.0  
+**Platform release:** 18.0.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -91,7 +91,7 @@ HR is not an engine. HR is a role-based dashboard powered by Identity, Organizat
 
 ### Core Objects
 
-Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset, Maintenance Record, Task, SOP, Workflow, Communication, Event, Booking, Membership, Benefit, Donation, Volunteer, Artist, Employee, Vendor, Customer, Invoice, Payout, Route, Campaign, Knowledge, Production Job, Repair, Memorial Case, Class, Application, Reservation, and Workspace.
+Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset, Maintenance Record, Observation, Task, SOP, Workflow, Communication, Event, Booking, Membership, Benefit, Donation, Volunteer, Artist, Employee, Vendor, Customer, Invoice, Payout, Route, Campaign, Knowledge, Production Job, Repair, Memorial Case, Class, Application, Reservation, and Workspace.
 
 ### Relationship Rules
 
@@ -235,7 +235,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Commerce | WooCommerce integration | Order-to-operation orchestration |
 | Sales | Opportunities foundation | Reusable pipeline and sales operating home |
 | Marketing | Content and marketing foundations | Campaign engine and attribution |
-| Intelligence | Executive brief and workspace health | Cross-engine recommendations and forecasting |
+| Intelligence | Observation Engine, Executive Brief, and workspace health | Observation review, cross-engine contributors, pattern detection, recommendations, and forecasting |
 
 ## Technical Debt and Risks
 
@@ -511,3 +511,25 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open Questions:** A dedicated equipment/facility registry and user interface remain intentionally postponed. Recurrence currently uses day intervals; calendar-based rules and vendor service agreements need a reusable scheduling policy. Photo/file evidence continues to depend on the future shared evidence attachment capability.
 
 **Next Development Session:** Build the Daily Operations Log Contributor so manager, retail, artist, vendor, and event logs can extract explicit follow-up obligations into synchronized Work Items without turning every observation into a task or duplicating the original log.
+
+### ADR-0019 — Facts Precede Actions
+
+**Status:** Accepted  
+**Decision:** Engines contribute verified facts as Observations before Intelligence or Operations interprets them. An Observation is not a task. A Work Item is created only when an authoritative source explicitly declares follow-up or operational action.  
+**Consequence:** Intelligence can analyze risks, opportunities, achievements, decisions, and trends without flooding the Universal Work Inbox or duplicating source records.
+
+### 2026-07-22 — Elev8 OS 18.0.0 — Observation Engine & Daily Operations Intelligence Foundation
+
+**What changed:** Added the canonical Observation object and service, stable source-key synchronization, classification, severity, confidence, organization scope, related-object references, Intelligence queries, Daily Operations Log contribution, explicit follow-up Work Item creation, and Observation summaries in the Daily Executive Brief.
+
+**Why:** Elev8 OS needed one shared language for verified business facts before cross-engine intelligence, recommendations, pattern detection, and AI reasoning could mature. Daily logs now contribute facts without automatically treating every note as work.
+
+**Engines changed:** Intelligence (primary); Operations, Workflow, Knowledge, Organization, Analytics, Automation, and Communication (supporting).
+
+**Business Graph changes:** Added Source → Observation, Observation → Work Item, and Observation → Knowledge/Conversation evidence relationships. Operations Logs remain authoritative source records; Observations store structured interpretation and Work Items store only explicit execution.
+
+**Architectural decisions:** Accepted ADR-0019, Facts Precede Actions.
+
+**Open questions:** Reusable classifier registration, controlled historical backfill, observation review/correction workflows, and cross-source pattern thresholds remain intentionally postponed.
+
+**Next development session:** Build the Observation Registry and Intelligence Review workspace, then connect Inventory Signals, Maintenance Records, Events, Booking decisions, Conversations, and commerce events as verified Observation contributors.

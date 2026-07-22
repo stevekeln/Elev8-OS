@@ -1,5 +1,15 @@
 # Elev8 OS Changelog
 
+## 18.0.0 — 2026-07-22
+
+- Added the canonical Observation object and Intelligence Engine service.
+- Added idempotent source-key synchronization, classification, severity, confidence, tags, organization scope, related-object references, and query summaries.
+- Added the Daily Operations Observation Contributor for manager, retail, artist, vendor, event, maintenance, and configurable operating logs.
+- Explicit follow-up fields can create one stable Universal Work Item; informational observations do not create tasks.
+- Added verified Observation counts, risks, and opportunities to the Daily Executive Brief.
+- Added Business Graph relationships for observed facts and evidence.
+- Accepted ADR-0019: Facts Precede Actions.
+
 ## 17.6.0 — 2026-07-22
 
 - Added the canonical Maintenance Record service for equipment, facilities, asset repairs, preventive maintenance, inspections, and safety checks.
