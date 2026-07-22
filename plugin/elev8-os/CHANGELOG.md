@@ -1,5 +1,22 @@
 # Elev8 OS Changelog
 
+## 17.0.0 — Operations Engine & Universal Work Inbox
+
+### Added
+- Added the canonical Operations Engine over the existing Work Item source, avoiding a second task system.
+- Added a frontend `/operations/` workspace with My Work and Team Work inboxes.
+- Added reusable operational work types for production, repairs, memorials, teaching, inventory, routes, maintenance, events, approvals, and general work.
+- Added organization scope, requester, customer, start time, completion time, and operational type metadata to Work Items.
+- Added a manager-friendly create flow, shared filters, operational metrics, and Universal Workspace links.
+- Added read-only connected-system signals for production, repairs, memorials, class decisions, and operations logs.
+- Added Operations navigation to the universal application shell and Command Palette.
+
+### Architecture
+- Operations owns operational execution records. Workflow supplies reusable states, approvals, dependencies, and completion rules.
+- Existing production, repair, memorial, booking, commerce, and identity records remain owned by their authoritative engines or source systems.
+- Dashboards contribute work to one inbox instead of creating separate task systems.
+- Added ADR-0011: the Universal Work Item is the canonical operational execution object.
+
 ## 16.3.0 — Integration Engine Adapters & Organization Reliability
 
 ### Fixed

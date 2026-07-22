@@ -27,10 +27,14 @@ final class Elev8_OS_Work_Service {
 
     public static function statuses(): array {
         return [
-            'new' => __('New', 'elev8-os'),
+            'new' => __('New (Legacy)', 'elev8-os'),
+            'requested' => __('Requested', 'elev8-os'),
+            'queued' => __('Queued', 'elev8-os'),
             'assigned' => __('Assigned', 'elev8-os'),
             'in_progress' => __('In Progress', 'elev8-os'),
             'waiting' => __('Waiting', 'elev8-os'),
+            'review' => __('Review', 'elev8-os'),
+            'approved' => __('Approved', 'elev8-os'),
             'completed' => __('Completed', 'elev8-os'),
             'cancelled' => __('Cancelled', 'elev8-os'),
             'archived' => __('Archived', 'elev8-os'),
@@ -46,6 +50,7 @@ final class Elev8_OS_Work_Service {
         $defaults = [
             'title' => '', 'description' => '', 'owner_user_id' => 0, 'due_date' => '', 'priority' => 'normal', 'status' => 'new',
             'source_type' => '', 'source_id' => 0, 'workflow_key' => '', 'step_key' => '', 'person_id' => 0, 'relationship_id' => 0,
+            'work_type' => 'general', 'organization_unit_id' => 0, 'requested_by_user_id' => 0, 'customer_person_id' => 0,
         ];
         $args = wp_parse_args($args, $defaults);
         $title = sanitize_text_field((string) $args['title']);
@@ -88,6 +93,10 @@ final class Elev8_OS_Work_Service {
             '_elev8_work_person_id' => absint($args['person_id']),
             '_elev8_work_relationship_id' => absint($args['relationship_id']),
             '_elev8_work_created_by' => get_current_user_id(),
+            '_elev8_work_type' => sanitize_key((string) $args['work_type']) ?: 'general',
+            '_elev8_work_organization_unit_id' => absint($args['organization_unit_id']),
+            '_elev8_work_requested_by_user_id' => absint($args['requested_by_user_id']) ?: get_current_user_id(),
+            '_elev8_work_customer_person_id' => absint($args['customer_person_id']),
         ];
         foreach ($meta as $key => $value) { update_post_meta((int) $id, $key, $value); }
         self::record_activity((int) $id, 'work_created', __('Work item created', 'elev8-os'), $title);
@@ -115,6 +124,11 @@ final class Elev8_OS_Work_Service {
             $user = $owner ? get_user_by('id', $owner) : false;
             if (!$owner || ($user instanceof WP_User && Elev8_OS_Access_Service::user_can('receive_assignments', $user))) { update_post_meta($id, '_elev8_work_owner_user_id', $owner); }
         }
+        if (array_key_exists('work_type', $changes)) {
+            $type = sanitize_key((string) $changes['work_type']);
+            if (!class_exists('Elev8_OS_Operations_Engine_Service') || isset(Elev8_OS_Operations_Engine_Service::types()[$type])) { update_post_meta($id, '_elev8_work_type', $type ?: 'general'); }
+        }
+        if (array_key_exists('organization_unit_id', $changes)) { update_post_meta($id, '_elev8_work_organization_unit_id', absint($changes['organization_unit_id'])); }
         if (array_key_exists('notes', $changes)) { update_post_meta($id, '_elev8_work_notes', sanitize_textarea_field((string) $changes['notes'])); }
 
         $after_status = (string) get_post_meta($id, '_elev8_work_status', true);

@@ -169,7 +169,9 @@ final class Elev8_OS_Application_Shell_Module {
                     <?php if (Elev8_OS_Access_Service::user_can('view_organization', $user) && class_exists('Elev8_OS_Organization_Module')) : ?>
                         <a href="<?php echo esc_url(Elev8_OS_Organization_Module::url()); ?>"><?php esc_html_e('Organization', 'elev8-os'); ?></a>
                     <?php endif; ?>
-                    <?php if (Elev8_OS_Access_Service::user_can('view_work', $user)) : ?>
+                    <?php if (Elev8_OS_Access_Service::user_can('view_operations', $user) && class_exists('Elev8_OS_Operations_Engine_Module')) : ?>
+                        <a href="<?php echo esc_url(Elev8_OS_Operations_Engine_Module::url()); ?>"><?php esc_html_e('Operations', 'elev8-os'); ?></a>
+                    <?php elseif (Elev8_OS_Access_Service::user_can('view_work', $user)) : ?>
                         <a href="<?php echo esc_url(class_exists('Elev8_OS_Action_Center_Module') ? Elev8_OS_Action_Center_Module::url() : $dashboard_url); ?>"><?php esc_html_e('My Actions', 'elev8-os'); ?></a>
                     <?php endif; ?>
                     <?php if (Elev8_OS_Access_Service::user_can('manage_daily_operations', $user)) : ?>
@@ -217,6 +219,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a href="<?php echo esc_url($dashboard_url); ?>">🏠 <span><?php esc_html_e('My Dashboard', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($profile_url); ?>">👤 <span><?php esc_html_e('My Profile', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($notifications_url); ?>">🔔 <span><?php esc_html_e('Notifications', 'elev8-os'); ?></span><?php if ($attention_count > 0) : ?><b><?php echo esc_html((string) $attention_count); ?></b><?php endif; ?></a>
+                <?php if (Elev8_OS_Access_Service::user_can('view_operations', $user) && class_exists('Elev8_OS_Operations_Engine_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Operations_Engine_Module::url()); ?>">⚙️ <span><?php esc_html_e('Operations', 'elev8-os'); ?></span></a><?php endif; ?>
                 <?php if (Elev8_OS_Access_Service::user_can('view_conversations', $user) && class_exists('Elev8_OS_Conversations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Conversations_Module::url()); ?>">💬 <span><?php esc_html_e('Conversations', 'elev8-os'); ?></span><?php $conversation_count = class_exists('Elev8_OS_Conversation_Service') ? Elev8_OS_Conversation_Service::unread_count($user->ID) : 0; if ($conversation_count > 0) : ?><b><?php echo esc_html((string) $conversation_count); ?></b><?php endif; ?></a><?php endif; ?>
                 <a href="<?php echo esc_url($resources_url); ?>">📚 <span><?php esc_html_e('Employee Guides', 'elev8-os'); ?></span></a>
                 <?php if (user_can($user, 'manage_options')) : ?><a href="<?php echo esc_url($blueprint_url); ?>">🧭 <span><?php esc_html_e('Business Blueprint', 'elev8-os'); ?></span></a><?php endif; ?>

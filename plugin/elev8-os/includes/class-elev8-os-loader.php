@@ -106,6 +106,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-person-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-intake-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-work-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-engine-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-action-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-relationship-service.php';
@@ -125,6 +126,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-manager-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-unified-intake-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-work-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-operations-engine-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-action-center-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-demand-manager-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-opportunity-module.php';
@@ -143,9 +145,11 @@ final class Elev8_OS_Loader {
         Elev8_OS_Person_Service::init();
         Elev8_OS_Unified_Intake_Service::init();
         Elev8_OS_Work_Service::init();
+        Elev8_OS_Operations_Engine_Service::init();
         Elev8_OS_Workflow_Service::init();
         Elev8_OS_Unified_Intake_Module::init();
         Elev8_OS_Work_Module::init();
+        Elev8_OS_Operations_Engine_Module::init();
         Elev8_OS_Action_Center_Module::init();
         Elev8_OS_Relationship_Service::init();
         Elev8_OS_Automation_Service::init();

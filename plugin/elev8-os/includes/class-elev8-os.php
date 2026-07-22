@@ -104,6 +104,7 @@ final class Elev8_OS {
         if (class_exists('Elev8_OS_Business_Graph_Module')) { Elev8_OS_Business_Graph_Module::activate(); }
         if (class_exists('Elev8_OS_Organization_Module')) { Elev8_OS_Organization_Module::activate(); }
         if (class_exists('Elev8_OS_Integration_Engine_Module')) { Elev8_OS_Integration_Engine_Module::activate(); }
+        if (class_exists('Elev8_OS_Operations_Engine_Module')) { Elev8_OS_Operations_Engine_Module::activate(); }
         self::add_rewrite_rules();
         flush_rewrite_rules();
     }

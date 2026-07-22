@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.3  
+**Blueprint version:** 1.4  
 **Established:** 2026-07-22  
-**Platform release:** 16.3.0  
+**Platform release:** 17.0.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -207,13 +207,22 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 **Decision:** Every Business Graph object type declares one owning engine, one authoritative system, its organization-scope behavior, and the relationship types it may participate in. New explicit relationships must pass the shared Business Graph Registry before storage.  
 **Consequence:** Engines may extend the registry through documented filters, but they may not invent unregistered object ownership or persist invalid graph links. Elev8 OS links authoritative records and records relationship context without cloning source data.
 
+
+
+### ADR-0011 — Universal Work Item Is the Canonical Operational Execution Object
+
+**Status:** Accepted  
+**Decision:** The Operations Engine owns the canonical Work Item used to represent operational execution. Production, repair, memorial, teaching, maintenance, inventory, route, event, and approval work are configurable work types over the same execution object. Workflow owns reusable state, approval, dependency, and completion mechanics.  
+**Consequence:** Existing source records are not replaced or migrated destructively. Engines contribute work through stable references, and role dashboards present filtered views of one shared Work Inbox.
+
+
 ## Roadmap by Engine
 
 | Engine | Current Foundation | Next Architectural Focus |
 |---|---|---|
 | Knowledge | Business Memory, Employee Guides, Business Blueprint | Structured SOP execution and knowledge relationships |
 | Organization | Organization units, hierarchy, scoped person assignments, CEO company map | Shared resources and organization-aware engine access across registered graph objects |
-| Operations | Glass production, repairs, memorials, daily operations | General reusable service operations and Workbench execution |
+| Operations | Universal Work Item, Work Inbox, glass production, repairs, memorials, and daily operations | Work adapters, Workbench execution, reusable SOP execution, and approval orchestration |
 | Communication | Conversations, alerts, mentions | Unified delivery, preferences, escalation, and customer communication |
 | Booking | Amelia calendar and approval center | General booking orchestration and staffing rules |
 | Financial | Production costing and payouts | Unified obligations, profitability, invoices, and accounting integration |
@@ -344,3 +353,20 @@ The organization unit attached to each WooCommerce or Amelia record still needs 
 
 ### Next Development Session
 Build configurable Integration Scope Mapping so WooCommerce stores/products/orders and Amelia services/locations/providers resolve into the correct Business, Brand, Location, and Department nodes.
+
+
+### 2026-07-22 — Elev8 OS 17.0.0 — Operations Engine & Universal Work Inbox
+
+**What changed:** Added a canonical Operations Engine service and frontend Work Inbox over the existing Work Item record. Added operational types, organization scope, requester/customer context, lifecycle timestamps, role-aware My Work and Team Work views, operational metrics, and connected-system signals.
+
+**Why:** Operational work was distributed across modules and dashboards. The platform needed one reusable execution object and one answer to “What should happen next?” without duplicating production, booking, commerce, repair, memorial, or identity records.
+
+**Engines changed:** Operations (primary), Workflow, Organization, Identity, Communication, Booking, and Integrations (supporting).
+
+**Business Graph changes:** Work Item ownership moved from Workflow to Operations. Work Items may now carry organization scope and stable source references while Workflow continues to own reusable lifecycle mechanics.
+
+**Architectural decision:** Accepted ADR-0011.
+
+**Open questions:** Existing production jobs, repairs, memorial cases, class decisions, events, and recurring procedures still need explicit contributor adapters that create or expose Work Items without duplicating source state.
+
+**Next development session:** Build Operations Contributor Adapters and SOP Execution so authoritative engine records can generate standardized work, checklists, approvals, and completion conditions through the shared Operations Engine.
