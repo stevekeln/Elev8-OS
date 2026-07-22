@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.10.0  
+**Platform release:** 18.11.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -728,4 +728,32 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Time decay, financial-value weighting, location-level scope, configurable evidence thresholds, and classification-specific weights remain intentionally postponed until sufficient real outcome history exists.
 
 **Next development session:** Build Outcome Measurement Governance and reminders so completed actions awaiting measurement are assigned, surfaced, and followed up through the existing Communication and Automation engines without treating missing measurement as operational failure.
+
+## Development History — 18.11.0
+
+### Plugin Usage Discovery and Migration Readiness
+
+The Integrations Engine now provides a read-only Platform Compatibility workspace. It inventories installed plugins and collects dependency evidence from page and post shortcodes, serialized block markup, registered block namespaces, custom post types, non-core database tables, and scheduled cron hooks. Evidence is grouped against installed plugins using stable plugin identity and explicit namespace aliases where plugin marketing names do not match their technical namespaces.
+
+This capability never activates, deactivates, updates, deletes, or configures plugins. A missing finding is not treated as proof that a plugin is safe to remove because runtime PHP calls, remote webhooks, theme dependencies, and external automations may exist outside the discoverable WordPress registries.
+
+**Primary engine:** Integrations.
+
+**Supporting engines:** Identity, Booking, Commerce, Communication, Inventory, Knowledge, Automation, Analytics, and Organization.
+
+**Business Graph changes:** Added a read-only dependency-evidence projection connecting an installed Plugin to discovered Shortcode Usage, Block Usage, Custom Post Type, Database Table, Scheduled Hook, and Registered Block. These are migration-planning relationships, not new authoritative business records.
+
+### ADR-0030 — Plugin Changes Require an Evidence-Based Migration Boundary
+
+A plugin may be retired only after capability ownership, authoritative data, stored records, public-page dependencies, scheduled work, external integrations, migration steps, Local validation, and rollback have been documented. Elev8 OS may recommend a migration sequence but must not silently change the installed stack.
+
+### ADR-0031 — Dependency Discovery Is Evidence, Not Permission
+
+Automated discovery can identify visible dependencies and reduce audit effort, but it cannot prove the absence of runtime or external dependencies. Therefore a clean scan may qualify a plugin for manual review, but never authorizes deactivation or deletion.
+
+**Technical debt:** Plugin-to-namespace matching currently uses deterministic token and alias rules. Future releases should support administrator-confirmed ownership mappings and integration-adapter declarations.
+
+**Open questions:** Theme-level PHP calls, remote Make scenarios, webhook consumers, license dependencies, and network-level multisite behavior require separate evidence sources before automated migration plans can be considered complete.
+
+**Next milestone:** Build administrator-confirmed dependency ownership and migration-plan records, then add Local-only retirement rehearsals with validation checklists and rollback evidence.
 

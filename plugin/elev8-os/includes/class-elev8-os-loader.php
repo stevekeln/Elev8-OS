@@ -105,6 +105,8 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-system-inspector-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-employee-mapping-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-release-information-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-plugin-usage-discovery-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-platform-compatibility-module.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-intelligence.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-recommendation-state-service.php';
@@ -249,6 +251,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Class_Demand_Manager_Module::init();
         Elev8_OS_Opportunity_Module::init();
         Elev8_OS_System_Inspector_Module::init();
+        Elev8_OS_Platform_Compatibility_Module::init();
         Elev8_OS_Employee_Mapping_Module::init();
         Elev8_OS_Business_Intelligence_Dashboard_Module::init();
         Elev8_OS_Observation_Registry_Module::init();

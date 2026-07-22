@@ -1,5 +1,21 @@
 # Elev8 OS Changelog
 
+## 18.11.0 — Plugin Usage Discovery & Migration Readiness
+
+### Added
+- Read-only Platform Compatibility workspace under Elev8 OS administration.
+- Installed-plugin inventory with active state, version, disposition, and migration-readiness guidance.
+- Discovery of shortcodes and block markup used in up to 5,000 content records.
+- Discovery of non-core database tables, scheduled cron hooks, registered blocks, and custom post types.
+- Per-plugin evidence matching with known namespace aliases for important companion systems.
+- Manual fresh-scan control, six-hour cache, and exportable JSON evidence report.
+
+### Architecture
+- Accepted ADR-0030: plugin retirement requires evidence and a tested migration boundary.
+- Accepted ADR-0031: dependency discovery is read-only evidence, not permission to deactivate software.
+- Preserved WordPress, WooCommerce, Amelia, SMTP, Google, and other authoritative ownership boundaries.
+- No plugin is activated, deactivated, updated, deleted, or reconfigured by this release.
+
 ## 18.10.0 — Executive Learning Dashboard & Calibration Health
 
 ### Added
