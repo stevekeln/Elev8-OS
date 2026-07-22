@@ -1,3 +1,12 @@
+
+## 20.0.0 - Production Operations Workspace Foundation
+
+- Added the reusable Production Operations Workspace as a governed read-and-coordinate layer over authoritative operational records.
+- Added the first Glass configuration using existing Glass Operations jobs, assignments, status, due dates, and progress.
+- Added production metrics for ready, running, waiting, blocked, late, quality review, and completed-today work.
+- Added filtered queue management and governed status/assignment updates through the existing Glass Operations service.
+- Registered the Production portal page, command-palette entry, admin workspace, and shared application-shell navigation.
+- Recorded ADR-0044: Production is a configurable workspace, not a new engine or duplicate production ledger.
 ## 19.10.0 — Credential Requirement and Renewal Workflow Governance
 
 ### Added

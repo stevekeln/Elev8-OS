@@ -29,6 +29,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'elev8-actions',
                 'shortcode' => 'elev8_action_center',
             ],
+            'production' => [
+                'option' => 'elev8_os_production_workspace_page_id',
+                'title' => __('Production', 'elev8-os'),
+                'slug' => 'elev8-production',
+                'shortcode' => 'elev8_production_workspace',
+            ],
             'team_coordination' => [
                 'option' => 'elev8_os_team_coordination_page_id',
                 'title' => __('Team Coordination', 'elev8-os'),

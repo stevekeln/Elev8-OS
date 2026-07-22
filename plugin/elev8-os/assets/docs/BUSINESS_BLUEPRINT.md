@@ -1062,3 +1062,44 @@ Universal Work Items may declare bounded credential or training evidence require
 ### ADR-0043 — Credential Requirements Are Workflow Evidence, Not Permission
 
 Credential requirements may inform coordination and renewal follow-up, but cannot grant access, certify legal competence, or automatically assign work. Universal Work remains the only execution system.
+
+
+## Development Update — 20.0.0 Production Operations Workspace
+
+### Architecture Updates
+
+Elev8 OS now provides a reusable Production Operations Workspace. Production is deliberately implemented as a configurable workspace over shared Engines rather than a new authoritative engine. The first configuration projects Glass Operations jobs so the Glass Manager can run daily production from one coordinated view.
+
+### Engines Changed
+
+- **Primary:** Operations
+- **Supporting:** Workflow, Organization, Assets, Inventory, Intelligence, Communication, Team Coordination, Knowledge
+
+### Business Graph Updates
+
+The workspace projects existing relationships without copying source records:
+
+```text
+Authoritative Production Source (Glass Job today)
+        ↓
+Production Queue Projection
+        ↓
+Assigned Person / Due Date / Status / Progress
+```
+
+Future production adapters may contribute pottery, jewelry, print, food, fabrication, or other production sources through the shared workspace contract.
+
+### ADR-0044 — Production Is a Configurable Workspace
+
+Production coordinates authoritative records owned by existing Engines and source services. It may rank, filter, display, and submit governed updates through those services, but it must not create a parallel production ledger. Industry-specific terms, workflow states, workstations, and policies must remain configurable.
+
+### Open Questions
+
+- Define the canonical workstation relationship after the Asset Engine is matured in the source repository.
+- Add material-readiness projections after operational inventory ownership is fully configured.
+- Add completion-photo and quality-evidence support through reusable Workflow evidence rather than workspace-specific storage.
+- Determine which production-source adapter should follow Glass Operations.
+
+### Next Development Session
+
+Build the Glass Production configuration deeper: memorial/custom/stock filters, quality-review evidence, shipping handoff, and manager daily brief while keeping all records authoritative in their existing engines.
