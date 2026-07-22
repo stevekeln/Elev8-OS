@@ -97,6 +97,10 @@ final class Elev8_OS_Team_Availability_Skill_Service {
             ? Elev8_OS_Team_Availability_Calendar_Service::verified_skills($candidate_user_id)
             : [];
         $verified_matched = array_values(array_intersect($required, $verified_skills));
+        $credential_skills = class_exists('Elev8_OS_Team_Coordination_Evidence_Service')
+            ? Elev8_OS_Team_Coordination_Evidence_Service::active_credential_skills($candidate_user_id)
+            : [];
+        $credential_matched = array_values(array_intersect($required, $credential_skills));
         $candidate_units = self::organization_units($candidate_user_id);
         $owner_units = $current_owner_id ? self::organization_units($current_owner_id) : [];
         $shared_units = array_values(array_intersect($candidate_units, $owner_units));
@@ -114,6 +118,7 @@ final class Elev8_OS_Team_Availability_Skill_Service {
             $score += $skill_score;
             $reasons[] = sprintf(__('%1$d of %2$d required skills matched', 'elev8-os'), count($matched), count($required));
             if ($verified_matched) { $score += min(20, count($verified_matched) * 5); $reasons[] = sprintf(_n('%d required skill is manager-confirmed', '%d required skills are manager-confirmed', count($verified_matched), 'elev8-os'), count($verified_matched)); }
+            if ($credential_matched) { $score += min(20, count($credential_matched) * 5); $reasons[] = sprintf(_n('%d required skill has active credential evidence', '%d required skills have active credential evidence', count($credential_matched), 'elev8-os'), count($credential_matched)); }
         } else {
             $score += 20;
             $reasons[] = __('no explicit skill requirement is recorded', 'elev8-os');
@@ -126,6 +131,7 @@ final class Elev8_OS_Team_Availability_Skill_Service {
             'availability' => $availability,
             'calendar' => $calendar,
             'verified_matched_skills' => $verified_matched,
+            'credential_matched_skills' => $credential_matched,
             'required_skills' => $required,
             'matched_skills' => $matched,
             'missing_skills' => $missing,

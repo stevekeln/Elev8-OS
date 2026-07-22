@@ -1181,3 +1181,8 @@
 - Glass Production, Repair, and Memorial records now contribute synchronized Work Items with execution contracts.
 - Added checklist, approval, completion-rule, escalation, source-status, and sync metadata.
 - No database schema changes and no authoritative source duplication.
+
+## 19.9.0
+- Added date-specific availability exceptions and credential/training evidence governance to Team Coordination.
+- Added renewal reminders through the shared Communication boundary and optional skill-verification expiration.
+- Added secure evidence boundaries that prohibit passwords, keys, codes, and full credential numbers.

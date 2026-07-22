@@ -1473,3 +1473,11 @@
 
 ### Database changes
 - None. Contributor contracts use existing Work Item post metadata.
+
+## 19.9.0
+- Added date-specific availability exceptions that override recurring coordination windows for a single Work Item due date.
+- Added bounded credential and training evidence references with optional expiration, renewal windows, safe internal references, and WordPress Media attachment IDs.
+- Added daily credential-expiration reminders through the shared Notification Service.
+- Added optional expiration to manager-confirmed skill evidence and excluded expired verification from active handoff matching.
+- Extended explainable handoff fit with active credential evidence while preserving human acknowledgement and access boundaries.
+- Added ADR-0042 documenting that availability exceptions and credential references are coordination evidence, not HR, access control, certification, or secret storage.

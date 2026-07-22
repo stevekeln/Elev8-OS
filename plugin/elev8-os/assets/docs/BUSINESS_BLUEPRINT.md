@@ -1023,3 +1023,32 @@ Declared skills remain owned by the person as advisory capability relationships.
 
 **Next milestone:** Build Team Coordination Exceptions and Credential Evidence, including date-specific availability exceptions, optional skill-expiration governance, and document-reference boundaries without storing credentials insecurely or creating an HR system.
 
+
+## Development History — 19.9.0
+
+### Team Coordination Exceptions and Credential Evidence
+
+Team Coordination now supports date-specific availability exceptions that override recurring weekly windows for a single date. Exceptions may mark a person available, limited, or unavailable and are used only when evaluating coordination fit for Work Items due on that date.
+
+Operational leaders may also record bounded credential or training evidence connected to a person and an optional declared skill. Evidence may include an issuer, expiration date, safe internal reference, optional WordPress Media attachment reference, and renewal reminder window. Elev8 OS never stores passwords, secret keys, access codes, license keys, or full credential numbers in this service.
+
+Skill-verification evidence can now include an optional expiration date. Expired verification is excluded from active manager-confirmed skill matching. Active credential evidence may strengthen an explainable handoff-fit projection, but it does not grant access, certify legal competence, or automatically assign work.
+
+**Primary engine:** Operations.
+
+**Supporting engines:** Organization, Workflow, Knowledge, Communication, Automation, Analytics, and Intelligence.
+
+**Business Graph changes:** Added Work Availability Exception and Credential Evidence Reference relationships connected to Person, Work Item due-date context, optional Skill relationships, renewal evidence, and handoff-fit projections. No attendance, leave, HR, password vault, licensing, certification, or staffing system was introduced.
+
+### ADR-0042 — Exceptions and Credential References Are Bounded Coordination Evidence
+
+**Status:** Accepted  
+**Decision:** Date-specific availability exceptions may override recurring coordination windows for a specific day. Credential and training evidence may be referenced for coordination and renewal governance, but Elev8 OS must never store secrets or treat internal evidence as a permission grant, professional license, employment qualification, or automatic-assignment authority.
+
+**Consequence:** Handoff guidance can avoid known date conflicts and surface expiring training evidence while preserving WordPress access, Organization assignments, human acknowledgement, and external credential authorities.
+
+**Technical debt:** Credential reminders currently use daily WordPress Cron and email through the shared Notification Service. Rich Media selection, organization-specific credential types, credential requirements on Work Items, renewal Work Items, secure document-provider adapters, and calendar/leave integrations remain future work.
+
+**Open questions:** Which credential types should require an attachment reference, which renewals should contribute Work Items rather than reminders, and whether Organization Units should define inherited credential policies remain intentionally postponed.
+
+**Next milestone:** Build Credential Requirement and Renewal Workflow Governance, allowing selected Work Item types to declare credential requirements and intentionally create renewal follow-up through shared Operations without turning credentials into access control or an HR system.

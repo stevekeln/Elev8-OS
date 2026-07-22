@@ -80,12 +80,13 @@ final class Elev8_OS_Team_Availability_Calendar_Service {
                 'verified_by_user_id' => absint($evidence['verified_by_user_id'] ?? 0),
                 'verified_at' => sanitize_text_field((string) ($evidence['verified_at'] ?? '')),
                 'note' => sanitize_textarea_field((string) ($evidence['note'] ?? '')),
+                'expires_on' => sanitize_text_field((string) ($evidence['expires_on'] ?? '')),
             ];
         }
         return $clean;
     }
 
-    public static function verify_skills(int $user_id, array $verified_skills, string $note = '') {
+    public static function verify_skills(int $user_id, array $verified_skills, string $note = '', string $expires_on = '') {
         if (!Elev8_OS_Team_Coordination_Service::can_coordinate()) {
             return new WP_Error('forbidden', __('Only an operational leader can verify coordination skills.', 'elev8-os'));
         }
@@ -98,6 +99,7 @@ final class Elev8_OS_Team_Availability_Calendar_Service {
                 'verified_by_user_id' => in_array($skill, $selected, true) ? get_current_user_id() : 0,
                 'verified_at' => in_array($skill, $selected, true) ? current_time('mysql') : '',
                 'note' => sanitize_textarea_field($note),
+                'expires_on' => sanitize_text_field($expires_on),
             ];
         }
         update_user_meta($user_id, self::USER_META_SKILL_VERIFICATION, $evidence);
@@ -109,7 +111,7 @@ final class Elev8_OS_Team_Availability_Calendar_Service {
     public static function verified_skills(int $user_id): array {
         $verified = [];
         foreach (self::skill_verifications($user_id) as $skill => $evidence) {
-            if (($evidence['status'] ?? '') === 'verified') { $verified[] = $skill; }
+            if (($evidence['status'] ?? '') === 'verified' && (empty($evidence['expires_on']) || $evidence['expires_on'] >= current_time('Y-m-d'))) { $verified[] = $skill; }
         }
         return $verified;
     }
@@ -124,6 +126,19 @@ final class Elev8_OS_Team_Availability_Calendar_Service {
         }
         if (!$due || !$has_schedule) {
             return ['eligible' => true, 'state' => $base['state'], 'due_date' => $due, 'explanation' => $has_schedule ? __('The Work Item has no due date to compare with recurring availability.', 'elev8-os') : __('No recurring availability calendar is recorded.', 'elev8-os')];
+        }
+        if (class_exists('Elev8_OS_Team_Coordination_Evidence_Service')) {
+            $exception = Elev8_OS_Team_Coordination_Evidence_Service::exception_for($user_id, $due);
+            if ($exception) {
+                $eligible = $exception['state'] !== 'unavailable';
+                return [
+                    'eligible' => $eligible,
+                    'state' => $exception['state'],
+                    'due_date' => $due,
+                    'exception' => $exception,
+                    'explanation' => sprintf(__('A date-specific availability exception marks this person %1$s on %2$s%3$s.', 'elev8-os'), $exception['state'], $due, !empty($exception['note']) ? ': ' . $exception['note'] : ''),
+                ];
+            }
         }
         $timestamp = strtotime($due . ' 12:00:00');
         $day = $timestamp ? strtolower(substr(date('D', $timestamp), 0, 3)) : '';
