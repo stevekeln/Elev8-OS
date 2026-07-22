@@ -114,6 +114,8 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-event-operations-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-inventory-signal-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-inventory-operations-contributor.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-maintenance-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-maintenance-operations-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-action-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-relationship-service.php';
@@ -160,6 +162,8 @@ final class Elev8_OS_Loader {
         Elev8_OS_Event_Operations_Contributor::init();
         Elev8_OS_Inventory_Signal_Service::init();
         Elev8_OS_Inventory_Operations_Contributor::init();
+        Elev8_OS_Maintenance_Service::init();
+        Elev8_OS_Maintenance_Operations_Contributor::init();
         Elev8_OS_Workflow_Service::init();
         Elev8_OS_Unified_Intake_Module::init();
         Elev8_OS_Work_Module::init();

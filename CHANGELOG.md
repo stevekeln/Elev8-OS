@@ -1,5 +1,13 @@
 # Elev8 OS Changelog
 
+## 17.6.0 — 2026-07-22
+
+- Added the canonical Maintenance Record service for equipment, facilities, asset repairs, preventive maintenance, inspections, and safety checks.
+- Added the Maintenance Operations Contributor with shared Work Item, SOP evidence, approval, escalation, and completion contracts.
+- Connected the existing Maintenance Log to the canonical maintenance source instead of creating a parallel task path.
+- Added recurring service scheduling, daily due-date reconciliation, overdue priority escalation, and asset service-history queries.
+- Added ADR-0018: maintenance condition and execution remain separate from authoritative asset and facility records.
+
 ## 17.5.0 — 2026-07-22
 
 - Added the Inventory Signal service as the canonical Elev8 OS record for operational inventory exceptions.

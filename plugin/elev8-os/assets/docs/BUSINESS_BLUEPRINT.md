@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.6  
+**Blueprint version:** 1.7  
 **Established:** 2026-07-22  
-**Platform release:** 17.2.0  
+**Platform release:** 17.6.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -91,7 +91,7 @@ HR is not an engine. HR is a role-based dashboard powered by Identity, Organizat
 
 ### Core Objects
 
-Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset, Task, SOP, Workflow, Communication, Event, Booking, Membership, Benefit, Donation, Volunteer, Artist, Employee, Vendor, Customer, Invoice, Payout, Route, Campaign, Knowledge, Production Job, Repair, Memorial Case, Class, Application, Reservation, and Workspace.
+Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset, Maintenance Record, Task, SOP, Workflow, Communication, Event, Booking, Membership, Benefit, Donation, Volunteer, Artist, Employee, Vendor, Customer, Invoice, Payout, Route, Campaign, Knowledge, Production Job, Repair, Memorial Case, Class, Application, Reservation, and Workspace.
 
 ### Relationship Rules
 
@@ -490,3 +490,24 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 **Next Development Session:** Build the Maintenance Operations Contributor so assets, equipment, facilities, recurring inspections, repair requests, and preventive maintenance contribute work through the same Operations and SOP execution architecture.
 
+### ADR-0018 — Maintenance Condition and Execution Are Separate
+
+**Status:** Accepted  
+**Decision:** Authoritative asset and facility systems own identity, location, custody, and base condition. Elev8 OS owns the canonical Maintenance Record for reported conditions, service schedules, inspection findings, repair history, recurrence, and operational state. Maintenance Records contribute execution through the shared Operations Contributor and SOP Execution architecture.  
+**Consequence:** Equipment repairs, facility issues, preventive maintenance, inspections, and safety checks use one auditable execution model without turning the Asset Engine into a second task system or copying facility records.
+
+### 2026-07-22 — Elev8 OS 17.6.0 — Maintenance Operations Contributor
+
+**Architecture Updates:** Added the Maintenance Record service and Maintenance Operations Contributor. Existing Maintenance Logs now create canonical Maintenance Records that synchronize one stable Work Item. The service also supports asset repairs, preventive maintenance, recurring inspections, safety checks, daily due reconciliation, overdue escalation, and service-history queries.
+
+**Why:** Maintenance issues were captured as logs or generic Work Items without a canonical maintenance lifecycle. A shared maintenance source preserves condition and service history while Operations handles execution, assignment, evidence, approval, and escalation.
+
+**Engines Changed:** Operations (primary); Assets, Workflow, Organization, Identity, Knowledge, Communication, and Automation (supporting).
+
+**Business Graph Updates:** Added Maintenance Record as a canonical graph object. Added Asset or Facility → Maintenance Record → Work Item → SOP Execution Evidence. Recurring service creates a new maintenance instance linked to the prior record rather than reopening historical evidence.
+
+**Architectural Decisions:** Accepted ADR-0018. Asset and facility identity remain authoritative in their owning engines; maintenance condition, schedule, service history, and execution state belong to Elev8 OS.
+
+**Open Questions:** A dedicated equipment/facility registry and user interface remain intentionally postponed. Recurrence currently uses day intervals; calendar-based rules and vendor service agreements need a reusable scheduling policy. Photo/file evidence continues to depend on the future shared evidence attachment capability.
+
+**Next Development Session:** Build the Daily Operations Log Contributor so manager, retail, artist, vendor, and event logs can extract explicit follow-up obligations into synchronized Work Items without turning every observation into a task or duplicating the original log.
