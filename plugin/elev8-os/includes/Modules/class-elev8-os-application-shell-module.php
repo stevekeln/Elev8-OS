@@ -155,6 +155,7 @@ final class Elev8_OS_Application_Shell_Module {
         $coaching_url = class_exists('Elev8_OS_Business_Coaching_Module') ? Elev8_OS_Business_Coaching_Module::url() : home_url('/elev8-business-coaching/');
         $it_support_url = class_exists('Elev8_OS_Portal_Page_Manager') ? Elev8_OS_Portal_Page_Manager::get_url('it_support') : home_url('/elev8-it-support/');
         $production_url = class_exists('Elev8_OS_Production_Workspace_Module') ? Elev8_OS_Production_Workspace_Module::url() : home_url('/elev8-production/');
+        $readiness_url = class_exists('Elev8_OS_Operational_Readiness_Module') ? Elev8_OS_Operational_Readiness_Module::url() : home_url('/elev8-readiness/');
         $team_coordination_url = class_exists('Elev8_OS_Team_Coordination_Module') ? Elev8_OS_Team_Coordination_Module::url() : home_url('/elev8-team-coordination/');
         $blueprint_url = class_exists('Elev8_OS_Business_Blueprint_Module') ? Elev8_OS_Business_Blueprint_Module::url() : home_url('/business-blueprint/');
         $logout_url = wp_logout_url($home_url);
@@ -192,6 +193,7 @@ final class Elev8_OS_Application_Shell_Module {
                     <a href="<?php echo esc_url($coaching_url); ?>"><?php esc_html_e('Coaching', 'elev8-os'); ?></a>
                     <a href="<?php echo esc_url($it_support_url); ?>"><?php esc_html_e('IT Support', 'elev8-os'); ?></a>
                     <?php if (class_exists('Elev8_OS_Production_Workspace_Service') && Elev8_OS_Production_Workspace_Service::can_view()): ?><a href="<?php echo esc_url($production_url); ?>"><?php esc_html_e('Production', 'elev8-os'); ?></a><?php endif; ?>
+                    <?php if (class_exists('Elev8_OS_Operational_Readiness_Service') && Elev8_OS_Operational_Readiness_Service::can_manage($user)): ?><a href="<?php echo esc_url($readiness_url); ?>"><?php esc_html_e('Readiness', 'elev8-os'); ?></a><?php endif; ?>
                     <a href="<?php echo esc_url($team_coordination_url); ?>"><?php esc_html_e('Team Coordination', 'elev8-os'); ?></a>
                     <a href="<?php echo esc_url($resources_url); ?>"><?php esc_html_e('Resources', 'elev8-os'); ?></a>
                     <?php if (user_can($user, 'manage_options')) : ?><a href="<?php echo esc_url($blueprint_url); ?>"><?php esc_html_e('Blueprint', 'elev8-os'); ?></a><?php endif; ?>
@@ -235,6 +237,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a href="<?php echo esc_url($coaching_url); ?>">🧭 <span><?php esc_html_e('Business Coaching', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($it_support_url); ?>">🖥️ <span><?php esc_html_e('IT Support', 'elev8-os'); ?></span></a>
                 <?php if (class_exists('Elev8_OS_Production_Workspace_Service') && Elev8_OS_Production_Workspace_Service::can_view()): ?><a href="<?php echo esc_url($production_url); ?>">🏭 <span><?php esc_html_e('Production', 'elev8-os'); ?></span></a><?php endif; ?>
+                <?php if (class_exists('Elev8_OS_Operational_Readiness_Service') && Elev8_OS_Operational_Readiness_Service::can_manage($user)): ?><a href="<?php echo esc_url($readiness_url); ?>">✅ <span><?php esc_html_e('Operational Readiness', 'elev8-os'); ?></span></a><?php endif; ?>
                 <a href="<?php echo esc_url($team_coordination_url); ?>">🤝 <span><?php esc_html_e('Team Coordination', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($resources_url); ?>">📚 <span><?php esc_html_e('Employee Guides', 'elev8-os'); ?></span></a>
                 <?php if (user_can($user, 'manage_options')) : ?><a href="<?php echo esc_url($blueprint_url); ?>">🧭 <span><?php esc_html_e('Business Blueprint', 'elev8-os'); ?></span></a><?php endif; ?>

@@ -1,3 +1,13 @@
+# 20.2.7 — Operational Readiness & Experience Standards
+
+- Added a configurable Operational Readiness workspace for reusable Experience Standards.
+- Managers can add, edit, reorder, activate, deactivate, and remove Trello-style readiness cards.
+- Standards can be scoped by organization, role, Work Item type, and future event/class/shift/production contexts.
+- Readiness cards appear directly inside relevant Universal Work Items in the employee Operations app.
+- Added checkbox, note, photo/media-reference, and manager-approval verification modes.
+- Added required-card readiness scoring with attributed completion evidence and timestamps.
+- Preserved Universal Work Items as the operational authority; readiness is contextual Workflow evidence, not another task system.
+
 # 20.2.6 — Easy Production Catalog Input
 
 - Replaced decimal production-time entry with separate minutes and seconds UI controls.

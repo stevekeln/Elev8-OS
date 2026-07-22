@@ -1403,3 +1403,43 @@ All user-entered operational values should use clear UI controls. Time is stored
 
 ### Next Development Session
 Add observed production-time capture and variance reporting so estimated time can be compared with actual work without changing the catalog definition.
+
+
+## Development Update — 20.2.7 Operational Readiness & Experience Standards
+
+### Architecture Updates
+Elev8 OS now treats Operational Readiness as the measurable ability to deliver the experience a business promises. Experience Standards are reusable, configurable card sets rather than hardcoded checklists. Authorized leaders may add, edit, reorder, disable, or remove cards as the business changes.
+
+The first execution adapter attaches Experience Standards to Universal Work Items. Employees see the relevant cards inside the Work Item they are already using, similar to contextual Trello cards, rather than navigating to a separate checklist system. Future adapters may project the same standards into events, classes, shifts, production jobs, and location opening or closing workflows.
+
+### Engines Changed
+**Primary engine:** Workflow  
+**Supporting engines:** Operations, Organization, Knowledge, Intelligence, Communication, and Experience.
+
+### Business Graph Updates
+```text
+Experience Standard
+    ↓
+Readiness Card Definition
+    ↓ contextual projection
+Universal Work Item
+    ↓
+Readiness Execution Evidence
+```
+
+Experience Standards define the promised experience. Universal Work remains authoritative for ownership, status, and execution. Readiness Evidence records who confirmed each card, when it was confirmed, and any required note or media reference.
+
+### ADR-0053 — Experience Standards Are Configurable Contextual Workflow
+Experience Standards must be configurable and reusable. They may contain ordered readiness cards with timing, instructions, SOP links, verification requirements, and mandatory status. The correct cards should appear in the employee's current app context. They may not become a parallel task system, hardcoded business policy, attendance system, or substitute for Universal Work Items.
+
+### Operational Readiness Framework
+Elev8 OS development is measured by whether a real business capability can safely operate on the platform, not by whether software is ever “finished.” Every readiness profile should identify which roles and capabilities are Ready, In Testing, Active Development, or Planned. Elev8 Glass Gallery is the first production-readiness profile, followed by HEMP and future businesses.
+
+### Open Questions
+- Which standard should be the default for each event, class, production type, shift, and location?
+- Which verification types need file uploads rather than safe references?
+- When should a missed required card create an Observation or manager alert?
+- How should readiness cards inherit from organization-wide standards without duplicating definitions?
+
+### Next Development Session
+Add event and class readiness adapters, readiness due-time alerts, and manager visibility for missed required cards while keeping card definitions reusable and configurable.

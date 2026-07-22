@@ -35,6 +35,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'elev8-production',
                 'shortcode' => 'elev8_production_workspace',
             ],
+            'readiness' => [
+                'option' => 'elev8_os_operational_readiness_page_id',
+                'title' => __('Operational Readiness', 'elev8-os'),
+                'slug' => 'elev8-readiness',
+                'shortcode' => 'elev8_operational_readiness',
+            ],
             'team_coordination' => [
                 'option' => 'elev8_os_team_coordination_page_id',
                 'title' => __('Team Coordination', 'elev8-os'),
