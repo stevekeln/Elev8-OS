@@ -943,6 +943,53 @@ final class Elev8_OS_Glass_Catalog_Import_Service {
         @rmdir($dir);
     }
 
+    /**
+     * Summarize whether workbook items in each family already exist in the catalog.
+     *
+     * @param array<string,array<int,string>> $families Family-to-column map.
+     * @param array<string,array<string,mixed>> $items Parsed workbook items.
+     * @return array<string,array<string,int|string>>
+     */
+    public static function family_import_statuses(array $families, array $items): array {
+        $codes = [];
+        foreach ($items as $item) {
+            $code = sanitize_text_field((string) ($item['product_code'] ?? ''));
+            if ($code !== '') {
+                $codes[] = $code;
+            }
+        }
+        $imported = class_exists('Elev8_OS_Production_Catalog_Service')
+            ? Elev8_OS_Production_Catalog_Service::imported_product_codes($codes)
+            : [];
+
+        $statuses = [];
+        foreach ($families as $family => $columns) {
+            $total = 0;
+            $done = 0;
+            foreach ($columns as $column) {
+                $item = $items[$column] ?? null;
+                if (!is_array($item)) {
+                    continue;
+                }
+                $code = strtoupper(sanitize_key(str_replace(' ', '-', (string) ($item['product_code'] ?? ''))));
+                if ($code === '') {
+                    continue;
+                }
+                $total++;
+                if (isset($imported[$code])) {
+                    $done++;
+                }
+            }
+            $state = $done === 0 ? 'not_imported' : ($done >= $total && $total > 0 ? 'imported' : 'partial');
+            $statuses[(string) $family] = [
+                'state' => $state,
+                'imported' => $done,
+                'total' => $total,
+            ];
+        }
+        return $statuses;
+    }
+
     public static function import_family(string $family, array $posted, bool $update = false): array {
         $session = self::session();
         $columns = $session['families'][$family] ?? [];

@@ -1215,4 +1215,52 @@ Production workstations and cycles coordinate where and when work occurs. They c
 ### Next Development Session
 
 Build the Production Manager compensation review and production-line completion experience, then generalize the reusable Compensation and Incentive architecture for manager pay, production bonuses, teaching revenue, commissions, and profit-sharing policies.
+## Development Update — 20.2.1 Import Status Visibility & Stable Dashboard Routing
 
+### Architecture Updates
+
+The Glass Catalog Import Wizard now compares parsed workbook product codes with the authoritative Production Catalog before presenting family review. The status display is a read-only projection: green means every detected item in the family already exists, red means none exist, and amber means the family is partially imported.
+
+The universal application shell now resolves **My Dashboard** through the stable role-based primary destination. Remembered workspaces remain available for resume/install experiences but can no longer redefine the dashboard navigation contract.
+
+### Engines Changed
+
+**Primary engines:** Operations and Experience  
+**Supporting engines:** Identity, Organization, and Production Catalog.
+
+### Business Graph Updates
+
+No new authoritative objects or relationships were introduced. Import status is derived from the existing Workbook Item → Production Catalog Product relationship.
+
+### ADR-0047 — Dashboard Navigation Is Stable; Import Status Is Derived
+
+The label **My Dashboard** must always resolve to the user's role-based Operational Home. A remembered workspace may support explicit resume behavior, but must never replace that navigation meaning. Import readiness must be derived from authoritative catalog identity and must not create a second import ledger.
+
+### Next Development Session
+
+Continue testing Production Workspace coordination and use observed manager workflows to select the next visible production capability.
+
+## Development Update — 20.2.2 Materials Quick Add
+
+### Architecture Updates
+
+The Production Catalog Materials workspace now exposes a prominent quick-add and edit experience. This is a usability improvement over the existing authoritative material catalog; it does not introduce a second material store or change completed-job cost history.
+
+The release also carries forward the 20.2.1 derived import-status projection and stable role-based **My Dashboard** navigation contract.
+
+### Engines Changed
+
+**Primary engine:** Operations  
+**Supporting engines:** Financial, Inventory, Experience, Identity, and Organization.
+
+### Business Graph Updates
+
+No new authoritative object was introduced. Existing Production Material records remain the source for future product cost snapshots and direct-cost calculations.
+
+### ADR-0048 — Material Entry Must Be Obvious Without Duplicating Material Authority
+
+A production workspace may simplify creation and editing of material definitions, but all material identity and current unit-cost data must remain owned by the Production Catalog service. Completed historical snapshots must not be rewritten when a material cost changes.
+
+### Next Development Session
+
+Continue Production Workspace testing and use observed Glass Manager workflows to prioritize the next visible production capability.

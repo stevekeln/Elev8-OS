@@ -88,8 +88,90 @@ final class Elev8_OS_Production_Catalog_Module {
     }
 
     private static function materials(): void {
-        $materials=Elev8_OS_Production_Catalog_Service::materials();
-        ?><div class="elev8-production__columns"><section class="panel"><h2>Add or update material</h2><form class="stack" method="post" action="<?php echo esc_url(admin_url('admin-post.php'));?>"><?php wp_nonce_field('elev8_save_production_material');?><input type="hidden" name="action" value="elev8_os_save_production_material"><label>Material name<input name="material_name" required></label><label>Material code<input name="material_code" placeholder="GLASS-CLEAR"></label><label>Unit<input name="unit" value="gram" placeholder="gram, rod, foot, each"></label><label>Unit cost ($)<input type="number" step="0.0001" min="0" name="unit_cost" value="0"></label><label>Notes<textarea name="notes" rows="3"></textarea></label><label class="check"><input type="checkbox" name="active" value="1" checked> Active</label><button class="button button-primary">Save material</button></form></section><section class="panel panel-wide"><h2>Material catalog</h2><?php if(!$materials){echo '<div class="empty">No materials yet.</div>';}else{?><div class="table-wrap"><table><thead><tr><th>Material</th><th>Code</th><th>Unit</th><th>Unit cost</th><th>Status</th></tr></thead><tbody><?php foreach($materials as $m):?><tr><td><strong><?php echo esc_html($m['material_name']);?></strong></td><td><?php echo esc_html($m['material_code']);?></td><td><?php echo esc_html($m['unit']);?></td><td>$<?php echo number_format_i18n((float)$m['unit_cost'],4);?></td><td><?php echo $m['active']?'Active':'Inactive';?></td></tr><?php endforeach;?></tbody></table></div><?php }?></section></div><?php
+        $materials = Elev8_OS_Production_Catalog_Service::materials();
+        $edit_id = absint($_GET['material_id'] ?? 0);
+        $editing = null;
+        if ($edit_id) {
+            foreach ($materials as $material) {
+                if ((int) ($material['id'] ?? 0) === $edit_id) {
+                    $editing = $material;
+                    break;
+                }
+            }
+        }
+        $form = $editing ?: [
+            'id' => 0,
+            'material_name' => '',
+            'material_code' => '',
+            'unit' => 'gram',
+            'unit_cost' => '0',
+            'notes' => '',
+            'active' => 1,
+        ];
+        ?>
+        <section class="panel material-manager">
+            <div class="panel-head material-manager__head">
+                <div>
+                    <p class="eyebrow">Production materials</p>
+                    <h2>Material catalog</h2>
+                    <p>Add glass, packaging, hardware, consumables, or any other direct production material here. Saved materials become immediately available when building a production product.</p>
+                </div>
+                <a class="button button-primary button-hero" href="#elev8-add-material">+ Add material</a>
+            </div>
+
+            <div id="elev8-add-material" class="material-quick-add">
+                <div class="material-quick-add__intro">
+                    <h3><?php echo $editing ? 'Edit material' : 'Add a material'; ?></h3>
+                    <p><?php echo $editing ? 'Update the material below. Existing completed-job history will not be rewritten.' : 'Enter the name, unit, and current unit cost. You can add notes or a custom code when needed.'; ?></p>
+                </div>
+                <form class="material-quick-add__form" method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                    <?php wp_nonce_field('elev8_save_production_material'); ?>
+                    <input type="hidden" name="action" value="elev8_os_save_production_material">
+                    <input type="hidden" name="material_id" value="<?php echo absint($form['id'] ?? 0); ?>">
+                    <label>Material name
+                        <input name="material_name" value="<?php echo esc_attr($form['material_name'] ?? ''); ?>" placeholder="Example: Clear borosilicate rod" required autofocus>
+                    </label>
+                    <label>Unit
+                        <input name="unit" value="<?php echo esc_attr($form['unit'] ?? 'gram'); ?>" placeholder="gram, rod, foot, each" required>
+                    </label>
+                    <label>Unit cost ($)
+                        <input type="number" step="0.0001" min="0" name="unit_cost" value="<?php echo esc_attr($form['unit_cost'] ?? 0); ?>" required>
+                    </label>
+                    <label>Material code <span class="optional">optional</span>
+                        <input name="material_code" value="<?php echo esc_attr($form['material_code'] ?? ''); ?>" placeholder="Auto-created when blank">
+                    </label>
+                    <label class="material-notes">Notes <span class="optional">optional</span>
+                        <textarea name="notes" rows="2" placeholder="Color, supplier, size, or purchasing notes"><?php echo esc_textarea($form['notes'] ?? ''); ?></textarea>
+                    </label>
+                    <label class="check material-active"><input type="checkbox" name="active" value="1" <?php checked(!empty($form['active'])); ?>> Active</label>
+                    <div class="material-actions">
+                        <button class="button button-primary button-hero"><?php echo $editing ? 'Save changes' : 'Add material'; ?></button>
+                        <?php if ($editing): ?><a class="button" href="<?php echo esc_url(self::url(['view' => 'materials'])); ?>">Cancel editing</a><?php endif; ?>
+                    </div>
+                </form>
+            </div>
+
+            <div class="material-list-head">
+                <div><h3>Saved materials</h3><p><?php echo absint(count($materials)); ?> material<?php echo count($materials) === 1 ? '' : 's'; ?> available to production products.</p></div>
+            </div>
+            <?php if (!$materials): ?>
+                <div class="empty material-empty"><strong>No materials yet.</strong><span>Use the Add Material form above to create your first production material.</span></div>
+            <?php else: ?>
+                <div class="table-wrap"><table class="material-table"><thead><tr><th>Material</th><th>Code</th><th>Unit</th><th>Unit cost</th><th>Status</th><th></th></tr></thead><tbody>
+                <?php foreach ($materials as $m): ?>
+                    <tr>
+                        <td><strong><?php echo esc_html($m['material_name']); ?></strong><?php if (!empty($m['notes'])): ?><small><?php echo esc_html($m['notes']); ?></small><?php endif; ?></td>
+                        <td><?php echo esc_html($m['material_code']); ?></td>
+                        <td><?php echo esc_html($m['unit']); ?></td>
+                        <td>$<?php echo number_format_i18n((float) $m['unit_cost'], 4); ?></td>
+                        <td><span class="material-status <?php echo !empty($m['active']) ? 'is-active' : 'is-inactive'; ?>"><?php echo !empty($m['active']) ? 'Active' : 'Inactive'; ?></span></td>
+                        <td><a class="button button-small" href="<?php echo esc_url(self::url(['view' => 'materials', 'material_id' => absint($m['id'])]) . '#elev8-add-material'); ?>">Edit</a></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody></table></div>
+            <?php endif; ?>
+        </section>
+        <?php
     }
 
     private static function compensation(): void {
@@ -145,6 +227,10 @@ final class Elev8_OS_Production_Catalog_Module {
             $families = $session['families'] ?? [];
             $items = $session['items'] ?? [];
             $diagnostics = $session['diagnostics'] ?? [];
+            $family_statuses = Elev8_OS_Glass_Catalog_Import_Service::family_import_statuses($families, $items);
+            $imported_family_count = count(array_filter($family_statuses, static fn(array $status): bool => ($status['state'] ?? '') === 'imported'));
+            $not_imported_family_count = count(array_filter($family_statuses, static fn(array $status): bool => ($status['state'] ?? '') === 'not_imported'));
+            $partial_family_count = count(array_filter($family_statuses, static fn(array $status): bool => ($status['state'] ?? '') === 'partial'));
             ?>
             <div class="wizard-success">
                 <strong>Workbook analyzed successfully.</strong>
@@ -189,12 +275,25 @@ final class Elev8_OS_Production_Catalog_Module {
                     <span class="step-number">2</span>
                     <div class="grow">
                         <h3>Choose a product family</h3>
-                        <p>Review the workbook in the same groups the glass team already understands.</p>
+                        <p>Green families are fully imported. Red families still need importing. Amber families are only partly imported.</p>
+                        <div class="family-status-summary" aria-label="Import status summary">
+                            <span class="is-imported"><strong><?php echo absint($imported_family_count); ?></strong> imported</span>
+                            <span class="is-not-imported"><strong><?php echo absint($not_imported_family_count); ?></strong> not imported</span>
+                            <?php if ($partial_family_count > 0): ?><span class="is-partial"><strong><?php echo absint($partial_family_count); ?></strong> partially imported</span><?php endif; ?>
+                        </div>
                         <div class="family-grid">
-                            <?php foreach ($families as $name => $cols): ?>
-                                <a class="family-card" href="<?php echo esc_url(self::url(['view' => 'wizard', 'family' => $name])); ?>">
+                            <?php foreach ($families as $name => $cols):
+                                $status = $family_statuses[$name] ?? ['state' => 'not_imported', 'imported' => 0, 'total' => count($cols)];
+                                $state = sanitize_html_class((string) ($status['state'] ?? 'not_imported'));
+                                $done = absint($status['imported'] ?? 0);
+                                $total = absint($status['total'] ?? count($cols));
+                                $label = $state === 'imported' ? 'Imported' : ($state === 'partial' ? 'Partially imported' : 'Not imported');
+                            ?>
+                                <a class="family-card family-card--<?php echo esc_attr($state); ?>" href="<?php echo esc_url(self::url(['view' => 'wizard', 'family' => $name])); ?>">
+                                    <span class="family-card__status" aria-label="<?php echo esc_attr($label); ?>"><span aria-hidden="true"><?php echo $state === 'imported' ? '✓' : ($state === 'partial' ? '!' : '×'); ?></span><?php echo esc_html($label); ?></span>
                                     <strong><?php echo esc_html($name); ?></strong>
                                     <span><?php echo count($cols); ?> detected item<?php echo count($cols) === 1 ? '' : 's'; ?></span>
+                                    <small><?php echo esc_html(sprintf('%d of %d imported', $done, $total)); ?></small>
                                     <em>Review family →</em>
                                 </a>
                             <?php endforeach; ?>

@@ -1,3 +1,20 @@
+## 20.2.2 — Materials Quick Add & Production Navigation Fixes
+
+- Rebuilt the Production Catalog Materials screen around a prominent, always-visible **Add Material** workflow.
+- Added a fast material form for name, unit, unit cost, optional code, notes, and active status.
+- Added edit controls for every saved material and clear active/inactive status badges.
+- Retained the 20.2.1 Import Wizard status visibility so imported families are green, not-yet-imported families are red, and partially imported families are amber.
+- Retained the stable **My Dashboard** routing fix so the link opens the role-based Operational Home instead of Conversations.
+- Preserved the Production Catalog as the authoritative owner of material definitions and costs.
+
+## 20.2.1 — Import Status Visibility & Stable Dashboard Link
+
+- Added authoritative import-state detection to the Glass Catalog Import Wizard.
+- Product-family cards are now green when every detected workbook item is already imported, red when none are imported, and amber when only part of the family is imported.
+- Added imported/not-imported family totals and per-family imported-item counts.
+- Fixed the universal application shell so **My Dashboard** always opens the user's stable role-based Operational Home instead of a remembered workspace such as Conversations.
+- No catalog records, conversations, or dashboard ownership boundaries were changed.
+
 ## 20.2.0 — Workstation, Kiln Coordination & Compensation Evidence
 
 - Added configurable production workstations with optional Asset and Organization references.

@@ -497,6 +497,39 @@ final class Elev8_OS_Production_Catalog_Service {
     }
 
 
+    /**
+     * Return normalized workbook product codes already present in the authoritative catalog.
+     *
+     * @param array<int,string> $codes Workbook product codes.
+     * @return array<string,bool> Normalized code lookup.
+     */
+    public static function imported_product_codes(array $codes): array {
+        global $wpdb;
+        $table = self::tables()['products'];
+        $normalized = [];
+        foreach ($codes as $code) {
+            $value = strtoupper(sanitize_key(str_replace(' ', '-', (string) $code)));
+            if ($value !== '') {
+                $normalized[$value] = true;
+            }
+        }
+        if (!$normalized) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($normalized), '%s'));
+        $sql = $wpdb->prepare(
+            "SELECT product_code FROM {$table} WHERE product_code IN ({$placeholders})",
+            array_keys($normalized)
+        );
+        $found = $wpdb->get_col($sql);
+        $lookup = [];
+        foreach ($found as $code) {
+            $lookup[(string) $code] = true;
+        }
+        return $lookup;
+    }
+
     public static function import_wizard_item(array $record, bool $update_existing = false) {
         global $wpdb; $t=self::tables();
         $code=sanitize_text_field($record['product_code']??'');

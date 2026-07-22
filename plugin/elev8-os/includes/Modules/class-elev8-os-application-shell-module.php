@@ -267,7 +267,7 @@ final class Elev8_OS_Application_Shell_Module {
 
     private static function dashboard_url(WP_User $user): string {
         if (class_exists('Elev8_OS_Workspace_Resolver_Service')) {
-            return Elev8_OS_Workspace_Resolver_Service::destination($user, true);
+            return Elev8_OS_Workspace_Resolver_Service::primary_destination_for($user);
         }
         return home_url('/artist-dashboard/');
     }
