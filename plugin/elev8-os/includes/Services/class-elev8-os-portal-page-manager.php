@@ -29,6 +29,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'elev8-actions',
                 'shortcode' => 'elev8_action_center',
             ],
+            'today' => [
+                'option' => 'elev8_os_daily_assistant_page_id',
+                'title' => __('Today', 'elev8-os'),
+                'slug' => 'elev8-today',
+                'shortcode' => 'elev8_daily_assistant',
+            ],
             'coaching' => [
                 'option' => 'elev8_os_business_coaching_page_id',
                 'title' => __('Business Coaching', 'elev8-os'),

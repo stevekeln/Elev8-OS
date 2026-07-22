@@ -810,4 +810,30 @@ Coaching owns only per-user presentation state: unread, read, pinned, needs foll
 **Open questions:** Whether a needs-follow-up coaching state should optionally propose a governed Work Item, how coaching should be delivered on mobile, and how users should rate usefulness remain intentionally postponed.
 
 **Next milestone:** Build the Proactive Daily Assistant, combining role-aware Coaching, assigned Work, conversations, and permitted attention signals into a concise personal start-of-day briefing without duplicating the Executive Brief.
+## Development History — 19.1.0
+
+### Proactive Daily Assistant
+
+The Experience layer now provides a personal start-of-day briefing that combines permitted Attention items, assigned Work, unread Conversations, and role-aware Business Coaching into one concise answer to “What should I focus on today?” The briefing ranks existing governed evidence and links users back to the authoritative Operations, Communication, or Intelligence record.
+
+The Daily Assistant is intentionally different from the Executive Brief. The Executive Brief summarizes business-wide leadership intelligence and may be delivered on a schedule. The Daily Assistant is an on-demand personal projection for every role and is limited by that user’s permissions.
+
+**Primary engine:** Intelligence.
+
+**Supporting engines:** Operations, Communication, Organization, Identity, Workflow, Analytics, and Experience.
+
+**Business Graph changes:** Added a non-authoritative Daily Assistant Projection relationship from Work, Conversation, Attention Projection, and Coaching Projection to a personal start-of-day view. No new business fact, task, conversation, or recommendation object was introduced.
+
+### ADR-0034 — The Daily Assistant Is a Personal Governed Read Model
+
+**Status:** Accepted  
+**Decision:** The Proactive Daily Assistant may rank and present evidence the user is already permitted to see, but it may not create Work Items, approve Recommendations, change Conversations, or replace the user’s role-based Operational Home. It is a personal read model and owns only its last-viewed presentation timestamp.
+
+**Consequence:** Every role receives a useful start-of-day experience without duplicating the Executive Brief, Coaching Engine, Attention Center, Conversations, or Operations logic. Source systems remain authoritative and all focus items remain traceable.
+
+**Technical debt:** The initial focus ranking is deterministic. Future releases should add user preference controls, configurable start-of-day delivery, usefulness feedback, and organization-specific focus policies before any language-model summarization.
+
+**Open questions:** Whether Today should optionally become a user-selected landing page, whether reminders should be delivered through the Communication Engine, and how often the briefing should refresh automatically remain intentionally postponed.
+
+**Next milestone:** Build Daily Assistant preferences and delivery governance so users can choose permitted delivery timing, focus categories, and notification channels without turning the assistant into an automatic task or decision system.
 

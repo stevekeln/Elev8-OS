@@ -43,6 +43,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-decision-learning-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-learning-health-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-coaching-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-proactive-daily-assistant-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-cross-engine-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-blueprint-service.php';
@@ -160,6 +161,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-intelligence-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-observation-registry-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-coaching-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-proactive-daily-assistant-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ceo-dashboard-module.php';
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
 
@@ -260,6 +262,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Business_Intelligence_Dashboard_Module::init();
         Elev8_OS_Observation_Registry_Module::init();
         Elev8_OS_Business_Coaching_Module::init();
+        Elev8_OS_Proactive_Daily_Assistant_Module::init();
         Elev8_OS_CEO_Dashboard_Module::init();
         Elev8_OS_Growth_Center_Module::init();
         Elev8_OS_Artist_Growth_Studio_Module::init();

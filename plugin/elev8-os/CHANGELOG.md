@@ -1,5 +1,20 @@
 # Elev8 OS Changelog
 
+## 19.1.0 — Proactive Daily Assistant
+
+### Added
+- A managed Today workspace at `/elev8-today/` that answers what each signed-in user should focus on now.
+- A role-aware personal briefing combining permitted Attention items, assigned Work, unread Conversations, and Business Coaching.
+- A ranked focus list with direct links to the governed source records.
+- Personal start-of-day metrics for due work, overdue work, unread Conversations, and active coaching.
+- Quick access to the user’s real role-based dashboard, Work, Conversations, Coaching, and Business Memory when permitted.
+- Today navigation in the shared Elev8 OS application shell and command palette.
+
+### Architecture
+- Accepted ADR-0034: the Proactive Daily Assistant is a personal read model, not a second dashboard, task system, or Executive Brief.
+- Preserved Operations, Communication, Intelligence, Identity, Organization, and access-control ownership boundaries.
+- The Daily Assistant cannot create Work Items, approve Recommendations, alter Conversations, or rewrite source evidence.
+
 ## 19.0.0 — Business Coaching Engine Foundation
 
 ### Added
