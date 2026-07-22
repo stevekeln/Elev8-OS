@@ -77,6 +77,8 @@ final class Elev8_OS_Operations_Contributor_Service {
                 'organization_unit_id' => absint($source['organization_unit_id'] ?? 0),
                 'requested_by_user_id' => absint($source['requested_by_user_id'] ?? 0),
                 'customer_person_id' => absint($source['customer_person_id'] ?? 0),
+                'person_id' => absint($source['person_id'] ?? 0),
+                'relationship_id' => absint($source['relationship_id'] ?? 0),
             ];
             $work_id = $existing ?: Elev8_OS_Operations_Engine_Service::create_work($work_args);
             if (is_wp_error($work_id)) { return $work_id; }

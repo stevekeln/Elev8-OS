@@ -79,7 +79,7 @@ Elev8 OS owns business operations, business relationships, business intelligence
 | Automation | Trigger-condition-action rules, escalation, and confirmation-first execution. |
 | Analytics | Trusted metrics, trends, comparisons, and reporting. |
 | Integrations | Boundaries and synchronization with external authoritative systems. |
-| Events | Event planning and operational execution connected to staffing, inventory, bookings, communications, and financial outcomes. |
+| Events | Event planning and operational execution connected to staffing, inventory, bookings, communications, and financial outcomes. Event applications now contribute synchronized review and delivery Work Items. |
 
 ## Dashboard Principle
 
@@ -216,6 +216,12 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 **Consequence:** Existing source records are not replaced or migrated destructively. Engines contribute work through stable references, and role dashboards present filtered views of one shared Work Inbox.
 
 
+### ADR-0014 — Booking Decisions Contribute Work Without Owning Bookings
+
+**Status:** Accepted  
+**Decision:** Amelia-backed approval states contribute synchronized Work Items through a Booking-to-Operations adapter. Amelia remains authoritative for booking status, schedule, provider, customer, and service data.  
+**Consequence:** Elev8 OS may assign, escalate, evidence, and close operational approval work, but it may not create a competing booking record or parallel approval state.
+
 ## Roadmap by Engine
 
 | Engine | Current Foundation | Next Architectural Focus |
@@ -224,7 +230,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Organization | Organization units, hierarchy, scoped person assignments, CEO company map | Shared resources and organization-aware engine access across registered graph objects |
 | Operations | Universal Work Item, Work Inbox, glass production, repairs, memorials, and daily operations | Work adapters, Workbench execution, reusable SOP execution, and approval orchestration |
 | Communication | Conversations, alerts, mentions | Unified delivery, preferences, escalation, and customer communication |
-| Booking | Amelia calendar and approval center | General booking orchestration and staffing rules |
+| Booking | Amelia calendar, approval center, and class approval Operations Contributor | General booking orchestration, staffing rules, and post-approval execution adapters |
 | Financial | Production costing and payouts | Unified obligations, profitability, invoices, and accounting integration |
 | Commerce | WooCommerce integration | Order-to-operation orchestration |
 | Sales | Opportunities foundation | Reusable pipeline and sales operating home |
@@ -415,3 +421,49 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 **Next Development Session:** Add the Amelia-backed Class Approval Operations Contributor so pending class decisions automatically create synchronized approval and follow-through work without copying Amelia booking data.
 
+
+
+### 2026-07-22 — Elev8 OS 17.3.0 — Class Approval Operations Contributor
+
+**What changed:** Connected pending Amelia class bookings to the Operations Contributor framework. Each pending booking contributes one stable approval Work Item with assignment, urgency, checklist, approval evidence, completion rules, escalation, and source synchronization. Approve, move, cancel, and scheduled scans all synchronize the same Work Item.
+
+**Why:** Class Approval already solved the authoritative booking decision, while Operations already solved shared work execution. Connecting them removes parallel task behavior and makes pending decisions visible in the Universal Work Inbox without copying Amelia data.
+
+**Engines changed:** Booking (primary); Operations, Workflow, Integrations, Identity, Communication, and Organization (supporting).
+
+**Business Graph changes:** Added the operational relationship Amelia Booking → Class Approval Contributor → Work Item. Provider assignment maps to a WordPress user only through the existing Amelia employee mapping. Organization scope remains configurable through a filter until a formal mapping policy is selected.
+
+**Architectural decision:** Accepted ADR-0014. Booking decisions may contribute work, but Amelia remains authoritative for booking data and decision state.
+
+**Open questions:** Automatic post-approval teaching preparation, customer communication confirmation, and location-to-organization mapping remain intentionally postponed.
+
+**Next development session:** Build the Event Operations Contributor so event applications and scheduled events use the same Work Item, SOP evidence, assignment, and escalation architecture.
+
+
+### ADR-0015 — Organization Assignments Grant Operational Reachability
+
+**Status:** Accepted  
+**Decision:** An active Organization Engine assignment makes a WordPress person eligible for internal communication and Work Item assignment, even when a legacy role capability has not yet been applied. Access to screens and privileged actions remains governed by the Centralized Access Service.  
+**Consequence:** Organization membership and assignment eligibility no longer drift apart, while WordPress remains authoritative for identity and permissions.
+
+### ADR-0016 — Event Applications Contribute Work Through Operations
+
+**Status:** Accepted  
+**Decision:** Event Applications remain authoritative for application state. Review, approval, planning, delivery, and follow-up are represented through the shared Operations Contributor and SOP Execution architecture. The former Takeover-specific workflow generator delegates to this adapter.  
+**Consequence:** Events no longer maintain a parallel task workflow, and application-linked Work Items preserve Person and Relationship graph connections.
+
+### 2026-07-22 — Elev8 OS 17.4.0 — Organization Recipient Alignment & Event Operations Contributor
+
+**Architecture Updates:** Unified internal recipient selection and Work Item owner validation under one assignment-eligibility policy. Added the Event Operations Contributor and retired the parallel Takeover task generator by delegating it to the shared adapter.
+
+**Why:** Shop employees entered through the Organization Engine were valid employees but invisible to Conversations because communication relied only on a legacy role capability. Event Applications also created a separate workflow outside the contributor architecture. Both issues represented duplicate policies that could drift.
+
+**Engines Changed:** Events (primary contributor milestone); Organization, Identity, Communication, Operations, Workflow, CRM, and Automation (supporting).
+
+**Business Graph Updates:** Active Organization Assignment now establishes operational reachability for its Person. Added Event Application → Event Operations Contributor → Work Item, preserving links to Person and Relationship without copying application data.
+
+**Architectural Decisions:** Accepted ADR-0015 and ADR-0016.
+
+**Open Questions:** Organization assignment type-to-communication-group policies remain configurable future work. Scheduled event records beyond applications still need a canonical event object adapter. Event inventory reservations and financial outcome reconciliation remain intentionally postponed.
+
+**Next Development Session:** Build the Inventory Operations Contributor and define canonical stock-exception workflows for low stock, receiving, cycle counts, and event reservations without duplicating WooCommerce product data.

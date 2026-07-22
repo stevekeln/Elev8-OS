@@ -122,6 +122,7 @@ final class Elev8_OS_Class_Approval_Service {
         $ok = $wpdb->update($appointments, $data, ['id'=>(int)$record['appointment_id']], $formats, ['%d']);
         if ($ok === false) { return false; }
         self::record_activity($booking_id, 'class_booking_moved', __('Class booking moved', 'elev8-os'), sprintf('%s → %s', (string)$record['booking_start'], $data[$start_col]));
+        self::signal_booking_changed($booking_id);
         return true;
     }
 
@@ -129,12 +130,62 @@ final class Elev8_OS_Class_Approval_Service {
         $rows = self::pending_bookings(0, true); if (!$rows) { return; }
         $seen = (array) get_option(self::SEEN_OPTION, []); $changed = false;
         foreach ($rows as $row) {
-            $id = (int)$row['booking_id']; if ($id < 1 || isset($seen[$id])) { continue; }
+            $id = (int)$row['booking_id']; if ($id < 1) { continue; }
+            self::signal_booking_changed($id, $row);
+            if (isset($seen[$id])) { continue; }
             $seen[$id] = time(); $changed = true;
             self::notify_glass_managers($row);
             self::record_activity($id, 'class_booking_pending', __('New pending class booking', 'elev8-os'), (string)$row['service']);
         }
         if ($changed) { update_option(self::SEEN_OPTION, array_slice($seen, -1000, null, true), false); }
+    }
+
+
+    /** Resolve one Amelia booking regardless of status without copying its record. */
+    public static function booking_record(int $booking_id): array {
+        global $wpdb;
+        if ($booking_id < 1) { return []; }
+        $bookings = $wpdb->prefix . 'amelia_customer_bookings';
+        $appointments = $wpdb->prefix . 'amelia_appointments';
+        if (!self::table_exists($bookings) || !self::table_exists($appointments)) { return []; }
+
+        $bc = self::columns($bookings); $ac = self::columns($appointments);
+        $appointment_fk = self::first($bc, ['appointmentId','appointment_id']);
+        $booking_status = self::first($bc, ['status']);
+        $persons = self::first($bc, ['persons','personsCount','persons_count']);
+        $customer_fk = self::first($bc, ['customerId','customer_id']);
+        $booking_info = self::first($bc, ['info','customFields','custom_fields']);
+        $provider_col = self::first($ac, ['providerId','provider_id','employeeId']);
+        $service_col = self::first($ac, ['serviceId','service_id']);
+        $start_col = self::first($ac, ['bookingStart','booking_start','start']);
+        $end_col = self::first($ac, ['bookingEnd','booking_end','end']);
+        $location_col = self::first($ac, ['locationId','location_id']);
+        if (!$appointment_fk || !$booking_status || !$start_col) { return []; }
+
+        $select = [
+            'b.`id` booking_id', "b.`{$booking_status}` booking_status", 'a.`id` appointment_id', "a.`{$start_col}` booking_start",
+            $end_col ? "a.`{$end_col}` booking_end" : "'' booking_end",
+            $persons ? "b.`{$persons}` persons" : '1 persons',
+            $provider_col ? "a.`{$provider_col}` provider_id" : '0 provider_id',
+            $service_col ? "a.`{$service_col}` service_id" : '0 service_id',
+            $location_col ? "a.`{$location_col}` location_id" : '0 location_id',
+            $customer_fk ? "b.`{$customer_fk}` customer_id" : '0 customer_id',
+            $booking_info ? "b.`{$booking_info}` booking_info" : "'' booking_info",
+        ];
+        $sql = 'SELECT ' . implode(',', $select) . " FROM `{$bookings}` b INNER JOIN `{$appointments}` a ON a.`id`=b.`{$appointment_fk}` WHERE b.`id`=%d LIMIT 1";
+        $row = $wpdb->get_row($wpdb->prepare($sql, $booking_id), ARRAY_A);
+        if (!$row) { return []; }
+        $row['service'] = self::label_map('amelia_services', ['name','title'])[(int)$row['service_id']] ?? __('Class', 'elev8-os');
+        $row['location'] = self::label_map('amelia_locations', ['name','address'])[(int)$row['location_id']] ?? __('Unavailable', 'elev8-os');
+        $row['teacher'] = self::provider_map()[(int)$row['provider_id']] ?? __('Unassigned', 'elev8-os');
+        $row['customer'] = self::customer_map()[(int)$row['customer_id']] ?? ['name'=>__('Customer', 'elev8-os'),'email'=>'','phone'=>''];
+        return $row;
+    }
+
+    private static function signal_booking_changed(int $booking_id, array $booking = []): void {
+        if ($booking_id < 1) { return; }
+        if (!$booking) { $booking = self::booking_record($booking_id); }
+        do_action('elev8_os_class_booking_changed', $booking_id, $booking);
     }
 
     private static function notify_glass_managers(array $row): void {
@@ -150,7 +201,9 @@ final class Elev8_OS_Class_Approval_Service {
         global $wpdb; $table=$wpdb->prefix.'amelia_customer_bookings'; $cols=self::columns($table); $status_col=self::first($cols,['status']);
         if (!$status_col || !$booking_id) { return false; }
         $ok=$wpdb->update($table,[$status_col=>$status],['id'=>$booking_id],['%s'],['%d']); if($ok===false){return false;}
-        self::record_activity($booking_id,$activity,ucwords(str_replace('_',' ',$activity)),$details); return true;
+        self::record_activity($booking_id,$activity,ucwords(str_replace('_',' ',$activity)),$details);
+        self::signal_booking_changed($booking_id);
+        return true;
     }
 
     private static function record_activity(int $id,string $type,string $label,string $details=''): void {

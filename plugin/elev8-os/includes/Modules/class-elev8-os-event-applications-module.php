@@ -146,6 +146,7 @@ final class Elev8_OS_Event_Applications_Module {
         update_post_meta((int) $id, '_elev8_event_app_intake_id', $intake_id);
         if ($person_id && class_exists('Elev8_OS_Person_Service')) { Elev8_OS_Person_Service::add_activity($person_id, 'event_application', (int) $id, __('Elev8 Takeover application', 'elev8-os'), 'elev8-takeover-application', $summary); }
         self::send_notifications((int) $id, $organization, $name, $email, $summary);
+        do_action('elev8_os_event_application_changed', (int) $id, ['status' => 'new']);
         self::redirect($redirect, 'thanks');
     }
 
@@ -210,9 +211,7 @@ final class Elev8_OS_Event_Applications_Module {
         update_post_meta($id, '_elev8_event_app_assigned_user', absint($_POST['assigned_user'] ?? 0));
         update_post_meta($id, '_elev8_event_app_follow_up', sanitize_text_field(wp_unslash($_POST['follow_up'] ?? '')));
         update_post_meta($id, '_elev8_event_app_internal_notes', sanitize_textarea_field(wp_unslash($_POST['internal_notes'] ?? '')));
-        if (class_exists('Elev8_OS_Work_Service') && in_array($status, ['approved', 'planning', 'scheduled'], true)) {
-            Elev8_OS_Work_Service::generate_takeover_workflow($id);
-        }
+        do_action('elev8_os_event_application_changed', $id, ['status' => $status]);
         if (class_exists('Elev8_OS_Activity_Service')) { Elev8_OS_Activity_Service::record(['type' => 'event_application_updated', 'label' => __('Event application updated', 'elev8-os'), 'details' => sprintf(__('Status changed from %1$s to %2$s.', 'elev8-os'), $old ?: 'new', $status), 'object_id' => $id, 'object_type' => self::POST_TYPE, 'source' => 'event-applications', 'actor_user_id' => get_current_user_id()]); }
         wp_safe_redirect(admin_url('admin.php?page=' . self::PAGE_SLUG . '&updated=1')); exit;
     }

@@ -234,11 +234,20 @@ final class Elev8_OS_Access_Service {
         return in_array($template_key, self::allowed_operations_templates($user), true);
     }
 
+    /** Active organization employment is also authoritative for assignment and communication eligibility. */
+    public static function can_receive_assignment(?WP_User $user = null): bool {
+        $user = $user instanceof WP_User ? $user : wp_get_current_user();
+        if (!$user instanceof WP_User || !$user->exists()) { return false; }
+        if (self::user_can('receive_assignments', $user)) { return true; }
+        return class_exists('Elev8_OS_Organization_Service')
+            && !empty(Elev8_OS_Organization_Service::assignments_for_user((int) $user->ID, true));
+    }
+
     /** @return array<string,array<int,WP_User>> */
     public static function assignment_users_grouped(): array {
         $groups = ['Management'=>[], 'Event Staff'=>[], 'Teachers'=>[], 'Artists'=>[], 'Shop Employees'=>[], 'Glass Team'=>[]];
         foreach (get_users(['orderby'=>'display_name','order'=>'ASC']) as $user) {
-            if (!self::user_can('receive_assignments', $user)) { continue; }
+            if (!self::can_receive_assignment($user)) { continue; }
             if (self::user_can('view_manager_dashboard', $user) || self::user_can('view_ceo_dashboard', $user)) { $groups['Management'][] = $user; }
             elseif (self::user_can('manage_events', $user) || self::user_can('manage_bingo', $user)) { $groups['Event Staff'][] = $user; }
             elseif (self::has_role($user, self::ROLE_TEACHER)) { $groups['Teachers'][] = $user; }

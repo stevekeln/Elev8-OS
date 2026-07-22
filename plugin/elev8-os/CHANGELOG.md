@@ -1,5 +1,21 @@
 # Elev8 OS Changelog
 
+## 17.4.0 — 2026-07-22
+
+- Fixed the shared recipient directory so active Organization Engine employees appear under Shop Employees even when their WordPress role has not yet received the legacy assignment capability.
+- Centralized assignment eligibility so recipient selection and Work Item assignment use the same rule.
+- Added the Event Operations Contributor for event application review, approval, planning, delivery, and follow-up.
+- Replaced the legacy parallel Takeover workflow generator with the shared Operations Contributor adapter.
+- Preserved Person and Relationship graph links on contributor-generated event Work Items.
+
+## 17.3.0 — 2026-07-22
+
+- Added the Amelia-backed Class Approval Operations Contributor.
+- Pending Amelia class bookings now create or synchronize one stable approval Work Item.
+- Approving, moving, or cancelling a class booking synchronizes the existing Work Item without duplicating Amelia data.
+- Added teacher assignment mapping through the existing Amelia employee user mapping.
+- Added configurable organization scope filtering for Amelia booking work.
+
 ## 17.2.0 — SOP Execution & Completion Evidence
 
 ### Added

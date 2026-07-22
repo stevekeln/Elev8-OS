@@ -78,7 +78,7 @@ final class Elev8_OS_Work_Service {
         $priority = sanitize_key((string) $args['priority']);
         if (!isset(self::priorities()[$priority])) { $priority = 'normal'; }
         $owner = absint($args['owner_user_id']);
-        if ($owner && !Elev8_OS_Access_Service::user_can('receive_assignments', get_user_by('id', $owner) ?: null)) { $owner = 0; }
+        if ($owner && !Elev8_OS_Access_Service::can_receive_assignment(get_user_by('id', $owner) ?: null)) { $owner = 0; }
         if ($owner && $status === 'new') { $status = 'assigned'; }
 
         $meta = [
@@ -122,7 +122,7 @@ final class Elev8_OS_Work_Service {
         if (array_key_exists('owner_user_id', $changes)) {
             $owner = absint($changes['owner_user_id']);
             $user = $owner ? get_user_by('id', $owner) : false;
-            if (!$owner || ($user instanceof WP_User && Elev8_OS_Access_Service::user_can('receive_assignments', $user))) { update_post_meta($id, '_elev8_work_owner_user_id', $owner); }
+            if (!$owner || ($user instanceof WP_User && Elev8_OS_Access_Service::can_receive_assignment($user))) { update_post_meta($id, '_elev8_work_owner_user_id', $owner); }
         }
         if (array_key_exists('work_type', $changes)) {
             $type = sanitize_key((string) $changes['work_type']);
@@ -140,46 +140,13 @@ final class Elev8_OS_Work_Service {
         return true;
     }
 
+    /** @deprecated Event application work is now owned by the Operations Contributor adapter. */
     public static function generate_takeover_workflow(int $application_id): array {
         if (get_post_type($application_id) !== 'elev8_event_app') { return []; }
-        $organization = (string) get_post_meta($application_id, '_elev8_event_app_organization_name', true);
-        $date = (string) get_post_meta($application_id, '_elev8_event_app_preferred_date_1', true);
-        $assigned = absint(get_post_meta($application_id, '_elev8_event_app_assigned_user', true));
-        $relationship = absint(get_post_meta($application_id, '_elev8_event_app_relationship_id', true));
-        $person = absint(get_post_meta($application_id, '_elev8_event_app_person_id', true));
-        $label = $organization ?: sprintf(__('Application #%d', 'elev8-os'), $application_id);
-        $base = current_time('Y-m-d');
-        $steps = [
-            ['review', sprintf(__('Review Takeover application — %s', 'elev8-os'), $label), $base, 'high'],
-            ['contact', sprintf(__('Contact dispensary — %s', 'elev8-os'), $label), self::date_plus($base, 1), 'high'],
-            ['decision', sprintf(__('Approve or decline Takeover — %s', 'elev8-os'), $label), self::date_plus($base, 3), 'high'],
-            ['reserve_date', sprintf(__('Confirm and reserve event date — %s', 'elev8-os'), $label), self::date_plus($base, 5), 'normal'],
-            ['assign_lead', sprintf(__('Assign event lead — %s', 'elev8-os'), $label), self::date_plus($base, 7), 'normal'],
-            ['marketing', sprintf(__('Create Takeover marketing package — %s', 'elev8-os'), $label), self::date_plus($base, 10), 'normal'],
-            ['staffing', sprintf(__('Schedule Takeover staff — %s', 'elev8-os'), $label), self::date_plus($base, 14), 'normal'],
-            ['confirm_week', sprintf(__('Confirm Takeover details one week before — %s', 'elev8-os'), $label), $date ? self::date_plus($date, -7) : '', 'high'],
-            ['confirm_day', sprintf(__('Confirm Takeover details one day before — %s', 'elev8-os'), $label), $date ? self::date_plus($date, -1) : '', 'high'],
-            ['follow_up', sprintf(__('Complete Takeover follow-up — %s', 'elev8-os'), $label), $date ? self::date_plus($date, 1) : '', 'normal'],
-        ];
-        $ids = [];
-        foreach ($steps as [$key, $title, $due, $priority]) {
-            $result = self::create([
-                'title' => $title,
-                'description' => sprintf(__('Generated from Elev8 Takeover application #%d.', 'elev8-os'), $application_id),
-                'owner_user_id' => in_array($key, ['review','contact','decision'], true) ? $assigned : 0,
-                'due_date' => $due,
-                'priority' => $priority,
-                'source_type' => 'event_application',
-                'source_id' => $application_id,
-                'workflow_key' => 'elev8_takeover',
-                'step_key' => $key,
-                'relationship_id' => $relationship,
-                'person_id' => $person,
-            ]);
-            if (!is_wp_error($result)) { $ids[] = (int) $result; }
+        if (class_exists('Elev8_OS_Event_Operations_Contributor')) {
+            return Elev8_OS_Event_Operations_Contributor::sync($application_id);
         }
-        update_post_meta($application_id, '_elev8_event_app_workflow_generated', current_time('mysql'));
-        return array_values(array_unique($ids));
+        return [];
     }
 
     public static function counts(int $owner_user_id = 0): array {
