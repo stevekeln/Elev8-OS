@@ -1,3 +1,10 @@
+## 20.2.4 — Embedded Conversation Panels
+- Added a reusable Business Graph conversation panel that keeps users inside the workspace where the work is happening.
+- Embedded production-job conversations directly into the Production Queue with unread counts, thread lists, first-unread navigation, replies, and a full-conversation escape hatch.
+- New context conversations retain authoritative Communication Engine threads and stable `context_type`/`context_id` relationships instead of creating comments or a second messaging store.
+- Assigned production workers can be preselected as participants while managers may include additional eligible Elev8 OS users.
+- Preserved per-user read evidence and the standalone Conversation Center as the searchable cross-business view.
+
 
 ## 20.2.3 — Embedded Conversation Usability
 - Added per-thread unread message counts and clear purple unread cards; read threads remain white.

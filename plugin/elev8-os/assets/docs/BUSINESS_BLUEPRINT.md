@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 2.0  
-**Established:** 2026-07-22  
-**Platform release:** 19.0.0  
+**Blueprint version:** 2.0
+**Established:** 2026-07-22
+**Platform release:** 19.0.0
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -38,7 +38,7 @@ WordPress is the platform and owns authentication, users, roles, content infrast
 
 WooCommerce owns products, orders, checkout, payments, taxes, subscriptions, and authoritative commerce records.
 
-WooCommerce answers: **What did the customer buy?**  
+WooCommerce answers: **What did the customer buy?**
 Elev8 OS answers: **What should happen because they bought it?**
 
 ### Amelia
@@ -124,109 +124,109 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 
 ### Customer Books a Class
 
-**Trigger:** Amelia creates a pending booking.  
-**Objects:** Person, Booking, Class, Communication, Task.  
-**Engines:** Booking, Communication, Workflow, Integration, Intelligence.  
+**Trigger:** Amelia creates a pending booking.
+**Objects:** Person, Booking, Class, Communication, Task.
+**Engines:** Booking, Communication, Workflow, Integration, Intelligence.
 **Outcome:** Correct manager or teacher is alerted, approves, moves, or cancels the booking, and Amelia remains authoritative.
 
 ### Glass Production and Payout
 
-**Trigger:** A production need is created or completed work is entered.  
-**Objects:** Product, Production Job, Person, Payout, Material, Task, Communication.  
-**Engines:** Operations, Financial, Inventory, Workflow, Communication.  
+**Trigger:** A production need is created or completed work is entered.
+**Objects:** Product, Production Job, Person, Payout, Material, Task, Communication.
+**Engines:** Operations, Financial, Inventory, Workflow, Communication.
 **Outcome:** Work is assigned, completed, quality checked, and approved pay is traceable to the source work.
 
 ### Repair and Memorial Custody
 
-**Trigger:** A customer item or memorial remains are received.  
-**Objects:** Customer, Asset, Repair, Memorial Case, Production Job, Communication, Payout.  
-**Engines:** Operations, Assets, Workflow, Communication, Financial.  
+**Trigger:** A customer item or memorial remains are received.
+**Objects:** Customer, Asset, Repair, Memorial Case, Production Job, Communication, Payout.
+**Engines:** Operations, Assets, Workflow, Communication, Financial.
 **Outcome:** Custody, approvals, production, reconciliation, and release remain auditable.
 
 ### Development Session
 
-**Trigger:** A new Elev8 OS coding session begins.  
-**Required sequence:** Read Blueprint → classify engines and objects → inspect existing ownership → design → implement → validate → update Blueprint → deliver changed files.  
+**Trigger:** A new Elev8 OS coding session begins.
+**Required sequence:** Read Blueprint → classify engines and objects → inspect existing ownership → design → implement → validate → update Blueprint → deliver changed files.
 **Outcome:** Architecture remains coherent and decisions remain durable.
 
 ## Architecture Decision Records
 
 ### ADR-0001 — Architecture Is the Product
 
-**Status:** Accepted  
-**Decision:** Code must serve a coherent platform architecture that remains understandable ten years from now.  
+**Status:** Accepted
+**Decision:** Code must serve a coherent platform architecture that remains understandable ten years from now.
 **Consequence:** A fast one-off solution must be rejected when it weakens engine ownership or the Business Graph.
 
 ### ADR-0002 — WooCommerce Owns Commerce Records
 
-**Status:** Accepted  
-**Decision:** WooCommerce owns products, orders, checkout, payments, taxes, and subscriptions.  
+**Status:** Accepted
+**Decision:** WooCommerce owns products, orders, checkout, payments, taxes, and subscriptions.
 **Consequence:** Elev8 OS reacts to commerce and coordinates operations without creating competing commerce records.
 
 ### ADR-0003 — Dashboards Are Views
 
-**Status:** Accepted  
-**Decision:** Role dashboards are views over shared engines and relationships.  
+**Status:** Accepted
+**Decision:** Role dashboards are views over shared engines and relationships.
 **Consequence:** Business logic must live in shared services, never inside a dashboard template.
 
 ### ADR-0004 — Business Policies Are Configurable
 
-**Status:** Accepted  
-**Decision:** Elev8 schedules, payout rules, locations, approval thresholds, and other business-specific policies may not be hardcoded into platform services.  
+**Status:** Accepted
+**Decision:** Elev8 schedules, payout rules, locations, approval thresholds, and other business-specific policies may not be hardcoded into platform services.
 **Consequence:** Platform capabilities remain reusable across thousands of businesses.
 
 ### ADR-0005 — Verified Data or Unavailable
 
-**Status:** Accepted  
-**Decision:** Business Intelligence must display **Unavailable** when data cannot be verified.  
+**Status:** Accepted
+**Decision:** Business Intelligence must display **Unavailable** when data cannot be verified.
 **Consequence:** Elev8 OS never creates persuasive but misleading business information.
 
 ### ADR-0006 — Uploaded Repository Is Source of Truth
 
-**Status:** Accepted  
-**Decision:** The uploaded repository is the only source of truth for development.  
+**Status:** Accepted
+**Decision:** The uploaded repository is the only source of truth for development.
 **Consequence:** Never recreate the repository, duplicate plugin folders, or return the whole repository.
 
 ### ADR-0007 — Blueprint Governs Development
 
-**Status:** Accepted  
-**Decision:** Every development session begins by consulting this Blueprint and ends by updating it.  
+**Status:** Accepted
+**Decision:** Every development session begins by consulting this Blueprint and ends by updating it.
 **Consequence:** Chat history and developer memory are supporting context, not the architectural source of truth.
 
 
 ### ADR-0008 — Organization Structure Is Configurable Graph Data
 
-**Status:** Accepted  
-**Decision:** Businesses, brands, locations, departments, teams, and person responsibilities are Organization Engine records and relationships. WordPress remains authoritative for user identity.  
+**Status:** Accepted
+**Decision:** Businesses, brands, locations, departments, teams, and person responsibilities are Organization Engine records and relationships. WordPress remains authoritative for user identity.
 **Consequence:** Operational engines may scope access and responsibility through Organization assignments without duplicating users or hardcoding a single-business hierarchy.
 
 
 ### ADR-0009 — Business Graph Ownership Is Explicit and Enforced
 
-**Status:** Accepted  
-**Decision:** Every Business Graph object type declares one owning engine, one authoritative system, its organization-scope behavior, and the relationship types it may participate in. New explicit relationships must pass the shared Business Graph Registry before storage.  
+**Status:** Accepted
+**Decision:** Every Business Graph object type declares one owning engine, one authoritative system, its organization-scope behavior, and the relationship types it may participate in. New explicit relationships must pass the shared Business Graph Registry before storage.
 **Consequence:** Engines may extend the registry through documented filters, but they may not invent unregistered object ownership or persist invalid graph links. Elev8 OS links authoritative records and records relationship context without cloning source data.
 
 
 
 ### ADR-0011 — Universal Work Item Is the Canonical Operational Execution Object
 
-**Status:** Accepted  
-**Decision:** The Operations Engine owns the canonical Work Item used to represent operational execution. Production, repair, memorial, teaching, maintenance, inventory, route, event, and approval work are configurable work types over the same execution object. Workflow owns reusable state, approval, dependency, and completion mechanics.  
+**Status:** Accepted
+**Decision:** The Operations Engine owns the canonical Work Item used to represent operational execution. Production, repair, memorial, teaching, maintenance, inventory, route, event, and approval work are configurable work types over the same execution object. Workflow owns reusable state, approval, dependency, and completion mechanics.
 **Consequence:** Existing source records are not replaced or migrated destructively. Engines contribute work through stable references, and role dashboards present filtered views of one shared Work Inbox.
 
 
 ### ADR-0014 — Booking Decisions Contribute Work Without Owning Bookings
 
-**Status:** Accepted  
-**Decision:** Amelia-backed approval states contribute synchronized Work Items through a Booking-to-Operations adapter. Amelia remains authoritative for booking status, schedule, provider, customer, and service data.  
+**Status:** Accepted
+**Decision:** Amelia-backed approval states contribute synchronized Work Items through a Booking-to-Operations adapter. Amelia remains authoritative for booking status, schedule, provider, customer, and service data.
 **Consequence:** Elev8 OS may assign, escalate, evidence, and close operational approval work, but it may not create a competing booking record or parallel approval state.
 
 
 ### ADR-0020 — Human Review Governs Intelligence Promotion
 
-**Status:** Accepted  
-**Decision:** Verified source observations may be generated automatically, but leaders must be able to confirm, correct, or dismiss them before higher-confidence recommendations or automation rely on them.  
+**Status:** Accepted
+**Decision:** Verified source observations may be generated automatically, but leaders must be able to confirm, correct, or dismiss them before higher-confidence recommendations or automation rely on them.
 **Consequence:** Review state, reviewer identity, timestamp, and notes are stored on the Observation rather than copied back into authoritative source records.
 
 ## Roadmap by Engine
@@ -302,12 +302,12 @@ Every build response and Blueprint update must include:
 
 ### 2026-07-22 — Release 16.1.0
 
-**Purpose:** Establish the Organization Engine foundation before expanding the Business Graph.  
-**Architecture updates:** Added configurable organization units, hierarchy, person assignments, scoped access foundation, Organization workspace integration, and Organization workspaces.  
-**Engines changed:** Organization (primary), Identity and Workflow (supporting).  
-**Business Graph changes:** Added explicit Business, Brand, Location, Department, and Team nodes; added Person → Organization assignment relationships with responsibility, assignment type, dates, active state, and primary designation.  
-**Architectural decisions:** Accepted ADR-0008. WordPress users remain authoritative Person identities; Organization Engine owns only their organizational relationships.  
-**Open questions:** Shared-resource scoping and inheritance rules remain intentionally postponed.  
+**Purpose:** Establish the Organization Engine foundation before expanding the Business Graph.
+**Architecture updates:** Added configurable organization units, hierarchy, person assignments, scoped access foundation, Organization workspace integration, and Organization workspaces.
+**Engines changed:** Organization (primary), Identity and Workflow (supporting).
+**Business Graph changes:** Added explicit Business, Brand, Location, Department, and Team nodes; added Person → Organization assignment relationships with responsibility, assignment type, dates, active state, and primary designation.
+**Architectural decisions:** Accepted ADR-0008. WordPress users remain authoritative Person identities; Organization Engine owns only their organizational relationships.
+**Open questions:** Shared-resource scoping and inheritance rules remain intentionally postponed.
 **Next recommended session:** Build the Business Graph Registry and relationship enforcement layer so engines can declare object ownership and organization scope consistently.
 ### 2026-07-22 — Release 16.1.1
 
@@ -346,8 +346,8 @@ Every build response and Blueprint update must include:
 
 ### ADR-0010 — External Records Participate Through Read-Only Adapters
 
-**Status:** Accepted  
-**Decision:** WooCommerce products and orders and Amelia bookings and classes participate in the Business Graph through stable read-only adapter references. Elev8 OS may attach relationships, work, communication, organization scope, and intelligence, but it must not copy or replace authoritative source records.  
+**Status:** Accepted
+**Decision:** WooCommerce products and orders and Amelia bookings and classes participate in the Business Graph through stable read-only adapter references. Elev8 OS may attach relationships, work, communication, organization scope, and intelligence, but it must not copy or replace authoritative source records.
 **Consequence:** Integration adapters must degrade to **Unavailable** when a source system or record cannot be verified.
 
 ## Development Session — 16.3.0
@@ -386,8 +386,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0012 — Operational Sources Contribute Work Through Adapters
 
-**Status:** Accepted  
-**Decision:** Authoritative operational systems contribute execution requirements to the Operations Engine through registered contributor adapters. Adapters create or synchronize stable Work Items, checklists, approvals, completion rules, due dates, assignments, escalation contracts, and timeline-ready source context while the source system continues to own its record and state.  
+**Status:** Accepted
+**Decision:** Authoritative operational systems contribute execution requirements to the Operations Engine through registered contributor adapters. Adapters create or synchronize stable Work Items, checklists, approvals, completion rules, due dates, assignments, escalation contracts, and timeline-ready source context while the source system continues to own its record and state.
 **Consequence:** Modules must not create parallel task systems for operational work. Contributor synchronization must be idempotent, source-referenced, and safe when source records are unavailable.
 
 ### 2026-07-22 — Elev8 OS 17.1.0 — Operations Contributor Adapter Foundation
@@ -408,8 +408,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0013 — Execution Contracts and Evidence Are Separate
 
-**Status:** Accepted  
-**Decision:** Operations Contributor adapters define immutable execution requirements, while the Workflow Engine records checklist completion, approval evidence, actor identity, timestamps, and audit history against the canonical Work Item. Source systems continue to own operational state.  
+**Status:** Accepted
+**Decision:** Operations Contributor adapters define immutable execution requirements, while the Workflow Engine records checklist completion, approval evidence, actor identity, timestamps, and audit history against the canonical Work Item. Source systems continue to own operational state.
 **Consequence:** Contributor synchronization may revise the current contract but must preserve compatible evidence. A Work Item cannot complete until its current execution contract is satisfied.
 
 ### 2026-07-22 — Elev8 OS 17.2.0 — SOP Execution & Completion Evidence
@@ -449,14 +449,14 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0015 — Organization Assignments Grant Operational Reachability
 
-**Status:** Accepted  
-**Decision:** An active Organization Engine assignment makes a WordPress person eligible for internal communication and Work Item assignment, even when a legacy role capability has not yet been applied. Access to screens and privileged actions remains governed by the Centralized Access Service.  
+**Status:** Accepted
+**Decision:** An active Organization Engine assignment makes a WordPress person eligible for internal communication and Work Item assignment, even when a legacy role capability has not yet been applied. Access to screens and privileged actions remains governed by the Centralized Access Service.
 **Consequence:** Organization membership and assignment eligibility no longer drift apart, while WordPress remains authoritative for identity and permissions.
 
 ### ADR-0016 — Event Applications Contribute Work Through Operations
 
-**Status:** Accepted  
-**Decision:** Event Applications remain authoritative for application state. Review, approval, planning, delivery, and follow-up are represented through the shared Operations Contributor and SOP Execution architecture. The former Takeover-specific workflow generator delegates to this adapter.  
+**Status:** Accepted
+**Decision:** Event Applications remain authoritative for application state. Review, approval, planning, delivery, and follow-up are represented through the shared Operations Contributor and SOP Execution architecture. The former Takeover-specific workflow generator delegates to this adapter.
 **Consequence:** Events no longer maintain a parallel task workflow, and application-linked Work Items preserve Person and Relationship graph connections.
 
 ### 2026-07-22 — Elev8 OS 17.4.0 — Organization Recipient Alignment & Event Operations Contributor
@@ -477,8 +477,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0017 — Inventory Authority and Inventory Execution Are Separate
 
-**Status:** Accepted  
-**Decision:** WooCommerce or another configured inventory provider remains authoritative for product identity and quantity. Elev8 OS owns canonical Inventory Signals for exceptions that require human action, and those signals contribute execution through the shared Operations and SOP architecture.  
+**Status:** Accepted
+**Decision:** WooCommerce or another configured inventory provider remains authoritative for product identity and quantity. Elev8 OS owns canonical Inventory Signals for exceptions that require human action, and those signals contribute execution through the shared Operations and SOP architecture.
 **Consequence:** Low stock, receiving, cycle counts, discrepancies, and event reservations use one execution model without cloning product records or creating a parallel stock ledger.
 
 ### 2026-07-22 — Elev8 OS 17.5.0 — Inventory Operations Contributor
@@ -499,8 +499,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0018 — Maintenance Condition and Execution Are Separate
 
-**Status:** Accepted  
-**Decision:** Authoritative asset and facility systems own identity, location, custody, and base condition. Elev8 OS owns the canonical Maintenance Record for reported conditions, service schedules, inspection findings, repair history, recurrence, and operational state. Maintenance Records contribute execution through the shared Operations Contributor and SOP Execution architecture.  
+**Status:** Accepted
+**Decision:** Authoritative asset and facility systems own identity, location, custody, and base condition. Elev8 OS owns the canonical Maintenance Record for reported conditions, service schedules, inspection findings, repair history, recurrence, and operational state. Maintenance Records contribute execution through the shared Operations Contributor and SOP Execution architecture.
 **Consequence:** Equipment repairs, facility issues, preventive maintenance, inspections, and safety checks use one auditable execution model without turning the Asset Engine into a second task system or copying facility records.
 
 ### 2026-07-22 — Elev8 OS 17.6.0 — Maintenance Operations Contributor
@@ -521,8 +521,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0019 — Facts Precede Actions
 
-**Status:** Accepted  
-**Decision:** Engines contribute verified facts as Observations before Intelligence or Operations interprets them. An Observation is not a task. A Work Item is created only when an authoritative source explicitly declares follow-up or operational action.  
+**Status:** Accepted
+**Decision:** Engines contribute verified facts as Observations before Intelligence or Operations interprets them. An Observation is not a task. A Work Item is created only when an authoritative source explicitly declares follow-up or operational action.
 **Consequence:** Intelligence can analyze risks, opportunities, achievements, decisions, and trends without flooding the Universal Work Inbox or duplicating source records.
 
 ### 2026-07-22 — Elev8 OS 18.0.0 — Observation Engine & Daily Operations Intelligence Foundation
@@ -551,8 +551,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0021 — Patterns Summarize Confirmed Facts Without Becoming Actions
 
-**Decision:** The Intelligence Engine may detect a Pattern only from confirmed or corrected Observations. A Pattern stores the supporting Observation relationships, frequency, time range, confidence, severity, and trend. Patterns do not modify authoritative source records and do not create Work Items automatically.  
-**Why:** Repetition is useful intelligence, but automatically converting repetition into execution would bypass human governance and create task overload.  
+**Decision:** The Intelligence Engine may detect a Pattern only from confirmed or corrected Observations. A Pattern stores the supporting Observation relationships, frequency, time range, confidence, severity, and trend. Patterns do not modify authoritative source records and do not create Work Items automatically.
+**Why:** Repetition is useful intelligence, but automatically converting repetition into execution would bypass human governance and create task overload.
 **Consequence:** Leaders acknowledge, dismiss, or resolve Patterns in the Intelligence Review workspace before future recommendation or automation layers use them.
 
 ### 2026-07-22 — Elev8 OS 18.2.0 — Cross-Source Pattern Detection
@@ -586,8 +586,8 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Next development session:** Build Recommendation outcome tracking so Elev8 OS can compare approved actions with completed work and measured results before introducing automated recommendation ranking.
 ### ADR-0023 — Intelligence Learns From Governed Outcomes
 
-**Status:** Accepted  
-**Decision:** Completing an approved Recommendation's Work Item proves execution, but it does not prove business success. Elev8 OS creates one Recommendation Outcome when execution completes, then requires a leader to record the measured result and optional before/after evidence. Recommendation performance scores use only measured Outcomes.  
+**Status:** Accepted
+**Decision:** Completing an approved Recommendation's Work Item proves execution, but it does not prove business success. Elev8 OS creates one Recommendation Outcome when execution completes, then requires a leader to record the measured result and optional before/after evidence. Recommendation performance scores use only measured Outcomes.
 **Consequence:** Intelligence can learn from organizational history without assuming that completed work was effective or rewriting the supporting Pattern, Observations, Recommendation, or authoritative source records.
 
 ### 2026-07-22 — Elev8 OS 18.4.0 — Recommendation Outcome Tracking
@@ -607,7 +607,7 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0024 — Executive Attention Is a Governed Read Model
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Executive Intelligence ranks existing governed Observations, Patterns, Recommendations, Work Items, and measured Outcomes into an explainable attention view. It is not an authoritative system and may not create facts, approve execution, infer success, or rewrite source records. Ranking uses transparent factors including severity, recurrence, trend, confidence, governance status, and whether a decision or outcome is still waiting.
 
 **Consequence:** Leaders receive a prioritized view of where attention is most valuable without introducing another dashboard-owned business system. Every executive item remains traceable to the governed Business Graph evidence that produced it.
@@ -628,7 +628,7 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0025 — Executive Attention Decisions Are Governed Evidence
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** A leader may acknowledge, defer, resolve, or reopen an Executive Intelligence attention item without changing the Pattern, Recommendation, Observation, Work Item, Outcome, or authoritative source that produced it. Each decision is stored as durable governance evidence with a stable attention key, user, timestamp, optional note, and defer-until date. Executive Brief delivery uses the Communication Engine boundary and configurable per-user policies.
 
 **Consequence:** The executive attention queue can support reminders and scheduled summaries without becoming a second task system. Deferred and resolved items leave the actionable queue while preserving a complete decision timeline. Delivery never changes intelligence evidence or approves operational execution.
@@ -649,7 +649,7 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0026 — Executive Follow-through Reuses Existing Governance Boundaries
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** An acknowledged Executive Intelligence attention item may intentionally become a formal decision record, delegated review, approved operational action, or scheduled follow-up. Formal decisions remain governance evidence. Delegated reviews and scheduled follow-ups create standard Operations Work Items. Approved operational actions are available only for governed Recommendations and must route through the existing Recommendation approval service.
 
 **Consequence:** Executive Intelligence can move from attention to accountable follow-through without creating a second task, approval, or decision system. Every follow-through record retains a stable connection to the attention projection and underlying Pattern or Recommendation, while Operations and Recommendation services remain authoritative for execution.
@@ -670,7 +670,7 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 
 ### ADR-0027 — Execution Completion and Decision Effectiveness Are Separate Evidence
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Completion of a delegated review or scheduled executive follow-up closes its Executive Decision Follow-through record because the Operations Work Item is authoritative for execution. Elev8 OS then creates one Executive Decision Outcome awaiting leader measurement. Approved Recommendation actions continue to use Recommendation Outcome and may not create a duplicate Executive Decision Outcome.
 
 **Consequence:** Leadership can distinguish whether assigned follow-through was completed from whether the executive decision was effective. The Work Item remains execution evidence, Recommendation Outcome remains authoritative for Recommendation-backed actions, and Executive Decision Outcome measures only follow-through that has no existing governed outcome object.
@@ -710,7 +710,7 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Next development session:** Build the Executive Learning Dashboard and calibration health controls so leaders can inspect evidence coverage, identify where outcomes are missing, and understand which recommendation classes have enough history to support dependable learning.
 ### ADR-0029 — Learning Health Is a Governed Read Model
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Calibration health must be calculated from existing Recommendation Outcomes and Executive Decision Outcomes without creating a parallel score ledger. Readiness is organization-specific and classification-specific, uses the same minimum evidence threshold as Decision Learning, and exposes missing measurement rather than inferring success from completed work.
 
 **Consequence:** Leaders can see where Elev8 OS has dependable evidence and where it cannot yet learn responsibly. The Learning Health view cannot change confidence, approve Recommendations, create Work Items, or modify Outcomes.
@@ -773,7 +773,7 @@ Dependency discovery remains read-only evidence. The new plan is governed human 
 
 ### ADR-0032 — Administrator Confirmation Governs Plugin Ownership and Retirement Planning
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Automated dependency discovery may suggest evidence, but an administrator must explicitly document capability ownership, authoritative data, replacement responsibility, migration steps, test scope, blockers, Local rehearsal, rollback, and approval before retirement can be considered. A plan record is evidence and authorization history; it is not an execution mechanism.
 
 **Consequence:** Elev8 OS gains a durable, auditable migration boundary without becoming a plugin manager. Retirement remains a separate intentional action performed only after successful Local validation.
@@ -800,7 +800,7 @@ Coaching owns only per-user presentation state: unread, read, pinned, needs foll
 
 ### ADR-0033 — Business Coaching Is Explainable Guidance
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Business Coaching is a personalized read model over governed Business Graph evidence. It may prioritize, explain, and present suggested next steps, but it may not create facts, promote Patterns, approve Recommendations, create Work Items, or modify authoritative records. Only personal presentation state belongs to Coaching.
 
 **Consequence:** Elev8 OS can proactively guide each role without creating another recommendation or task system. Every coaching card remains traceable to Operations or Intelligence evidence, and users may organize their own view without changing shared business truth.
@@ -826,7 +826,7 @@ The Daily Assistant is intentionally different from the Executive Brief. The Exe
 
 ### ADR-0034 — The Daily Assistant Is a Personal Governed Read Model
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** The Proactive Daily Assistant may rank and present evidence the user is already permitted to see, but it may not create Work Items, approve Recommendations, change Conversations, or replace the user’s role-based Operational Home. It is a personal read model and owns only its last-viewed presentation timestamp.
 
 **Consequence:** Every role receives a useful start-of-day experience without duplicating the Executive Brief, Coaching Engine, Attention Center, Conversations, or Operations logic. Source systems remain authoritative and all focus items remain traceable.
@@ -852,7 +852,7 @@ The delivery layer stores only personal preferences and delivery timestamps. It 
 
 ### ADR-0035 — Daily Assistant Delivery Is Personal Preference Governance
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Daily Assistant delivery may schedule and transport a user-permitted briefing through existing Automation and Communication boundaries. It may not create actions, escalate source evidence, modify shared records, or infer that a delivered briefing was read or acted upon.
 
 **Consequence:** Every role can receive a useful briefing at a chosen time without introducing a parallel notification or workflow system. Email transport remains replaceable through the Notification Service, including future AWS SES integration.
@@ -878,7 +878,7 @@ Critical incidents affecting checkout, payments, internet, security, or essentia
 
 ### ADR-0036 — IT Support Is a Configurable Operations Capability
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** IT Support must reuse Asset, Maintenance, Operations, Workflow, Communication, Automation, and Intelligence services. A business may assign one person or several people to IT Support without creating a formal department.
 
 **Consequence:** Technology incidents enter the same accountable execution and intelligence architecture as other operational conditions. Future IT dashboards, asset replacement planning, knowledge articles, and automation can extend the shared records without creating a silo.
@@ -905,7 +905,7 @@ Focus policy and feedback are presentation governance only. They do not change W
 
 ### ADR-0037 — Focus Ranking Must Be Explainable
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Every Daily Assistant focus score must be traceable to governed evidence and bounded Organization Unit policy. Personal usefulness feedback may influence only the user's future presentation. No opaque score may determine operational priority, and Focus Intelligence may not modify authoritative records.
 
 **Consequence:** Elev8 OS can improve daily relevance without creating hidden automation or allowing presentation preferences to become business truth.
@@ -932,7 +932,7 @@ Work Dependencies are governed waiting-on relationships between canonical Work I
 
 ### ADR-0038 — Team Coordination Extends Universal Work
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Team coordination must reuse Universal Work Items, Organization scope, centralized assignment eligibility, and Workflow relationships. Dependencies and handoffs may add governed relationships and evidence, but they may not create a second task or project-management system.
 
 **Consequence:** Every operational contributor can participate in cross-team coordination without custom handoff logic. Future automation and intelligence can reason over the same Work Item graph.
@@ -958,7 +958,7 @@ A proposed handoff no longer changes Work Item ownership immediately. The propos
 
 ### ADR-0039 — Capacity Is Advisory and Handoffs Require Acknowledgement
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Capacity targets may guide workload visibility and reassignment suggestions, but cannot automatically assign, remove, or reprioritize work. A proposed handoff must retain the current owner until the recipient or an authorized operational leader explicitly accepts it.
 
 **Consequence:** Team Coordination can expose overload and recommend safer distribution while preserving human accountability and the Universal Work Item as the only execution record.
@@ -985,7 +985,7 @@ Availability and skill evidence remains advisory. It does not alter WordPress ac
 
 ### ADR-0040 — Availability and Skills Are Advisory Coordination Evidence
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Availability and skill relationships may improve explainable handoff suggestions, but cannot grant access, certify competence, replace scheduling, or automatically assign work. Active Organization assignments remain the authoritative scope relationship, and accepted handoffs remain the only path to ownership change.
 
 **Consequence:** Elev8 OS can make safer, more relevant coordination suggestions while preserving human accountability and existing engine ownership boundaries.
@@ -1012,7 +1012,7 @@ Declared skills remain owned by the person as advisory capability relationships.
 
 ### ADR-0041 — Availability Calendars and Skill Verification Are Bounded Coordination Evidence
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Recurring availability windows may identify scheduling conflicts for coordination suggestions, and operational leaders may verify declared skills for handoff-fit evidence. Neither capability may replace attendance, payroll, leave, Amelia or native Booking availability, professional certification, WordPress access, or human handoff acknowledgement.
 
 **Consequence:** Elev8 OS can make safer and more explainable cross-team suggestions while preserving authoritative ownership boundaries and avoiding an HR or scheduling subsystem.
@@ -1042,7 +1042,7 @@ Skill-verification evidence can now include an optional expiration date. Expired
 
 ### ADR-0042 — Exceptions and Credential References Are Bounded Coordination Evidence
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** Date-specific availability exceptions may override recurring coordination windows for a specific day. Credential and training evidence may be referenced for coordination and renewal governance, but Elev8 OS must never store secrets or treat internal evidence as a permission grant, professional license, employment qualification, or automatic-assignment authority.
 
 **Consequence:** Handoff guidance can avoid known date conflicts and surface expiring training evidence while preserving WordPress access, Organization assignments, human acknowledgement, and external credential authorities.
@@ -1069,7 +1069,7 @@ Expiring or expired credential evidence can now contribute one stable renewal Wo
 
 ### ADR-0043 — Credential Requirements Are Workflow Evidence, Not Permission
 
-**Status:** Accepted  
+**Status:** Accepted
 **Decision:** A Work Item may declare the credential or training evidence useful or required for coordination. Matching evidence may inform readiness and handoff guidance, but cannot grant access, certify legal authority, or automatically assign work. Expiring evidence may intentionally contribute duplicate-protected renewal work through Operations.
 
 **Consequence:** Elev8 OS can surface credential gaps and create accountable renewal follow-up while preserving WordPress access control, external credential authorities, human assignment governance, and Universal Work as the only task system.
@@ -1128,7 +1128,7 @@ The reusable Production Operations Workspace now provides its first deeper indus
 
 ### Engines Changed
 
-**Primary engine:** Operations  
+**Primary engine:** Operations
 **Supporting engines:** Workflow, Communication, Organization, Intelligence, and Glass Operations.
 
 ### Business Graph Updates
@@ -1168,7 +1168,7 @@ Completed production can now contribute duplicate-protected compensation evidenc
 
 ### Engines Changed
 
-**Primary engine:** Operations  
+**Primary engine:** Operations
 **Supporting engines:** Assets, Workflow, Organization, Financial, Intelligence, Communication, and Glass Operations.
 
 ### Business Graph Updates
@@ -1225,7 +1225,7 @@ The universal application shell now resolves **My Dashboard** through the stable
 
 ### Engines Changed
 
-**Primary engines:** Operations and Experience  
+**Primary engines:** Operations and Experience
 **Supporting engines:** Identity, Organization, and Production Catalog.
 
 ### Business Graph Updates
@@ -1250,7 +1250,7 @@ The release also carries forward the 20.2.1 derived import-status projection and
 
 ### Engines Changed
 
-**Primary engine:** Operations  
+**Primary engine:** Operations
 **Supporting engines:** Financial, Inventory, Experience, Identity, and Organization.
 
 ### Business Graph Updates
@@ -1273,7 +1273,7 @@ Conversation remains owned by the Communication Engine, but its presentation is 
 
 ### Engines Changed
 
-**Primary engine:** Communication  
+**Primary engine:** Communication
 **Supporting engines:** Identity, Organization, Experience, Business Memory, and Workflow.
 
 ### Business Graph Updates
@@ -1287,3 +1287,44 @@ Unread counts, first-unread positioning, and message-history navigation may impr
 ### Next Development Session
 
 Add reusable embedded conversation panels to Production, Work Item, Asset, and other object workspaces using the same Conversation authority and per-user read evidence.
+
+## Development Update — 20.2.4 Embedded Conversation Panels
+
+### Architecture Updates
+
+The Communication Engine now exposes a reusable embedded conversation panel for Business Graph workspaces. The first production use attaches authoritative Conversation threads directly to Glass Production Jobs so managers and assigned workers can discuss the work, see unread evidence, and reply without leaving the Production Workspace.
+
+The panel reuses existing Conversation threads, messages, participants, attachments boundary, and per-user read evidence. The standalone Conversation Center remains the searchable cross-business view and full-thread experience.
+
+### Engines Changed
+
+**Primary engine:** Communication
+**Supporting engines:** Operations, Workflow, Organization, Identity, Experience, and Glass Operations.
+
+### Business Graph Updates
+
+```text
+Production Job
+    ↓
+Conversation Context Relationship
+    ↓
+Conversation Thread
+```
+
+No duplicate comment, inbox, message, or production record was introduced.
+
+### ADR-0050 — Conversations Are Embedded Capabilities Over One Communication Authority
+
+Business Graph workspaces may render context-specific Conversation panels, but all threads and messages remain owned by the Communication Engine. Embedded panels may improve navigation, participant defaults, unread presentation, and contextual return behavior; they may not create a separate comment or messaging ledger.
+
+### Intentionally Postponed
+
+- Embedded attachments and voice notes.
+- Side-drawer presentation without page refresh.
+- AI summaries and follow-up extraction.
+- Automatic participant policies by object type.
+- Embedded panels for Work Items, Assets, Customers, Events, and Memorial Cases.
+
+### Next Development Session
+
+Extend the reusable embedded panel to Universal Work Items and Assets, then add governed conversation summaries and explicit follow-up extraction without silently creating Work Items.
