@@ -1,3 +1,18 @@
+## 19.6.0 — Team Capacity & Handoff Governance
+
+### Added
+- Configurable per-person workload-capacity targets used only for planning and coordination visibility.
+- Explainable capacity projections based on active, urgent, overdue, and blocked Work Items.
+- Governed handoff requests that require acknowledgement before Work Item ownership changes.
+- Accept and decline evidence for handoff requests, with decision notes and timestamps.
+- Dependency-change notifications through the existing Communication Engine email boundary.
+- Explainable reassignment suggestions for over-capacity owners without automatic assignment changes.
+
+### Architecture
+- Accepted ADR-0039: capacity is advisory policy and handoffs require acknowledgement.
+- Organization owns configurable capacity policy; Operations owns handoff evidence; Workflow owns dependencies.
+- Capacity scores and reassignment suggestions are read models and cannot modify operational priority or ownership.
+
 ## 19.5.0 — Team Coordination & Work Dependencies
 
 ### Added

@@ -1,0 +1,10 @@
+BUSINESS_BLUEPRINT.md
+CHANGELOG.md
+BUILD_VERSION
+plugin/elev8-os/CHANGELOG.md
+plugin/elev8-os/elev8-os.php
+plugin/elev8-os/includes/class-elev8-os-loader.php
+plugin/elev8-os/assets/docs/BUSINESS_BLUEPRINT.md
+plugin/elev8-os/includes/Modules/class-elev8-os-team-coordination-module.php
+plugin/elev8-os/includes/Services/class-elev8-os-team-capacity-service.php
+plugin/elev8-os/includes/Services/class-elev8-os-team-coordination-service.php

@@ -146,10 +146,18 @@ final class Elev8_OS_Team_Coordination_Service {
                 $handoffs[] = $handoff;
             }
         }
+        foreach ($workloads as &$load) {
+            if (class_exists('Elev8_OS_Team_Capacity_Service')) {
+                $load['capacity'] = Elev8_OS_Team_Capacity_Service::capacity_projection($load);
+            }
+        }
+        unset($load);
         usort($bottlenecks, static fn(array $a, array $b): int => ((int) $b['bottleneck_score']) <=> ((int) $a['bottleneck_score']));
-        usort($workloads, static fn(array $a, array $b): int => ((int) $b['active']) <=> ((int) $a['active']));
+        usort($workloads, static fn(array $a, array $b): int => ((int) ($b['capacity']['percent'] ?? $b['active'])) <=> ((int) ($a['capacity']['percent'] ?? $a['active'])));
         usort($handoffs, static fn(array $a, array $b): int => strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? '')));
-        return ['team_view' => $team, 'items' => $items, 'workloads' => array_values($workloads), 'bottlenecks' => array_slice($bottlenecks, 0, 25), 'handoffs' => array_slice($handoffs, 0, 25)];
+        $snapshot = ['team_view' => $team, 'items' => $items, 'workloads' => array_values($workloads), 'bottlenecks' => array_slice($bottlenecks, 0, 25), 'handoffs' => array_slice($handoffs, 0, 25)];
+        $snapshot['reassignment_suggestions'] = class_exists('Elev8_OS_Team_Capacity_Service') ? Elev8_OS_Team_Capacity_Service::reassignment_suggestions($snapshot) : [];
+        return $snapshot;
     }
 
     /** @return WP_User[] */

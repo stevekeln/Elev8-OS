@@ -942,4 +942,30 @@ Work Dependencies are governed waiting-on relationships between canonical Work I
 **Open questions:** Whether Organization Units should define workload-capacity targets, when a blocked Work Item should automatically suggest reassignment, and which handoffs require acknowledgement remain intentionally postponed.
 
 **Next milestone:** Build Team Capacity and Handoff Governance with configurable capacity targets, handoff acknowledgement, dependency notifications, and explainable reassignment suggestions without automatic assignment changes.
+## Development History — 19.6.0
+
+### Team Capacity and Handoff Governance
+
+Team Coordination now includes configurable workload-capacity targets, explainable capacity pressure, acknowledgement-based handoffs, dependency notifications, and governed reassignment suggestions. Capacity is calculated from active, urgent, overdue, and blocked Universal Work Items and is used only as planning evidence.
+
+A proposed handoff no longer changes Work Item ownership immediately. The proposed recipient or an authorized operational leader must explicitly accept or decline the handoff. Accepted handoffs reuse the canonical Operations owner field and preserve both the request and decision evidence. Dependency changes notify affected owners through the existing Communication Engine boundary.
+
+**Primary engine:** Operations.
+
+**Supporting engines:** Workflow, Organization, Identity, Communication, Automation, Analytics, and Intelligence.
+
+**Business Graph changes:** Added Work Capacity Policy and Work Handoff Request evidence connected to a Person and Universal Work Item. Capacity projections and reassignment suggestions remain non-authoritative read models. No duplicate employee, team, project, task, or ticket object was introduced.
+
+### ADR-0039 — Capacity Is Advisory and Handoffs Require Acknowledgement
+
+**Status:** Accepted  
+**Decision:** Capacity targets may guide workload visibility and reassignment suggestions, but cannot automatically assign, remove, or reprioritize work. A proposed handoff must retain the current owner until the recipient or an authorized operational leader explicitly accepts it.
+
+**Consequence:** Team Coordination can expose overload and recommend safer distribution while preserving human accountability and the Universal Work Item as the only execution record.
+
+**Technical debt:** Capacity currently uses a per-person target and a transparent weighted point model. Organization-inherited capacity templates, skill matching, availability calendars, time estimates, and channel-specific dependency notifications remain future work.
+
+**Open questions:** Whether capacity targets should inherit from Organization Units, whether accepted handoffs should support a short transition window, and how working schedules should influence capacity remain intentionally postponed.
+
+**Next milestone:** Build Team Availability and Skill-Aware Coordination, using Organization assignments, working availability, and configurable skill relationships to improve handoff suggestions without automatic assignment.
 

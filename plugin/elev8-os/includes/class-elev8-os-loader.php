@@ -138,6 +138,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-maintenance-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-it-support-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-team-coordination-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-team-capacity-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-maintenance-operations-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-action-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-service.php';
@@ -193,6 +194,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Maintenance_Service::init();
         Elev8_OS_IT_Support_Service::init();
         Elev8_OS_Team_Coordination_Service::init();
+        Elev8_OS_Team_Capacity_Service::init();
         Elev8_OS_Maintenance_Operations_Contributor::init();
         Elev8_OS_Observation_Service::init();
         Elev8_OS_Pattern_Detection_Service::init();
