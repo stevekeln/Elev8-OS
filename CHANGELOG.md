@@ -1,5 +1,20 @@
 # Elev8 OS Changelog
 
+## 19.0.0 — Business Coaching Engine Foundation
+
+### Added
+- A role-aware Business Coaching workspace available as a managed Elev8 OS portal page and administration view.
+- Explainable coaching cards derived from governed Work Items, confirmed Patterns, and Recommendations.
+- Role filters for owners, shop managers, glass managers, glassblowers, artists, teachers, event hosts, retail employees, volunteers, and team members.
+- Personal coaching-card states: unread, read, pinned, needs follow-up, and dismissed.
+- Evidence explanations and direct links back to Operations or Intelligence records.
+- Coaching summary metrics and shared application-shell navigation.
+
+### Architecture
+- Accepted ADR-0033: Business Coaching is explainable guidance, not a new source of facts, recommendations, approvals, or work.
+- Coaching owns only its personal presentation state; source intelligence and operations records remain authoritative.
+- Reused the existing Observation, Pattern, Recommendation, Operations, Organization, Identity, Analytics, and Workflow boundaries.
+
 ## 18.12.0 — Administrator-Confirmed Migration Plans
 
 ### Added

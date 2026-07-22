@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.11.0  
+**Platform release:** 19.0.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -783,3 +783,31 @@ Dependency discovery remains read-only evidence. The new plan is governed human 
 **Open questions:** Whether final retirement approval should require two people, whether Local and Live environments should be cryptographically linked, and how multisite network plugins should be governed remain intentionally postponed.
 
 **Next milestone:** Build Local-only retirement rehearsal governance with required validation checklists, environment confirmation, before-and-after evidence, and rollback verification.
+
+## Development History — 19.0.0
+
+### Business Coaching Engine Foundation
+
+The Intelligence Engine now provides a role-aware Business Coaching read model. Coaching projects governed Work Items, confirmed Patterns, and Recommendations into practical guidance for owners, managers, employees, artists, teachers, event hosts, volunteers, and glass teams. Every coaching card explains why it exists and links back to the governed evidence that produced it.
+
+Coaching owns only per-user presentation state: unread, read, pinned, needs follow-up, or dismissed. It cannot create or alter Observations, Patterns, Recommendations, Work Items, approvals, outcomes, or authoritative business records.
+
+**Primary engine:** Intelligence.
+
+**Supporting engines:** Operations, Organization, Identity, Analytics, Workflow, Communication, CRM, and Knowledge.
+
+**Business Graph changes:** Added a non-authoritative Coaching Projection relationship from Pattern, Recommendation, and Work Item evidence to a role-specific user view. No duplicate fact, recommendation, or task object was introduced.
+
+### ADR-0033 — Business Coaching Is Explainable Guidance
+
+**Status:** Accepted  
+**Decision:** Business Coaching is a personalized read model over governed Business Graph evidence. It may prioritize, explain, and present suggested next steps, but it may not create facts, promote Patterns, approve Recommendations, create Work Items, or modify authoritative records. Only personal presentation state belongs to Coaching.
+
+**Consequence:** Elev8 OS can proactively guide each role without creating another recommendation or task system. Every coaching card remains traceable to Operations or Intelligence evidence, and users may organize their own view without changing shared business truth.
+
+**Technical debt:** The initial coaching rules are deterministic and role-based. Future releases should add configurable coaching policies, organization-scoped preferences, delivery timing, and measured coaching usefulness before adding language-model generation.
+
+**Open questions:** Whether a needs-follow-up coaching state should optionally propose a governed Work Item, how coaching should be delivered on mobile, and how users should rate usefulness remain intentionally postponed.
+
+**Next milestone:** Build the Proactive Daily Assistant, combining role-aware Coaching, assigned Work, conversations, and permitted attention signals into a concise personal start-of-day briefing without duplicating the Executive Brief.
+

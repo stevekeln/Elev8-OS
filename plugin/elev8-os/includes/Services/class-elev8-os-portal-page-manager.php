@@ -29,6 +29,12 @@ final class Elev8_OS_Portal_Page_Manager {
                 'slug' => 'elev8-actions',
                 'shortcode' => 'elev8_action_center',
             ],
+            'coaching' => [
+                'option' => 'elev8_os_business_coaching_page_id',
+                'title' => __('Business Coaching', 'elev8-os'),
+                'slug' => 'elev8-business-coaching',
+                'shortcode' => 'elev8_business_coaching',
+            ],
             'resources' => [
                 'option' => 'elev8_os_resources_page_id',
                 'title' => __('Employee Guides', 'elev8-os'),
