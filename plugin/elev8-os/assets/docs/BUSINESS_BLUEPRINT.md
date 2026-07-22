@@ -4,7 +4,7 @@
 
 **Blueprint version:** 2.0  
 **Established:** 2026-07-22  
-**Platform release:** 18.9.0  
+**Platform release:** 18.10.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -708,4 +708,24 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Whether future calibration should incorporate time decay, location-level scope, financial value, or configurable evidence weights remains intentionally postponed until enough real outcome history exists.
 
 **Next development session:** Build the Executive Learning Dashboard and calibration health controls so leaders can inspect evidence coverage, identify where outcomes are missing, and understand which recommendation classes have enough history to support dependable learning.
+### ADR-0029 — Learning Health Is a Governed Read Model
+
+**Status:** Accepted  
+**Decision:** Calibration health must be calculated from existing Recommendation Outcomes and Executive Decision Outcomes without creating a parallel score ledger. Readiness is organization-specific and classification-specific, uses the same minimum evidence threshold as Decision Learning, and exposes missing measurement rather than inferring success from completed work.
+
+**Consequence:** Leaders can see where Elev8 OS has dependable evidence and where it cannot yet learn responsibly. The Learning Health view cannot change confidence, approve Recommendations, create Work Items, or modify Outcomes.
+
+### 2026-07-22 — Elev8 OS 18.10.0 — Executive Learning Dashboard & Calibration Health
+
+**What changed:** Added an Executive Learning Health workspace with organization-scope filtering, calibration coverage, classification-level readiness, positive/neutral/negative result history, missing-outcome counts, and explicit leadership guidance.
+
+**Why:** Confidence calibration existed, but leaders could not see whether its evidence was dependable or where missing measurements prevented learning. This release makes the quality and limits of organizational learning visible.
+
+**Engines changed:** Intelligence (primary); Analytics, Organization, Operations, and Workflow (supporting).
+
+**Business Graph changes:** Added no new authoritative object. Recommendation Outcomes and Executive Decision Outcomes now feed a governed Learning Health read model that explains calibration coverage.
+
+**Open questions:** Time decay, financial-value weighting, location-level scope, configurable evidence thresholds, and classification-specific weights remain intentionally postponed until sufficient real outcome history exists.
+
+**Next development session:** Build Outcome Measurement Governance and reminders so completed actions awaiting measurement are assigned, surfaced, and followed up through the existing Communication and Automation engines without treating missing measurement as operational failure.
 

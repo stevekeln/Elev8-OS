@@ -1,5 +1,20 @@
 # Elev8 OS Changelog
 
+## 18.10.0 — Executive Learning Dashboard & Calibration Health
+
+### Added
+- Executive Learning Health view inside the governed Intelligence workspace.
+- Organization-scope filtering for calibration evidence.
+- Per-classification readiness for risk, opportunity, decision, achievement, follow-up, and information Recommendations.
+- Explainable counts for measured positive, neutral, and negative outcomes.
+- Missing-outcome visibility for approved Recommendations and completed Executive Decision follow-through.
+- Calibration coverage percentage and leadership guidance for improving learning quality.
+
+### Architecture
+- Accepted ADR-0029: learning health is a governed read model, not a second scoring or outcome system.
+- Preserved the existing three-outcome minimum and ±15-point confidence boundary.
+- The dashboard cannot alter confidence, approve Recommendations, create Work Items, or rewrite Outcomes.
+
 ## 18.9.0 — Decision Learning & Confidence Calibration
 
 - Added an explainable Decision Learning service that calibrates Recommendation confidence from measured Recommendation Outcomes and Executive Decision Outcomes.

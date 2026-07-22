@@ -30,6 +30,7 @@ final class Elev8_OS_Observation_Registry_Module {
         if (!self::can_review($user)) { return '<p>'.esc_html__('You do not have permission to review intelligence.', 'elev8-os').'</p>'; }
         $view = sanitize_key((string)($_GET['view'] ?? 'observations'));
         if ($view === 'executive') { return self::executive_view(); }
+        if ($view === 'learning') { return self::learning_view(); }
         if ($view === 'patterns') { return self::patterns_view(); }
         if ($view === 'recommendations') { return self::recommendations_view(); }
         $filters = [
@@ -70,7 +71,7 @@ final class Elev8_OS_Observation_Registry_Module {
     private static function tabs(string $active): void {
         $base = self::url();
         echo '<nav style="display:flex;gap:8px;flex-wrap:wrap;margin:18px 0">';
-        foreach (['executive'=>__('Executive Intelligence','elev8-os'),'observations'=>__('Observations','elev8-os'),'patterns'=>__('Patterns','elev8-os'),'recommendations'=>__('Recommendations','elev8-os')] as $key=>$label) {
+        foreach (['executive'=>__('Executive Intelligence','elev8-os'),'learning'=>__('Learning Health','elev8-os'),'observations'=>__('Observations','elev8-os'),'patterns'=>__('Patterns','elev8-os'),'recommendations'=>__('Recommendations','elev8-os')] as $key=>$label) {
             $url = $key === 'observations' ? $base : add_query_arg('view',$key,$base);
             $style = $active === $key ? 'background:#5b21b6;color:#fff;' : 'background:#fff;color:#2d1b55;';
             echo '<a href="'.esc_url($url).'" style="'.esc_attr($style).'border:1px solid #d8c8ff;border-radius:999px;padding:9px 14px;text-decoration:none;font-weight:700">'.esc_html($label).'</a>';
@@ -129,6 +130,48 @@ final class Elev8_OS_Observation_Registry_Module {
         if(!$items){echo '<p>'.esc_html($kind==='risk'?__('No active confirmed risk Patterns.','elev8-os'):__('No active confirmed opportunity Patterns.','elev8-os')).'</p>';}
         foreach($items as $item){echo '<article style="border-top:1px solid #eee;padding:12px 0"><a href="'.esc_url(add_query_arg('view','patterns',self::url())).'" style="font-weight:800;text-decoration:none">'.esc_html((string)($item['title']??'')).'</a><p style="margin:4px 0">'.esc_html((string)($item['summary']??'')).'</p><small>'.sprintf(esc_html__('%1$d observations · %2$s severity · %3$s trend · %4$d%% confidence','elev8-os'),(int)($item['occurrence_count']??0),(string)($item['severity']??'normal'),(string)($item['trend']??'stable'),(int)($item['confidence']??0)).'</small></article>';}
         echo '</section>';
+    }
+
+    private static function learning_view(): string {
+        if (!class_exists('Elev8_OS_Executive_Learning_Health_Service')) {
+            return '<p>'.esc_html__('Learning Health is unavailable.', 'elev8-os').'</p>';
+        }
+        $organization_unit_id = absint($_GET['organization_unit_id'] ?? 0);
+        $report = Elev8_OS_Executive_Learning_Health_Service::report($organization_unit_id);
+        $totals = (array) ($report['totals'] ?? []);
+        ob_start();
+        echo '<div class="elev8-observation-registry"><header><p>'.esc_html__('INTELLIGENCE ENGINE', 'elev8-os').'</p><h1>'.esc_html__('Executive Learning Health', 'elev8-os').'</h1><span>'.esc_html__('See where Elev8 OS has dependable measured evidence, where learning is still developing, and which outcomes need leadership measurement.', 'elev8-os').'</span></header>';
+        self::tabs('learning');
+        echo '<form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0"><input type="hidden" name="view" value="learning"><label><strong>'.esc_html__('Organization scope', 'elev8-os').'</strong> <select name="organization_unit_id"><option value="0">'.esc_html__('All organization scopes', 'elev8-os').'</option>';
+        foreach ((array) ($report['organizations'] ?? []) as $scope) {
+            echo '<option value="'.(int) $scope['id'].'" '.selected($organization_unit_id, (int) $scope['id'], false).'>'.esc_html((string) $scope['label']).'</option>';
+        }
+        echo '</select></label><button>'.esc_html__('Apply scope', 'elev8-os').'</button></form>';
+        echo '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:20px 0">';
+        self::metric_card(__('Calibration coverage', 'elev8-os'), (int) ($report['coverage_percent'] ?? 0).'%', __('Classes with enough measured evidence', 'elev8-os'));
+        self::metric_card(__('Calibration ready', 'elev8-os'), (int) ($totals['ready'] ?? 0), __('Recommendation classifications', 'elev8-os'));
+        self::metric_card(__('Measured outcomes', 'elev8-os'), (int) ($totals['measured'] ?? 0), __('Comparable governed results', 'elev8-os'));
+        self::metric_card(__('Awaiting measurement', 'elev8-os'), (int) ($totals['awaiting_measurement'] ?? 0), __('Completed actions needing evidence', 'elev8-os'));
+        echo '</div>';
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><h2>'.esc_html__('Calibration guardrails', 'elev8-os').'</h2><p>'.esc_html(sprintf(__('Confidence changes only after at least %d comparable measured outcomes exist in the selected scope. Adjustments remain bounded to ±15 points and never authorize execution.', 'elev8-os'), (int) ($report['minimum_sample'] ?? 3))).'</p></section>';
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;margin-bottom:18px"><h2>'.esc_html__('Evidence coverage by classification', 'elev8-os').'</h2>';
+        foreach ((array) ($report['classifications'] ?? []) as $row) {
+            $health = (string) ($row['health'] ?? 'no_evidence');
+            $label = $health === 'ready' ? __('Calibration ready', 'elev8-os') : ($health === 'developing' ? __('Developing', 'elev8-os') : __('No evidence', 'elev8-os'));
+            echo '<article style="border-top:1px solid #eee;padding:14px 0"><div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><h3 style="margin:0 0 4px">'.esc_html((string) $row['label']).'</h3><p style="margin:0">'.esc_html((string) $row['explanation']).'</p></div><strong>'.esc_html($label).'</strong></div>';
+            echo '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px"><span>'.esc_html(sprintf(__('Measured: %d', 'elev8-os'), (int) $row['measured'])).'</span><span>'.esc_html(sprintf(__('Positive: %d', 'elev8-os'), (int) $row['positive'])).'</span><span>'.esc_html(sprintf(__('Neutral: %d', 'elev8-os'), (int) $row['neutral'])).'</span><span>'.esc_html(sprintf(__('Negative: %d', 'elev8-os'), (int) $row['negative'])).'</span><span>'.esc_html(sprintf(__('Awaiting: %d', 'elev8-os'), (int) $row['awaiting_measurement'])).'</span></div></article>';
+        }
+        echo '</section>';
+        echo '<section style="background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px"><h2>'.esc_html__('What leadership should do next', 'elev8-os').'</h2>';
+        if ((int) ($totals['awaiting_measurement'] ?? 0) > 0) {
+            echo '<p>'.esc_html__('Complete the missing Recommendation Outcomes and Executive Decision Outcomes. Better measurement—not more automation—is the fastest way to improve dependable learning.', 'elev8-os').'</p>';
+        } elseif ((int) ($totals['ready'] ?? 0) < (int) ($totals['classifications'] ?? 0)) {
+            echo '<p>'.esc_html__('Continue measuring future decisions consistently. Some classifications do not yet have enough comparable history for calibration.', 'elev8-os').'</p>';
+        } else {
+            echo '<p>'.esc_html__('Every tracked classification currently has enough measured evidence for bounded confidence calibration. Continue recording outcomes to preserve learning quality.', 'elev8-os').'</p>';
+        }
+        echo '</section></div>';
+        return (string) ob_get_clean();
     }
 
     private static function patterns_view(): string {

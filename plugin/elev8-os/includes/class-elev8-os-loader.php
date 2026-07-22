@@ -41,6 +41,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-decision-follow-through-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-decision-effectiveness-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-decision-learning-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-executive-learning-health-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-cross-engine-observation-contributor.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-blueprint-service.php';
@@ -187,6 +188,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Executive_Decision_Follow_Through_Service::init();
         Elev8_OS_Executive_Decision_Effectiveness_Service::init();
         Elev8_OS_Decision_Learning_Service::init();
+        Elev8_OS_Executive_Learning_Health_Service::init();
         Elev8_OS_Daily_Operations_Observation_Contributor::init();
         Elev8_OS_Cross_Engine_Observation_Contributor::init();
         Elev8_OS_Workflow_Service::init();
