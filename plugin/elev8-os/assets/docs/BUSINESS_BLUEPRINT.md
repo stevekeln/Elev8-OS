@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.8  
+**Blueprint version:** 1.9  
 **Established:** 2026-07-22  
-**Platform release:** 18.0.0  
+**Platform release:** 18.1.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -222,6 +222,13 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 **Decision:** Amelia-backed approval states contribute synchronized Work Items through a Booking-to-Operations adapter. Amelia remains authoritative for booking status, schedule, provider, customer, and service data.  
 **Consequence:** Elev8 OS may assign, escalate, evidence, and close operational approval work, but it may not create a competing booking record or parallel approval state.
 
+
+### ADR-0020 — Human Review Governs Intelligence Promotion
+
+**Status:** Accepted  
+**Decision:** Verified source observations may be generated automatically, but leaders must be able to confirm, correct, or dismiss them before higher-confidence recommendations or automation rely on them.  
+**Consequence:** Review state, reviewer identity, timestamp, and notes are stored on the Observation rather than copied back into authoritative source records.
+
 ## Roadmap by Engine
 
 | Engine | Current Foundation | Next Architectural Focus |
@@ -235,7 +242,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Commerce | WooCommerce integration | Order-to-operation orchestration |
 | Sales | Opportunities foundation | Reusable pipeline and sales operating home |
 | Marketing | Content and marketing foundations | Campaign engine and attribution |
-| Intelligence | Observation Engine, Executive Brief, and workspace health | Observation review, cross-engine contributors, pattern detection, recommendations, and forecasting |
+| Intelligence | Observation Engine, Observation Review workspace, cross-engine contributors, Executive Brief, and workspace health | Pattern detection, configurable classification, recommendations, and forecasting |
 
 ## Technical Debt and Risks
 
@@ -533,3 +540,11 @@ Build configurable Integration Scope Mapping so WooCommerce stores/products/orde
 **Open questions:** Reusable classifier registration, controlled historical backfill, observation review/correction workflows, and cross-source pattern thresholds remain intentionally postponed.
 
 **Next development session:** Build the Observation Registry and Intelligence Review workspace, then connect Inventory Signals, Maintenance Records, Events, Booking decisions, Conversations, and commerce events as verified Observation contributors.
+
+## Development History — 18.1.0
+
+- Added the Intelligence Review workspace and Observation Registry.
+- Added review audit metadata and lifecycle states.
+- Connected Inventory, Maintenance, Events, Booking, and Communication as verified Observation contributors.
+- Preserved source authority and stable source keys to prevent duplicate facts.
+

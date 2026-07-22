@@ -23,6 +23,10 @@ final class Elev8_OS_Observation_Service {
     public const META_REQUIRES_ACTION = '_elev8_observation_requires_action';
     public const META_WORK_ID = '_elev8_observation_work_id';
     public const META_RELATED = '_elev8_observation_related_objects';
+    public const META_REVIEW_STATUS = '_elev8_observation_review_status';
+    public const META_REVIEWED_BY = '_elev8_observation_reviewed_by_user_id';
+    public const META_REVIEWED_AT = '_elev8_observation_reviewed_at';
+    public const META_REVIEW_NOTES = '_elev8_observation_review_notes';
 
     public static function init(): void {
         add_action('init', [__CLASS__, 'register_post_type']);
@@ -88,6 +92,9 @@ final class Elev8_OS_Observation_Service {
         update_post_meta($observation_id, self::META_OCCURRED_AT, $occurred_at);
         update_post_meta($observation_id, self::META_REQUIRES_ACTION, !empty($args['requires_action']) ? 1 : 0);
         update_post_meta($observation_id, self::META_RELATED, $related);
+        if (!get_post_meta($observation_id, self::META_REVIEW_STATUS, true)) {
+            update_post_meta($observation_id, self::META_REVIEW_STATUS, 'unreviewed');
+        }
         if (!empty($args['work_id'])) { update_post_meta($observation_id, self::META_WORK_ID, absint($args['work_id'])); }
 
         do_action('elev8_os_observation_saved', $observation_id, $args);
@@ -130,15 +137,21 @@ final class Elev8_OS_Observation_Service {
             'requires_action' => (bool)get_post_meta($id, self::META_REQUIRES_ACTION, true),
             'work_id' => absint(get_post_meta($id, self::META_WORK_ID, true)),
             'related_objects' => (array)get_post_meta($id, self::META_RELATED, true),
+            'review_status' => (string)get_post_meta($id, self::META_REVIEW_STATUS, true) ?: 'unreviewed',
+            'reviewed_by_user_id' => absint(get_post_meta($id, self::META_REVIEWED_BY, true)),
+            'reviewed_at' => (string)get_post_meta($id, self::META_REVIEWED_AT, true),
+            'review_notes' => (string)get_post_meta($id, self::META_REVIEW_NOTES, true),
         ];
     }
 
     /** @return array<int,array<string,mixed>> */
     public static function query(array $filters = []): array {
-        $filters = wp_parse_args($filters, ['classification'=>'','severity'=>'','organization_unit_id'=>0,'requires_action'=>'','date_from'=>'','date_to'=>'','posts_per_page'=>100]);
+        $filters = wp_parse_args($filters, ['classification'=>'','severity'=>'','source_type'=>'','review_status'=>'','organization_unit_id'=>0,'requires_action'=>'','date_from'=>'','date_to'=>'','posts_per_page'=>100]);
         $meta = ['relation' => 'AND'];
         if ($filters['classification']) { $meta[] = ['key'=>self::META_CLASSIFICATIONS,'value'=>'"'.sanitize_key((string)$filters['classification']).'"','compare'=>'LIKE']; }
         if ($filters['severity']) { $meta[] = ['key'=>self::META_SEVERITY,'value'=>sanitize_key((string)$filters['severity'])]; }
+        if ($filters['source_type']) { $meta[] = ['key'=>self::META_SOURCE_TYPE,'value'=>sanitize_key((string)$filters['source_type'])]; }
+        if ($filters['review_status']) { $meta[] = ['key'=>self::META_REVIEW_STATUS,'value'=>sanitize_key((string)$filters['review_status'])]; }
         if ($filters['organization_unit_id']) { $meta[] = ['key'=>self::META_ORGANIZATION,'value'=>absint($filters['organization_unit_id']),'type'=>'NUMERIC']; }
         if ($filters['requires_action'] !== '') { $meta[] = ['key'=>self::META_REQUIRES_ACTION,'value'=>!empty($filters['requires_action']) ? 1 : 0,'type'=>'NUMERIC']; }
         $date_query = [];
@@ -161,6 +174,23 @@ final class Elev8_OS_Observation_Service {
             if (isset($summary[$item['severity']])) { $summary[$item['severity']]++; }
         }
         return $summary;
+    }
+
+
+    public static function review(int $id, string $status, int $user_id, string $notes = '') {
+        if (get_post_type($id) !== self::POST_TYPE) {
+            return new WP_Error('invalid_observation', __('The observation could not be found.', 'elev8-os'));
+        }
+        $status = sanitize_key($status);
+        if (!in_array($status, ['unreviewed','confirmed','corrected','dismissed'], true)) {
+            return new WP_Error('invalid_review_status', __('The review status is invalid.', 'elev8-os'));
+        }
+        update_post_meta($id, self::META_REVIEW_STATUS, $status);
+        update_post_meta($id, self::META_REVIEWED_BY, absint($user_id));
+        update_post_meta($id, self::META_REVIEWED_AT, current_time('mysql'));
+        update_post_meta($id, self::META_REVIEW_NOTES, sanitize_textarea_field($notes));
+        do_action('elev8_os_observation_reviewed', $id, $status, $user_id);
+        return true;
     }
 
     public static function register_graph_objects(array $objects): array {

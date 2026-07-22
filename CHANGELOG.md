@@ -1,5 +1,14 @@
 # Elev8 OS Changelog
 
+## 18.1.0 — Intelligence Review & Cross-Engine Observations
+
+- Added the frontend Observation Review workspace inside the shared Elev8 OS portal shell.
+- Added confirm, correct, dismiss, and return-to-review states with reviewer notes and audit metadata.
+- Added filters for classification, severity, source engine, and review status.
+- Added verified Observation contributors for Inventory Signals, Maintenance Records, Event Applications, Amelia booking decisions, and Conversations.
+- Preserved authoritative ownership: contributors summarize source state and never duplicate inventory, maintenance, event, booking, or conversation records.
+- Added the Observation Review command to the shared command palette for authorized leaders.
+
 ## 18.0.0 — 2026-07-22
 
 - Added the canonical Observation object and Intelligence Engine service.
