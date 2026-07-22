@@ -31,6 +31,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-blueprint-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-organization-service.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-artist-portal-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-waitlist-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-class-idea-center-module.php';
@@ -69,6 +70,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-daily-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-memory-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-blueprint-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-organization-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-mobile-home-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-browser-notification-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-knowledge-base-module.php';
@@ -170,6 +172,8 @@ final class Elev8_OS_Loader {
         Elev8_OS_Business_Memory_Module::init();
         Elev8_OS_Business_Blueprint_Service::init();
         Elev8_OS_Business_Blueprint_Module::init();
+        Elev8_OS_Organization_Service::init();
+        Elev8_OS_Organization_Module::init();
         Elev8_OS_Mobile_Home_Module::init();
         Elev8_OS_Browser_Notification_Module::init();
         Elev8_OS_Knowledge_Base_Module::init();

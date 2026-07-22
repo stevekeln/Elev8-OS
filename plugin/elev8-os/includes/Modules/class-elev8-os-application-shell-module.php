@@ -166,6 +166,9 @@ final class Elev8_OS_Application_Shell_Module {
                 <nav class="elev8-app-shell__nav" aria-label="<?php esc_attr_e('Elev8 OS navigation', 'elev8-os'); ?>">
                     <a href="<?php echo esc_url($home_url); ?>"><?php esc_html_e('Elev8 Arts Home', 'elev8-os'); ?></a>
                     <a href="<?php echo esc_url($dashboard_url); ?>"><?php esc_html_e('My Dashboard', 'elev8-os'); ?></a>
+                    <?php if (Elev8_OS_Access_Service::user_can('view_organization', $user) && class_exists('Elev8_OS_Organization_Module')) : ?>
+                        <a href="<?php echo esc_url(Elev8_OS_Organization_Module::url()); ?>"><?php esc_html_e('Organization', 'elev8-os'); ?></a>
+                    <?php endif; ?>
                     <?php if (Elev8_OS_Access_Service::user_can('view_work', $user)) : ?>
                         <a href="<?php echo esc_url(class_exists('Elev8_OS_Action_Center_Module') ? Elev8_OS_Action_Center_Module::url() : $dashboard_url); ?>"><?php esc_html_e('My Actions', 'elev8-os'); ?></a>
                     <?php endif; ?>

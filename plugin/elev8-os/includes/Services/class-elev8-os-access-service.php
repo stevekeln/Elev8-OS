@@ -68,6 +68,8 @@ final class Elev8_OS_Access_Service {
         'receive_work' => 'elev8_receive_work',
         'view_conversations' => 'elev8_view_conversations',
         'manage_conversations' => 'elev8_manage_conversations',
+        'view_organization' => 'elev8_view_organization',
+        'manage_organization' => 'elev8_manage_organization',
     ];
 
     public static function init(): void {
@@ -112,6 +114,20 @@ final class Elev8_OS_Access_Service {
         return false;
     }
 
+
+    /**
+     * Capability check constrained to an Organization Engine scope.
+     * Global administrators/owners retain global access; other users must have
+     * both the capability and an active assignment to the unit or its parent.
+     */
+    public static function user_can_in_scope(string $permission, int $organization_unit_id, ?WP_User $user = null): bool {
+        $user = $user ?: (class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user());
+        if (!$user instanceof WP_User || $user->ID < 1 || $organization_unit_id < 1) { return false; }
+        if (!self::user_can($permission, $user)) { return false; }
+        if (user_can($user, 'manage_options') || self::user_can('view_ceo_dashboard', $user)) { return true; }
+        return class_exists('Elev8_OS_Organization_Service') && Elev8_OS_Organization_Service::user_in_scope((int) $user->ID, $organization_unit_id);
+    }
+
     public static function can_edit_user(int $user_id): bool {
         return current_user_can('edit_user', $user_id);
     }
@@ -135,7 +151,7 @@ final class Elev8_OS_Access_Service {
             'elev8_view_manager_dashboard','elev8_submit_manager_log','elev8_manage_daily_operations',
             'elev8_manage_events','elev8_manage_retail_operations','elev8_manage_inventory',
             'elev8_manage_checkins','elev8_manage_relationships','elev8_manage_reservations','elev8_manage_event_applications','elev8_manage_work','elev8_view_work','elev8_receive_work','elev8_receive_assignments',
-            'elev8_view_business_memory','elev8_view_reports','elev8_view_conversations','elev8_manage_conversations',
+            'elev8_view_business_memory','elev8_view_reports','elev8_view_conversations','elev8_manage_conversations','elev8_view_organization',
         ];
         self::grant_to_role('shop_manager', $manager);
         self::grant_to_role('editor', $manager); // Legacy manager compatibility.
@@ -152,7 +168,7 @@ final class Elev8_OS_Access_Service {
         self::grant_to_role(self::ROLE_DJ, ['elev8_manage_events','elev8_view_assigned_reservations','elev8_submit_event_log','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
         self::grant_to_role(self::ROLE_VOLUNTEER, ['elev8_view_volunteer_portal','elev8_view_conversations']);
 
-        self::grant_to_role(self::ROLE_GLASS_MANAGER, ['elev8_view_glass_dashboard','elev8_manage_glass_orders','elev8_manage_glass_production','elev8_manage_blower_payouts','elev8_glass_work','elev8_view_artist_classes','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
+        self::grant_to_role(self::ROLE_GLASS_MANAGER, ['elev8_view_glass_dashboard','elev8_manage_glass_orders','elev8_manage_glass_production','elev8_manage_blower_payouts','elev8_glass_work','elev8_view_artist_classes','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations','elev8_view_organization']);
         self::grant_to_role(self::ROLE_GLASS_BLOWER, ['elev8_glass_work','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
 
         self::assign_foundation_glass_manager();

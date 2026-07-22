@@ -101,6 +101,7 @@ final class Elev8_OS {
         }
         if (class_exists('Elev8_OS_Class_Approval_Service')) { Elev8_OS_Class_Approval_Service::activate(); }
         if (class_exists('Elev8_OS_Business_Blueprint_Module')) { Elev8_OS_Business_Blueprint_Module::activate(); }
+        if (class_exists('Elev8_OS_Organization_Module')) { Elev8_OS_Organization_Module::activate(); }
         self::add_rewrite_rules();
         flush_rewrite_rules();
     }

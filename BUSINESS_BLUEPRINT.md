@@ -2,9 +2,9 @@
 
 > Architecture is the product. Code serves the architecture. Elev8 OS must still make sense ten years from now.
 
-**Blueprint version:** 1.0  
+**Blueprint version:** 1.1  
 **Established:** 2026-07-22  
-**Platform release:** 16.0.0  
+**Platform release:** 16.1.0  
 **Status:** Governing architecture document
 
 ## Platform Constitution
@@ -55,7 +55,7 @@ Elev8 OS owns business operations, business relationships, business intelligence
 
 | Engine | Purpose | Owns | Must Not Duplicate |
 |---|---|---|---|
-| Organization | Represents businesses, brands, locations, departments, teams, and reporting structure. | Organization structure and relationships. | WordPress authentication or commerce records. |
+| Organization | Represents businesses, brands, locations, departments, teams, reporting structure, and scoped person responsibilities. | Organization units, hierarchy, assignments, and scope relationships. | WordPress authentication, user identity, or commerce records. |
 | Commerce | Interprets commerce events and coordinates operational consequences. | Commerce orchestration and relationships. | WooCommerce products, orders, payments, taxes, or checkout. |
 | Sales | Manages opportunities, pipelines, follow-up, proposals, and conversion activity. | Sales execution and opportunity relationships. | CRM identities or authoritative orders. |
 | Marketing | Plans campaigns, content, audiences, launches, attribution, and reusable marketing workflows. | Campaign execution and marketing intelligence. | Customer identity or commerce transactions. |
@@ -108,6 +108,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 | Existing Elev8 OS Capability | Primary Engine | Supporting Engines |
 |---|---|---|
 | Access Service, public profiles, role landing | Identity | Organization |
+| Businesses, brands, locations, departments, teams, person assignments | Organization | Identity, Workflow |
 | Glass production, repairs, memorials | Operations | Assets, Workflow, Financial |
 | Production Catalog and Fast Pay | Operations | Commerce, Financial, Knowledge |
 | Conversations and notifications | Communication | Identity, Automation, Knowledge |
@@ -192,12 +193,19 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 **Decision:** Every development session begins by consulting this Blueprint and ends by updating it.  
 **Consequence:** Chat history and developer memory are supporting context, not the architectural source of truth.
 
+
+### ADR-0008 — Organization Structure Is Configurable Graph Data
+
+**Status:** Accepted  
+**Decision:** Businesses, brands, locations, departments, teams, and person responsibilities are Organization Engine records and relationships. WordPress remains authoritative for user identity.  
+**Consequence:** Operational engines may scope access and responsibility through Organization assignments without duplicating users or hardcoding a single-business hierarchy.
+
 ## Roadmap by Engine
 
 | Engine | Current Foundation | Next Architectural Focus |
 |---|---|---|
 | Knowledge | Business Memory, Employee Guides, Business Blueprint | Structured SOP execution and knowledge relationships |
-| Organization | Roles and role-based experiences | Multi-business, brand, location, and department model |
+| Organization | Organization units, hierarchy, scoped person assignments, CEO company map | Scoped responsibilities, shared resources, and organization-aware engine access |
 | Operations | Glass production, repairs, memorials, daily operations | General reusable service operations and Workbench execution |
 | Communication | Conversations, alerts, mentions | Unified delivery, preferences, escalation, and customer communication |
 | Booking | Amelia calendar and approval center | General booking orchestration and staffing rules |
@@ -216,7 +224,7 @@ Person, Business, Brand, Location, Department, Product, Order, Inventory, Asset,
 
 ## Open Questions
 
-1. What is the canonical multi-business and organization data model?
+1. How should shared assets, inventory, customers, and vendors be scoped across organization units without duplicating their authoritative records?
 2. Which accounting system will be authoritative for ledgers, reconciliation, and payroll export?
 3. How should Elev8 OS synchronize the repository Blueprint with structured in-app architecture records without creating two sources of truth?
 4. Which existing modules should be renamed or consolidated as engine capabilities?
@@ -260,3 +268,15 @@ Every build response and Blueprint update must include:
 **Open questions:** Structured in-app editing and repository synchronization remain intentionally postponed.
 
 **Next development session:** Define the Organization Engine and canonical multi-business Business Graph before expanding additional engines.
+
+## Development Session History
+
+### 2026-07-22 — Release 16.1.0
+
+**Purpose:** Establish the Organization Engine foundation before expanding the Business Graph.  
+**Architecture updates:** Added configurable organization units, hierarchy, person assignments, scoped access foundation, Organization workspace integration, and Organization workspaces.  
+**Engines changed:** Organization (primary), Identity and Workflow (supporting).  
+**Business Graph changes:** Added explicit Business, Brand, Location, Department, and Team nodes; added Person → Organization assignment relationships with responsibility, assignment type, dates, active state, and primary designation.  
+**Architectural decisions:** Accepted ADR-0008. WordPress users remain authoritative Person identities; Organization Engine owns only their organizational relationships.  
+**Open questions:** Shared-resource scoping and inheritance rules remain intentionally postponed.  
+**Next recommended session:** Build the Business Graph Registry and relationship enforcement layer so engines can declare object ownership and organization scope consistently.

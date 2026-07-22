@@ -17,6 +17,7 @@ final class Elev8_OS_Workspace_Service {
             'event_application' => __('Event Application', 'elev8-os'),
             'reservation' => __('Reservation', 'elev8-os'),
             'person' => __('Person', 'elev8-os'),
+            'organization' => __('Organization Unit', 'elev8-os'),
         ];
     }
 
@@ -28,6 +29,8 @@ final class Elev8_OS_Workspace_Service {
             'elev8_ops_log' => 'manager_log',
             'elev8_event_app' => 'event_application',
             'user' => 'person',
+            'org_unit' => 'organization',
+            'elev8_org_unit' => 'organization',
         ];
         return $aliases[$type] ?? $type;
     }
@@ -58,6 +61,8 @@ final class Elev8_OS_Workspace_Service {
                 return Elev8_OS_Access_Service::user_can('manage_reservations', $user) || Elev8_OS_Access_Service::user_can('view_assigned_reservations', $user);
             case 'person':
                 return $id === $user->ID || Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user) || Elev8_OS_Access_Service::user_can('manage_work', $user);
+            case 'organization':
+                return class_exists('Elev8_OS_Organization_Service') && (Elev8_OS_Organization_Service::can_manage($user) || (Elev8_OS_Organization_Service::can_view($user) && Elev8_OS_Organization_Service::user_in_scope((int) $user->ID, $id)));
         }
         return (bool) apply_filters('elev8_os_workspace_can_view', false, $type, $id, $user);
     }
@@ -97,6 +102,18 @@ final class Elev8_OS_Workspace_Service {
                 $summary['status'] = ucfirst(str_replace('_', ' ', (string) get_post_meta($id, '_elev8_event_app_status', true) ?: 'new'));
                 $summary['source_url'] = add_query_arg(['page' => 'elev8-event-applications', 'view' => 'detail', 'application_id' => $id], admin_url('admin.php'));
                 break;
+            case 'organization':
+                if (class_exists('Elev8_OS_Organization_Service')) {
+                    $unit = Elev8_OS_Organization_Service::get_unit($id);
+                    if ($unit) {
+                        $summary['label'] = (string) $unit['type_label'];
+                        $summary['title'] = (string) $unit['name'];
+                        $summary['description'] = wp_trim_words(wp_strip_all_tags((string) $unit['description']), 45);
+                        $summary['status'] = ucfirst((string) $unit['status']);
+                        $summary['source_url'] = class_exists('Elev8_OS_Organization_Module') ? Elev8_OS_Organization_Module::url(['unit_id' => $id]) : '';
+                    }
+                }
+                break;
             case 'person':
                 $person = get_userdata($id); if (!$person instanceof WP_User) { break; }
                 $summary['title'] = $person->display_name;
@@ -111,6 +128,10 @@ final class Elev8_OS_Workspace_Service {
 
     public static function source_details(string $type, int $id): string {
         $type = self::normalize_type($type);
+        if ($type === 'organization' && class_exists('Elev8_OS_Organization_Service')) {
+            $unit = Elev8_OS_Organization_Service::get_unit($id);
+            return wp_kses_post((string) ($unit['description'] ?? ''));
+        }
         if ($type === 'person') {
             $profile = class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::get($id) : [];
             return sanitize_textarea_field((string) ($profile['bio'] ?? ''));
@@ -205,6 +226,7 @@ final class Elev8_OS_Workspace_Service {
             $ids[] = absint(get_post_meta($id, '_elev8_work_created_by', true));
         }
         if ($type === 'conversation' && class_exists('Elev8_OS_Conversation_Service')) { $ids = array_merge($ids, Elev8_OS_Conversation_Service::participants($id)); }
+        if ($type === 'organization' && class_exists('Elev8_OS_Organization_Service')) { foreach (Elev8_OS_Organization_Service::assignments_for_unit($id) as $assignment) { $ids[] = (int) $assignment['user_id']; } }
         $post = get_post($id); if ($post instanceof WP_Post && $post->post_author) { $ids[] = (int) $post->post_author; }
         $users = [];
         foreach (array_unique(array_filter(array_map('absint', $ids))) as $user_id) { $user = get_userdata($user_id); if ($user instanceof WP_User) { $users[] = $user; } }
@@ -213,6 +235,10 @@ final class Elev8_OS_Workspace_Service {
 
     public static function files(string $type, int $id): array {
         $type = self::normalize_type($type);
+        if ($type === 'organization' && class_exists('Elev8_OS_Organization_Service')) {
+            $unit = Elev8_OS_Organization_Service::get_unit($id);
+            return wp_kses_post((string) ($unit['description'] ?? ''));
+        }
         if ($type === 'person') {
             $profile = class_exists('Elev8_OS_Public_Profile_Service') ? Elev8_OS_Public_Profile_Service::get($id) : [];
             $ids = array_filter([absint($profile['profile_photo_id'] ?? 0), absint($profile['cover_image_id'] ?? 0)]);

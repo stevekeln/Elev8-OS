@@ -1,3 +1,13 @@
+# Elev8 OS 16.1.0 — Organization Engine Foundation
+
+- Added configurable Business, Brand, Location, Department, and Team organization units.
+- Added parent-child organization hierarchy and a CEO-facing Company Map workspace.
+- Added scoped Person assignments with assignment type, responsibility, primary status, effective dates, and active state.
+- Added Organization workspace support and Activity history.
+- Added Organization-aware access foundation through `user_can_in_scope()`.
+- Added Organization navigation and Command Palette access.
+- Updated the Business Blueprint with ADR-0008 and the 16.1.0 development session.
+
 ## 16.0.0 - Business Blueprint Engine Foundation
 
 ### Added
