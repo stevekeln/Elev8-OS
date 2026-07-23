@@ -1,2 +1,46 @@
 .elev8-glass-suite{display:grid;grid-template-columns:245px minmax(0,1fr);gap:22px;max-width:1500px;margin:22px auto;padding:0 18px;align-items:start}.elev8-glass-suite__nav{position:sticky;top:84px;background:#173845;color:#fff;border-radius:16px;padding:14px;box-shadow:0 12px 32px rgba(17,45,57,.18);display:flex;flex-direction:column;gap:5px}.elev8-glass-suite__brand{padding:10px 10px 15px;border-bottom:1px solid rgba(255,255,255,.16);margin-bottom:5px}.elev8-glass-suite__brand span{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.12em;opacity:.72}.elev8-glass-suite__brand strong{display:block;font-size:21px;margin-top:2px}.elev8-glass-suite__nav a{color:#eef8fb;text-decoration:none;padding:10px 11px;border-radius:9px;font-weight:650;line-height:1.2}.elev8-glass-suite__nav a:hover,.elev8-glass-suite__nav a.is-active{background:#fff;color:#173845}.elev8-glass-suite__divider{font-size:11px;text-transform:uppercase;letter-spacing:.12em;opacity:.65;padding:14px 10px 4px}.elev8-glass-suite__content{min-width:0}.elev8-glass-suite__content>.wrap{margin:0}.elev8-glass-suite .notice{margin:14px 0}.elev8-suite-message{max-width:800px;margin:40px auto;padding:24px;border-radius:14px;background:#fff3cd;border:1px solid #ffe69c}.elev8-glass-suite .button{box-sizing:border-box}@media(max-width:900px){.elev8-glass-suite{grid-template-columns:1fr;padding:0 10px}.elev8-glass-suite__nav{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.elev8-glass-suite__brand,.elev8-glass-suite__divider{grid-column:1/-1}.elev8-glass-suite__nav a{text-align:center;background:rgba(255,255,255,.08)}}@media(max-width:520px){.elev8-glass-suite__nav{grid-template-columns:1fr}.elev8-glass-suite__brand,.elev8-glass-suite__divider{grid-column:auto}}
 .elev8-suite-class-alert{display:flex;justify-content:space-between;gap:18px;align-items:center;margin:0 0 18px;padding:16px 18px;border-radius:12px;background:#fff4e5;border:2px solid #e86722;color:#3c2b1f;text-decoration:none;box-shadow:0 5px 18px rgba(0,0,0,.08)}.elev8-suite-class-alert strong{font-size:17px}.elev8-suite-class-alert span{font-weight:600}@media(max-width:700px){.elev8-suite-class-alert{display:block}.elev8-suite-class-alert span{display:block;margin-top:5px}}
+
+
+/* 20.7.1 — Full-viewport Glass Manager workspace.
+ * Break out of narrow public-theme content columns without changing the site theme.
+ */
+body .elev8-glass-suite{
+  box-sizing:border-box;
+  width:100vw;
+  max-width:none;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  padding-left:max(18px,env(safe-area-inset-left));
+  padding-right:max(18px,env(safe-area-inset-right));
+}
+body .elev8-glass-suite,
+body .elev8-glass-suite *{box-sizing:border-box}
+body .elev8-glass-suite__content,
+body .elev8-glass-suite__content>.wrap,
+body .elev8-glass-suite .elev8-glass{width:100%;max-width:none;min-width:0}
+body .elev8-glass-suite__content>.wrap{padding:0}
+
+@media(max-width:900px){
+  body .elev8-glass-suite{
+    display:block;
+    margin-top:0;
+    margin-bottom:0;
+    padding-left:max(12px,env(safe-area-inset-left));
+    padding-right:max(12px,env(safe-area-inset-right));
+  }
+  body .elev8-glass-suite__nav{margin-bottom:14px}
+  body .elev8-glass-suite .elev8-glass-brief,
+  body .elev8-glass-suite .elev8-glass-manager-grid,
+  body .elev8-glass-suite .elev8-glass-manager-grid--equal,
+  body .elev8-glass-suite .elev8-glass__grid{grid-template-columns:minmax(0,1fr)}
+  body .elev8-glass-suite .elev8-glass__kpis,
+  body .elev8-glass-suite .elev8-glass__kpis--manager{grid-template-columns:minmax(0,1fr)}
+  body .elev8-glass-suite .elev8-manager-workload{grid-template-columns:minmax(0,1fr)}
+  body .elev8-glass-suite :where(.panel,.elev8-glass__kpis article,.elev8-glass-brief,.elev8-glass-all-clear){width:100%;min-width:0;max-width:none}
+  body .elev8-glass-suite :where(h1,h2,h3,p,a,span,strong,small){overflow-wrap:anywhere;word-break:normal}
+}
+
+@media(min-width:901px){
+  body .elev8-glass-suite{padding-left:clamp(18px,3vw,48px);padding-right:clamp(18px,3vw,48px)}
+}

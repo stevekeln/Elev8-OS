@@ -1453,3 +1453,66 @@ Add event and class readiness adapters, readiness due-time alerts, and manager v
 ### Release 20.3.0 — Constitution v2 and Report a Problem Foundation
 
 Constitution v2 is now the governing architecture document. The repository gap analysis identifies Mobile Reliability as the next foundation priority. The first real-business win is a phone-friendly Report a Problem page, a prominent Mobile Home entry, normalized context capture, optional evidence upload, duplicate occurrence counting, impact escalation, and an owner triage queue.
+
+## ADR-0053 — Trusted Device Registry and Revocation Boundary
+
+**Status:** Accepted  
+**Release:** 20.4.0  
+**Classification:** Core Platform Capability / Shared Platform Service
+
+**Decision:** Elev8 OS owns a privacy-preserving Trusted Device Registry for mobile reliability. WordPress remains the authentication and session-token authority. Elev8 OS records a generated device identifier, device/browser label, first seen, last seen, a salted one-way IP hash, and revocation state. It never stores passwords, payment information, or raw WordPress authentication tokens.
+
+**Remote logout behavior:** A user may revoke an individual registered device. The revoked browser is signed out on its next authenticated Elev8 OS request. This creates a safe device-specific control without copying or weakening WordPress authentication.
+
+**Why:** Employees need app-like persistence and the ability to remove lost or old devices. The registry establishes device identity and lifecycle evidence before session refresh, push subscription governance, and notification deep linking are added.
+
+**Next development session:** Add governed safe session-refresh signals and notification deep-link registration using the Trusted Device Registry as the device authority.
+
+## ADR-0054 — Repository Health Gate
+
+**Status:** Accepted  
+**Release:** 20.4.0  
+**Classification:** Core Platform Capability / Development Infrastructure
+
+**Decision:** Every release build must pass a visible Repository Health Check before PHP validation and packaging. The health gate verifies the canonical plugin entry, absence of duplicate root entries, required architecture files, version consistency, changelog coverage, and loader registration for modules. Blocking failures stop the build and provide specific corrective guidance.
+
+**Why:** Release confidence should be automated. The build that prevented a duplicate plugin entry proved that strict repository checks reduce risk and operational stress.
+
+
+## Release 20.5.0 — Founder Preview and Persistent Access
+
+- User Preview is a CEO-only testing capability over the centralized Access Service and Workspace Resolver; it does not impersonate WordPress authentication or create a second identity system.
+- Preview mode is read-only, visibly identified, suppresses outbound communication, and uses clean application presentation for reliable mobile and desktop testing.
+- Persistent Access extends WordPress authentication only for registered trusted devices. Device revocation, password changes, account status, and WordPress sessions remain authoritative.
+
+
+## Theme-Isolated Application Shell
+
+Elev8 OS managed workspaces render through a dedicated application gateway. WordPress remains the authentication and runtime platform, while the public website theme is excluded from application presentation. The app shell owns navigation, responsive layout, safe-area handling, typography, and workspace framing. Public website pages continue using the active theme. New operational screens should prefer the clean application route rather than wp-admin or theme-dependent page templates.
+
+
+## Elev8 UI Framework (20.7.0)
+Presentation is a shared platform layer. Engines expose capability but never own layout. Design tokens, reusable components, role-aware shells, theme packs, and a temporary legacy bridge support gradual migration without duplicating business logic. The first full workspace migration target is Glass Manager Operational Home, followed by operational readiness cards.
+
+
+## ADR-0055 — Workspace and Widget Presentation Boundary
+
+**Status:** Accepted  
+**Release:** 21.0.0  
+**Classification:** Core Platform Capability
+
+**Decision:** Elev8 OS workspaces are registered presentation definitions over shared engines. A workspace declares shell context, permitted audience, widgets, navigation, and quick actions. Widgets declare their source engine, access boundary, responsive size, and render/data callbacks. The Responsive Grid Service owns layout behavior across phone, tablet, and desktop.
+
+**Boundary:** Workspaces and widgets may project engine data but may not duplicate records, own business rules, bypass the Access Service, or create engine-specific layout systems. Existing dashboards remain live until individually migrated.
+
+**First migration:** Glass Manager Operational Home becomes the 21.1 proof case. Production, QC, pay, assignment, and permissions remain authoritative in their current services while the presentation is reassembled as Studio workspace widgets.
+
+## 21.1.0 — Live Workspace Runtime and Safe Feedback Return
+
+**Classification:** Core Platform Capability.
+
+The Workspace Platform now has a real front-end runtime rather than only an administrator preview. Workspace definitions continue to supply presentation metadata, while engines remain authoritative for data and actions. The Studio workspace proves this boundary with a Studio Pulse widget sourced directly from Glass Operations summary data.
+
+Problem reporting is a governed exception to preview read-only protection. A report is authored by the real authenticated user, while the effective preview user and role are stored only as diagnostic context. Submission returns the user to the originating workspace instead of stranding them on an administrative endpoint.
+
+**Business Graph impact:** Problem Reports now preserve reporter, page, device, and optional preview-context relationships without impersonating the previewed employee.

@@ -54,11 +54,11 @@ final class Elev8_OS_CEO_Dashboard_Module {
      */
     public static function render_workspace_navigation(string $active = 'overview'): void {
         $items = [
-            'overview' => [__('Overview', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG)],
+            'overview' => [__('Overview', 'elev8-os'), class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=' . self::PAGE_SLUG)],
             'intelligence' => [__('Business Intelligence', 'elev8-os'), admin_url('admin.php?page=elev8-business-intelligence')],
-            'operations' => [__('Business Memory', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=memory')],
-            'opportunities' => [__('Opportunities', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities')],
-            'class-requests' => [__('Class Requests', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests')],
+            'operations' => [__('Business Memory', 'elev8-os'), class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo', ['view' => 'memory']) : admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=memory')],
+            'opportunities' => [__('Opportunities', 'elev8-os'), class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo', ['view' => 'opportunities']) : admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities')],
+            'class-requests' => [__('Class Requests', 'elev8-os'), class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo', ['view' => 'class-requests']) : admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests')],
             'growth' => [__('Growth', 'elev8-os'), admin_url('admin.php?page=elev8-growth-center')],
             'system' => [__('System Health', 'elev8-os'), admin_url('admin.php?page=elev8-system-inspector')],
         ];

@@ -173,7 +173,7 @@ final class Elev8_OS_Mobile_Home_Module {
         }
 
         if ($can('view_ceo_dashboard')) {
-            $cards[] = self::card(__('CEO Dashboard', 'elev8-os'), __('See the owner view, priorities, and business intelligence.', 'elev8-os'), admin_url('admin.php?page=elev8-ceo-dashboard'), 'chart-area', true);
+            $cards[] = self::card(__('CEO Dashboard', 'elev8-os'), __('See the owner view, priorities, and business intelligence.', 'elev8-os'), class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=elev8-ceo-dashboard'), 'chart-area', true);
             $cards[] = self::card(__('Record Business Memory', 'elev8-os'), __('Quickly document a conversation, event, decision, or incident.', 'elev8-os'), admin_url('admin.php?page=elev8-business-memory&view=new'), 'edit-page', true);
         }
         if ($can('submit_manager_log')) {

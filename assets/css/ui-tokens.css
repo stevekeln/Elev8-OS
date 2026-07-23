@@ -1,0 +1,15 @@
+:root {
+  --e8-color-bg:#f4f6f8; --e8-color-surface:#fff; --e8-color-surface-soft:#eef2f5;
+  --e8-color-text:#17212b; --e8-color-muted:#667382; --e8-color-line:#dce2e8;
+  --e8-color-brand:#6d28d9; --e8-color-brand-strong:#4c1d95; --e8-color-accent:#168ca5;
+  --e8-color-success:#177245; --e8-color-warning:#9a6700; --e8-color-danger:#b42318;
+  --e8-space-1:.25rem; --e8-space-2:.5rem; --e8-space-3:.75rem; --e8-space-4:1rem;
+  --e8-space-5:1.25rem; --e8-space-6:1.5rem; --e8-space-8:2rem; --e8-space-10:2.5rem;
+  --e8-radius-sm:.65rem; --e8-radius-md:1rem; --e8-radius-lg:1.5rem; --e8-radius-pill:999px;
+  --e8-shadow-sm:0 1px 2px rgba(16,24,40,.06); --e8-shadow-md:0 12px 30px rgba(16,24,40,.10);
+  --e8-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --e8-content:1180px; --e8-touch:46px;
+}
+.elev8-ui--theme-studio { --e8-color-brand:#164e63; --e8-color-brand-strong:#0f3440; --e8-color-accent:#0891b2; }
+.elev8-ui--theme-retail { --e8-color-brand:#9a3412; --e8-color-brand-strong:#7c2d12; --e8-color-accent:#ea580c; }
+.elev8-ui--theme-executive { --e8-color-brand:#252b36; --e8-color-brand-strong:#111827; --e8-color-accent:#6d28d9; }

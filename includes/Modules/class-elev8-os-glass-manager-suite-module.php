@@ -14,6 +14,17 @@ final class Elev8_OS_Glass_Manager_Suite_Module {
         add_shortcode(self::SHORTCODE, [__CLASS__, 'shortcode']);
         add_action('init', [__CLASS__, 'ensure_page'], 30);
         add_action('wp_enqueue_scripts', [__CLASS__, 'assets']);
+        add_action('wp_head', [__CLASS__, 'viewport_meta'], 1);
+    }
+
+
+    /**
+     * The application workspace must use the real device viewport even when the
+     * active public theme omits a mobile viewport declaration.
+     */
+    public static function viewport_meta(): void {
+        if (!self::is_current()) { return; }
+        echo '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' . "\n";
     }
 
     public static function ensure_page(): void {

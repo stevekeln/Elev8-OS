@@ -46,6 +46,8 @@ final class Elev8_OS_Problem_Report_Service {
         $expected = sanitize_textarea_field((string) ($raw['expected'] ?? ''));
         $page_url = esc_url_raw((string) ($raw['page_url'] ?? ''));
         $device = sanitize_text_field((string) ($raw['device'] ?? ''));
+        $preview_target_user_id = absint($raw['preview_target_user_id'] ?? 0);
+        $preview_role = sanitize_key((string) ($raw['preview_role'] ?? ''));
         $fingerprint = self::fingerprint($category, $area, $summary);
         $existing = self::find_open_duplicate($fingerprint);
 
@@ -54,7 +56,7 @@ final class Elev8_OS_Problem_Report_Service {
             $data['occurrences'] = max(1, (int) ($data['occurrences'] ?? 1)) + 1;
             $data['last_reported_at'] = current_time('mysql');
             $data['reporters'] = array_values(array_unique(array_merge((array) ($data['reporters'] ?? []), [$user_id])));
-            $data['recent_context'][] = ['user_id' => $user_id, 'details' => $details, 'page_url' => $page_url, 'device' => $device, 'reported_at' => current_time('mysql')];
+            $data['recent_context'][] = ['user_id' => $user_id, 'details' => $details, 'page_url' => $page_url, 'device' => $device, 'preview_target_user_id' => $preview_target_user_id, 'preview_role' => $preview_role, 'reported_at' => current_time('mysql')];
             $data['recent_context'] = array_slice($data['recent_context'], -10);
             if (self::severity_rank($severity) > self::severity_rank((string) ($data['severity'] ?? 'normal'))) { $data['severity'] = $severity; }
             update_post_meta($existing, self::META, $data);
@@ -70,6 +72,7 @@ final class Elev8_OS_Problem_Report_Service {
         $data = [
             'category' => $category, 'severity' => $severity, 'area' => $area, 'summary' => $summary,
             'details' => $details, 'expected' => $expected, 'page_url' => $page_url, 'device' => $device,
+            'preview_target_user_id' => $preview_target_user_id, 'preview_role' => $preview_role,
             'fingerprint' => $fingerprint, 'status' => 'new', 'occurrences' => 1, 'reporters' => [$user_id],
             'created_at' => current_time('mysql'), 'last_reported_at' => current_time('mysql'),
             'recent_context' => [], 'attachment_ids' => self::attachments($files, (int) $post_id),

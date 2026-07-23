@@ -100,6 +100,10 @@ final class Elev8_OS_Application_Shell_Module {
             return false;
         }
 
+        if (class_exists('Elev8_OS_Clean_App_Module') && Elev8_OS_Clean_App_Module::is_request()) {
+            return true;
+        }
+
         $path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
 
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {
@@ -158,6 +162,7 @@ final class Elev8_OS_Application_Shell_Module {
         $readiness_url = class_exists('Elev8_OS_Operational_Readiness_Module') ? Elev8_OS_Operational_Readiness_Module::url() : home_url('/elev8-readiness/');
         $team_coordination_url = class_exists('Elev8_OS_Team_Coordination_Module') ? Elev8_OS_Team_Coordination_Module::url() : home_url('/elev8-team-coordination/');
         $blueprint_url = class_exists('Elev8_OS_Business_Blueprint_Module') ? Elev8_OS_Business_Blueprint_Module::url() : home_url('/business-blueprint/');
+        $problem_report_url = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url(Elev8_OS_Problem_Report_Module::current_request_url()) : home_url('/report-a-problem/');
         $logout_url = wp_logout_url($home_url);
         $display_name = trim((string) $user->display_name) ?: (string) $user->user_login;
         $initial = function_exists('mb_substr') ? mb_substr($display_name, 0, 1) : substr($display_name, 0, 1);
@@ -200,6 +205,7 @@ final class Elev8_OS_Application_Shell_Module {
                 </nav>
 
                 <div class="elev8-app-shell__actions">
+                    <a class="elev8-app-shell__problem-button" href="<?php echo esc_url($problem_report_url); ?>" aria-label="<?php esc_attr_e('Report a Problem', 'elev8-os'); ?>"><span aria-hidden="true">!</span><strong><?php esc_html_e('Report', 'elev8-os'); ?></strong></a>
                     <?php if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::can_preview()) : ?>
                         <a class="elev8-app-shell__preview-button" href="<?php echo esc_url(Elev8_OS_Preview_Service::preview_page_url()); ?>">👁 <span><?php esc_html_e('Preview', 'elev8-os'); ?></span></a>
                     <?php endif; ?>
@@ -248,6 +254,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a class="elev8-app-shell__logout" href="<?php echo esc_url($logout_url); ?>">🚪 <span><?php esc_html_e('Log Out', 'elev8-os'); ?></span></a>
             </div>
         </div>
+
 
             <div class="elev8-command-palette" id="elev8-command-palette" data-elev8-command-palette hidden>
                 <button class="elev8-command-palette__backdrop" type="button" data-elev8-command-close aria-label="<?php esc_attr_e('Close search', 'elev8-os'); ?>"></button>
