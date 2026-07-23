@@ -1,3 +1,18 @@
+## 21.2.0 — Workspace Shell v1
+
+- Added the first shared Workspace Shell with a restrained role-aware header, responsive content frame, and consistent workspace context.
+- Added a four-action phone navigation bar for Home, Today, Actions, and Messages on the live workspace route.
+- Made `/elev8-workspace/` use the available viewport instead of inheriting narrow theme content widths.
+- Standardized Report a Problem to one accessible control in the shared top action bar.
+- Removed duplicate floating, user-menu, workspace-widget, and quick-action problem-report controls.
+- Preserved existing engines, permissions, dashboards, and business data while advancing presentation architecture only.
+
+## 21.1.2 — Workspace Activation Recovery
+
+- Fixed the fatal activation error caused by the Workspace Definition Service calling the nonexistent `Elev8_OS_Dashboard_Module::url()` method.
+- Executive and Retail workspace dashboard actions now use the supported clean-app CEO URL with a stable CEO dashboard fallback.
+- No business data, roles, permissions, or operational records are changed by this recovery release.
+
 ## 21.1.0 — Live Workspaces & Report Recovery
 
 - Problem reports are allowed during read-only role preview and remain attributed to the real signed-in owner with preview context recorded separately.

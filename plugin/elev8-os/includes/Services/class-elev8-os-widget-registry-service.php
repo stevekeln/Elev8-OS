@@ -92,6 +92,15 @@ final class Elev8_OS_Widget_Registry_Service {
             'priority' => 20,
             'render_callback' => [__CLASS__, 'render_quick_actions'],
         ]);
+        self::register('retail_shift', [
+            'label' => __('Retail Shift', 'elev8-os'),
+            'description' => __('The essential starting point for a retail employee shift.', 'elev8-os'),
+            'engine' => 'operations',
+            'size' => 'wide',
+            'priority' => 15,
+            'capability' => 'submit_retail_log',
+            'render_callback' => [__CLASS__, 'render_retail_shift'],
+        ]);
         self::register('studio_pulse', [
             'label' => __('Studio Pulse', 'elev8-os'),
             'description' => __('Verified production, deadline, and pay signals from Glass Operations.', 'elev8-os'),
@@ -165,6 +174,24 @@ final class Elev8_OS_Widget_Registry_Service {
                 <?php foreach ($items as $item): ?><div><strong><?php echo esc_html((string) $item['value']); ?></strong><span><?php echo esc_html((string) $item['label']); ?></span></div><?php endforeach; ?>
             </div>
             <?php if (class_exists('Elev8_OS_Glass_Manager_Suite_Module')): ?><a class="elev8-ui-button" href="<?php echo esc_url(Elev8_OS_Glass_Manager_Suite_Module::url()); ?>"><?php esc_html_e('Open Glass Operations', 'elev8-os'); ?></a><?php endif; ?>
+        </article>
+        <?php
+    }
+
+    public static function render_retail_shift(array $data, array $context, array $widget): void {
+        $log_url = class_exists('Elev8_OS_Checkin_Center_Module') ? add_query_arg(['type'=>'retail','team'=>'1'], Elev8_OS_Checkin_Center_Module::page_url()) : home_url('/');
+        $actions_url = home_url('/elev8-actions/');
+        $messages_url = home_url('/elev8-conversations/');
+        ?>
+        <article class="elev8-workspace-widget" data-elev8-widget="retail_shift">
+            <span class="elev8-workspace-widget__engine"><?php esc_html_e('OPERATIONS', 'elev8-os'); ?></span>
+            <h2><?php esc_html_e('Ready for your shift', 'elev8-os'); ?></h2>
+            <p><?php esc_html_e('Use this workspace for today’s work—not your public profile. Start your retail log, check assigned actions, and open team messages.', 'elev8-os'); ?></p>
+            <div class="elev8-workspace-actions">
+                <a class="elev8-ui-button elev8-ui-button--primary" href="<?php echo esc_url($log_url); ?>"><?php esc_html_e('Start Retail Log', 'elev8-os'); ?></a>
+                <a class="elev8-ui-button" href="<?php echo esc_url($actions_url); ?>"><?php esc_html_e('My Actions', 'elev8-os'); ?></a>
+                <a class="elev8-ui-button" href="<?php echo esc_url($messages_url); ?>"><?php esc_html_e('Messages', 'elev8-os'); ?></a>
+            </div>
         </article>
         <?php
     }

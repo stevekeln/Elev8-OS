@@ -62,19 +62,18 @@ final class Elev8_OS_Workspace_Definition_Service {
             if (self::can_view($workspace, $user)) { return $workspace; }
         }
         return self::get('business') ?: [
-            'id' => 'business', 'label' => __('Business Workspace', 'elev8-os'), 'widgets' => ['workspace_welcome','quick_actions','report_problem'], 'actions' => []
+            'id' => 'business', 'label' => __('Business Workspace', 'elev8-os'), 'widgets' => ['workspace_welcome','quick_actions'], 'actions' => []
         ];
     }
 
     public static function register_core_workspaces(): void {
-        $dashboard = class_exists('Elev8_OS_Dashboard_Module') ? Elev8_OS_Dashboard_Module::url() : admin_url('admin.php?page=elev8-os');
-        $problem = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url(Elev8_OS_Problem_Report_Module::current_request_url()) : home_url('/report-a-problem/');
+        $dashboard = class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=elev8-ceo-dashboard');
         self::register('executive', [
             'label' => __('Executive Workspace', 'elev8-os'),
             'description' => __('A focused owner view for verified decisions, risk, opportunity, and follow-through.', 'elev8-os'),
             'shell' => 'executive',
             'roles' => ['administrator','ceo'],
-            'widgets' => ['workspace_welcome','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','quick_actions'],
             'actions' => [
                 ['label' => __('Open CEO Dashboard', 'elev8-os'), 'url' => $dashboard],
                 ['label' => __('Review Problem Reports', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-problem-reports')],
@@ -86,7 +85,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'description' => __('Production, quality, assignments, readiness, and accurate pay in one operational view.', 'elev8-os'),
             'shell' => 'studio',
             'roles' => ['glass_manager','studio_manager','glassblower'],
-            'widgets' => ['workspace_welcome','studio_pulse','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','studio_pulse','quick_actions'],
             'actions' => [
                 ['label' => __('Open Production', 'elev8-os'), 'url' => home_url('/elev8-production/')],
                 ['label' => __('Open Readiness', 'elev8-os'), 'url' => home_url('/elev8-readiness/')],
@@ -98,10 +97,9 @@ final class Elev8_OS_Workspace_Definition_Service {
             'description' => __('A phone-first workspace for customer service, store operations, and daily execution.', 'elev8-os'),
             'shell' => 'retail',
             'roles' => ['shop_manager','shop_employee','retail_employee','author','contributor'],
-            'widgets' => ['workspace_welcome','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','quick_actions'],
             'actions' => [
                 ['label' => __('Open My Dashboard', 'elev8-os'), 'url' => $dashboard],
-                ['label' => __('Report a Problem', 'elev8-os'), 'url' => $problem],
             ],
             'priority' => 30,
         ]);
@@ -110,7 +108,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'description' => __('Classes, students, artwork, opportunities, and business growth.', 'elev8-os'),
             'shell' => 'artist',
             'roles' => ['artist','elev8_artist','teacher'],
-            'widgets' => ['workspace_welcome','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','quick_actions'],
             'actions' => [['label' => __('Open Artist Portal', 'elev8-os'), 'url' => home_url('/artist-portal/')]],
             'priority' => 40,
         ]);
@@ -119,7 +117,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'description' => __('Event execution, reservations, check-in, volunteers, and follow-up.', 'elev8-os'),
             'shell' => 'event',
             'roles' => ['volunteer','event_staff','event_host','dj'],
-            'widgets' => ['workspace_welcome','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','quick_actions'],
             'actions' => [['label' => __('Open Today', 'elev8-os'), 'url' => home_url('/elev8-today/')]],
             'priority' => 50,
         ]);
@@ -128,7 +126,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'description' => __('Shared operating access based on the current user’s permissions.', 'elev8-os'),
             'shell' => 'business',
             'roles' => [],
-            'widgets' => ['workspace_welcome','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','quick_actions'],
             'actions' => [['label' => __('Open My Dashboard', 'elev8-os'), 'url' => $dashboard]],
             'priority' => 999,
         ]);

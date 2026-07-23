@@ -1,8 +1,17 @@
-## 21.1.1 - 2026-07-23
-- Emergency recovery release based on the known-working 21.1.0 source.
-- Keeps one Report a Problem control in the shared top action bar.
-- Removes duplicate floating and user-menu report controls.
-- Defers the 21.2.0 retail redirect changes pending review of the server fatal log.
+## 21.2.0 — Workspace Shell v1
+
+- Added the first shared Workspace Shell with a restrained role-aware header, responsive content frame, and consistent workspace context.
+- Added a four-action phone navigation bar for Home, Today, Actions, and Messages on the live workspace route.
+- Made `/elev8-workspace/` use the available viewport instead of inheriting narrow theme content widths.
+- Standardized Report a Problem to one accessible control in the shared top action bar.
+- Removed duplicate floating, user-menu, workspace-widget, and quick-action problem-report controls.
+- Preserved existing engines, permissions, dashboards, and business data while advancing presentation architecture only.
+
+## 21.1.2 — Workspace Activation Recovery
+
+- Fixed the fatal activation error caused by the Workspace Definition Service calling the nonexistent `Elev8_OS_Dashboard_Module::url()` method.
+- Executive and Retail workspace dashboard actions now use the supported clean-app CEO URL with a stable CEO dashboard fallback.
+- No business data, roles, permissions, or operational records are changed by this recovery release.
 
 ## 21.1.0 — Live Workspaces & Report Recovery
 
@@ -335,6 +344,21 @@
 - Preserved WordPress, WooCommerce, Amelia, SMTP, Google, and other authoritative ownership boundaries.
 - No plugin is activated, deactivated, updated, deleted, or reconfigured by this release.
 
+## 18.10.0 — Executive Learning Dashboard & Calibration Health
+
+### Added
+- Executive Learning Health view inside the governed Intelligence workspace.
+- Organization-scope filtering for calibration evidence.
+- Per-classification readiness for risk, opportunity, decision, achievement, follow-up, and information Recommendations.
+- Explainable counts for measured positive, neutral, and negative outcomes.
+- Missing-outcome visibility for approved Recommendations and completed Executive Decision follow-through.
+- Calibration coverage percentage and leadership guidance for improving learning quality.
+
+### Architecture
+- Accepted ADR-0029: learning health is a governed read model, not a second scoring or outcome system.
+- Preserved the existing three-outcome minimum and ±15-point confidence boundary.
+- The dashboard cannot alter confidence, approve Recommendations, create Work Items, or rewrite Outcomes.
+
 ## 18.9.0 — Decision Learning & Confidence Calibration
 
 - Added an explainable Decision Learning service that calibrates Recommendation confidence from measured Recommendation Outcomes and Executive Decision Outcomes.
@@ -457,11 +481,22 @@
 
 
 ## 18.2.0 — Cross-Source Pattern Detection
-- Added the canonical Pattern object and stable cross-source detection service.
-- Added daily, event-driven, and manual scans over confirmed/corrected Observations.
-- Added Pattern Review to the Intelligence workspace with acknowledgement, dismissal, and resolution controls.
-- Added occurrence, date range, confidence, severity, trend, and supporting-observation evidence.
-- No authoritative source records are duplicated or modified, and Patterns do not create Work Items automatically.
+
+### Added
+- Canonical Intelligence Engine Pattern object.
+- Daily and on-demand pattern scans using confirmed and corrected Observations.
+- Stable pattern fingerprints grouped by shared Business Graph object, meaningful tag, organization scope, and classification.
+- Pattern frequency, first and last occurrence, confidence, severity, and trend metadata.
+- Pattern Review tab inside the Intelligence Review workspace.
+- Human controls to acknowledge, dismiss, resolve, or reactivate a Pattern.
+
+### Architecture
+- Accepted ADR-0021: Patterns summarize confirmed facts without becoming actions.
+- Patterns retain supporting Observation IDs and never rewrite authoritative source records.
+- Pattern detection does not automatically create Work Items.
+
+### Database changes
+- None. Patterns use a private WordPress post type and post metadata.
 
 ## 18.1.0 — Intelligence Review & Cross-Engine Observations
 
@@ -472,22 +507,15 @@
 - Preserved authoritative ownership: contributors summarize source state and never duplicate inventory, maintenance, event, booking, or conversation records.
 - Added the Observation Review command to the shared command palette for authorized leaders.
 
-## 18.0.0 — Observation Engine & Daily Operations Intelligence Foundation
+## 18.0.0 — 2026-07-22
 
-### Added
-- Canonical Observation service owned by the Intelligence Engine.
-- Stable source references, classifications, severity, confidence, organization scope, tags, and related-object context.
-- Daily Operations Log contributor that separates facts from explicit follow-up work.
-- Observation summaries in the Daily Executive Brief.
-
-### Architecture
-- Accepted ADR-0019: Facts Precede Actions. Observations preserve verified facts; Work Items represent execution only.
-- No Daily Operations Log, WordPress identity, WooCommerce, or Amelia source record is duplicated.
-
-### Database changes
-- None. Observations use a private WordPress post type and post metadata.
-
-# Elev8 OS Changelog
+- Added the canonical Observation object and Intelligence Engine service.
+- Added idempotent source-key synchronization, classification, severity, confidence, tags, organization scope, related-object references, and query summaries.
+- Added the Daily Operations Observation Contributor for manager, retail, artist, vendor, event, maintenance, and configurable operating logs.
+- Explicit follow-up fields can create one stable Universal Work Item; informational observations do not create tasks.
+- Added verified Observation counts, risks, and opportunities to the Daily Executive Brief.
+- Added Business Graph relationships for observed facts and evidence.
+- Accepted ADR-0019: Facts Precede Actions.
 
 ## 17.6.0 — 2026-07-22
 
@@ -804,22 +832,7 @@
 - Added a universal Preview action to the Elev8 OS application header and user menu.
 - Suppressed WordPress email and Elev8 OS notification delivery during preview requests to prevent accidental test messages.
 - Added responsive founder tooling for faster desktop and phone testing without passwords, logout, or Incognito windows.
-# Changelog
-
-## 18.10.0 — Executive Learning Dashboard & Calibration Health
-
-### Added
-- Executive Learning Health view inside the governed Intelligence workspace.
-- Organization-scope filtering for calibration evidence.
-- Per-classification readiness for risk, opportunity, decision, achievement, follow-up, and information Recommendations.
-- Explainable counts for measured positive, neutral, and negative outcomes.
-- Missing-outcome visibility for approved Recommendations and completed Executive Decision follow-through.
-- Calibration coverage percentage and leadership guidance for improving learning quality.
-
-### Architecture
-- Accepted ADR-0029: learning health is a governed read model, not a second scoring or outcome system.
-- Preserved the existing three-outcome minimum and ±15-point confidence boundary.
-- The dashboard cannot alter confidence, approve Recommendations, create Work Items, or rewrite Outcomes.
+# Elev8 OS Changelog
 
 ## 13.5.0 — Repair & Memorial Production Engine
 
@@ -843,11 +856,287 @@
 
 ## 13.3.0 — QR Label Sheet Composer
 
-- Added batch selection for all or selected artwork QR labels.
-- Added full letter-sheet layouts for six 3 × 3 labels or sixteen 3 × 1 labels.
-- Added Select All, Clear All, selection totals, copies-per-label, and multi-page output.
-- Added the same sheet composer to the artist Print Center and the administrator Gallery Print Center.
-- Preserved tracked artwork URLs, ownership validation, single-label printing, Production Board, Production Jobs, and pay sheets.
+- Added batch artwork QR label selection for artists and administrators.
+- Added Select All, Clear All, live selection totals, and copies-per-label controls.
+- Added full letter-sheet layouts for six 3 × 3 labels or sixteen 3 × 1 labels per page.
+- Added multi-page printing for larger selections while preserving one tracked QR code per artwork.
+- Added ownership and artist validation so labels cannot be mixed across unauthorized profiles.
+- Preserved all existing single-label, artist-card, Production Board, Production Jobs, and pay-sheet workflows.
+
+## 13.2.0 — Glass Production Board
+
+- Added a visual production board that groups active glass jobs by workflow status.
+- Added drag-and-drop status movement with server-side permission, nonce and status validation.
+- Added quick blower assignment directly on production cards.
+- Added filters for search, blower, source, priority and overdue work.
+- Added live workload summaries for each active glassblower and unassigned work.
+- Added overdue and due-today indicators without changing the underlying job source of truth.
+- Added accessible non-drag status controls so the board remains usable on phones and by keyboard.
+- Preserved Production Catalog snapshots, automatic pay sheets, QC controls and Glassblower Operational Homes.
+
+## 13.1.0 — Production Jobs, Glassblower Team & Pay Sheets
+
+- Added catalog-backed production job lines with compensation, material-cost and product-version snapshots.
+- Added configurable job sources for Shipping, Head Shop, Cremation, Website, Wholesale, Repair, Internal Inventory and Custom work.
+- Added Glassblower Team roster management; production dropdowns now show only active roster members with the Glassblower role and compensation profile.
+- Added automatic foundation matching for Nick (shimkus92@gmail.com) and Adam (adamelev8@gmail.com) at $18/hour with piecework eligibility, without hardcoded user IDs.
+- Added manager QC, completion, time and payroll approval controls for production lines.
+- Added catalog/profile-driven hourly and piecework calculations and automatic pay-sheet review.
+- Added a role-aware Glassblower Operational Home showing assigned work, QC status, pending/approved pay and Conversations access.
+- Preserved existing Glass Operations, Production Catalog, Workspace, Relationship and Intelligence engines.
+
+## 13.0.0 — Glass Production Catalog & Compensation Engine
+
+- Added a new Elev8 OS Production Catalog designed for manual entry rather than importing the legacy spreadsheet as a database.
+- Added production-product definitions with codes, categories, descriptions, skill level, department, active status, and estimated production time.
+- Added product-controlled compensation methods: Hourly, Piecework, Either (manager chooses on the future job), and Included in another production item.
+- Added piecework payout rates and payout units for piece, pair, set, batch, or job.
+- Added reusable material records with units and unit costs, plus product bills of materials, waste allowance, and cost snapshots.
+- Added direct consumable, packaging, and other production-cost fields with estimated labor costing.
+- Added glassblower compensation profiles that support hourly pay and product-specific piecework at the same time.
+- Added configurable initial $18/hour compensation-profile setup for uniquely matched Nick and Adam users, without hardcoded user IDs.
+- Added immutable production-product version snapshots so future jobs can preserve the rates and costs in effect when they were created.
+- Added a dedicated Production Catalog administration workspace for Products, Materials, and Compensation Profiles.
+- Preserved the existing Glass Operations jobs and payout tools; 13.0.0 establishes the trusted definitions that future Production Jobs and Pay Sheets will consume.
+
+## 12.3.0 — Workspace Executive Intelligence
+
+- Added an explainable Workspace Intelligence Service for every supported Universal Workspace.
+- Added a verified 0–100 workspace health score using actions, overdue work, blockers, dependencies, conversations, relationships, and timeline activity.
+- Added rule-based health states: Healthy, Needs Attention, and Action Required.
+- Added verified risks, opportunities, confidence, and a recommended next step inside each workspace.
+- Added a Why? explanation that shows the exact verified signals behind every health conclusion.
+- Preserved confirmation-first automation; no autonomous actions or generative-AI guessing were introduced.
+- Kept source records owned by their existing engines and used the Workspace and Relationship Engines as read-only context.
+
+## 12.2.0 — Workspace Automation Engine
+
+- Added rule-based suggested actions inside Universal Workspaces.
+- Added confirmation-first automations for manager notes, event applications, reservations, conversations, and work completion.
+- Added Explain Why details for every suggested automation.
+- Created connected Work items without modifying source records.
+- Added activity audit entries and relationship links for executed automations.
+- Added dependency signals for Blocks and Depends On relationships.
+
+# Changelog
+
+## 12.1.0 - Relationship Engine
+
+- Added a shared Relationship Engine for explicit, trusted links between Elev8 OS records.
+- Added two-way workspace relationships without duplicating authoritative source data.
+- Added relationship types for related records, dependencies, blockers, follow-up, support, and participation.
+- Added relationship impact metrics to Universal Workspaces.
+- Added a workspace connector for authorized owners and managers.
+- Added relationship notes, removal controls, permission checks, and immutable Activity records.
+- Preserved inferred workspace links while allowing explicit Business Graph relationships to supplement them.
+
+## 11.3.2 — Public Profile Type Save Hotfix
+
+### Fixed
+- Fixed public profile type checkboxes so unchecked types are removed when the profile is saved.
+- Preserved an explicitly saved empty profile-type selection instead of re-inferring types from WordPress roles or legacy artist data.
+- Prevented legacy artist compatibility logic from silently adding Artist back after it was intentionally unchecked.
+- Synchronized the legacy public artist webpage only when Artist remains selected and the shared public profile is published.
+
+### Compatibility
+- Existing profiles that have never saved shared profile types still receive the original one-time type inference.
+- Artist and Teacher combinations can now be changed safely to Teacher only, Artist only, multiple types, or no selected type.
+- Publishing still requires at least one selected public profile type.
+
+## 11.3.1 — Public Profile Eligibility Hotfix
+
+### Added
+- Added explicit public-profile eligibility states: Eligible, Customer, Bot / Spam, Archived, and Not Yet Classified.
+- Added eligibility controls to the CEO Public Profile editor without changing the user’s WordPress role or customer history.
+- Added Public Profiles filters for eligible team members, excluded accounts, individual exclusion types, and all WordPress users.
+- Added weighted profile completeness based on public name, profile type, headline, biography, and profile photo.
+
+### Changed
+- Removed the automatic Staff fallback for unknown WordPress users.
+- Customers, bots, archived users, and unclassified accounts are excluded from the normal Public Profiles workspace and CEO profile-attention section.
+- Excluding an account clears public profile types, prevents publication, and unpublishes any connected legacy artist page.
+- Public profile publishing now requires at least one profile type and a biography.
+
+### Compatibility
+- Existing explicitly assigned public profile types remain eligible.
+- Existing legacy artist profiles remain eligible and continue to synchronize publication state.
+- WordPress roles, customer records, orders, and account history are not modified.
+
+## 11.3.0 — Identity Media Uploads
+
+- Replaced public-profile image URL fields with direct WordPress Media Library upload controls.
+- Added reusable profile photo and cover-image selectors with preview, replace, and remove actions.
+- Stored WordPress attachment IDs as the trusted image references while preserving legacy image URLs for backward compatibility.
+- Added a public cover image to published profiles and retained existing profile-photo behavior.
+- Added shared media-control styling and JavaScript for frontend and CEO profile editors.
+- Updated profile completeness and legacy artist synchronization to continue using verified resolved image URLs.
+- Preserved unified profile types, publication controls, CEO oversight, artist compatibility, and existing public URLs.
+
+## 11.2.0 — Unified Public Profiles & CEO Oversight
+
+- Consolidated artists, teachers, event hosts, managers, volunteers, and staff under the shared Public Profiles service.
+- Added multi-type public identities without changing private WordPress roles.
+- Added a CEO Public Profiles workspace with type, status, and search filters.
+- Added Published, Draft/Unpublished, Missing Profile, and Incomplete summaries.
+- Added direct CEO edit, preview, publish, and unpublish workflows for any user, including Event Hosts who are not artists.
+- Added CEO Dashboard attention cards for unpublished or incomplete profiles.
+- Enlarged and clarified the legacy artist public-page activation control.
+- Added backward-compatible synchronization between legacy artist publication and the shared Public Profiles service.
+- Preserved artist storefront, class, payout, and artwork-specific data in the Artist module.
+
+# Elev8 OS Changelog
+
+## 11.1.0 — Public Profiles Foundation
+
+- Added a shared Public Profile Service for Event Hosts, Artists, Managers, and future roles.
+- Added a frontend My Public Profile editor with draft, preview, publish, and unpublish controls.
+- Added public profile routes at `/people/{profile-slug}/`.
+- Connected the Event Host profile warning and coaching recommendation to the working editor.
+- Updated the universal user menu and command palette to open the public profile workspace.
+- Preserved the existing private WordPress account settings link separately.
+
+## 11.0.0 — Action Engine Foundation
+- Added a frontend My Actions workspace so non-admin users no longer get redirected away from Work.
+- Added direct status, due-date, notes, completion, and team action controls.
+- Added Manager Logs to the universal header for authorized leaders.
+- Made manager-log activity in the Daily Executive Brief clickable.
+- Added shared Action Service and reusable Action Center portal page.
+
+## 10.25.0 — Conversation Engine Foundation
+
+- Added a shared threaded Conversation Service for questions, decisions, replies, and operational follow-up.
+- Added a phone-friendly frontend Conversation Center available from the Universal Application Shell.
+- Added capability-aware conversation access for owners, managers, event hosts, artists, teachers, volunteers, retail employees, and glass team members.
+- Added multi-person conversations, replies, open/closed status, unread tracking, participant visibility, and @username participant inclusion.
+- Added immutable Activity records for conversation creation and replies so communication contributes to Business Memory and future intelligence.
+- Added Conversations to the universal header, user menu, and Command Palette with unread counts.
+- Preserved existing dashboards, Universal Search, Attention Center, Coaching, Executive Brief, Workflow Engine, and centralized access rules.
+
+## 10.24.0 — Universal Application Shell Frontend Compatibility Fix
+
+- Fixed the Universal Application Shell not appearing on the frontend Event Host / DJ Operational Home.
+- Added a safe `wp_footer` fallback for themes that do not call WordPress `wp_body_open()`.
+- Added direct portal-slug detection so dashboard pages remain recognized even when saved page IDs are stale or unavailable.
+- Added frontend shell placement logic that moves fallback markup to the top of the page while preserving the WordPress admin bar.
+- Applied the same compatibility behavior to CEO, Manager, Event Host, Artist, Teacher, Volunteer, and future frontend Operational Homes.
+- Preserved Universal Search, notifications, the user menu, Install App, dashboard actions, and centralized access rules.
+
+## 10.23.0 — Universal Search & Command Palette
+
+- Added a shared, role-aware Elev8 OS command palette to the Universal Application Shell.
+- Added Search and Ctrl/Cmd+K access on supported Elev8 OS frontend and admin workspaces.
+- Added keyboard navigation, mobile presentation, Escape-to-close, and quick-action discovery.
+- Added capability-aware commands for dashboards, work, Business Memory, Business Intelligence, reservations, event tools, opportunities, and artist workspaces.
+- Added secure AJAX search for work items, scoped to the current user unless team-work permission is granted.
+- Added owner-only team-member search and an extension filter for future module search providers.
+- Preserved the existing Universal Application Header, notifications, user menu, dashboards, and access rules.
+
+## 10.22.0 — Universal Application Shell
+
+### Added
+- Universal Elev8 OS application header across frontend portal pages and Elev8 OS admin workspaces.
+- Capability-aware navigation for Dashboard, Work, and Business Memory.
+- Consistent user menu with My Dashboard, My Profile, Notifications, Settings, Help, Return to Elev8Arts.com, and Log Out.
+- Role labels for Owner, Shop Manager, Glass Manager, Event Host, Teacher, Artist, Volunteer, and other team members.
+- Shared notification badge backed by the Attention Service.
+- Responsive mobile menu and sticky application header.
+
+### Preserved
+- Existing CEO, Manager, Event Host, Artist, Teacher, and Volunteer dashboards.
+- Existing Install App control and dashboard actions.
+- Existing Access Service permissions and Attention Service data.
+
+### Database changes
+- None.
+
+# Elev8 OS Changelog
+
+## 10.21.0 — Role-Aware Coaching Foundation
+
+- Added a shared, deterministic Coaching Service for CEO, Manager, and Event Host Operational Homes.
+- Added recommendation cards with verified reasons, confidence, one-tap actions, and “Why am I seeing this?” explanations.
+- Distinguished recommendations from raw information and attention items.
+- Preserved user control: recommendations never perform autonomous changes and do not call an external AI provider.
+- Added extension hooks so future Artist, Teacher, Retail, Maintenance, and LLM coaching providers can reuse the same contract.
+
+## 10.20.0 — Executive Brief Engine
+
+- Added a reusable, rule-based Daily Brief Service built from verified Elev8 OS sources.
+- Added a phone-friendly Daily Executive Brief with Yesterday, Business Pulse, Attention, Wins, Risks, Opportunities, Today’s Focus, and an expandable timeline.
+- Added confidence indicators based on available trusted sources.
+- Added reusable Why explanations for the daily summary, Business Pulse, and confidence level.
+- Preserved existing CEO intelligence, workflow health, manager-note notifications, event applications, reservations, and KPI calculations.
+- Missing or unconnected data remains explicitly Unavailable rather than inferred.
+
+
+## 10.19.0 — Manager Operational Home
+
+- Added a capability-driven Manager Operational Home for non-owner managers.
+- Added mission briefing, Business Pulse, attention queue, work summaries, daily operations status, team pulse, events and reservation coordination, verified wins, and end-of-shift closeout.
+- Added a reusable Manager Dashboard Service backed by Access, Attention, Work, Daily Operations, Reservations, and Event Applications engines.
+- Preserved artist, event-host, and CEO dashboard behavior.
+- Added responsive phone-first manager dashboard styling.
+
+## 10.18.0 — Workflow Engine Foundation & Explain Why
+
+- Added a reusable Workflow Engine that listens for trusted Elev8 OS events, evaluates configurable definitions, executes registered actions, and preserves an auditable run history.
+- Added initial workflow triggers for Manager Operations entries, Unified Intake submissions, and Bingo reservations.
+- Added extensible workflow-definition and workflow-action filters so future business modules can participate without duplicating routing logic.
+- Added idempotent workflow execution to prevent the same source record from running the same workflow twice.
+- Added registered actions for immutable Activity records and shared Work Management items.
+- Added Workflow Health to the CEO Dashboard with active workflows, recent runs, completed runs, failed runs, and a plain-language Why explanation.
+- Added a reusable Explain Why service and Why controls to CEO financial KPI cards so users can understand source, diagnostic, and confidence information.
+- Preserved current Attention, Event Application, Manager Note, reservation, Work, Business Intelligence, and Executive Intelligence behavior.
+
+## 10.16.0 — Executive Intelligence Center
+
+- Added a reusable rule-based Executive Intelligence Service that converts verified Attention, Dashboard, and Business Intelligence data into a concise CEO briefing without guessing.
+- Added an Executive Brief with daypart greeting, current operating headline, verified changes, upcoming reservations, event application status, and booked-value context.
+- Upgraded the shared Attention queue into a CEO Decision Queue with context-aware actions for manager notes, event applications, reservations, and work.
+- Added Recent Wins based only on verified conditions such as no critical issues, positive booked-value movement, and upcoming reservation activity.
+- Added a rule-based Opportunities panel that surfaces verified next moves and links directly into the relevant workspace.
+- Added an Executive Timeline using timestamped activity already represented by the shared Attention Center.
+- Added responsive Executive Intelligence widgets designed for desktop and phone use.
+- Preserved existing KPI calculations, Access Service checks, Attention Service inputs, CEO tools, Event Application notifications, and System Information.
+
+## 10.15.0 — CEO Attention Center
+
+- Added a reusable Attention Service that gathers verified items from Daily Operations, Work Management, Reservations, and Event Applications.
+- Added manager messages marked for Steve directly to the CEO Attention Center with the original author, message preview, timestamp, and direct link to the operating log.
+- Replaced the CEO's generic Needs Attention list with a prioritized Waiting on Me queue using critical, high, and normal severity states.
+- Added a rule-based Business Pulse showing whether the business is healthy, needs attention, or requires immediate action.
+- Rebuilt the CEO workspace links as readable command cards and moved secondary navigation into a compact CEO Tools row.
+- Connected the shared Dashboard Service notification state to the Attention Service instead of displaying an unavailable placeholder.
+- Preserved existing Event Application notifications, reservations, work counts, verified financial KPIs, and system information.
+
+## 10.14.1 - Event Host Access Hotfix
+
+- Added a frontend Bingo Reservations workspace inside the Event Host Operational Home so event hosts are not redirected into a blocked WordPress admin screen.
+- Corrected the Event Host Bingo Reservations action to use the verified dashboard workspace route.
+- Added mobile-friendly reservation cards, filters, contact links, notes, guest counts, and status updates.
+- Preserved assignment-scoped reservation visibility through the centralized Access Service.
+- Kept reservation status updates on the frontend workspace after saving.
+- Embedded the Install Elev8 OS control directly in the Event Host dashboard header and added a no-JavaScript visible fallback.
+- Preserved the Complete Event Log action and existing event-host metrics.
+
+## 10.14.0 — Installable App & Mission Briefing
+- Added a reusable Elev8 OS app-install capability for logged-in team members on supported mobile and desktop browsers.
+- Added a standards-based web app manifest and service worker so Elev8 OS can open from a phone Home screen in standalone app mode.
+- Added a large first-use Install Elev8 OS prompt that collapses into a small persistent button after dismissal or installation.
+- Added iPhone/iPad Safari and non-install-prompt browser instructions without pretending an automatic install is available.
+- Connected the installed app start screen to the role-aware Elev8 OS Mobile Home.
+- Added a clearer event-host mission briefing focused on reviewing entries, running the event, and preserving the closeout in Business Memory.
+- Preserved existing role dashboards, permissions, and operational data sources.
+
+## 10.13.0 — Event Host Operational Home
+- Added a capability-driven Event Host Operational Home for Open Mic DJs and future event-host roles.
+- Replaced irrelevant artist sales, class, student, and payout widgets for event hosts with verified Open Mic and Bingo operational data.
+- Added an immediate public host-profile status notice while preserving the private Elev8 OS account.
+- Added phone-first event actions for Open Mic check-ins, Bingo reservations, and the Event Operating Log.
+- Added verified Open Mic submission metrics and recent check-ins from Daily Operations Intelligence.
+- Added scoped Bingo reservation metrics using the existing Reservations engine and Access Service.
+- Added a mobile-first Tonight Mode foundation ready for future event-control capabilities.
+- Preserved the existing Artist Dashboard for artists and teachers.
 
 ## 10.12.7 — Operational Home
 - Added a shared Dashboard Service as the single source for verified role-aware operational counts.
@@ -947,16 +1236,6 @@
 - Existing CRM records are updated only where fields are missing; Food Vendor classification takes priority when applicable.
 
 # Elev8 OS Changelog
-
-## 13.5.0 — Repair & Memorial Production Engine
-
-- Added repair intake with damage description, evaluation, quote, approval, payment, risk and intake-photo tracking.
-- Added memorial intake with secure storage, container description, amount received/used/returned and required reconciliation before completion.
-- Added immutable memorial chain-of-custody events with user, time, location, notes and optional attachment.
-- Added case-specific workflow statuses while preserving Glass Operations jobs, production lines, QC, pay and assignments as sources of truth.
-- Added reusable customer-update templates for receipt, quote/ashes confirmation, production, QC and release.
-- Added Glass Manager attention signals for incomplete custody, overdue repair approval and missing ashes reconciliation.
-- Added multi-photo uploads through the WordPress Media Library and preserved Universal Activity records.
 
 ## 10.10.0 — Relationships & Community Outreach
 - Added a CRM-backed Relationships directory seeded with 123 cleaned dispensary records.
@@ -1352,21 +1631,51 @@
 - Adds redirect-loop protections and keeps the public Artist Dashboard as the single artist home.
 - No database changes.
 
+## 12.0.0 — Workspace Engine Foundation
+- Added a universal frontend Workspace Engine that gathers one source record's summary, status, activity timeline, actions, conversations, related records, people, and files without duplicating authoritative business data.
+- Added the `/elev8-workspace/` operational page and reusable **Open Workspace** URLs for work items, conversations, manager logs, event applications, reservations, and people.
+- Added capability-aware workspace permissions through the centralized Access Service.
+- Added the first universal Activity Timeline, Related Record inference, and Workspace header components.
+- Added **Open Workspace** actions to frontend Work and Conversation experiences.
+- Added a Workspace command to Universal Search / Command Palette.
+- Preserved existing dashboards, Action Center, Conversations, Business Memory, and source-record workspaces.
+
 ## 17.1.0 — Operations Contributor Adapter Foundation
-- Added the reusable Operations Contributor registry and Glass Operations adapter.
-- Glass Production, Repair, and Memorial records now contribute synchronized Work Items with execution contracts.
-- Added checklist, approval, completion-rule, escalation, source-status, and sync metadata.
-- No database schema changes and no authoritative source duplication.
+
+### Added
+- Reusable Operations Contributor registry and source synchronization service.
+- First contributor adapter for Glass Production, Repairs, and Memorials.
+- Standard execution contracts for checklists, required approvals, completion rules, and escalations.
+- Source status and synchronization timestamps on contributed Work Items.
+
+### Changed
+- Glass job creation and updates now publish source-change events to the Operations Engine.
+- Universal Work Item summaries now expose contributor execution context.
+
+### Architecture
+- Accepted ADR-0012: authoritative operational records contribute work through idempotent adapters and remain the owners of source state.
+- No duplicate production, repair, memorial, commerce, booking, or identity records are created.
+
+### Database changes
+- None. Contributor contracts use existing Work Item post metadata.
 
 ## 19.9.0
-- Added date-specific availability exceptions and credential/training evidence governance to Team Coordination.
-- Added renewal reminders through the shared Communication boundary and optional skill-verification expiration.
-- Added secure evidence boundaries that prohibit passwords, keys, codes, and full credential numbers.
+- Added date-specific availability exceptions that override recurring coordination windows for a single Work Item due date.
+- Added bounded credential and training evidence references with optional expiration, renewal windows, safe internal references, and WordPress Media attachment IDs.
+- Added daily credential-expiration reminders through the shared Notification Service.
+- Added optional expiration to manager-confirmed skill evidence and excluded expired verification from active handoff matching.
+- Extended explainable handoff fit with active credential evidence while preserving human acknowledgement and access boundaries.
+- Added ADR-0042 documenting that availability exceptions and credential references are coordination evidence, not HR, access control, certification, or secret storage.
 
 ## 20.2.5 — Work Item Conversations & Governed Follow-up Capture
 - Embedded authoritative Conversation panels in Universal Work Items.
-- Added governed summaries and explicit follow-up Work Item creation.
+- Added per-user unread counts for Work Item conversations.
+- Added human-maintained governed Conversation summaries with attribution and timestamps.
+- Added explicit Conversation-to-Work follow-up promotion through the Operations Engine.
+- Preserved the rule that ordinary messages never silently create Work Items.
 
 ## 20.3.0 - 2026-07-23
-- Constitution v2 foundation.
-- Universal Report a Problem intake with duplicate grouping and triage.
+- Added Elev8 OS Constitution v2 and repository gap analysis.
+- Added universal Report a Problem service and mobile-friendly reporting page.
+- Added duplicate fingerprint grouping, occurrence counting, impact escalation, context capture, optional attachments, and owner triage queue.
+- Added a prominent Report a Problem card to Mobile Home for every authenticated user.

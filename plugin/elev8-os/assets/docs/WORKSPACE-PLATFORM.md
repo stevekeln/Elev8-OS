@@ -20,3 +20,12 @@ Use the `elev8_os_workspace_definitions` and `elev8_os_widgets` filters or the r
 - No engine-specific CSS layout systems.
 - No dashboard-owned business logic.
 - Report a Problem remains universally reachable.
+
+
+## 21.1 Live Runtime
+
+The first real front-end workspace is available at `/elev8-workspace/`. Studio users receive verified Glass Operations metrics, workspace actions, and universal problem reporting through the shared widget grid.
+
+## 21.2.0 — Workspace Shell v1
+
+The live workspace route now uses a shared shell contract: one restrained role-aware header, a full-width responsive content frame, one universal problem-report control in the top application bar, and consistent phone navigation for Home, Today, Actions, and Messages. Workspace definitions continue to supply widgets and actions; engines remain authoritative for data and business rules.

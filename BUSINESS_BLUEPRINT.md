@@ -1516,3 +1516,7 @@ The Workspace Platform now has a real front-end runtime rather than only an admi
 Problem reporting is a governed exception to preview read-only protection. A report is authored by the real authenticated user, while the effective preview user and role are stored only as diagnostic context. Submission returns the user to the originating workspace instead of stranding them on an administrative endpoint.
 
 **Business Graph impact:** Problem Reports now preserve reporter, page, device, and optional preview-context relationships without impersonating the previewed employee.
+## Workspace Shell v1 (21.2.0)
+
+Elev8 OS now has a shared live workspace shell that owns workspace-level presentation without moving business logic out of engines. The shell provides a restrained role-aware header, a responsive full-width content frame, one universal problem-report entry point, and consistent phone navigation. Individual workspaces supply definitions, widgets, actions, and permissions; the shell supplies presentation.
+

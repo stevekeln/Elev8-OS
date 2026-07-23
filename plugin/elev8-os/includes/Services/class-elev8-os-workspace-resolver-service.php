@@ -138,12 +138,13 @@ final class Elev8_OS_Workspace_Resolver_Service {
             case 'owner': return class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=elev8-ceo-dashboard');
             case 'glass_manager': return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : home_url('/glass-manager/');
             case 'glassblower': return class_exists('Elev8_OS_Glass_Workbench_Module') ? Elev8_OS_Glass_Workbench_Module::url() : home_url('/glass-workbench/');
+            case 'retail':
+                return class_exists('Elev8_OS_Workspace_Runtime_Module') ? Elev8_OS_Workspace_Runtime_Module::url() : (class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/'));
             case 'shop_manager':
             case 'event_host':
             case 'teacher':
             case 'artist':
             case 'volunteer':
-            case 'retail':
                 return class_exists('Elev8_OS_Portal_Page_Manager') ? Elev8_OS_Portal_Page_Manager::get_url('dashboard') : home_url('/artist-dashboard/');
             default:
                 return class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/');
