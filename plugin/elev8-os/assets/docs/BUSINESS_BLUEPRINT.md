@@ -1493,3 +1493,16 @@ Elev8 OS managed workspaces render through a dedicated application gateway. Word
 
 ## Elev8 UI Framework (20.7.0)
 Presentation is a shared platform layer. Engines expose capability but never own layout. Design tokens, reusable components, role-aware shells, theme packs, and a temporary legacy bridge support gradual migration without duplicating business logic. The first full workspace migration target is Glass Manager Operational Home, followed by operational readiness cards.
+
+
+## ADR-0055 — Workspace and Widget Presentation Boundary
+
+**Status:** Accepted  
+**Release:** 21.0.0  
+**Classification:** Core Platform Capability
+
+**Decision:** Elev8 OS workspaces are registered presentation definitions over shared engines. A workspace declares shell context, permitted audience, widgets, navigation, and quick actions. Widgets declare their source engine, access boundary, responsive size, and render/data callbacks. The Responsive Grid Service owns layout behavior across phone, tablet, and desktop.
+
+**Boundary:** Workspaces and widgets may project engine data but may not duplicate records, own business rules, bypass the Access Service, or create engine-specific layout systems. Existing dashboards remain live until individually migrated.
+
+**First migration:** Glass Manager Operational Home becomes the 21.1 proof case. Production, QC, pay, assignment, and permissions remain authoritative in their current services while the presentation is reassembled as Studio workspace widgets.

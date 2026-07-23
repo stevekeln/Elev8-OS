@@ -1,3 +1,14 @@
+## 21.0.0 — Elev8 Experience Platform Foundation
+
+- Added the Workspace Definition Registry for role-aware presentation metadata without moving business logic out of engines.
+- Added the shared Widget Registry with access boundaries, engine ownership, size metadata, and reusable render/data callbacks.
+- Added the Responsive Grid Service for one-column phone, adaptive tablet, and multi-column desktop workspace layouts.
+- Added an administrator Workspace Platform screen with a live resolved-workspace preview and registry inventory.
+- Registered initial Executive, Studio, Retail, Artist, Event, and Business workspace definitions.
+- Registered foundation widgets for workspace welcome, quick actions, and universal Report a Problem access.
+- Added the 21.1 Codex assignment for migrating Glass Manager without changing its production, QC, pay, or permission logic.
+- Existing dashboards remain active and migrate one at a time behind stable URLs.
+
 ## 20.7.3 - Navigation and Preview Recovery
 
 - Rebuilt the shared application-shell CSS to prevent desktop navigation labels and mobile Preview controls from collapsing into vertical text.
