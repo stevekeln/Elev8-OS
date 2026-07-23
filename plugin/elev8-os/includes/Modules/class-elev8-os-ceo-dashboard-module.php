@@ -192,8 +192,6 @@ final class Elev8_OS_CEO_Dashboard_Module {
 
             <?php self::render_daily_brief($daily_brief); ?>
 
-            <?php self::render_public_profile_attention(); ?>
-
             <?php if (class_exists('Elev8_OS_Coaching_Service')) { Elev8_OS_Coaching_Service::render(wp_get_current_user(), __('CEO Recommended Next Actions', 'elev8-os')); } ?>
 
             <?php self::render_operational_home($operational_summary, $operational_priorities, $executive_intelligence); ?>
@@ -214,6 +212,19 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     <?php self::render_command_card('chart-area', __('Business Intelligence', 'elev8-os'), __('Verified KPIs, confidence, trends, and decision support.', 'elev8-os'), admin_url('admin.php?page=elev8-business-intelligence')); ?>
                     <?php self::render_command_card('lightbulb', __('Class Requests', 'elev8-os'), __('Customer demand and potential class opportunities.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=class-requests')); ?>
                     <?php self::render_command_card('megaphone', __('Opportunities', 'elev8-os'), __('Actions that can help artists and the business grow.', 'elev8-os'), admin_url('admin.php?page=' . self::PAGE_SLUG . '&view=opportunities')); ?>
+                    <?php
+                    $problem_reports = class_exists('Elev8_OS_Problem_Report_Service') ? Elev8_OS_Problem_Report_Service::reports(['posts_per_page' => 100]) : [];
+                    $open_problem_reports = array_values(array_filter($problem_reports, static function (array $item): bool {
+                        $status = (string) ($item['data']['status'] ?? 'new');
+                        return !in_array($status, ['resolved', 'closed'], true);
+                    }));
+                    self::render_command_card(
+                        'sos',
+                        __('Problem Reports', 'elev8-os'),
+                        sprintf(_n('%d open report awaiting review.', '%d open reports awaiting review.', count($open_problem_reports), 'elev8-os'), count($open_problem_reports)),
+                        admin_url('admin.php?page=elev8-problem-reports')
+                    );
+                    ?>
                 </div>
                 <div class="elev8-ceo-tool-row" aria-label="<?php esc_attr_e('Additional CEO tools', 'elev8-os'); ?>">
                     <?php if (class_exists('Elev8_OS_Bingo_Reservations_Module')) : ?><a href="<?php echo esc_url(Elev8_OS_Bingo_Reservations_Module::admin_url()); ?>"><span class="dashicons dashicons-tickets-alt"></span><?php esc_html_e('Reservations', 'elev8-os'); ?></a><?php endif; ?>
@@ -255,6 +266,8 @@ final class Elev8_OS_CEO_Dashboard_Module {
                     ?>
                 </div>
             </section>
+
+            <?php self::render_public_profile_attention(); ?>
 
             <section class="elev8-bi-section" aria-labelledby="elev8-ceo-system-heading">
                 <div class="elev8-bi-section__heading">

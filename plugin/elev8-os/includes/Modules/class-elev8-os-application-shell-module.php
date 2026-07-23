@@ -119,7 +119,7 @@ final class Elev8_OS_Application_Shell_Module {
             }
         }
 
-        $known = ['checkin', 'elev8-mobile-home', 'artist-dashboard'];
+        $known = ['checkin', 'elev8-mobile-home', 'artist-dashboard', 'elev8-conversations', 'elev8-workspace', 'glass-manager', 'glass-workbench'];
         foreach ($known as $slug) {
             if ($path === $slug || substr($path, -strlen('/' . $slug)) === '/' . $slug) {
                 return true;

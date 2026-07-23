@@ -1,3 +1,10 @@
+## 21.2.1
+
+- Kept Conversations inside the shared Elev8 OS application shell.
+- Ensured the shared Report control appears on Glass Manager and Glass Workbench mobile pages.
+- Added a Problem Reports card to the CEO tools with the current open-report count.
+- Moved Profiles Needing Attention near the bottom of the CEO dashboard.
+
 ## 21.2.0 — Workspace Shell v1
 
 - Added the first shared Workspace Shell with a restrained role-aware header, responsive content frame, and consistent workspace context.
