@@ -1,3 +1,14 @@
+# 20.4.0 — Mobile Reliability & Release Confidence
+
+- Added the Trusted Device Registry as the first Mobile Reliability Foundation capability.
+- Authenticated browsers register a privacy-preserving device identity and update last-seen evidence at a controlled interval.
+- Added a phone-friendly My Devices workspace showing current and previously active devices.
+- Users can revoke a lost or old device; revoked devices are signed out on their next authenticated request.
+- Elev8 OS does not store passwords, payment data, or raw WordPress session tokens.
+- Added a self-documenting Repository Health Check to the release builder.
+- The builder now verifies canonical repository structure, required architecture documents, version alignment, changelog coverage, duplicate plugin entries, and module loading before PHP validation or packaging.
+- Updated the Constitution gap analysis and Business Blueprint with the governed device-session boundary and next mobile reliability steps.
+
 # 20.2.7 — Operational Readiness & Experience Standards
 
 - Added a configurable Operational Readiness workspace for reusable Experience Standards.

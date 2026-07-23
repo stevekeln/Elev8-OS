@@ -104,6 +104,62 @@ try {
         Stop-Build "BUILD_VERSION '$version' is not valid. Example: 10.4.11"
     }
 
+    Write-Step 'Repository health check'
+    $healthFailures = New-Object System.Collections.Generic.List[string]
+    $healthWarnings = New-Object System.Collections.Generic.List[string]
+    function Add-HealthPass([string]$Message) { Write-Host "  [PASS] $Message" -ForegroundColor Green }
+    function Add-HealthFailure([string]$Message) { $healthFailures.Add($Message); Write-Host "  [FAIL] $Message" -ForegroundColor Red }
+    function Add-HealthWarning([string]$Message) { $healthWarnings.Add($Message); Write-Host "  [WARN] $Message" -ForegroundColor Yellow }
+
+    $requiredRepositoryFiles = @('CONSTITUTION.md','BUSINESS_BLUEPRINT.md','CHANGELOG.md','FOUNDATION-MANIFEST.json','Build Elev8 OS Release.bat')
+    foreach ($requiredFile in $requiredRepositoryFiles) {
+        $requiredPath = Join-Path $projectRoot $requiredFile
+        if (Test-Path -LiteralPath $requiredPath -PathType Leaf) { Add-HealthPass "$requiredFile present" }
+        else { Add-HealthFailure "Missing required repository file: $requiredFile" }
+    }
+
+    $canonicalPluginFile = Join-Path $projectRoot 'plugin\elev8-os\elev8-os.php'
+    if (Test-Path -LiteralPath $canonicalPluginFile -PathType Leaf) { Add-HealthPass 'Canonical plugin entry present' }
+    else { Add-HealthFailure 'Canonical plugin entry missing: plugin\elev8-os\elev8-os.php' }
+
+    $rootPluginFile = Join-Path $projectRoot 'elev8-os.php'
+    if (Test-Path -LiteralPath $rootPluginFile -PathType Leaf) { Add-HealthFailure 'Duplicate root plugin entry found. Delete Elev8-OS\elev8-os.php.' }
+    else { Add-HealthPass 'No duplicate root plugin entry' }
+
+    if (Test-Path -LiteralPath $canonicalPluginFile -PathType Leaf) {
+        $pluginVersionText = Get-Content -LiteralPath $canonicalPluginFile -Raw
+        $headerMatch = [regex]::Match($pluginVersionText, '(?m)^\s*\*\s*Version:\s*([^\s]+)')
+        $constantMatch = [regex]::Match($pluginVersionText, "define\(\s*'ELEV8_OS_VERSION'\s*,\s*'([^']+)'\s*\);")
+        if ($headerMatch.Success -and $headerMatch.Groups[1].Value -eq $version) { Add-HealthPass 'Plugin header matches BUILD_VERSION' }
+        else { Add-HealthFailure "Plugin header does not match BUILD_VERSION $version" }
+        if ($constantMatch.Success -and $constantMatch.Groups[1].Value -eq $version) { Add-HealthPass 'Version constant matches BUILD_VERSION' }
+        else { Add-HealthFailure "ELEV8_OS_VERSION does not match BUILD_VERSION $version" }
+    }
+
+    $changelogPath = Join-Path $projectRoot 'CHANGELOG.md'
+    if ((Test-Path -LiteralPath $changelogPath) -and ((Get-Content -LiteralPath $changelogPath -Raw) -match [regex]::Escape($version))) { Add-HealthPass "CHANGELOG contains $version" }
+    else { Add-HealthFailure "CHANGELOG does not contain release version $version" }
+
+    $loaderPath = Join-Path $projectRoot 'plugin\elev8-os\includes\class-elev8-os-loader.php'
+    if (Test-Path -LiteralPath $loaderPath) {
+        $loaderText = Get-Content -LiteralPath $loaderPath -Raw
+        $missingRegistrations = @()
+        Get-ChildItem -LiteralPath (Join-Path $projectRoot 'plugin\elev8-os\includes\Modules') -File -Filter 'class-elev8-os-*.php' | ForEach-Object {
+            if ($loaderText -notmatch [regex]::Escape($_.Name)) { $missingRegistrations += $_.Name }
+        }
+        if ($missingRegistrations.Count -eq 0) { Add-HealthPass 'All module files are loaded' }
+        else { Add-HealthWarning ('Unloaded legacy/optional module files: ' + ($missingRegistrations -join ', ')) }
+    }
+
+    if ($healthFailures.Count -gt 0) {
+        Write-Host ''
+        Write-Host 'Repository Status: NEEDS ATTENTION' -ForegroundColor Red
+        Write-Host 'Suggested fixes:' -ForegroundColor Yellow
+        $healthFailures | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
+        Stop-Build "Repository health check found $($healthFailures.Count) blocking issue(s)."
+    }
+    Write-Host 'Repository Status: HEALTHY' -ForegroundColor Green
+
     $excludedRoots = @(
         (Join-Path $projectRoot '.git'),
         (Join-Path $projectRoot 'releases'),

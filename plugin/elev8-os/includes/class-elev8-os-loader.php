@@ -31,6 +31,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-business-memory-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-problem-report-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-device-session-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-observation-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-pattern-detection-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-intelligence-recommendation-service.php';
@@ -91,6 +92,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-daily-operations-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-memory-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-problem-report-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-device-session-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-blueprint-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-business-graph-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-organization-module.php';
@@ -262,6 +264,8 @@ final class Elev8_OS_Loader {
         Elev8_OS_Business_Memory_Module::init();
         Elev8_OS_Problem_Report_Service::init();
         Elev8_OS_Problem_Report_Module::init();
+        Elev8_OS_Device_Session_Service::init();
+        Elev8_OS_Device_Session_Module::init();
         Elev8_OS_Business_Blueprint_Service::init();
         Elev8_OS_Business_Blueprint_Module::init();
         Elev8_OS_Business_Graph_Registry_Service::init();

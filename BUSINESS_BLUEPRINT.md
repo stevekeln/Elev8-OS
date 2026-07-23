@@ -1453,3 +1453,27 @@ Add event and class readiness adapters, readiness due-time alerts, and manager v
 ### Release 20.3.0 — Constitution v2 and Report a Problem Foundation
 
 Constitution v2 is now the governing architecture document. The repository gap analysis identifies Mobile Reliability as the next foundation priority. The first real-business win is a phone-friendly Report a Problem page, a prominent Mobile Home entry, normalized context capture, optional evidence upload, duplicate occurrence counting, impact escalation, and an owner triage queue.
+
+## ADR-0053 — Trusted Device Registry and Revocation Boundary
+
+**Status:** Accepted  
+**Release:** 20.4.0  
+**Classification:** Core Platform Capability / Shared Platform Service
+
+**Decision:** Elev8 OS owns a privacy-preserving Trusted Device Registry for mobile reliability. WordPress remains the authentication and session-token authority. Elev8 OS records a generated device identifier, device/browser label, first seen, last seen, a salted one-way IP hash, and revocation state. It never stores passwords, payment information, or raw WordPress authentication tokens.
+
+**Remote logout behavior:** A user may revoke an individual registered device. The revoked browser is signed out on its next authenticated Elev8 OS request. This creates a safe device-specific control without copying or weakening WordPress authentication.
+
+**Why:** Employees need app-like persistence and the ability to remove lost or old devices. The registry establishes device identity and lifecycle evidence before session refresh, push subscription governance, and notification deep linking are added.
+
+**Next development session:** Add governed safe session-refresh signals and notification deep-link registration using the Trusted Device Registry as the device authority.
+
+## ADR-0054 — Repository Health Gate
+
+**Status:** Accepted  
+**Release:** 20.4.0  
+**Classification:** Core Platform Capability / Development Infrastructure
+
+**Decision:** Every release build must pass a visible Repository Health Check before PHP validation and packaging. The health gate verifies the canonical plugin entry, absence of duplicate root entries, required architecture files, version consistency, changelog coverage, and loader registration for modules. Blocking failures stop the build and provide specific corrective guidance.
+
+**Why:** Release confidence should be automated. The build that prevented a duplicate plugin entry proved that strict repository checks reduce risk and operational stress.
