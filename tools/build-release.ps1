@@ -258,6 +258,17 @@ try {
             Stop-Build 'PHP CLI could not be found. Open Local once so its PHP service is installed, then run the builder again.'
         }
         Write-Host "PHP executable: $phpExecutable"
+
+        Write-Step 'Validating Elev8 OS static class contracts'
+        $staticContractValidator = Join-Path $projectRoot 'tools\validate-static-contracts.php'
+        if (-not (Test-Path -LiteralPath $staticContractValidator -PathType Leaf)) {
+            Stop-Build "Static contract validator was not found: $staticContractValidator"
+        }
+        & $phpExecutable $staticContractValidator $pluginSourceRoot
+        if ($LASTEXITCODE -ne 0) {
+            Stop-Build 'Static contract validation failed. No release ZIP was created.'
+        }
+        Write-Host 'Static class contracts verified.' -ForegroundColor Green
         foreach ($file in $phpFiles) {
             $validationOutput = & $phpExecutable -l $file.FullName 2>&1
             if ($LASTEXITCODE -ne 0) {

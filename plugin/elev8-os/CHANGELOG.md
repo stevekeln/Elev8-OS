@@ -1,4 +1,12 @@
+## 21.4.1 — Static Contract Recovery
+
+- Fixed the activation fatal caused by `Elev8_OS_Problem_Report_Module::url()` by establishing a stable backward-compatible route contract.
+- Added compatibility contracts for older workspace and integration callers so dormant undefined-method failures cannot surface later.
+- Added a build-time static contract validator. The BAT builder now refuses to create a release ZIP when an Elev8 OS class or static method reference is missing.
+- Preserved all 21.4.0 roles, workspaces, permissions, and business data.
+
 ## 21.4.0
+
 - Added the scalable Elev8 Operations Manager role and dedicated cross-operational workspace.
 - Added explicit Operations Manager capabilities without granting WordPress administrator access.
 - Added an IT Support role and workspace as a configurable business capability rather than a standalone engine.

@@ -17,6 +17,11 @@ final class Elev8_OS_Problem_Report_Module {
         add_action('admin_notices', [__CLASS__, 'render_return_notice']);
     }
 
+    /** Backward-compatible route contract used by workspace definitions. */
+    public static function url(string $return_to = ''): string {
+        return self::page_url($return_to);
+    }
+
     public static function page_url(string $return_to = ''): string {
         $url = home_url('/' . self::PAGE_SLUG . '/');
         if ($return_to !== '') { $url = add_query_arg('return_to', rawurlencode($return_to), $url); }

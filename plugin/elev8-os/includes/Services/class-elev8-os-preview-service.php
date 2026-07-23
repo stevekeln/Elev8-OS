@@ -27,6 +27,11 @@ final class Elev8_OS_Preview_Service {
         return $user instanceof WP_User && $user->ID > 0 && user_can($user, 'manage_options');
     }
 
+    /** Backward-compatible name for callers created before is_active(). */
+    public static function is_previewing(): bool {
+        return self::is_active();
+    }
+
     public static function is_active(): bool {
         if (!self::can_preview()) { return false; }
         return self::target_user() instanceof WP_User;

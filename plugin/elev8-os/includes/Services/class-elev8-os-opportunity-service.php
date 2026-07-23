@@ -76,6 +76,37 @@ final class Elev8_OS_Opportunity_Service {
         ) {$charset};");
     }
 
+    /** Backward-compatible service contract for the Class Demand module. */
+    public static function save(array $data): int {
+        return self::save_opportunity($data);
+    }
+
+    public static function find(int $id): ?array {
+        return self::get($id);
+    }
+
+    /** @return array<string,mixed> */
+    public static function metrics(): array {
+        $intelligence = self::intelligence();
+        $metrics = is_array($intelligence['metrics'] ?? null) ? $intelligence['metrics'] : [];
+        $value = static function (string $key, $default = 0) use ($metrics) {
+            $metric = $metrics[$key] ?? null;
+            return is_array($metric) && array_key_exists('value', $metric) ? $metric['value'] : $default;
+        };
+        $available = static function (string $key) use ($metrics): bool {
+            $metric = $metrics[$key] ?? null;
+            return !is_array($metric) || !array_key_exists('available', $metric) || (bool) $metric['available'];
+        };
+        return [
+            'active_ideas' => (int) $value('opportunity_count', 0),
+            'people_waiting' => (int) $value('people_waiting', 0),
+            'seats_requested' => (int) $value('seats_waiting', 0),
+            'teacher_needed' => (int) $value('classes_without_teacher', 0),
+            'potential_revenue' => (float) $value('potential_revenue', 0),
+            'revenue_available' => $available('potential_revenue'),
+        ];
+    }
+
     public static function save_opportunity(array $data): int {
         global $wpdb;
         $id = absint($data['id'] ?? 0);

@@ -1,6 +1,13 @@
 <?php
 if (!defined('ABSPATH')) { exit; }
 final class Elev8_OS_Class_Approval_Module {
+    /** Stable route contract for integrations and workspace links. */
+    public static function url(array $args = []): string {
+        $base = class_exists('Elev8_OS_Glass_Manager_Suite_Module')
+            ? Elev8_OS_Glass_Manager_Suite_Module::url(['suite_tool' => 'approvals'])
+            : admin_url('admin.php?page=elev8-glass-operations');
+        return $args ? add_query_arg($args, $base) : $base;
+    }
     public static function init(): void {
         add_action('admin_post_elev8_os_class_decision', [__CLASS__, 'handle_decision']);
         add_action('wp_ajax_elev8_os_pending_class_count', [__CLASS__, 'ajax_count']);

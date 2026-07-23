@@ -8,6 +8,13 @@ if (!defined('ABSPATH')) {
  * Artist-facing class schedule backed by verified Amelia data.
  */
 final class Elev8_OS_My_Classes_Module {
+    /** Stable route contract for integrations and workspace links. */
+    public static function url(array $args = []): string {
+        $base = class_exists('Elev8_OS_Portal_Page_Manager')
+            ? Elev8_OS_Portal_Page_Manager::get_url('classes')
+            : home_url('/artist-dashboard/');
+        return $args ? add_query_arg($args, $base) : $base;
+    }
 
     private const SHORTCODE = 'elev8_artist_classes';
     private const EMPLOYEE_META_KEY = 'elev8_os_amelia_employee_id';
