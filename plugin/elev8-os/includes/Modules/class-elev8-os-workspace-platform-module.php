@@ -30,6 +30,7 @@ final class Elev8_OS_Workspace_Platform_Module {
                 <div><strong><?php echo esc_html((string) count($widgets)); ?></strong><span><?php esc_html_e('Registered widgets', 'elev8-os'); ?></span></div>
                 <div><strong><?php echo esc_html((string) ($workspace['label'] ?? '')); ?></strong><span><?php esc_html_e('Resolved for you', 'elev8-os'); ?></span></div>
             </div>
+            <p><a class="button button-primary" href="<?php echo esc_url(Elev8_OS_Workspace_Runtime_Module::url()); ?>"><?php esc_html_e('Open My Live Workspace', 'elev8-os'); ?></a></p>
             <h2><?php esc_html_e('Live Foundation Preview', 'elev8-os'); ?></h2>
             <?php echo Elev8_OS_Responsive_Grid_Service::render($workspace); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <h2><?php esc_html_e('Registered Workspaces', 'elev8-os'); ?></h2>

@@ -20,3 +20,8 @@ Use the `elev8_os_workspace_definitions` and `elev8_os_widgets` filters or the r
 - No engine-specific CSS layout systems.
 - No dashboard-owned business logic.
 - Report a Problem remains universally reachable.
+
+
+## 21.1 Live Runtime
+
+The first real front-end workspace is available at `/elev8-workspace/`. Studio users receive verified Glass Operations metrics, workspace actions, and universal problem reporting through the shared widget grid.

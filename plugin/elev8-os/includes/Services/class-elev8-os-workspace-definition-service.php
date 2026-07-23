@@ -68,7 +68,7 @@ final class Elev8_OS_Workspace_Definition_Service {
 
     public static function register_core_workspaces(): void {
         $dashboard = class_exists('Elev8_OS_Dashboard_Module') ? Elev8_OS_Dashboard_Module::url() : admin_url('admin.php?page=elev8-os');
-        $problem = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url() : home_url('/report-a-problem/');
+        $problem = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url(Elev8_OS_Problem_Report_Module::current_request_url()) : home_url('/report-a-problem/');
         self::register('executive', [
             'label' => __('Executive Workspace', 'elev8-os'),
             'description' => __('A focused owner view for verified decisions, risk, opportunity, and follow-through.', 'elev8-os'),
@@ -86,7 +86,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'description' => __('Production, quality, assignments, readiness, and accurate pay in one operational view.', 'elev8-os'),
             'shell' => 'studio',
             'roles' => ['glass_manager','studio_manager','glassblower'],
-            'widgets' => ['workspace_welcome','quick_actions','report_problem'],
+            'widgets' => ['workspace_welcome','studio_pulse','quick_actions','report_problem'],
             'actions' => [
                 ['label' => __('Open Production', 'elev8-os'), 'url' => home_url('/elev8-production/')],
                 ['label' => __('Open Readiness', 'elev8-os'), 'url' => home_url('/elev8-readiness/')],

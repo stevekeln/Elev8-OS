@@ -1506,3 +1506,13 @@ Presentation is a shared platform layer. Engines expose capability but never own
 **Boundary:** Workspaces and widgets may project engine data but may not duplicate records, own business rules, bypass the Access Service, or create engine-specific layout systems. Existing dashboards remain live until individually migrated.
 
 **First migration:** Glass Manager Operational Home becomes the 21.1 proof case. Production, QC, pay, assignment, and permissions remain authoritative in their current services while the presentation is reassembled as Studio workspace widgets.
+
+## 21.1.0 — Live Workspace Runtime and Safe Feedback Return
+
+**Classification:** Core Platform Capability.
+
+The Workspace Platform now has a real front-end runtime rather than only an administrator preview. Workspace definitions continue to supply presentation metadata, while engines remain authoritative for data and actions. The Studio workspace proves this boundary with a Studio Pulse widget sourced directly from Glass Operations summary data.
+
+Problem reporting is a governed exception to preview read-only protection. A report is authored by the real authenticated user, while the effective preview user and role are stored only as diagnostic context. Submission returns the user to the originating workspace instead of stranding them on an administrative endpoint.
+
+**Business Graph impact:** Problem Reports now preserve reporter, page, device, and optional preview-context relationships without impersonating the previewed employee.

@@ -189,7 +189,7 @@ final class Elev8_OS_Preview_Service {
     public static function protect_preview_writes(): void {
         if (!self::is_active() || strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST') { return; }
         $action = sanitize_key((string) ($_REQUEST['action'] ?? ''));
-        if (in_array($action, ['elev8_os_stop_preview', 'heartbeat'], true)) { return; }
+        if (in_array($action, ['elev8_os_stop_preview', 'elev8_submit_problem', 'heartbeat'], true)) { return; }
         wp_die(esc_html__('Preview mode is read-only. Exit preview before changing business data.', 'elev8-os'), esc_html__('Preview Mode', 'elev8-os'), ['response' => 403, 'back_link' => true]);
     }
 

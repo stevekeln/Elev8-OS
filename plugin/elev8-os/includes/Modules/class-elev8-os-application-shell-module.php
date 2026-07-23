@@ -162,7 +162,7 @@ final class Elev8_OS_Application_Shell_Module {
         $readiness_url = class_exists('Elev8_OS_Operational_Readiness_Module') ? Elev8_OS_Operational_Readiness_Module::url() : home_url('/elev8-readiness/');
         $team_coordination_url = class_exists('Elev8_OS_Team_Coordination_Module') ? Elev8_OS_Team_Coordination_Module::url() : home_url('/elev8-team-coordination/');
         $blueprint_url = class_exists('Elev8_OS_Business_Blueprint_Module') ? Elev8_OS_Business_Blueprint_Module::url() : home_url('/business-blueprint/');
-        $problem_report_url = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url() : home_url('/report-a-problem/');
+        $problem_report_url = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url(Elev8_OS_Problem_Report_Module::current_request_url()) : home_url('/report-a-problem/');
         $logout_url = wp_logout_url($home_url);
         $display_name = trim((string) $user->display_name) ?: (string) $user->user_login;
         $initial = function_exists('mb_substr') ? mb_substr($display_name, 0, 1) : substr($display_name, 0, 1);

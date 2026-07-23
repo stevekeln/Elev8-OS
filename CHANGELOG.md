@@ -1,3 +1,11 @@
+## 21.1.0 — Live Workspaces & Report Recovery
+
+- Problem reports are allowed during read-only role preview and remain attributed to the real signed-in owner with preview context recorded separately.
+- Submitting a report now returns the user to the exact page they came from and shows a brief success confirmation.
+- Added the first live Workspace Runtime page at `/elev8-workspace/`.
+- Added a verified Studio Pulse widget backed by the Glass Operations service.
+- Studio workspace now combines role context, verified metrics, quick actions, and universal problem reporting.
+
 ## 21.0.0 — Elev8 Experience Platform Foundation
 
 - Added the Workspace Definition Registry for role-aware presentation metadata without moving business logic out of engines.

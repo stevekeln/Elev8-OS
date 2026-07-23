@@ -92,6 +92,16 @@ final class Elev8_OS_Widget_Registry_Service {
             'priority' => 20,
             'render_callback' => [__CLASS__, 'render_quick_actions'],
         ]);
+        self::register('studio_pulse', [
+            'label' => __('Studio Pulse', 'elev8-os'),
+            'description' => __('Verified production, deadline, and pay signals from Glass Operations.', 'elev8-os'),
+            'engine' => 'operations',
+            'size' => 'wide',
+            'priority' => 15,
+            'capability' => 'view_glass_dashboard',
+            'data_callback' => [__CLASS__, 'studio_pulse_data'],
+            'render_callback' => [__CLASS__, 'render_studio_pulse'],
+        ]);
         self::register('report_problem', [
             'label' => __('Report a Problem', 'elev8-os'),
             'description' => __('Universal product and experience feedback intake.', 'elev8-os'),
@@ -134,8 +144,34 @@ final class Elev8_OS_Widget_Registry_Service {
         <?php
     }
 
+
+    public static function studio_pulse_data(array $context): array {
+        if (!class_exists('Elev8_OS_Glass_Operations_Service')) { return []; }
+        return Elev8_OS_Glass_Operations_Service::summary();
+    }
+
+    public static function render_studio_pulse(array $data, array $context, array $widget): void {
+        $items = [
+            ['value' => (int) ($data['open_jobs'] ?? 0), 'label' => __('Open jobs', 'elev8-os')],
+            ['value' => (int) ($data['overdue'] ?? 0), 'label' => __('Overdue', 'elev8-os')],
+            ['value' => (int) ($data['cremation_ready'] ?? 0), 'label' => __('Memorial jobs ready', 'elev8-os')],
+            ['value' => '$' . number_format_i18n((float) ($data['pending_payout'] ?? 0), 2), 'label' => __('Pending pay', 'elev8-os')],
+        ];
+        ?>
+        <article class="elev8-workspace-widget" data-elev8-widget="studio_pulse">
+            <span class="elev8-workspace-widget__engine"><?php esc_html_e('OPERATIONS', 'elev8-os'); ?></span>
+            <h2><?php esc_html_e('Studio Pulse', 'elev8-os'); ?></h2>
+            <div class="elev8-workspace-metrics">
+                <?php foreach ($items as $item): ?><div><strong><?php echo esc_html((string) $item['value']); ?></strong><span><?php echo esc_html((string) $item['label']); ?></span></div><?php endforeach; ?>
+            </div>
+            <?php if (class_exists('Elev8_OS_Glass_Manager_Suite_Module')): ?><a class="elev8-ui-button" href="<?php echo esc_url(Elev8_OS_Glass_Manager_Suite_Module::url()); ?>"><?php esc_html_e('Open Glass Operations', 'elev8-os'); ?></a><?php endif; ?>
+        </article>
+        <?php
+    }
+
     public static function render_report_problem(array $data, array $context, array $widget): void {
-        $url = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url() : home_url('/report-a-problem/');
+        $return_to = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::current_request_url() : '';
+        $url = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url($return_to) : home_url('/report-a-problem/');
         ?>
         <article class="elev8-workspace-widget elev8-workspace-widget--attention" data-elev8-widget="report_problem">
             <span class="elev8-workspace-widget__engine"><?php esc_html_e('PRODUCT INTELLIGENCE', 'elev8-os'); ?></span>
