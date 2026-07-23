@@ -135,7 +135,7 @@ final class Elev8_OS_Workspace_Resolver_Service {
 
     private static function primary_destination(WP_User $user): string {
         switch (self::role_key($user)) {
-            case 'owner': return admin_url('admin.php?page=elev8-ceo-dashboard');
+            case 'owner': return class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=elev8-ceo-dashboard');
             case 'glass_manager': return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : home_url('/glass-manager/');
             case 'glassblower': return class_exists('Elev8_OS_Glass_Workbench_Module') ? Elev8_OS_Glass_Workbench_Module::url() : home_url('/glass-workbench/');
             case 'shop_manager':

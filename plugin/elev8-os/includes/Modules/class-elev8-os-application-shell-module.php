@@ -100,6 +100,10 @@ final class Elev8_OS_Application_Shell_Module {
             return false;
         }
 
+        if (class_exists('Elev8_OS_Clean_App_Module') && Elev8_OS_Clean_App_Module::is_request()) {
+            return true;
+        }
+
         $path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
 
         if (class_exists('Elev8_OS_Portal_Page_Manager')) {

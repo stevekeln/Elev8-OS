@@ -1484,3 +1484,8 @@ Constitution v2 is now the governing architecture document. The repository gap a
 - User Preview is a CEO-only testing capability over the centralized Access Service and Workspace Resolver; it does not impersonate WordPress authentication or create a second identity system.
 - Preview mode is read-only, visibly identified, suppresses outbound communication, and uses clean application presentation for reliable mobile and desktop testing.
 - Persistent Access extends WordPress authentication only for registered trusted devices. Device revocation, password changes, account status, and WordPress sessions remain authoritative.
+
+
+## Theme-Isolated Application Shell
+
+Elev8 OS managed workspaces render through a dedicated application gateway. WordPress remains the authentication and runtime platform, while the public website theme is excluded from application presentation. The app shell owns navigation, responsive layout, safe-area handling, typography, and workspace framing. Public website pages continue using the active theme. New operational screens should prefer the clean application route rather than wp-admin or theme-dependent page templates.

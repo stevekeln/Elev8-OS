@@ -1,3 +1,12 @@
+## 20.6.0 - 2026-07-23
+
+- Added the theme-isolated Elev8 OS Clean App gateway.
+- Moved the CEO landing destination into a dedicated front-end application shell.
+- Removed public-theme headers, footers, notices, admin chrome, and unrelated theme CSS from clean app screens.
+- Preserved WordPress authentication, permissions, data services, plugin assets, and preview behavior.
+- Added viewport-safe mobile layout controls and eliminated theme footer horizontal drift from Elev8 OS screens.
+- Updated CEO workspace and Mobile Home links to stay inside the clean application experience.
+
 # 20.5.0 — User Preview & Persistent Access
 
 - Added a CEO-only View As User workflow that opens the selected employee experience in a clean window without requiring their password.
