@@ -1,3 +1,10 @@
+## 20.7.2 - Universal Report a Problem Access
+
+- Added a persistent Report a Problem action to every Elev8 OS application workspace.
+- Added Report a Problem to the shared user menu.
+- Positioned the mobile control above bottom navigation so it remains reachable without crowding role actions.
+- Preserved the full-width Glass Manager mobile corrections from 20.7.1.
+
 ## 20.7.1 — Full-Width Mobile Workspace
 - Made the Glass Manager suite break out of narrow public-theme content columns and use the full device viewport.
 - Added a workspace-specific mobile viewport declaration for themes that omit it.

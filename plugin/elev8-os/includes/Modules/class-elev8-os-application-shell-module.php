@@ -162,6 +162,7 @@ final class Elev8_OS_Application_Shell_Module {
         $readiness_url = class_exists('Elev8_OS_Operational_Readiness_Module') ? Elev8_OS_Operational_Readiness_Module::url() : home_url('/elev8-readiness/');
         $team_coordination_url = class_exists('Elev8_OS_Team_Coordination_Module') ? Elev8_OS_Team_Coordination_Module::url() : home_url('/elev8-team-coordination/');
         $blueprint_url = class_exists('Elev8_OS_Business_Blueprint_Module') ? Elev8_OS_Business_Blueprint_Module::url() : home_url('/business-blueprint/');
+        $problem_report_url = class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::page_url() : home_url('/report-a-problem/');
         $logout_url = wp_logout_url($home_url);
         $display_name = trim((string) $user->display_name) ?: (string) $user->user_login;
         $initial = function_exists('mb_substr') ? mb_substr($display_name, 0, 1) : substr($display_name, 0, 1);
@@ -245,6 +246,7 @@ final class Elev8_OS_Application_Shell_Module {
                 <a href="<?php echo esc_url($team_coordination_url); ?>">🤝 <span><?php esc_html_e('Team Coordination', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($resources_url); ?>">📚 <span><?php esc_html_e('Employee Guides', 'elev8-os'); ?></span></a>
                 <?php if (user_can($user, 'manage_options')) : ?><a href="<?php echo esc_url($blueprint_url); ?>">🧭 <span><?php esc_html_e('Business Blueprint', 'elev8-os'); ?></span></a><?php endif; ?>
+                <a href="<?php echo esc_url($problem_report_url); ?>">🛟 <span><?php esc_html_e('Report a Problem', 'elev8-os'); ?></span></a>
                 <a href="<?php echo esc_url($settings_url); ?>">⚙️ <span><?php esc_html_e('Settings', 'elev8-os'); ?></span></a>
                 <?php if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::can_preview()) : ?><a href="<?php echo esc_url(Elev8_OS_Preview_Service::preview_page_url()); ?>">👁 <span><?php esc_html_e('Role Preview', 'elev8-os'); ?></span></a><?php endif; ?>
                 <a href="<?php echo esc_url($help_url); ?>">❓ <span><?php esc_html_e('Help', 'elev8-os'); ?></span></a>
@@ -252,6 +254,11 @@ final class Elev8_OS_Application_Shell_Module {
                 <a class="elev8-app-shell__logout" href="<?php echo esc_url($logout_url); ?>">🚪 <span><?php esc_html_e('Log Out', 'elev8-os'); ?></span></a>
             </div>
         </div>
+
+        <a class="elev8-app-shell__report-problem" href="<?php echo esc_url($problem_report_url); ?>" aria-label="<?php esc_attr_e('Report a Problem', 'elev8-os'); ?>">
+            <span aria-hidden="true">!</span>
+            <strong><?php esc_html_e('Report a Problem', 'elev8-os'); ?></strong>
+        </a>
 
             <div class="elev8-command-palette" id="elev8-command-palette" data-elev8-command-palette hidden>
                 <button class="elev8-command-palette__backdrop" type="button" data-elev8-command-close aria-label="<?php esc_attr_e('Close search', 'elev8-os'); ?>"></button>
