@@ -1525,3 +1525,16 @@ Elev8 OS now has a shared live workspace shell that owns workspace-level present
 ## Shipping & Customer Service Workspace Foundation (21.3.0)
 
 Shipping & Fulfillment and Customer Service are reusable role-based workspaces, not separate engines. Both consume the shared Commerce Integration boundary, CRM, Operations, Communication, Workflow, and the QR/Capture Service. Order capture is read-only in this phase: scan or enter once, normalize the reference, retrieve verified order data, then let the active workspace determine meaning. Camera scanning must always include manual entry fallback.
+
+
+## Role, Workspace, and Permission Separation
+
+Elev8 OS separates human identity from operating access:
+
+- Job titles communicate professional identity and do not grant access.
+- Operational roles describe work a person performs.
+- Workspaces present the tools and information for that work.
+- Permissions govern actions inside each workspace.
+- A person may access several workspaces while retaining one identity.
+- Operations Manager is a cross-operational coordination role. It does not replace Shop Manager, Glass Manager, Shipping, Customer Service, or IT Support.
+

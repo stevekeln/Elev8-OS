@@ -102,6 +102,15 @@ final class Elev8_OS_Widget_Registry_Service {
             'render_callback' => [__CLASS__, 'render_retail_shift'],
         ]);
 
+        self::register('operations_manager_overview', [
+            'label' => __('Operations Overview', 'elev8-os'),
+            'description' => __('A cross-operational view of work that needs coordination.', 'elev8-os'),
+            'engine' => 'operations',
+            'size' => 'wide',
+            'priority' => 10,
+            'capability' => 'view_operations_manager_workspace',
+            'render_callback' => [__CLASS__, 'render_operations_manager_overview'],
+        ]);
         self::register('shipping_order_capture', [
             'label' => __('Order Capture', 'elev8-os'),
             'description' => __('Scan or enter an order number from the pick list.', 'elev8-os'),
@@ -252,4 +261,51 @@ final class Elev8_OS_Widget_Registry_Service {
         </article>
         <?php
     }
+
+    public static function render_operations_manager_overview(array $widget, array $context = []): string {
+        $problem_count = 0;
+        if (class_exists('Elev8_OS_Problem_Report_Service')) {
+            $counts = wp_count_posts(Elev8_OS_Problem_Report_Service::POST_TYPE);
+            $problem_count = isset($counts->publish) ? (int) $counts->publish : 0;
+        }
+
+        $cards = [
+            [
+                'label' => __('Open Problem Reports', 'elev8-os'),
+                'value' => (string) $problem_count,
+                'url' => admin_url('admin.php?page=elev8-problem-reports'),
+            ],
+            [
+                'label' => __('Shipping & Fulfillment', 'elev8-os'),
+                'value' => __('Open workspace', 'elev8-os'),
+                'url' => add_query_arg('workspace', 'shipping', home_url('/elev8-workspace/')),
+            ],
+            [
+                'label' => __('Customer Service', 'elev8-os'),
+                'value' => __('Open workspace', 'elev8-os'),
+                'url' => add_query_arg('workspace', 'customer_service', home_url('/elev8-workspace/')),
+            ],
+            [
+                'label' => __('Conversations', 'elev8-os'),
+                'value' => __('Review follow-up', 'elev8-os'),
+                'url' => home_url('/elev8-conversations/'),
+            ],
+        ];
+
+        ob_start(); ?>
+        <section class="elev8-operations-overview" aria-label="<?php esc_attr_e('Operations overview', 'elev8-os'); ?>">
+            <div class="elev8-operations-overview__grid">
+                <?php foreach ($cards as $card): ?>
+                    <a class="elev8-operations-overview__card" href="<?php echo esc_url($card['url']); ?>">
+                        <strong><?php echo esc_html($card['value']); ?></strong>
+                        <span><?php echo esc_html($card['label']); ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+            <p class="elev8-operations-overview__note"><?php esc_html_e('Use this workspace to coordinate work across departments. Department work stays in its own workspace and shared engines remain authoritative.', 'elev8-os'); ?></p>
+        </section>
+        <?php
+        return (string) ob_get_clean();
+    }
+
 }

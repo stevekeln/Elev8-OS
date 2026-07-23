@@ -69,6 +69,7 @@ final class Elev8_OS_Workspace_Runtime_Module {
             ? Elev8_OS_Preview_Service::effective_user()
             : wp_get_current_user();
         $workspace = Elev8_OS_Workspace_Definition_Service::resolve($user);
+        $accessible_workspaces = Elev8_OS_Workspace_Definition_Service::accessible($user);
         $actions_url = class_exists('Elev8_OS_Action_Center_Module')
             ? Elev8_OS_Action_Center_Module::url()
             : self::url();
@@ -94,6 +95,19 @@ final class Elev8_OS_Workspace_Runtime_Module {
                     <strong><?php echo esc_html($user instanceof WP_User ? $user->display_name : ''); ?></strong>
                     <span><?php echo esc_html($role_label); ?></span>
                 </div>
+                <?php if (count($accessible_workspaces) > 1): ?>
+                    <nav class="elev8-workspace-switcher" aria-label="<?php esc_attr_e('Available workspaces', 'elev8-os'); ?>">
+                        <span><?php esc_html_e('Workspaces', 'elev8-os'); ?></span>
+                        <div>
+                            <?php foreach ($accessible_workspaces as $available): ?>
+                                <?php $is_current = (string) ($available['id'] ?? '') === (string) ($workspace['id'] ?? ''); ?>
+                                <a class="<?php echo $is_current ? 'is-current' : ''; ?>" href="<?php echo esc_url(add_query_arg('workspace', (string) $available['id'], self::url())); ?>">
+                                    <?php echo esc_html((string) ($available['label'] ?? '')); ?>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </nav>
+                <?php endif; ?>
             </header>
 
             <?php echo Elev8_OS_Responsive_Grid_Service::render($workspace, ['user' => $user]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

@@ -1,3 +1,12 @@
+## 21.4.0
+- Added the scalable Elev8 Operations Manager role and dedicated cross-operational workspace.
+- Added explicit Operations Manager capabilities without granting WordPress administrator access.
+- Added an IT Support role and workspace as a configurable business capability rather than a standalone engine.
+- Added a workspace selector for users who can access multiple operational workspaces.
+- Added a remembered default workspace that is not changed by CEO Preview.
+- Added an Operations Overview widget linking problem reports, shipping, customer service, and conversations.
+- Kept Shop Manager, Glass Manager, Shipping, and Customer Service as separate workspaces powered by shared engines.
+
 
 ## 21.3.0 — Shipping & Customer Service Workspaces
 

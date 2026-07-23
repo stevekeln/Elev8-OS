@@ -21,6 +21,8 @@ final class Elev8_OS_Access_Service {
     public const ROLE_GLASS_BLOWER = 'elev8_glass_blower';
     public const ROLE_SHIPPING = 'elev8_shipping';
     public const ROLE_CUSTOMER_SERVICE = 'elev8_customer_service';
+    public const ROLE_OPERATIONS_MANAGER = 'elev8_operations_manager';
+    public const ROLE_IT_SUPPORT = 'elev8_it_support';
 
     public const META_ALLOW = '_elev8_access_allow';
     public const META_DENY = '_elev8_access_deny';
@@ -78,6 +80,8 @@ final class Elev8_OS_Access_Service {
         'scan_shipping_orders' => 'elev8_scan_shipping_orders',
         'view_customer_service_workspace' => 'elev8_view_customer_service_workspace',
         'search_customer_orders' => 'elev8_search_customer_orders',
+        'view_operations_manager_workspace' => 'elev8_view_operations_manager_workspace',
+        'view_it_support_workspace' => 'elev8_view_it_support_workspace',
     ];
 
     public static function init(): void {
@@ -152,6 +156,8 @@ final class Elev8_OS_Access_Service {
         add_role(self::ROLE_GLASS_BLOWER, __('Elev8 Glass Blower', 'elev8-os'), ['read' => true]);
         add_role(self::ROLE_SHIPPING, __('Elev8 Shipping & Fulfillment', 'elev8-os'), ['read' => true]);
         add_role(self::ROLE_CUSTOMER_SERVICE, __('Elev8 Customer Service', 'elev8-os'), ['read' => true]);
+        add_role(self::ROLE_OPERATIONS_MANAGER, __('Elev8 Operations Manager', 'elev8-os'), ['read' => true]);
+        add_role(self::ROLE_IT_SUPPORT, __('Elev8 IT Support', 'elev8-os'), ['read' => true]);
 
         $all = array_values(array_unique(array_filter(self::$permission_map, static fn(string $cap): bool => $cap !== 'manage_options')));
         self::grant_to_role('administrator', $all);
@@ -165,6 +171,33 @@ final class Elev8_OS_Access_Service {
         ];
         self::grant_to_role('shop_manager', $manager);
         self::grant_to_role('editor', $manager); // Legacy manager compatibility.
+
+        $operations_manager = [
+            'elev8_view_operations_manager_workspace',
+            'elev8_view_it_support_workspace',
+            'elev8_view_manager_dashboard',
+            'elev8_submit_manager_log',
+            'elev8_manage_daily_operations',
+            'elev8_manage_retail_operations',
+            'elev8_manage_inventory',
+            'elev8_view_shipping_workspace',
+            'elev8_scan_shipping_orders',
+            'elev8_view_customer_service_workspace',
+            'elev8_search_customer_orders',
+            'elev8_view_operations',
+            'elev8_manage_operations',
+            'elev8_view_work',
+            'elev8_manage_work',
+            'elev8_receive_work',
+            'elev8_receive_assignments',
+            'elev8_view_conversations',
+            'elev8_manage_conversations',
+            'elev8_view_business_memory',
+            'elev8_view_reports',
+        ];
+        self::grant_to_role(self::ROLE_OPERATIONS_MANAGER, $operations_manager);
+
+        self::grant_to_role(self::ROLE_IT_SUPPORT, ['elev8_view_it_support_workspace','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
 
         self::grant_to_role(self::ROLE_RETAIL, ['elev8_submit_retail_log','elev8_manage_retail_operations','elev8_view_operations','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
         self::grant_to_role('author', ['elev8_submit_retail_log','elev8_view_operations','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);

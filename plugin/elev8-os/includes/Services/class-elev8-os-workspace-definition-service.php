@@ -56,8 +56,39 @@ final class Elev8_OS_Workspace_Definition_Service {
         return (bool) array_intersect($roles, array_map('sanitize_key', (array) $user->roles));
     }
 
+    public static function accessible(?WP_User $user = null): array {
+        $user = $user ?: wp_get_current_user();
+        if (!$user instanceof WP_User || !$user->exists()) { return []; }
+        return array_filter(self::all(), static function(array $workspace) use ($user): bool {
+            return self::can_view($workspace, $user);
+        });
+    }
+
     public static function resolve(?WP_User $user = null): array {
         $user = $user ?: wp_get_current_user();
+        if (!$user instanceof WP_User || !$user->exists()) {
+            return self::get('business') ?: [
+                'id' => 'business', 'label' => __('Business Workspace', 'elev8-os'), 'widgets' => ['workspace_welcome','quick_actions'], 'actions' => []
+            ];
+        }
+
+        $requested = isset($_GET['workspace']) ? sanitize_key(wp_unslash((string) $_GET['workspace'])) : '';
+        if ($requested !== '') {
+            $workspace = self::get($requested);
+            if ($workspace && self::can_view($workspace, $user)) {
+                if (!class_exists('Elev8_OS_Preview_Service') || !Elev8_OS_Preview_Service::is_previewing()) {
+                    update_user_meta($user->ID, '_elev8_os_default_workspace', $requested);
+                }
+                return $workspace;
+            }
+        }
+
+        $default = sanitize_key((string) get_user_meta($user->ID, '_elev8_os_default_workspace', true));
+        if ($default !== '') {
+            $workspace = self::get($default);
+            if ($workspace && self::can_view($workspace, $user)) { return $workspace; }
+        }
+
         foreach (self::all() as $workspace) {
             if (self::can_view($workspace, $user)) { return $workspace; }
         }
@@ -93,6 +124,37 @@ final class Elev8_OS_Workspace_Definition_Service {
             'priority' => 20,
         ]);
 
+        self::register('operations_manager', [
+            'label' => __('Operations Manager Workspace', 'elev8-os'),
+            'description' => __('Coordinate daily execution across retail, shipping, customer service, IT support, and assigned management work.', 'elev8-os'),
+            'shell' => 'operations-manager',
+            'capability' => 'view_operations_manager_workspace',
+            'roles' => ['elev8_operations_manager'],
+            'widgets' => ['workspace_welcome','operations_manager_overview','quick_actions'],
+            'actions' => [
+                ['label' => __('Open Manager Dashboard', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-manager-dashboard')],
+                ['label' => __('Shipping & Fulfillment', 'elev8-os'), 'url' => add_query_arg('workspace', 'shipping', home_url('/elev8-workspace/'))],
+                ['label' => __('Customer Service', 'elev8-os'), 'url' => add_query_arg('workspace', 'customer_service', home_url('/elev8-workspace/'))],
+                ['label' => __('Conversations', 'elev8-os'), 'url' => home_url('/elev8-conversations/')],
+            ],
+            'priority' => 15,
+        ]);
+
+        self::register('it_support', [
+            'label' => __('IT Support Workspace', 'elev8-os'),
+            'description' => __('Support devices, user access, reported problems, and reliable day-to-day use of Elev8 OS.', 'elev8-os'),
+            'shell' => 'it-support',
+            'capability' => 'view_it_support_workspace',
+            'roles' => ['elev8_it_support'],
+            'widgets' => ['workspace_welcome','quick_actions'],
+            'actions' => [
+                ['label' => __('My Devices', 'elev8-os'), 'url' => class_exists('Elev8_OS_Device_Session_Module') ? Elev8_OS_Device_Session_Module::page_url() : home_url('/my-devices/')],
+                ['label' => __('Report a Problem', 'elev8-os'), 'url' => class_exists('Elev8_OS_Problem_Report_Module') ? Elev8_OS_Problem_Report_Module::url() : home_url('/report-a-problem/')],
+                ['label' => __('Conversations', 'elev8-os'), 'url' => home_url('/elev8-conversations/')],
+            ],
+            'priority' => 24,
+        ]);
+
         self::register('shipping', [
             'label' => __('Shipping & Fulfillment Workspace', 'elev8-os'),
             'description' => __('Scan an order from the pick list, verify what belongs in the box, and keep fulfillment work connected to the order.', 'elev8-os'),
@@ -123,6 +185,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'label' => __('Retail Workspace', 'elev8-os'),
             'description' => __('A phone-first workspace for customer service, store operations, and daily execution.', 'elev8-os'),
             'shell' => 'retail',
+            'capability' => 'manage_retail_operations',
             'roles' => ['shop_manager','shop_employee','retail_employee','author','contributor'],
             'widgets' => ['workspace_welcome','quick_actions'],
             'actions' => [
