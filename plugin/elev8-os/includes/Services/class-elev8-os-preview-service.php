@@ -217,7 +217,12 @@ final class Elev8_OS_Preview_Service {
             case 'teacher': return Elev8_OS_Access_Service::is_teacher($user);
             case 'event_host': return Elev8_OS_Access_Service::uses_event_host_home($user);
             case 'volunteer': return Elev8_OS_Access_Service::user_can('view_volunteer_portal', $user);
-            case 'retail': return Elev8_OS_Access_Service::is_retail_employee($user);
+            case 'retail':
+                $roles = array_map('sanitize_key', (array) $user->roles);
+                $legacy_retail_roles = ['elev8_retail_employee', 'shop_employee', 'retail_employee', 'author', 'contributor'];
+                return Elev8_OS_Access_Service::user_can('submit_retail_log', $user)
+                    || Elev8_OS_Access_Service::user_can('manage_retail_operations', $user)
+                    || (bool) array_intersect($legacy_retail_roles, $roles);
             case 'artist': return Elev8_OS_Access_Service::user_can('view_artist_dashboard', $user) && !Elev8_OS_Access_Service::is_teacher($user);
         }
         return false;

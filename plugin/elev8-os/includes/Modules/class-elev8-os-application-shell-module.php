@@ -205,6 +205,7 @@ final class Elev8_OS_Application_Shell_Module {
                 </nav>
 
                 <div class="elev8-app-shell__actions">
+                    <a class="elev8-app-shell__problem-button" href="<?php echo esc_url($problem_report_url); ?>" aria-label="<?php esc_attr_e('Report a Problem', 'elev8-os'); ?>"><span aria-hidden="true">!</span><strong><?php esc_html_e('Report', 'elev8-os'); ?></strong></a>
                     <?php if (class_exists('Elev8_OS_Preview_Service') && Elev8_OS_Preview_Service::can_preview()) : ?>
                         <a class="elev8-app-shell__preview-button" href="<?php echo esc_url(Elev8_OS_Preview_Service::preview_page_url()); ?>">👁 <span><?php esc_html_e('Preview', 'elev8-os'); ?></span></a>
                     <?php endif; ?>

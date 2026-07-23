@@ -1,3 +1,11 @@
+## 20.7.3 - Navigation and Preview Recovery
+
+- Rebuilt the shared application-shell CSS to prevent desktop navigation labels and mobile Preview controls from collapsing into vertical text.
+- Made the application header responsive with non-shrinking controls and a compact phone layout.
+- Strengthened the universal Report a Problem action so it remains visible above mobile bottom navigation and is always available in the user menu.
+- Expanded Retail Employee preview matching to include centralized retail capabilities and legacy shop employee, author, and contributor role mappings.
+- Removed duplicated command-palette CSS that was making layout behavior harder to predict.
+
 ## 20.7.2 - Universal Report a Problem Access
 
 - Added a persistent Report a Problem action to every Elev8 OS application workspace.
