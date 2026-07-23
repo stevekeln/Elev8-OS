@@ -1489,3 +1489,7 @@ Constitution v2 is now the governing architecture document. The repository gap a
 ## Theme-Isolated Application Shell
 
 Elev8 OS managed workspaces render through a dedicated application gateway. WordPress remains the authentication and runtime platform, while the public website theme is excluded from application presentation. The app shell owns navigation, responsive layout, safe-area handling, typography, and workspace framing. Public website pages continue using the active theme. New operational screens should prefer the clean application route rather than wp-admin or theme-dependent page templates.
+
+
+## Elev8 UI Framework (20.7.0)
+Presentation is a shared platform layer. Engines expose capability but never own layout. Design tokens, reusable components, role-aware shells, theme packs, and a temporary legacy bridge support gradual migration without duplicating business logic. The first full workspace migration target is Glass Manager Operational Home, followed by operational readiness cards.

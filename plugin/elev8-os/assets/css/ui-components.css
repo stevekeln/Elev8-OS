@@ -1,0 +1,10 @@
+.elev8-ui,.elev8-ui *{box-sizing:border-box}.elev8-ui{font-family:var(--e8-font);color:var(--e8-color-text)}
+.elev8-ui :where(img,svg,video,canvas,iframe){max-width:100%;height:auto}.elev8-ui :where(p,li,td,th,a,code,pre,h1,h2,h3){overflow-wrap:anywhere}
+.elev8-ui-card{background:var(--e8-color-surface);border:1px solid var(--e8-color-line);border-radius:var(--e8-radius-lg);padding:clamp(1rem,2vw,1.5rem);box-shadow:var(--e8-shadow-sm);min-width:0}
+.elev8-ui-card h2{margin:.35rem 0 .55rem;font-size:1.25rem}.elev8-ui-card p{color:var(--e8-color-muted);margin:.4rem 0}
+.elev8-ui-kicker{display:inline-block;font-size:.75rem;font-weight:800;letter-spacing:.09em;color:var(--e8-color-muted)}
+.elev8-ui-grid{display:grid;gap:var(--e8-space-4);min-width:0}.elev8-ui-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.elev8-ui .button,.elev8-ui button,.elev8-ui input[type=submit]{min-height:var(--e8-touch);border-radius:var(--e8-radius-sm)}
+.elev8-ui input:not([type=checkbox]):not([type=radio]),.elev8-ui select,.elev8-ui textarea{max-width:100%;min-height:var(--e8-touch);border-radius:var(--e8-radius-sm)}
+.elev8-ui-settings-card{display:grid;gap:var(--e8-space-4);max-width:720px;margin:var(--e8-space-6) 0}.elev8-ui-settings-card label{display:block}
+@media(max-width:900px){.elev8-ui-grid--3{grid-template-columns:1fr}}

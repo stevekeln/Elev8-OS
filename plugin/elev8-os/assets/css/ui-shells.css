@@ -1,0 +1,16 @@
+/* Shared application frame. Engines do not own these layout rules. */
+.elev8-ui.elev8-ui--legacy-bridge :where(.wrap,.elev8-dashboard-shell,.elev8-ceo-dashboard,.elev8-glass-manager-home,.elev8-mobile-home,.elev8-app-main){width:min(100%,var(--e8-content));max-width:100%;min-width:0;margin-left:auto;margin-right:auto}
+.elev8-ui.elev8-ui--legacy-bridge :where(.elev8-dashboard-grid,.elev8-card-grid,.elev8-metric-grid,.elev8-actions-grid){min-width:0;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.elev8-ui.elev8-ui--legacy-bridge :where(.card,.elev8-card,.elev8-dashboard-card,.elev8-panel){min-width:0;max-width:100%}
+.elev8-ui--shell-studio{--e8-shell-banner:linear-gradient(145deg,#123744,#245a69)}
+.elev8-ui--shell-retail{--e8-shell-banner:linear-gradient(145deg,#7c2d12,#c2410c)}
+.elev8-ui--shell-executive{--e8-shell-banner:linear-gradient(145deg,#1f2937,#4c1d95)}
+.elev8-ui--shell-artist{--e8-shell-banner:linear-gradient(145deg,#4c1d95,#7c3aed)}
+.elev8-ui--shell-event{--e8-shell-banner:linear-gradient(145deg,#155e75,#0e7490)}
+.elev8-ui--shell-business{--e8-shell-banner:linear-gradient(145deg,#374151,#6d28d9)}
+@media(max-width:782px){
+ .elev8-ui.elev8-ui--legacy-bridge :where(.wrap,.elev8-dashboard-shell,.elev8-ceo-dashboard,.elev8-glass-manager-home,.elev8-mobile-home,.elev8-app-main){padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));overflow:hidden}
+ .elev8-ui.elev8-ui--legacy-bridge :where(h1){font-size:clamp(1.8rem,9vw,2.75rem);line-height:1.05;letter-spacing:-.03em}
+ .elev8-ui.elev8-ui--legacy-bridge :where(h2){line-height:1.15}
+ .elev8-ui.elev8-ui--legacy-bridge :where(table){display:block;max-width:100%;overflow-x:auto}
+}

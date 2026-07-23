@@ -26,6 +26,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-access-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-resolver-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-ui-framework-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-experience-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-preview-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-operations-intelligence-service.php';
@@ -108,6 +109,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-site-layout-guard-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-clean-app-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-application-shell-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ui-framework-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-experience-engine-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-role-preview-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
@@ -191,6 +193,7 @@ final class Elev8_OS_Loader {
         Elev8_OS::init();
         Elev8_OS_Access_Service::init();
         Elev8_OS_Workspace_Resolver_Service::init();
+        Elev8_OS_UI_Framework_Service::init();
         Elev8_OS_Experience_Service::init();
         Elev8_OS_Preview_Service::init();
         Elev8_OS_WooCommerce::init();
@@ -286,6 +289,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Site_Layout_Guard_Module::init();
         Elev8_OS_Clean_App_Module::init();
         Elev8_OS_Application_Shell_Module::init();
+        Elev8_OS_UI_Framework_Module::init();
         Elev8_OS_Experience_Engine_Module::init();
         Elev8_OS_Role_Preview_Module::init();
         Elev8_OS_Checkin_Center_Module::init();

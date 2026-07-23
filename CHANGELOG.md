@@ -1,3 +1,11 @@
+
+## 20.7.0 — Elev8 UI Framework Foundation
+- Added a presentation registry that keeps UI concerns separate from engines and business rules.
+- Added design tokens, reusable component foundations, role-aware shell contexts, and theme packs.
+- Added a safe legacy-layout bridge for gradual workspace migration and mobile overflow protection.
+- Added an administrator UI Framework control panel with feature flags and theme-pack selection.
+- Added formal UI Framework and Codex implementation guides.
+
 ## 20.6.0 - 2026-07-23
 
 - Added the theme-isolated Elev8 OS Clean App gateway.
