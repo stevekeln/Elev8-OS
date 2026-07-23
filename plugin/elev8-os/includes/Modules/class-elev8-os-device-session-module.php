@@ -31,6 +31,8 @@ final class Elev8_OS_Device_Session_Module {
         wp_localize_script('elev8-device-session', 'elev8DeviceSession', [
             'endpoint' => esc_url_raw(rest_url('elev8-os/v1/device/register')),
             'nonce' => wp_create_nonce('wp_rest'),
+            'refreshEndpoint' => esc_url_raw(rest_url('elev8-os/v1/device/refresh')),
+            'refreshInterval' => Elev8_OS_Device_Session_Service::refresh_interval() * 1000,
         ]);
         if (is_page(self::PAGE_SLUG)) {
             wp_enqueue_style('elev8-device-session', ELEV8_OS_URL . 'assets/css/device-session.css', [], ELEV8_OS_VERSION);
@@ -43,6 +45,11 @@ final class Elev8_OS_Device_Session_Module {
             'callback' => [__CLASS__, 'register'],
             'permission_callback' => static fn(): bool => is_user_logged_in(),
         ]);
+        register_rest_route('elev8-os/v1', '/device/refresh', [
+            'methods' => 'POST',
+            'callback' => [__CLASS__, 'refresh'],
+            'permission_callback' => static fn(): bool => is_user_logged_in(),
+        ]);
     }
 
     public static function register(WP_REST_Request $request): WP_REST_Response {
@@ -52,6 +59,11 @@ final class Elev8_OS_Device_Session_Module {
             'platform' => sanitize_text_field((string)$request->get_param('platform')),
         ]);
         return new WP_REST_Response(['ok'=>true,'device'=>$record], 200);
+    }
+
+    public static function refresh(): WP_REST_Response {
+        $ok = Elev8_OS_Device_Session_Service::refresh_session(get_current_user_id());
+        return new WP_REST_Response(['ok' => $ok], $ok ? 200 : 403);
     }
 
     public static function mobile_card(array $cards, WP_User $user): array {

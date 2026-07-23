@@ -12,10 +12,51 @@ final class Elev8_OS_Device_Session_Service {
     private const META_KEY = 'elev8_os_trusted_devices_v1';
     private const COOKIE = 'elev8_os_device';
     private const MAX_DEVICES = 20;
+    private const REMEMBER_DAYS = 90;
+    private const REFRESH_INTERVAL = 12 * HOUR_IN_SECONDS;
 
     public static function init(): void {
         add_action('init', [__CLASS__, 'enforce_revocation'], 2);
+        add_action('login_form', [__CLASS__, 'render_remember_device_field']);
+        add_action('wp_login', [__CLASS__, 'remember_login_device'], 10, 2);
+        add_filter('auth_cookie_expiration', [__CLASS__, 'auth_cookie_expiration'], 20, 3);
     }
+
+    public static function render_remember_device_field(): void {
+        $checked = !isset($_POST['elev8_remember_device']) || (string) $_POST['elev8_remember_device'] === '1';
+        echo '<p class="elev8-remember-device"><label><input type="checkbox" name="elev8_remember_device" value="1" ' . checked($checked, true, false) . '> ' . esc_html__('Keep me signed in on this trusted device', 'elev8-os') . '</label></p>';
+    }
+
+    public static function remember_login_device(string $user_login, WP_User $user): void {
+        if (empty($_POST['elev8_remember_device'])) { return; }
+        $device_id = self::current_device_id();
+        if (!$device_id) { $device_id = wp_generate_uuid4(); }
+        self::set_device_cookie($device_id);
+        self::register((int) $user->ID, [
+            'device_id' => $device_id,
+            'user_agent' => sanitize_text_field((string) ($_SERVER['HTTP_USER_AGENT'] ?? '')),
+            'platform' => '',
+        ]);
+    }
+
+    public static function auth_cookie_expiration(int $length, int $user_id, bool $remember): int {
+        $requested = !empty($_POST['elev8_remember_device']);
+        $trusted = self::current_device_id() !== '';
+        return ($requested || $trusted) ? self::REMEMBER_DAYS * DAY_IN_SECONDS : $length;
+    }
+
+    public static function refresh_session(int $user_id): bool {
+        if ($user_id <= 0 || self::current_device_id() === '') { return false; }
+        $devices = self::devices($user_id);
+        $device_id = self::current_device_id();
+        if (empty($devices[$device_id]) || !empty($devices[$device_id]['revoked'])) { return false; }
+        wp_set_auth_cookie($user_id, true, is_ssl(), wp_get_session_token());
+        $devices[$device_id]['last_seen_gmt'] = current_time('mysql', true);
+        update_user_meta($user_id, self::META_KEY, $devices);
+        return true;
+    }
+
+    public static function refresh_interval(): int { return self::REFRESH_INTERVAL; }
 
     public static function cookie_name(): string { return self::COOKIE; }
 

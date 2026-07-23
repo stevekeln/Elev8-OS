@@ -10,7 +10,14 @@
   }
   var last = 0;
   try { last = parseInt(window.localStorage.getItem(key + '_seen') || '0', 10); } catch (e) {}
-  if (Date.now() - last < 15 * 60 * 1000) return;
+  var now = Date.now();
+  var refreshKey = key + '_refreshed';
+  var refreshed = 0;
+  try { refreshed = parseInt(window.localStorage.getItem(refreshKey) || '0', 10); } catch (e) {}
+  if (window.elev8DeviceSession.refreshEndpoint && now - refreshed >= (window.elev8DeviceSession.refreshInterval || 43200000)) {
+    fetch(window.elev8DeviceSession.refreshEndpoint, {method:'POST',credentials:'same-origin',headers:{'X-WP-Nonce':window.elev8DeviceSession.nonce}}).then(function(r){if(r.ok){try{window.localStorage.setItem(refreshKey,String(Date.now()));}catch(e){}}}).catch(function(){});
+  }
+  if (now - last < 15 * 60 * 1000) return;
   fetch(window.elev8DeviceSession.endpoint, {
     method: 'POST', credentials: 'same-origin',
     headers: {'Content-Type':'application/json','X-WP-Nonce':window.elev8DeviceSession.nonce},

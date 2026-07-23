@@ -1,3 +1,14 @@
+# 20.5.0 — User Preview & Persistent Access
+
+- Added a CEO-only View As User workflow that opens the selected employee experience in a clean window without requiring their password.
+- Preview uses the selected user for centralized access checks and workspace resolution while the CEO remains securely authenticated.
+- Added a persistent preview banner, role-aware jump links, one-click exit, and WordPress chrome suppression for an accurate mobile or desktop view.
+- Preview mode is read-only and blocks business-data writes, outbound email, and notification delivery to prevent accidental actions under another person’s identity.
+- Added a checked-by-default “Keep me signed in on this trusted device” login control.
+- Trusted devices receive a governed 90-day WordPress authentication lifetime and refresh their authenticated session during active use.
+- Password changes, account disabling, WordPress session invalidation, and device revocation remain authoritative and immediately end access.
+- No passwords, raw login tokens, or parallel authentication credentials are stored by Elev8 OS.
+
 # 20.4.0 — Mobile Reliability & Release Confidence
 
 - Added the Trusted Device Registry as the first Mobile Reliability Foundation capability.

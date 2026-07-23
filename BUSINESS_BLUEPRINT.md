@@ -1477,3 +1477,10 @@ Constitution v2 is now the governing architecture document. The repository gap a
 **Decision:** Every release build must pass a visible Repository Health Check before PHP validation and packaging. The health gate verifies the canonical plugin entry, absence of duplicate root entries, required architecture files, version consistency, changelog coverage, and loader registration for modules. Blocking failures stop the build and provide specific corrective guidance.
 
 **Why:** Release confidence should be automated. The build that prevented a duplicate plugin entry proved that strict repository checks reduce risk and operational stress.
+
+
+## Release 20.5.0 — Founder Preview and Persistent Access
+
+- User Preview is a CEO-only testing capability over the centralized Access Service and Workspace Resolver; it does not impersonate WordPress authentication or create a second identity system.
+- Preview mode is read-only, visibly identified, suppresses outbound communication, and uses clean application presentation for reliable mobile and desktop testing.
+- Persistent Access extends WordPress authentication only for registered trusted devices. Device revocation, password changes, account status, and WordPress sessions remain authoritative.

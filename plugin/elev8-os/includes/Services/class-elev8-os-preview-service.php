@@ -18,6 +18,8 @@ final class Elev8_OS_Preview_Service {
         add_filter('pre_wp_mail', [__CLASS__, 'suppress_mail_during_preview'], 10, 2);
         add_filter('elev8_os_notifications_suppressed', [__CLASS__, 'notifications_suppressed']);
         add_filter('show_admin_bar', [__CLASS__, 'filter_admin_bar']);
+        add_action('admin_init', [__CLASS__, 'protect_preview_writes'], 1);
+        add_filter('rest_pre_dispatch', [__CLASS__, 'protect_preview_rest_writes'], 10, 3);
     }
 
     public static function can_preview(?WP_User $user = null): bool {
@@ -181,6 +183,19 @@ final class Elev8_OS_Preview_Service {
         $redirect = isset($_GET['redirect_to']) ? rawurldecode((string) wp_unslash($_GET['redirect_to'])) : admin_url('admin.php?page=elev8-role-preview');
         wp_safe_redirect(wp_validate_redirect($redirect, admin_url('admin.php?page=elev8-role-preview')));
         exit;
+    }
+
+
+    public static function protect_preview_writes(): void {
+        if (!self::is_active() || strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST') { return; }
+        $action = sanitize_key((string) ($_REQUEST['action'] ?? ''));
+        if (in_array($action, ['elev8_os_stop_preview', 'heartbeat'], true)) { return; }
+        wp_die(esc_html__('Preview mode is read-only. Exit preview before changing business data.', 'elev8-os'), esc_html__('Preview Mode', 'elev8-os'), ['response' => 403, 'back_link' => true]);
+    }
+
+    public static function protect_preview_rest_writes($result, WP_REST_Server $server, WP_REST_Request $request) {
+        if (!self::is_active() || in_array($request->get_method(), ['GET', 'HEAD', 'OPTIONS'], true)) { return $result; }
+        return new WP_Error('elev8_preview_read_only', __('Preview mode is read-only. Exit preview before changing business data.', 'elev8-os'), ['status' => 403]);
     }
 
     public static function suppress_mail_during_preview($return, array $atts) {
