@@ -1,3 +1,9 @@
+## 20.7.1 — Full-Width Mobile Workspace
+- Made the Glass Manager suite break out of narrow public-theme content columns and use the full device viewport.
+- Added a workspace-specific mobile viewport declaration for themes that omit it.
+- Forced operational cards, KPIs, panels, and manager grids into a true single-column phone layout.
+- Added safe-area padding and overflow protection without changing the public website theme.
+
 
 ## 20.7.0 — Elev8 UI Framework Foundation
 - Added a presentation registry that keeps UI concerns separate from engines and business rules.
