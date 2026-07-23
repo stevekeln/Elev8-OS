@@ -1,0 +1,13 @@
+BUILD_VERSION
+CHANGELOG.md
+BUSINESS_BLUEPRINT.md
+CONSTITUTION.md
+ELEV8-OS-CONSTITUTION-V2-GAP-ANALYSIS.md
+plugin/elev8-os/elev8-os.php
+plugin/elev8-os/CHANGELOG.md
+plugin/elev8-os/includes/class-elev8-os-loader.php
+plugin/elev8-os/includes/Services/class-elev8-os-problem-report-service.php
+plugin/elev8-os/includes/Modules/class-elev8-os-problem-report-module.php
+plugin/elev8-os/assets/css/problem-report.css
+plugin/elev8-os/assets/docs/CONSTITUTION.md
+plugin/elev8-os/assets/docs/BUSINESS_BLUEPRINT.md

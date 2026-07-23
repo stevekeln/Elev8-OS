@@ -1281,3 +1281,7 @@
 ## 20.2.5 — Work Item Conversations & Governed Follow-up Capture
 - Embedded authoritative Conversation panels in Universal Work Items.
 - Added governed summaries and explicit follow-up Work Item creation.
+
+## 20.3.0 - 2026-07-23
+- Constitution v2 foundation.
+- Universal Report a Problem intake with duplicate grouping and triage.

@@ -1,0 +1,148 @@
+.elev8-os{max-width:1400px}
+.elev8-header{display:flex;align-items:flex-start;justify-content:space-between;margin:20px 0}
+.elev8-header h1{font-size:30px;margin:0 0 5px}
+.elev8-header p{margin:0;color:#646970}
+.elev8-version{background:#fff;border:1px solid #dcdcde;border-radius:999px;padding:7px 12px}
+.elev8-private-note{background:#fff8e5;border-left:4px solid #dba617;padding:12px 15px;margin-bottom:16px}
+.elev8-filter{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #dcdcde;padding:14px;border-radius:10px;margin-bottom:16px}
+.elev8-filter input{min-height:36px}
+.elev8-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.elev8-card,.elev8-panel{background:#fff;border:1px solid #dcdcde;border-radius:12px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.elev8-card span{display:block;color:#646970;font-size:13px;margin-bottom:8px}
+.elev8-card strong{font-size:28px}
+.elev8-panel{margin-bottom:16px}
+.elev8-panel h2{margin-top:0}
+.elev8-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.elev8-panel label{display:block;font-weight:600;margin:12px 0 5px}
+.elev8-panel input[type=text],.elev8-panel input[type=number],.elev8-panel select{width:100%;max-width:none}
+.elev8-fields{display:grid;grid-template-columns:repeat(2,1fr);gap:0 12px}
+.elev8-table-wrap{overflow:auto}
+.elev8-empty{padding:18px;background:#f6f7f7;border-radius:8px;color:#646970}
+.elev8-rule{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee}
+.elev8-rule:last-child{border-bottom:0}
+.elev8-rule p{margin:4px 0 0;color:#646970}
+.elev8-diagnostics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.elev8-diagnostics div{padding:10px;border-radius:7px;background:#f6f7f7}
+.elev8-diagnostics .ok span{color:#1d7f36;font-weight:bold}
+.elev8-diagnostics .missing span{color:#b32d2e;font-weight:bold}
+@media(max-width:900px){
+  .elev8-cards{grid-template-columns:repeat(2,1fr)}
+  .elev8-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .elev8-cards,.elev8-fields,.elev8-diagnostics{grid-template-columns:1fr}
+  .elev8-filter{align-items:stretch;flex-direction:column}
+}
+
+.elev8-rule-box{margin:18px 0;padding:16px;border:2px solid #ef6c35;border-radius:10px;background:#fffaf7}.elev8-rule-box h3{margin-top:0}.elev8-fields-three{grid-template-columns:repeat(3,1fr)}.elev8-example{margin-top:14px;background:#fff;border-left:4px solid #ef6c35;padding:12px}.elev8-legacy-rules{margin:14px 0;border:1px solid #dcdcde;border-radius:8px;padding:12px;background:#f6f7f7}.elev8-legacy-rules summary{cursor:pointer;font-weight:600}@media(max-width:1000px){.elev8-fields-three{grid-template-columns:1fr}}
+.elev8-portal{max-width:1280px}.elev8-portal h1{margin-bottom:4px}.elev8-big-status{font-size:28px;font-weight:700;margin:12px 0}.elev8-os textarea,.elev8-os input[type=url],.elev8-os input[type=text],.elev8-os select{max-width:100%}.elev8-os .elev8-panel form label{display:block;font-weight:600;margin:14px 0 6px}.elev8-os .elev8-panel form input,.elev8-os .elev8-panel form select,.elev8-os .elev8-panel form textarea{width:100%}
+
+/* Public artist pages */
+.elev8-public-page{max-width:1180px;margin:40px auto;padding:0 20px}
+.elev8-public-profile .elev8-cover{height:280px;background-size:cover;background-position:center;border-radius:16px;margin-bottom:-70px}
+.elev8-public-head{display:flex;align-items:flex-end;gap:24px;margin:0 24px 28px;position:relative}
+.elev8-public-head img{width:150px;height:150px;border-radius:50%;object-fit:cover;border:6px solid #fff;background:#fff}
+.elev8-public-head h1{margin:0 0 6px;font-size:40px}
+.elev8-public-head p{font-size:18px;margin:0}
+.elev8-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.elev8-gallery img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px}
+.elev8-class-list>div{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid #ddd}
+.elev8-public-profile input[readonly],.elev8-portal input[readonly]{width:100%;max-width:620px}
+@media(max-width:700px){.elev8-public-profile .elev8-cover{height:180px;margin-bottom:-45px}.elev8-public-head{align-items:center;margin-left:12px}.elev8-public-head img{width:100px;height:100px}.elev8-public-head h1{font-size:28px}.elev8-class-list>div{grid-template-columns:1fr}}
+
+/* Artist public payment, contact, share, and QR tools */
+.elev8-public-links .button { margin: 0 8px 8px 0; }
+.elev8-share-tools { display:flex; justify-content:center; gap:28px; flex-wrap:wrap; margin:30px 0; }
+.elev8-share-tools button { border:0; background:transparent; padding:8px 4px; font:inherit; text-decoration:underline; cursor:pointer; }
+.elev8-share-tools button:hover { text-decoration:none; }
+.elev8-qr-modal[hidden] { display:none !important; }
+.elev8-qr-modal { position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,.72); display:flex; align-items:center; justify-content:center; padding:20px; }
+.elev8-qr-dialog { width:min(430px, 95vw); background:#fff; color:#222; padding:28px; border-radius:14px; text-align:center; position:relative; box-shadow:0 18px 60px rgba(0,0,0,.35); }
+.elev8-qr-dialog img { width:min(320px, 80vw); height:auto; display:block; margin:18px auto; }
+.elev8-close-qr { position:absolute; top:8px; right:12px; border:0; background:transparent; font-size:32px; line-height:1; cursor:pointer; }
+body.elev8-qr-open { overflow:hidden; }
+
+/* Version 5 Development Center */
+.elev8-development .elev8-roadmap-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.elev8-roadmap-phase{border:1px solid #dcdcde;border-radius:10px;padding:14px;background:#fafafa}
+.elev8-roadmap-title{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}
+.elev8-progress{height:10px;background:#e2e4e7;border-radius:99px;overflow:hidden;margin-bottom:8px}
+.elev8-progress i{display:block;height:100%;background:#2271b1;border-radius:99px}
+.elev8-dev-list{display:grid;gap:10px}
+.elev8-dev-item{border:1px solid #dcdcde;border-radius:10px;background:#fff;overflow:hidden}
+.elev8-dev-item summary{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;padding:14px;cursor:pointer}
+.elev8-dev-item form{padding:0 14px 16px;border-top:1px solid #eee}
+.elev8-badge,.elev8-status,.elev8-priority{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;line-height:1.2}
+.elev8-feature{background:#e7f3ff;color:#135e96}.elev8-bug{background:#fce8e8;color:#8a2424}.elev8-idea{background:#f3e8ff;color:#6b2ca0}
+.elev8-status{background:#f0f0f1}.elev8-priority-low{background:#f0f0f1}.elev8-priority-medium{background:#fff3cd}.elev8-priority-high{background:#ffe2c2}.elev8-priority-critical{background:#ffd6d6;color:#8a2424;font-weight:700}
+.elev8-release{border-bottom:1px solid #eee;padding:0 0 14px;margin:0 0 14px}.elev8-release:last-child{border-bottom:0}.elev8-release h3{margin-bottom:6px}.elev8-release h3 small{font-weight:400;color:#646970}
+@media(max-width:1100px){.elev8-development .elev8-roadmap-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.elev8-development .elev8-roadmap-grid{grid-template-columns:1fr}.elev8-dev-item summary{grid-template-columns:1fr}.elev8-dev-item summary strong{order:-1}}
+.elev8-vision blockquote{margin:18px 0;padding:18px 22px;border-left:5px solid #ff7a00;background:#fff7ee;font-size:16px}.elev8-mission{font-size:17px}.elev8-principles{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}.elev8-principles span{background:#f1f5f9;border:1px solid #dbe3ea;border-radius:999px;padding:8px 12px;font-weight:600}.elev8-module-list p{padding:12px 0;margin:0;border-bottom:1px solid #e8edf1}.elev8-module-list p:last-child{border-bottom:0}
+
+
+/* 7.1.1 Asset Engine public artist storefront */
+.elev8-artist-store{margin-top:28px}
+.elev8-store-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:18px}
+.elev8-store-heading h2{margin:2px 0 0}
+.elev8-store-heading>p{max-width:460px;margin:0;color:#5d6670}
+.elev8-store-eyebrow{margin:0;color:#1769aa;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.elev8-store-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.elev8-store-card{overflow:hidden;border:1px solid #dfe3e8;border-radius:14px;background:#fff}
+.elev8-store-image{position:relative;aspect-ratio:1/1;background:#f4f5f6}
+.elev8-store-image img{display:block;width:100%;height:100%;object-fit:cover}
+.elev8-store-image-missing{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:#68727d;font-weight:600}
+.elev8-store-badge{position:absolute;top:12px;right:12px;padding:7px 11px;border-radius:999px;background:#20262d;color:#fff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.elev8-store-card.is-sold .elev8-store-image img{filter:grayscale(.45);opacity:.78}
+.elev8-store-body{padding:18px}
+.elev8-store-title-row{display:flex;justify-content:space-between;align-items:start;gap:16px}
+.elev8-store-title-row h3{margin:0;font-size:20px}
+.elev8-store-title-row strong{white-space:nowrap;font-size:17px}
+.elev8-store-meta{color:#5d6670;font-size:14px}
+.elev8-live-store-note,.elev8-editor-help{padding:14px 16px;border-radius:10px;background:#f3f7fb;color:#36536d}
+@media (max-width:1100px){.elev8-store-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.elev8-store-grid{grid-template-columns:1fr}.elev8-store-heading,.elev8-store-title-row{display:block}.elev8-store-heading>p{margin-top:8px}.elev8-store-title-row strong{display:block;margin-top:8px}}
+
+/* 7.2.0 Asset Store checkout */
+.elev8-store-image-link{display:block;color:inherit;text-decoration:none}.elev8-store-title-row h3 a{color:inherit;text-decoration:none}.elev8-store-title-row h3 a:hover{text-decoration:underline}.elev8-store-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}.elev8-store-actions .button{margin:0}.elev8-buy-button{font-weight:700}.elev8-details-link{font-weight:600}.elev8-unavailable-label{display:inline-block;padding:9px 12px;border-radius:7px;background:#f0f0f1;color:#50575e;font-weight:600}.elev8-store-card.is-reserved .elev8-store-image img{filter:grayscale(.2);opacity:.88}
+
+
+/* 7.3.0 QR Asset Experience */
+.elev8-public-asset-page{max-width:1240px}.elev8-asset-nav{display:flex;justify-content:space-between;gap:20px;margin:0 0 18px;color:#5d6670}.elev8-asset-hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,.65fr);gap:34px;align-items:start;margin-bottom:28px}.elev8-asset-hero-image{overflow:hidden;border-radius:18px;background:#f4f5f6;min-height:520px}.elev8-asset-hero-image img{display:block;width:100%;height:auto;max-height:820px;object-fit:contain;margin:auto}.elev8-asset-purchase-panel{position:sticky;top:28px;background:#fff;border:1px solid #dfe3e8;border-radius:16px;padding:28px;box-shadow:0 8px 28px rgba(0,0,0,.06)}.elev8-asset-purchase-panel h1{font-size:38px;line-height:1.08;margin:8px 0 8px}.elev8-asset-byline{font-size:17px}.elev8-asset-price{font-size:30px;font-weight:750;margin:24px 0}.elev8-asset-facts{margin:0 0 24px}.elev8-asset-facts>div{display:grid;grid-template-columns:110px 1fr;gap:16px;padding:10px 0;border-bottom:1px solid #eceff2}.elev8-asset-facts dt{font-weight:700}.elev8-asset-facts dd{margin:0}.elev8-asset-buy-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.elev8-asset-primary-buy{font-size:18px;padding:13px 22px}.elev8-asset-fulfillment{margin:20px 0 0;color:#5d6670;font-size:14px}.elev8-asset-story p{font-size:17px;line-height:1.7}.elev8-asset-artist{display:grid;grid-template-columns:130px 1fr;gap:24px;align-items:center}.elev8-asset-artist img{width:130px;height:130px;border-radius:50%;object-fit:cover}.elev8-asset-more{margin-top:28px}
+@media(max-width:900px){.elev8-asset-hero{grid-template-columns:1fr}.elev8-asset-purchase-panel{position:static}.elev8-asset-hero-image{min-height:0}.elev8-asset-purchase-panel h1{font-size:32px}}
+@media(max-width:600px){.elev8-asset-nav{display:block}.elev8-asset-nav span{display:block;margin-top:8px}.elev8-asset-purchase-panel{padding:20px}.elev8-asset-purchase-panel h1{font-size:28px}.elev8-asset-facts>div{grid-template-columns:1fr;gap:3px}.elev8-asset-artist{grid-template-columns:1fr}.elev8-asset-artist img{width:100px;height:100px}}
+
+/* 7.3.1 Asset Polish public experience */
+.elev8-asset-media-column{min-width:0}.elev8-asset-thumbnails{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px;margin-top:12px}.elev8-asset-thumbnails button{padding:3px;border:2px solid transparent;border-radius:9px;background:#fff;cursor:pointer}.elev8-asset-thumbnails button.is-active,.elev8-asset-thumbnails button:hover{border-color:#1769aa}.elev8-asset-thumbnails img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:6px}.elev8-asset-special blockquote{margin:8px 0 0;padding:0;border:0;font-size:24px;line-height:1.45;font-weight:600}.elev8-asset-story h3{margin-top:28px}.elev8-responsive-video{position:relative;overflow:hidden;padding-top:56.25%;border-radius:12px;background:#111}.elev8-responsive-video iframe{position:absolute;inset:0;width:100%;height:100%}.elev8-asset-documents>div{display:flex;gap:10px;flex-wrap:wrap}.elev8-asset-tags{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 28px}.elev8-asset-tags span{padding:7px 11px;border-radius:999px;background:#eef3f7;color:#405266;font-size:13px}.elev8-asset-share{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid #eceff2}.elev8-asset-share strong{width:100%;font-size:13px}.elev8-asset-share a,.elev8-asset-share button{border:0;background:transparent;padding:0;color:#1769aa;font:inherit;text-decoration:underline;cursor:pointer}.elev8-store-card .elev8-featured-chip{position:absolute;z-index:2;top:12px;left:12px}
+@media(max-width:600px){.elev8-asset-special blockquote{font-size:20px}.elev8-asset-thumbnails{grid-template-columns:repeat(4,1fr)}}
+
+
+/* 7.7.3 Reusable Elev8 Identity account search */
+.elev8-identity-field{margin:0 0 18px}.elev8-user-account-picker{margin-top:7px}.elev8-user-account-search,.elev8-user-account-picker select{width:100%;max-width:none}.elev8-user-account-picker select{margin-top:8px;min-height:38px}.elev8-user-search-status{min-height:18px;margin:5px 0 0;color:#646970;font-size:12px}.elev8-selected-identity{display:none;margin-top:8px;padding:8px 10px;border-radius:6px;font-weight:600}.elev8-selected-identity:not(:empty){display:block}.elev8-selected-identity.is-connected{background:#edfaef;color:#166534}.elev8-selected-identity.is-available{background:#eef6ff;color:#174ea6}.elev8-selected-identity.is-conflict{background:#fff4e5;color:#8a4b08}.elev8-identity-authority{margin-top:10px!important;padding-left:10px;border-left:3px solid #2271b1}
+
+/* 7.7.4 public contact actions */
+.elev8-contact-action{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}.elev8-contact-primary{min-width:0}.elev8-copy-contact{flex:0 0 auto;padding:5px 10px;border:1px solid #c3c4c7;border-radius:6px;background:#fff;color:#1d2327;cursor:pointer;font:inherit;font-size:12px}.elev8-copy-contact:hover,.elev8-copy-contact:focus{border-color:#2271b1;color:#135e96}.elev8-contact-help{margin:14px 0 0;color:#646970;font-size:12px;line-height:1.45}
+
+
+/* Gallery Print Center */
+.elev8-print-center{max-width:1180px}.elev8-print-center-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:22px 0}.elev8-print-center .elev8-panel{background:#fff;border:1px solid #dcdcde;border-radius:10px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,.04)}.elev8-print-center form{display:grid;gap:16px;margin-top:18px}.elev8-print-center label{display:grid;gap:7px}.elev8-print-center select{width:100%;max-width:none;min-height:42px}.elev8-print-center .button-primary{justify-self:start}@media(max-width:800px){.elev8-print-center-grid{grid-template-columns:1fr}}
+
+/* 10.2.3 Artist Identity public profile refinement */
+.elev8-public-profile{--e8-purple:#68439a;--e8-purple-dark:#422568;--e8-lavender:#f4effb;max-width:1180px;margin:28px auto;padding:28px;border-radius:28px;background:linear-gradient(145deg,#fff 0 60%,var(--e8-lavender) 100%);box-shadow:0 22px 60px rgba(66,37,104,.10)}
+.elev8-public-profile .elev8-cover{height:360px;border-radius:22px;margin-bottom:-86px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.elev8-public-head{position:relative;display:flex;align-items:end;gap:24px;margin:0 28px 30px}
+.elev8-public-head img{width:170px;height:170px;border:7px solid #fff;border-radius:50%;object-fit:cover;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.elev8-public-head h1{margin:0;font-size:clamp(38px,6vw,72px);line-height:.95;letter-spacing:-.03em;color:#21172f}
+.elev8-public-head p{margin:10px 0 8px;color:var(--e8-purple);font-size:16px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.elev8-public-profile .elev8-panel{border:1px solid rgba(104,67,154,.14);border-radius:20px;box-shadow:0 10px 26px rgba(66,37,104,.05)}
+.elev8-public-profile .button-primary,.elev8-public-profile .elev8-contact-primary{border-color:var(--e8-purple)!important;background:var(--e8-purple)!important;color:#fff!important;border-radius:999px;padding:10px 18px;text-decoration:none}
+.elev8-share-tools{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}.elev8-share-tools .button{border-radius:999px}
+@media(max-width:700px){.elev8-public-profile{padding:14px;border-radius:18px}.elev8-public-profile .elev8-cover{height:210px;margin-bottom:-52px}.elev8-public-head{align-items:center;margin:0 8px 24px}.elev8-public-head img{width:105px;height:105px;border-width:5px}.elev8-public-head h1{font-size:34px}.elev8-public-head p{font-size:12px}}
+
+
+/* 11.2.0 prominent legacy artist publication control */
+input[name="public_enabled"]{width:28px!important;height:28px!important;min-width:28px!important;margin-right:10px!important;vertical-align:middle}input[name="public_enabled"]:checked:before{width:30px!important;height:30px!important;margin:-2px 0 0 -2px!important}.elev8-panel label:has(input[name="public_enabled"]){display:flex!important;align-items:center;gap:10px;margin:20px 0;padding:18px;border:2px solid #6b35c9;border-radius:14px;background:#f7f2ff;font-size:18px!important;font-weight:800!important;color:#2d155e}
+
+
+/* 13.3.0 QR Label Sheet Composer */
+.elev8-print-card-wide{grid-column:1/-1;min-height:0}.elev8-label-selection-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px;border-radius:10px;background:#f6f7f7}.elev8-label-selection-toolbar strong{margin-left:auto}.elev8-artwork-selection-grid,.elev8-admin-artwork-selection{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-height:420px;overflow:auto;padding:4px}.elev8-artwork-selection-item,.elev8-admin-artwork-selection label{display:flex;align-items:flex-start;gap:10px;padding:13px;border:1px solid #dcdcde;border-radius:10px;background:#fff;cursor:pointer}.elev8-artwork-selection-item:has(input:checked),.elev8-admin-artwork-selection label:has(input:checked){border-color:#68439a;background:#f5effd;box-shadow:0 0 0 1px #68439a}.elev8-artwork-selection-item input,.elev8-admin-artwork-selection input{flex:0 0 auto;margin-top:2px}.elev8-artwork-selection-item span,.elev8-admin-artwork-selection span{display:grid;gap:3px;min-width:0}.elev8-artwork-selection-item strong,.elev8-admin-artwork-selection strong{overflow-wrap:anywhere}.elev8-artwork-selection-item small,.elev8-admin-artwork-selection small{color:#646970}.elev8-label-sheet-options,.elev8-batch-options{display:grid;grid-template-columns:2fr 1fr;gap:14px}.elev8-label-sheet-options input[type=number],.elev8-batch-options input[type=number]{width:100%;min-height:44px}.elev8-print-help{margin:0;padding:12px 14px;border-left:4px solid #68439a;background:#f7f2ff;color:#4c356c}.elev8-batch-print-panel{grid-column:1/-1}.elev8-admin-artwork-selection{margin:4px 0}.elev8-admin-artwork-selection label[hidden]{display:none!important}@media(max-width:900px){.elev8-artwork-selection-grid,.elev8-admin-artwork-selection{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.elev8-artwork-selection-grid,.elev8-admin-artwork-selection,.elev8-label-sheet-options,.elev8-batch-options{grid-template-columns:1fr}.elev8-label-selection-toolbar strong{width:100%;margin-left:0}}

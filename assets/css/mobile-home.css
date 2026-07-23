@@ -1,0 +1,71 @@
+.elev8-os-mobile-home-page .entry-header,
+.elev8-os-mobile-home-page .page-header { display:none; }
+.elev8-mobile-home{max-width:920px;margin:24px auto;padding:0 16px 36px;font-family:Arial,Helvetica,sans-serif;color:#25252a;box-sizing:border-box}
+.elev8-mobile-home *{box-sizing:border-box}
+.elev8-mobile-hero{padding:28px 24px;border:1px solid #eadcf7;border-radius:22px;background:linear-gradient(145deg,#faf7fd,#fff);box-shadow:0 10px 28px rgba(111,45,189,.08)}
+.elev8-mobile-hero .eyebrow{margin:0 0 8px;color:#6f2dbd;font-size:12px;font-weight:800;letter-spacing:.12em}
+.elev8-mobile-hero h1{margin:0 0 8px;font-size:34px;line-height:1.12;color:#1d1d1f}
+.elev8-mobile-hero p:last-child{margin:0;color:#5b5d65;font-size:16px;line-height:1.55}
+.elev8-mobile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.elev8-mobile-card{min-height:150px;padding:19px;border:1px solid #e5dced;border-radius:18px;background:#fff;color:#24242a;text-decoration:none;box-shadow:0 6px 18px rgba(40,28,54,.06);display:flex;flex-direction:column;align-items:flex-start;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+.elev8-mobile-card:hover,.elev8-mobile-card:focus{transform:translateY(-2px);border-color:#b88be2;box-shadow:0 10px 24px rgba(111,45,189,.13);color:#24242a}
+.elev8-mobile-card.is-primary{background:#6f2dbd;color:#fff;border-color:#6f2dbd}
+.elev8-mobile-card .dashicons{width:36px;height:36px;font-size:28px;line-height:36px;margin-bottom:14px;color:#6f2dbd}
+.elev8-mobile-card.is-primary .dashicons{color:#fff}
+.elev8-mobile-card strong{font-size:19px;line-height:1.25;margin-bottom:7px}
+.elev8-mobile-card small{font-size:14px;line-height:1.45;color:#686a72}
+.elev8-mobile-card.is-primary small{color:rgba(255,255,255,.84)}
+.elev8-mobile-install-tip{display:flex;gap:8px;flex-direction:column;margin-top:18px;padding:17px 18px;border-radius:15px;background:#fff8f1;border:1px solid #f0dcc7;color:#4d443b}
+.elev8-mobile-install-tip strong{font-size:15px}
+.elev8-mobile-install-tip span{font-size:14px;line-height:1.45}
+.elev8-mobile-primary{display:inline-block;margin-top:18px;padding:13px 20px;background:#ff7a00;color:#fff!important;text-decoration:none;border-radius:10px;font-weight:800}
+.elev8-mobile-login{text-align:center}.elev8-mobile-login .elev8-mobile-hero p{max-width:520px;margin-left:auto;margin-right:auto}
+@media(max-width:640px){
+ .elev8-mobile-home{margin:12px auto;padding:0 10px 28px}
+ .elev8-mobile-hero{padding:24px 20px;border-radius:18px}
+ .elev8-mobile-hero h1{font-size:29px}
+ .elev8-mobile-grid{grid-template-columns:1fr;gap:11px}
+ .elev8-mobile-card{min-height:0;padding:17px;display:grid;grid-template-columns:42px 1fr;column-gap:12px;align-items:center}
+ .elev8-mobile-card .dashicons{grid-row:1/3;margin:0;width:42px;height:42px;font-size:29px;line-height:42px}
+ .elev8-mobile-card strong{margin:0 0 3px;font-size:18px}
+ .elev8-mobile-card small{font-size:13px}
+}
+
+/* 10.12.7 Operational Home summary */
+.elev8-mobile-operational {
+    margin: 0 0 18px;
+    padding: 16px;
+    border: 1px solid rgba(111,45,189,.18);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(31,24,44,.06);
+}
+.elev8-mobile-operational__summary {
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-bottom:12px;
+}
+.elev8-mobile-operational__summary strong { font-size:28px; line-height:1; }
+.elev8-mobile-operational__summary span { color:#5f5668; font-weight:600; }
+.elev8-mobile-priorities { display:grid; gap:8px; }
+.elev8-mobile-priorities a {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#f7f4fb;
+    color:#211b27;
+    text-decoration:none;
+}
+.elev8-mobile-priorities b {
+    min-width:30px;
+    height:30px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background:#6f2dbd;
+    color:#fff;
+}

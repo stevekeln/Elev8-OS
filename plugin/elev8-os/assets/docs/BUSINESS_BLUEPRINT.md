@@ -1443,3 +1443,13 @@ Elev8 OS development is measured by whether a real business capability can safel
 
 ### Next Development Session
 Add event and class readiness adapters, readiness due-time alerts, and manager visibility for missed required cards while keeping card definitions reusable and configurable.
+
+### ADR-00XX — Universal Problem Reports Feed Product Intelligence
+
+**Status:** Accepted  
+**Decision:** Report a Problem is a shared platform service available to every authenticated user. Reports retain reporter, page, device, area, impact, expected behavior, evidence, and normalized issue fingerprint. Likely duplicate open reports increase occurrence count and priority rather than creating disconnected queues. IT Support remains a configurable business module for technology operations; universal problem reporting owns product and experience feedback intake.  
+**Consequence:** Repeated operational pain becomes measurable evidence for Product Intelligence and release planning without requiring employees to understand technical categories.
+
+### Release 20.3.0 — Constitution v2 and Report a Problem Foundation
+
+Constitution v2 is now the governing architecture document. The repository gap analysis identifies Mobile Reliability as the next foundation priority. The first real-business win is a phone-friendly Report a Problem page, a prominent Mobile Home entry, normalized context capture, optional evidence upload, duplicate occurrence counting, impact escalation, and an owner triage queue.

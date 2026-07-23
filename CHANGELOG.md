@@ -1579,3 +1579,9 @@
 - Added human-maintained governed Conversation summaries with attribution and timestamps.
 - Added explicit Conversation-to-Work follow-up promotion through the Operations Engine.
 - Preserved the rule that ordinary messages never silently create Work Items.
+
+## 20.3.0 - 2026-07-23
+- Added Elev8 OS Constitution v2 and repository gap analysis.
+- Added universal Report a Problem service and mobile-friendly reporting page.
+- Added duplicate fingerprint grouping, occurrence counting, impact escalation, context capture, optional attachments, and owner triage queue.
+- Added a prominent Report a Problem card to Mobile Home for every authenticated user.
