@@ -16,6 +16,7 @@ final class Elev8_OS_Workspace_Resolver_Service {
         add_filter('login_redirect', [__CLASS__, 'filter_login_redirect'], 10000, 3);
         add_filter('um_login_redirect_url', [__CLASS__, 'filter_um_redirect'], 10000, 2);
         add_action('um_on_login_before_redirect', [__CLASS__, 'um_before_redirect'], 10000, 1);
+        add_action('template_redirect', [__CLASS__, 'redirect_operational_profile'], 0);
         add_action('template_redirect', [__CLASS__, 'redirect_legacy_dashboard'], 2);
         add_action('set_user_role', [__CLASS__, 'clear_user_memory'], 10, 3);
         add_action('add_user_role', [__CLASS__, 'clear_user_memory'], 10, 2);
@@ -54,7 +55,7 @@ final class Elev8_OS_Workspace_Resolver_Service {
         if (Elev8_OS_Access_Service::is_teacher($user)) { return 'teacher'; }
         if (Elev8_OS_Access_Service::user_can('view_artist_dashboard', $user)) { return 'artist'; }
         if (Elev8_OS_Access_Service::user_can('view_volunteer_portal', $user)) { return 'volunteer'; }
-        if (Elev8_OS_Access_Service::user_can('manage_retail_operations', $user) || Elev8_OS_Access_Service::user_can('submit_retail_log', $user)) { return 'retail'; }
+        if (self::is_retail_user($user)) { return 'retail'; }
         return 'team';
     }
 
@@ -131,6 +132,43 @@ final class Elev8_OS_Workspace_Resolver_Service {
             echo '<tr><td>' . esc_html($user->display_name . ' (' . $user->user_email . ')') . '</td><td>' . esc_html(implode(', ', $user->roles)) . '</td><td>' . esc_html(self::role_label($user)) . '</td><td><code>' . esc_html(self::destination($user)) . '</code></td></tr>';
         }
         echo '</tbody></table></div>';
+    }
+
+
+    /**
+     * Keep operational users out of public Ultimate Member profile screens.
+     *
+     * This runs before Ultimate Member chooses its profile template so phones,
+     * embedded email browsers, and direct /user/... links all reach Elev8 OS.
+     */
+    public static function redirect_operational_profile(): void {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in()) { return; }
+        $user = wp_get_current_user();
+        if (!$user instanceof WP_User || !$user->ID || !self::has_operational_role($user)) { return; }
+
+        $is_profile = function_exists('um_is_core_page') && um_is_core_page('user');
+        if (!$is_profile) {
+            $path = (string) wp_parse_url((string) wp_unslash($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+            $is_profile = (bool) preg_match('#/user/[^/]+/?$#i', $path);
+        }
+        if (!$is_profile) { return; }
+
+        wp_safe_redirect(self::destination($user));
+        exit;
+    }
+
+    private static function is_retail_user(WP_User $user): bool {
+        if (Elev8_OS_Access_Service::user_can('manage_retail_operations', $user) || Elev8_OS_Access_Service::user_can('submit_retail_log', $user)) {
+            return true;
+        }
+        $aliases = ['elev8_retail_employee','retail_employee','shop_employee','retail','staff','author','contributor'];
+        foreach ((array) $user->roles as $role) {
+            $normalized = sanitize_key((string) $role);
+            if (in_array($normalized, $aliases, true) || strpos($normalized, 'retail') !== false || strpos($normalized, 'shop_employee') !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static function primary_destination(WP_User $user): string {

@@ -1,3 +1,10 @@
+## 21.2.2
+- Redirected retail and other operational users away from public Ultimate Member profiles into their Elev8 OS workspace.
+- Added retail-role alias recognition for existing staff accounts that predate the canonical Elev8 role.
+- Made managed dashboards and problem reporting escape narrow theme containers on phones.
+- Changed Shop Manager mobile metrics and panels to a full-width single-column layout.
+- Added a shared mobile viewport declaration across all managed Elev8 OS front-end screens.
+
 ## 21.2.1
 
 - Kept Conversations inside the shared Elev8 OS application shell.

@@ -15,12 +15,18 @@ final class Elev8_OS_Application_Shell_Module {
 
     public static function init(): void {
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_frontend']);
+        add_action('wp_head', [__CLASS__, 'viewport_meta'], 0);
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin']);
         add_action('wp_body_open', [__CLASS__, 'render_frontend']);
         add_action('wp_footer', [__CLASS__, 'render_frontend_fallback'], 1);
         add_action('admin_notices', [__CLASS__, 'render_admin']);
         add_filter('body_class', [__CLASS__, 'frontend_body_class']);
         add_filter('admin_body_class', [__CLASS__, 'admin_body_class']);
+    }
+
+    public static function viewport_meta(): void {
+        if (!self::should_render_frontend()) { return; }
+        echo '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' . "\n";
     }
 
     public static function enqueue_frontend(): void {

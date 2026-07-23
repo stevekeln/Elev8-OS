@@ -32,3 +32,30 @@
 @media(max-width:390px){.elev8-app-shell__brand-text{display:none}.elev8-app-shell__inner{padding:0 8px}.elev8-app-shell__actions{gap:4px}}
 @media(max-width:782px){.wp-admin .elev8-app-shell{top:0}.wp-admin .elev8-app-shell__menu{top:74px}}
 .elev8-app-shell__problem-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:8px 11px;border-radius:12px;background:#35106d!important;color:#fff!important;text-decoration:none!important;font-weight:800;white-space:nowrap;flex:0 0 auto}.elev8-app-shell__problem-button span{width:21px;height:21px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#35106d;font-weight:900}.elev8-app-shell__problem-button:hover,.elev8-app-shell__problem-button:focus{background:#4f1aa0!important;color:#fff!important}@media(max-width:900px){.elev8-app-shell__problem-button{width:42px;height:42px;padding:0}.elev8-app-shell__problem-button strong{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}}@media(max-width:520px){.elev8-app-shell__problem-button{width:40px;height:40px}}
+
+/* 21.2.2 — managed workspaces escape narrow public-theme containers. */
+.elev8-os-app-shell-active .elev8-artist-dashboard,
+.elev8-os-app-shell-active .elev8-manager-dashboard,
+.elev8-os-app-shell-active .elev8-workspace-runtime,
+.elev8-os-app-shell-active .elev8-problem-wrap{
+  position:relative;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(1280px,calc(100vw - 24px));
+  max-width:none;
+  margin-left:0;
+  margin-right:0;
+}
+@media(max-width:640px){
+  .elev8-os-app-shell-active .elev8-artist-dashboard,
+  .elev8-os-app-shell-active .elev8-manager-dashboard,
+  .elev8-os-app-shell-active .elev8-workspace-runtime,
+  .elev8-os-app-shell-active .elev8-problem-wrap{
+    width:100vw;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  .elev8-manager-metrics{grid-template-columns:1fr!important}
+  .elev8-manager-layout,.elev8-manager-mission,.elev8-manager-closeout{grid-template-columns:1fr!important}
+  .elev8-manager-metric,.elev8-manager-card{min-width:0;width:100%}
+}

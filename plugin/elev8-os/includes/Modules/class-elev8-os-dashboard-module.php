@@ -762,6 +762,7 @@ final class Elev8_OS_Dashboard_Module {
 
     private static function is_dashboard_user(WP_User $user): bool {
         return self::is_artist_user($user)
+            || (class_exists('Elev8_OS_Access_Service') && (Elev8_OS_Access_Service::user_can('submit_retail_log', $user) || Elev8_OS_Access_Service::user_can('manage_retail_operations', $user)))
             || (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::is_manager($user))
             || (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::uses_event_host_home($user))
             || (class_exists('Elev8_OS_Access_Service') && Elev8_OS_Access_Service::user_can('glass_work', $user));
