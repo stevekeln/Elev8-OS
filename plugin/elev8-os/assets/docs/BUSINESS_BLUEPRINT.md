@@ -1520,3 +1520,8 @@ Problem reporting is a governed exception to preview read-only protection. A rep
 
 Elev8 OS now has a shared live workspace shell that owns workspace-level presentation without moving business logic out of engines. The shell provides a restrained role-aware header, a responsive full-width content frame, one universal problem-report entry point, and consistent phone navigation. Individual workspaces supply definitions, widgets, actions, and permissions; the shell supplies presentation.
 
+
+
+## Shipping & Customer Service Workspace Foundation (21.3.0)
+
+Shipping & Fulfillment and Customer Service are reusable role-based workspaces, not separate engines. Both consume the shared Commerce Integration boundary, CRM, Operations, Communication, Workflow, and the QR/Capture Service. Order capture is read-only in this phase: scan or enter once, normalize the reference, retrieve verified order data, then let the active workspace determine meaning. Camera scanning must always include manual entry fallback.

@@ -1,3 +1,14 @@
+
+## 21.3.0 — Shipping & Customer Service Workspaces
+
+- Added dedicated Shipping & Fulfillment and Customer Service roles and capabilities.
+- Added role-resolved workspaces inside the shared Elev8 OS shell.
+- Added a shared Order Capture service that reads verified WooCommerce order data.
+- Added phone camera barcode/QR scanning with manual order entry fallback.
+- Shipping can scan an order from the pick list and verify line items before packing.
+- Customer Service can find an order before continuing a customer conversation.
+- No order status, payment, or fulfillment data is changed by this foundation release.
+
 ## 21.2.2
 - Redirected retail and other operational users away from public Ultimate Member profiles into their Elev8 OS workspace.
 - Added retail-role alias recognition for existing staff accounts that predate the canonical Elev8 role.

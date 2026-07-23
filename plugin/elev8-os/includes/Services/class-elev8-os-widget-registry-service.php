@@ -101,6 +101,25 @@ final class Elev8_OS_Widget_Registry_Service {
             'capability' => 'submit_retail_log',
             'render_callback' => [__CLASS__, 'render_retail_shift'],
         ]);
+
+        self::register('shipping_order_capture', [
+            'label' => __('Order Capture', 'elev8-os'),
+            'description' => __('Scan or enter an order number from the pick list.', 'elev8-os'),
+            'engine' => 'commerce',
+            'size' => 'wide',
+            'priority' => 15,
+            'capability' => 'scan_shipping_orders',
+            'render_callback' => [__CLASS__, 'render_shipping_order_capture'],
+        ]);
+        self::register('customer_order_lookup', [
+            'label' => __('Customer Order Lookup', 'elev8-os'),
+            'description' => __('Find an order before replying to the customer.', 'elev8-os'),
+            'engine' => 'commerce',
+            'size' => 'wide',
+            'priority' => 15,
+            'capability' => 'search_customer_orders',
+            'render_callback' => [__CLASS__, 'render_customer_order_lookup'],
+        ]);
         self::register('studio_pulse', [
             'label' => __('Studio Pulse', 'elev8-os'),
             'description' => __('Verified production, deadline, and pay signals from Glass Operations.', 'elev8-os'),
@@ -153,6 +172,31 @@ final class Elev8_OS_Widget_Registry_Service {
         <?php
     }
 
+
+
+    public static function render_shipping_order_capture(array $data, array $context, array $widget): void {
+        $url = class_exists('Elev8_OS_Order_Capture_Module') ? Elev8_OS_Order_Capture_Module::url('shipping') : home_url('/elev8-order-capture/');
+        ?>
+        <article class="elev8-workspace-widget" data-elev8-widget="shipping_order_capture">
+            <span class="elev8-workspace-widget__engine"><?php esc_html_e('COMMERCE + OPERATIONS', 'elev8-os'); ?></span>
+            <h2><?php esc_html_e('Scan the pick-list order', 'elev8-os'); ?></h2>
+            <p><?php esc_html_e('Use the phone camera when supported, or type the order number. Elev8 OS will show the verified order and line items before packing.', 'elev8-os'); ?></p>
+            <a class="elev8-ui-button elev8-ui-button--primary" href="<?php echo esc_url($url); ?>"><?php esc_html_e('Open Order Scanner', 'elev8-os'); ?></a>
+        </article>
+        <?php
+    }
+
+    public static function render_customer_order_lookup(array $data, array $context, array $widget): void {
+        $url = class_exists('Elev8_OS_Order_Capture_Module') ? Elev8_OS_Order_Capture_Module::url('customer-service') : home_url('/elev8-order-capture/');
+        ?>
+        <article class="elev8-workspace-widget" data-elev8-widget="customer_order_lookup">
+            <span class="elev8-workspace-widget__engine"><?php esc_html_e('COMMERCE + CRM', 'elev8-os'); ?></span>
+            <h2><?php esc_html_e('Find the customer order first', 'elev8-os'); ?></h2>
+            <p><?php esc_html_e('Search by order number to verify status, customer, products, and totals before continuing the conversation.', 'elev8-os'); ?></p>
+            <a class="elev8-ui-button elev8-ui-button--primary" href="<?php echo esc_url($url); ?>"><?php esc_html_e('Find an Order', 'elev8-os'); ?></a>
+        </article>
+        <?php
+    }
 
     public static function studio_pulse_data(array $context): array {
         if (!class_exists('Elev8_OS_Glass_Operations_Service')) { return []; }

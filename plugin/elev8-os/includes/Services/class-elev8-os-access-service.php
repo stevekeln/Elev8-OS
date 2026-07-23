@@ -19,6 +19,8 @@ final class Elev8_OS_Access_Service {
     public const ROLE_RETAIL = 'elev8_retail_employee';
     public const ROLE_GLASS_MANAGER = 'elev8_glass_manager';
     public const ROLE_GLASS_BLOWER = 'elev8_glass_blower';
+    public const ROLE_SHIPPING = 'elev8_shipping';
+    public const ROLE_CUSTOMER_SERVICE = 'elev8_customer_service';
 
     public const META_ALLOW = '_elev8_access_allow';
     public const META_DENY = '_elev8_access_deny';
@@ -72,6 +74,10 @@ final class Elev8_OS_Access_Service {
         'manage_organization' => 'elev8_manage_organization',
         'view_operations' => 'elev8_view_operations',
         'manage_operations' => 'elev8_manage_operations',
+        'view_shipping_workspace' => 'elev8_view_shipping_workspace',
+        'scan_shipping_orders' => 'elev8_scan_shipping_orders',
+        'view_customer_service_workspace' => 'elev8_view_customer_service_workspace',
+        'search_customer_orders' => 'elev8_search_customer_orders',
     ];
 
     public static function init(): void {
@@ -144,6 +150,8 @@ final class Elev8_OS_Access_Service {
         add_role(self::ROLE_RETAIL, __('Elev8 Retail Employee', 'elev8-os'), ['read' => true]);
         add_role(self::ROLE_GLASS_MANAGER, __('Elev8 Glass Manager', 'elev8-os'), ['read' => true]);
         add_role(self::ROLE_GLASS_BLOWER, __('Elev8 Glass Blower', 'elev8-os'), ['read' => true]);
+        add_role(self::ROLE_SHIPPING, __('Elev8 Shipping & Fulfillment', 'elev8-os'), ['read' => true]);
+        add_role(self::ROLE_CUSTOMER_SERVICE, __('Elev8 Customer Service', 'elev8-os'), ['read' => true]);
 
         $all = array_values(array_unique(array_filter(self::$permission_map, static fn(string $cap): bool => $cap !== 'manage_options')));
         self::grant_to_role('administrator', $all);
@@ -172,6 +180,9 @@ final class Elev8_OS_Access_Service {
 
         self::grant_to_role(self::ROLE_GLASS_MANAGER, ['elev8_view_operations','elev8_manage_operations','elev8_view_glass_dashboard','elev8_manage_glass_orders','elev8_manage_glass_production','elev8_manage_blower_payouts','elev8_glass_work','elev8_view_artist_classes','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations','elev8_view_organization']);
         self::grant_to_role(self::ROLE_GLASS_BLOWER, ['elev8_view_operations','elev8_glass_work','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
+
+        self::grant_to_role(self::ROLE_SHIPPING, ['elev8_view_shipping_workspace','elev8_scan_shipping_orders','elev8_view_operations','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
+        self::grant_to_role(self::ROLE_CUSTOMER_SERVICE, ['elev8_view_customer_service_workspace','elev8_search_customer_orders','elev8_view_operations','elev8_view_work','elev8_receive_work','elev8_receive_assignments','elev8_view_conversations']);
 
         self::assign_foundation_glass_manager();
     }

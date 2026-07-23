@@ -92,6 +92,33 @@ final class Elev8_OS_Workspace_Definition_Service {
             ],
             'priority' => 20,
         ]);
+
+        self::register('shipping', [
+            'label' => __('Shipping & Fulfillment Workspace', 'elev8-os'),
+            'description' => __('Scan an order from the pick list, verify what belongs in the box, and keep fulfillment work connected to the order.', 'elev8-os'),
+            'shell' => 'shipping',
+            'capability' => 'view_shipping_workspace',
+            'roles' => ['elev8_shipping'],
+            'widgets' => ['workspace_welcome','shipping_order_capture','quick_actions'],
+            'actions' => [
+                ['label' => __('Scan or Enter an Order', 'elev8-os'), 'url' => class_exists('Elev8_OS_Order_Capture_Module') ? Elev8_OS_Order_Capture_Module::url('shipping') : home_url('/elev8-order-capture/')],
+                ['label' => __('Messages', 'elev8-os'), 'url' => home_url('/elev8-conversations/')],
+            ],
+            'priority' => 25,
+        ]);
+        self::register('customer_service', [
+            'label' => __('Customer Service Workspace', 'elev8-os'),
+            'description' => __('Find a customer order, review the order context, and keep follow-up connected to conversations and assigned work.', 'elev8-os'),
+            'shell' => 'customer-service',
+            'capability' => 'view_customer_service_workspace',
+            'roles' => ['elev8_customer_service'],
+            'widgets' => ['workspace_welcome','customer_order_lookup','quick_actions'],
+            'actions' => [
+                ['label' => __('Find an Order', 'elev8-os'), 'url' => class_exists('Elev8_OS_Order_Capture_Module') ? Elev8_OS_Order_Capture_Module::url('customer-service') : home_url('/elev8-order-capture/')],
+                ['label' => __('Open Conversations', 'elev8-os'), 'url' => home_url('/elev8-conversations/')],
+            ],
+            'priority' => 26,
+        ]);
         self::register('retail', [
             'label' => __('Retail Workspace', 'elev8-os'),
             'description' => __('A phone-first workspace for customer service, store operations, and daily execution.', 'elev8-os'),

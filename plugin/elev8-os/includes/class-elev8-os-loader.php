@@ -28,6 +28,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-resolver-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-ui-framework-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-widget-registry-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-order-capture-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-definition-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-responsive-grid-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-experience-service.php';
@@ -115,6 +116,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ui-framework-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-workspace-platform-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-workspace-runtime-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-order-capture-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-experience-engine-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-role-preview-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-checkin-center-module.php';
@@ -201,6 +203,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_UI_Framework_Service::init();
         Elev8_OS_Widget_Registry_Service::init();
         Elev8_OS_Workspace_Definition_Service::init();
+        Elev8_OS_Order_Capture_Module::init();
         Elev8_OS_Experience_Service::init();
         Elev8_OS_Preview_Service::init();
         Elev8_OS_WooCommerce::init();

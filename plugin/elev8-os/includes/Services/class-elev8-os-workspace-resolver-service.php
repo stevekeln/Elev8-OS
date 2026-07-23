@@ -55,6 +55,8 @@ final class Elev8_OS_Workspace_Resolver_Service {
         if (Elev8_OS_Access_Service::is_teacher($user)) { return 'teacher'; }
         if (Elev8_OS_Access_Service::user_can('view_artist_dashboard', $user)) { return 'artist'; }
         if (Elev8_OS_Access_Service::user_can('view_volunteer_portal', $user)) { return 'volunteer'; }
+        if (Elev8_OS_Access_Service::user_can('view_shipping_workspace', $user)) { return 'shipping'; }
+        if (Elev8_OS_Access_Service::user_can('view_customer_service_workspace', $user)) { return 'customer_service'; }
         if (self::is_retail_user($user)) { return 'retail'; }
         return 'team';
     }
@@ -69,6 +71,8 @@ final class Elev8_OS_Workspace_Resolver_Service {
             'teacher' => __('Teacher', 'elev8-os'),
             'artist' => __('Artist', 'elev8-os'),
             'volunteer' => __('Volunteer', 'elev8-os'),
+            'shipping' => __('Shipping & Fulfillment', 'elev8-os'),
+            'customer_service' => __('Customer Service', 'elev8-os'),
             'retail' => __('Retail Employee', 'elev8-os'),
             'team' => __('Elev8 Team', 'elev8-os'),
         ];
@@ -176,6 +180,8 @@ final class Elev8_OS_Workspace_Resolver_Service {
             case 'owner': return class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=elev8-ceo-dashboard');
             case 'glass_manager': return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : home_url('/glass-manager/');
             case 'glassblower': return class_exists('Elev8_OS_Glass_Workbench_Module') ? Elev8_OS_Glass_Workbench_Module::url() : home_url('/glass-workbench/');
+            case 'shipping':
+            case 'customer_service':
             case 'retail':
                 return class_exists('Elev8_OS_Workspace_Runtime_Module') ? Elev8_OS_Workspace_Runtime_Module::url() : (class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/'));
             case 'shop_manager':
