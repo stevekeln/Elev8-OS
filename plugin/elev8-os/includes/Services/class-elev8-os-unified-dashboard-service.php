@@ -13,6 +13,7 @@ final class Elev8_OS_Unified_Dashboard_Service {
 
     public static function init(): void {
         add_action('admin_menu', [__CLASS__, 'register_admin_page'], 96);
+        add_action('template_redirect', [__CLASS__, 'redirect_legacy_dashboard_homes'], 2);
     }
 
     public static function url(string $workspace = ''): string {
@@ -22,10 +23,33 @@ final class Elev8_OS_Unified_Dashboard_Service {
         return $workspace !== '' ? add_query_arg('workspace', sanitize_key($workspace), $url) : $url;
     }
 
+
+    /**
+     * Move only legacy dashboard home screens into the canonical dashboard.
+     * Tool-specific URLs remain available until their capabilities are migrated.
+     */
+    public static function redirect_legacy_dashboard_homes(): void {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in()) { return; }
+        if (!class_exists('Elev8_OS_Glass_Manager_Suite_Module') || !Elev8_OS_Glass_Manager_Suite_Module::is_current()) { return; }
+
+        $tool = isset($_GET['suite_tool']) ? sanitize_key(wp_unslash((string) $_GET['suite_tool'])) : '';
+        $view = isset($_GET['view']) ? sanitize_key(wp_unslash((string) $_GET['view'])) : '';
+        if ($tool !== '' || $view !== '') { return; }
+
+        $user = class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user();
+        if (!$user instanceof WP_User || !class_exists('Elev8_OS_Workspace_Definition_Service')) { return; }
+        $studio = Elev8_OS_Workspace_Definition_Service::get('studio');
+        if (!$studio || !Elev8_OS_Workspace_Definition_Service::can_view($studio, $user)) { return; }
+
+        wp_safe_redirect(self::url('studio'));
+        exit;
+    }
+
     public static function migration_inventory(): array {
         $items = [
             ['id' => 'ceo-dashboard', 'label' => __('CEO Dashboard', 'elev8-os'), 'type' => 'dashboard', 'target' => 'executive', 'status' => 'bridge'],
-            ['id' => 'glass-manager', 'label' => __('Glass Manager Home', 'elev8-os'), 'type' => 'dashboard', 'target' => 'studio', 'status' => 'partial'],
+            ['id' => 'glass-manager-home', 'label' => __('Glass Manager Home', 'elev8-os'), 'type' => 'dashboard', 'target' => 'studio', 'status' => 'native'],
+            ['id' => 'glass-manager-tools', 'label' => __('Glass Manager Legacy Tools', 'elev8-os'), 'type' => 'tools', 'target' => 'studio', 'status' => 'partial'],
             ['id' => 'shop-manager', 'label' => __('Shop Manager Dashboard', 'elev8-os'), 'type' => 'dashboard', 'target' => 'shop_manager', 'status' => 'bridge'],
             ['id' => 'artist-dashboard', 'label' => __('Artist Dashboard', 'elev8-os'), 'type' => 'dashboard', 'target' => 'artist', 'status' => 'bridge'],
             ['id' => 'shipping', 'label' => __('Shipping & Fulfillment', 'elev8-os'), 'type' => 'workspace', 'target' => 'shipping', 'status' => 'native'],

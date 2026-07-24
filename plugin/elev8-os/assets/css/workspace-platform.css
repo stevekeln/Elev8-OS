@@ -71,3 +71,8 @@ body.elev8-workspace-active .entry-title{display:none!important}
     .elev8-workspace-grid { width: 100%; max-width: none; }
     .elev8-workspace-actions .elev8-ui-button { width: 100%; justify-content: center; }
 }
+
+/* 21.6.0 Studio home migration */
+.elev8-workspace-actions--studio-today{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.elev8-workspace-actions--studio-today .elev8-ui-button{min-height:56px;display:flex;align-items:center;justify-content:center;text-align:center}
+@media (max-width:640px){.elev8-workspace-actions--studio-today{grid-template-columns:1fr}.elev8-workspace-widget--studio-today{order:-1}}

@@ -129,6 +129,15 @@ final class Elev8_OS_Widget_Registry_Service {
             'capability' => 'search_customer_orders',
             'render_callback' => [__CLASS__, 'render_customer_order_lookup'],
         ]);
+        self::register('studio_today', [
+            'label' => __('Studio Today', 'elev8-os'),
+            'description' => __('The four most common Glass Manager starting points.', 'elev8-os'),
+            'engine' => 'operations',
+            'size' => 'wide',
+            'priority' => 16,
+            'capability' => 'view_glass_dashboard',
+            'render_callback' => [__CLASS__, 'render_studio_today'],
+        ]);
         self::register('studio_pulse', [
             'label' => __('Studio Pulse', 'elev8-os'),
             'description' => __('Verified production, deadline, and pay signals from Glass Operations.', 'elev8-os'),
@@ -225,6 +234,29 @@ final class Elev8_OS_Widget_Registry_Service {
         <?php
     }
 
+
+    public static function render_studio_today(array $data, array $context, array $widget): void {
+        $base = class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : home_url('/glass-manager/');
+        $actions = [
+            ['label' => __('Production Board', 'elev8-os'), 'url' => add_query_arg(['suite_tool'=>'operations','view'=>'board'], $base)],
+            ['label' => __('New Production Job', 'elev8-os'), 'url' => add_query_arg(['suite_tool'=>'operations','view'=>'new-job'], $base)],
+            ['label' => __('Repair Intake', 'elev8-os'), 'url' => add_query_arg(['suite_tool'=>'operations','view'=>'repair-intake'], $base)],
+            ['label' => __('Memorial Intake', 'elev8-os'), 'url' => add_query_arg(['suite_tool'=>'operations','view'=>'memorial-intake'], $base)],
+        ];
+        ?>
+        <article class="elev8-workspace-widget elev8-workspace-widget--studio-today" data-elev8-widget="studio_today">
+            <span class="elev8-workspace-widget__engine"><?php esc_html_e('TODAY', 'elev8-os'); ?></span>
+            <h2><?php esc_html_e('Start studio work', 'elev8-os'); ?></h2>
+            <p><?php esc_html_e('Open the work you use most. Less common administration stays under More tools.', 'elev8-os'); ?></p>
+            <div class="elev8-workspace-actions elev8-workspace-actions--studio-today">
+                <?php foreach ($actions as $action): ?>
+                    <a class="elev8-ui-button" href="<?php echo esc_url($action['url']); ?>"><?php echo esc_html($action['label']); ?></a>
+                <?php endforeach; ?>
+            </div>
+        </article>
+        <?php
+    }
+
     public static function studio_pulse_data(array $context): array {
         if (!class_exists('Elev8_OS_Glass_Operations_Service')) { return []; }
         return Elev8_OS_Glass_Operations_Service::summary();
@@ -244,7 +276,7 @@ final class Elev8_OS_Widget_Registry_Service {
             <div class="elev8-workspace-metrics">
                 <?php foreach ($items as $item): ?><div><strong><?php echo esc_html((string) $item['value']); ?></strong><span><?php echo esc_html((string) $item['label']); ?></span></div><?php endforeach; ?>
             </div>
-            <?php if (class_exists('Elev8_OS_Glass_Manager_Suite_Module')): ?><a class="elev8-ui-button" href="<?php echo esc_url(Elev8_OS_Glass_Manager_Suite_Module::url()); ?>"><?php esc_html_e('Open Glass Operations', 'elev8-os'); ?></a><?php endif; ?>
+            <?php if (class_exists('Elev8_OS_Glass_Manager_Suite_Module')): ?><a class="elev8-ui-button" href="<?php echo esc_url(Elev8_OS_Glass_Manager_Suite_Module::url(['suite_tool'=>'operations','view'=>'board'])); ?>"><?php esc_html_e('Open Production Board', 'elev8-os'); ?></a><?php endif; ?>
         </article>
         <?php
     }

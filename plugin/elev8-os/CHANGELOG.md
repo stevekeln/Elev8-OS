@@ -1,3 +1,11 @@
+## 21.6.0 — Studio Home Migration
+
+- Migrated the Glass Manager landing experience into the single unified dashboard instead of the oversized legacy suite menu.
+- Added a compact Studio Today widget with direct access to Production Board, New Production Job, Repair Intake, and Memorial Intake.
+- Kept catalog, compensation, approvals, classes, actions, and conversations available as governed legacy tools behind More tools.
+- Redirected only the old Glass Manager default dashboard to the Studio Workspace; specific legacy tool URLs remain available until each capability is migrated.
+- Updated the migration inventory to distinguish the native Studio home from remaining legacy tools.
+
 ## 21.5.0 — Unified Dashboard Migration Foundation
 
 - Established `/elev8-workspace/` as the single canonical application dashboard for every operational role.

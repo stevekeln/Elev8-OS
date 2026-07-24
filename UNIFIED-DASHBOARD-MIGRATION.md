@@ -40,3 +40,8 @@ Old pages remain available as governed legacy bridges until their replacement is
 - Phone and desktop behavior are verified.
 - The legacy URL redirects safely.
 - No business records are lost or duplicated.
+
+
+## 21.6.0 Studio Home Migration
+
+The old `/glass-manager/` default dashboard now redirects to the canonical Studio Workspace. Tool-specific URLs remain as temporary bridges. The Studio Workspace exposes verified Studio Pulse data, four primary starting actions, and less common tools behind More tools.
