@@ -1,3 +1,13 @@
+## 21.5.0 — Unified Dashboard Migration Foundation
+
+- Established `/elev8-workspace/` as the single canonical application dashboard for every operational role.
+- Updated login and shell destinations so the person changes the dashboard content rather than being sent to a separate dashboard page.
+- Added a dedicated Shop Manager workspace and activated the existing Retail Shift widget for retail employees.
+- Added a governed legacy-surface migration inventory under Elev8 OS → Dashboard Migration.
+- Limited workspace home screens to four primary quick actions with additional tools behind a compact More Tools control.
+- Preserved legacy tools as bridges until their widgets, actions, workflows, reports, or settings replacements reach functional parity.
+- Added UNIFIED-DASHBOARD-MIGRATION.md as the execution plan and architectural rule set.
+
 ## 21.4.1 — Static Contract Recovery
 
 - Fixed the activation fatal caused by `Elev8_OS_Problem_Report_Module::url()` by establishing a stable backward-compatible route contract.

@@ -164,17 +164,35 @@ final class Elev8_OS_Widget_Registry_Service {
     public static function render_quick_actions(array $data, array $context, array $widget): void {
         $actions = (array) ($context['workspace']['actions'] ?? []);
         ?>
+        <?php
+        $primary_actions = array_slice($actions, 0, 4);
+        $more_actions = array_slice($actions, 4);
+        ?>
         <article class="elev8-workspace-widget" data-elev8-widget="quick_actions">
             <span class="elev8-workspace-widget__engine"><?php esc_html_e('WORKFLOW', 'elev8-os'); ?></span>
             <h2><?php esc_html_e('Quick Actions', 'elev8-os'); ?></h2>
             <div class="elev8-workspace-actions">
-                <?php foreach ($actions as $action) :
+                <?php foreach ($primary_actions as $action) :
                     $url = (string) ($action['url'] ?? '');
                     $label = (string) ($action['label'] ?? '');
                     if ($url === '' || $label === '') { continue; }
                     ?>
                     <a class="elev8-ui-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
                 <?php endforeach; ?>
+                <?php if ($more_actions) : ?>
+                    <details class="elev8-workspace-more-tools">
+                        <summary><?php esc_html_e('More tools', 'elev8-os'); ?></summary>
+                        <div class="elev8-workspace-actions elev8-workspace-actions--more">
+                            <?php foreach ($more_actions as $action) :
+                                $url = (string) ($action['url'] ?? '');
+                                $label = (string) ($action['label'] ?? '');
+                                if ($url === '' || $label === '') { continue; }
+                                ?>
+                                <a class="elev8-ui-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
+                            <?php endforeach; ?>
+                        </div>
+                    </details>
+                <?php endif; ?>
                 <?php if (!$actions) : ?><p><?php esc_html_e('No quick actions are configured for this workspace yet.', 'elev8-os'); ?></p><?php endif; ?>
             </div>
         </article>

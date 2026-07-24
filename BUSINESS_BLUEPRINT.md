@@ -1538,3 +1538,7 @@ Elev8 OS separates human identity from operating access:
 - A person may access several workspaces while retaining one identity.
 - Operations Manager is a cross-operational coordination role. It does not replace Shop Manager, Glass Manager, Shipping, Customer Service, or IT Support.
 
+
+## Unified Dashboard Architecture (21.5.0)
+
+Elev8 OS uses one application dashboard route. The shared shell remains stable while role, permissions, selected workspace, location, assignment, and current work determine the widgets and actions inside it. Legacy pages are governed bridges only; business capability must migrate into shared engines/services and appear as widgets, actions, workflows, reports, or settings.

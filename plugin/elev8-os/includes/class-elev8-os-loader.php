@@ -26,6 +26,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-daily-operations-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-access-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-resolver-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-unified-dashboard-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-ui-framework-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-widget-registry-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-order-capture-service.php';
@@ -252,6 +253,7 @@ final class Elev8_OS_Loader {
         Elev8_OS_Relationship_Service::init();
         Elev8_OS_Automation_Service::init();
         Elev8_OS_Workspace_Module::init();
+        Elev8_OS_Unified_Dashboard_Service::init();
         Elev8_OS_Portal_Page_Manager::init();
         Elev8_OS_Recommendation_State_Service::init();
         Elev8_OS_Gallery_Operations_Service::init();

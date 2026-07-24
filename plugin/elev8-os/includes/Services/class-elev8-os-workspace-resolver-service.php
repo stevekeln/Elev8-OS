@@ -48,6 +48,8 @@ final class Elev8_OS_Workspace_Resolver_Service {
         $user = $user ?: wp_get_current_user();
         if (!$user instanceof WP_User) { return 'team'; }
         if (Elev8_OS_Access_Service::user_can('view_ceo_dashboard', $user)) { return 'owner'; }
+        if (Elev8_OS_Access_Service::user_can('view_operations_manager_workspace', $user)) { return 'operations_manager'; }
+        if (Elev8_OS_Access_Service::user_can('view_it_support_workspace', $user)) { return 'it_support'; }
         if (Elev8_OS_Access_Service::user_can('view_glass_dashboard', $user)) { return 'glass_manager'; }
         if (Elev8_OS_Access_Service::user_can('view_manager_dashboard', $user)) { return 'shop_manager'; }
         if (Elev8_OS_Access_Service::uses_event_host_home($user)) { return 'event_host'; }
@@ -64,6 +66,8 @@ final class Elev8_OS_Workspace_Resolver_Service {
     public static function role_label(?WP_User $user = null): string {
         $labels = [
             'owner' => __('Owner', 'elev8-os'),
+            'operations_manager' => __('Operations Manager', 'elev8-os'),
+            'it_support' => __('IT Support', 'elev8-os'),
             'glass_manager' => __('Glass Manager', 'elev8-os'),
             'shop_manager' => __('Shop Manager', 'elev8-os'),
             'event_host' => __('Event Host', 'elev8-os'),
@@ -176,23 +180,30 @@ final class Elev8_OS_Workspace_Resolver_Service {
     }
 
     private static function primary_destination(WP_User $user): string {
-        switch (self::role_key($user)) {
-            case 'owner': return class_exists('Elev8_OS_Clean_App_Module') ? Elev8_OS_Clean_App_Module::url('ceo') : admin_url('admin.php?page=elev8-ceo-dashboard');
-            case 'glass_manager': return class_exists('Elev8_OS_Glass_Manager_Suite_Module') ? Elev8_OS_Glass_Manager_Suite_Module::url() : home_url('/glass-manager/');
-            case 'glassblower': return class_exists('Elev8_OS_Glass_Workbench_Module') ? Elev8_OS_Glass_Workbench_Module::url() : home_url('/glass-workbench/');
-            case 'shipping':
-            case 'customer_service':
-            case 'retail':
-                return class_exists('Elev8_OS_Workspace_Runtime_Module') ? Elev8_OS_Workspace_Runtime_Module::url() : (class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/'));
-            case 'shop_manager':
-            case 'event_host':
-            case 'teacher':
-            case 'artist':
-            case 'volunteer':
-                return class_exists('Elev8_OS_Portal_Page_Manager') ? Elev8_OS_Portal_Page_Manager::get_url('dashboard') : home_url('/artist-dashboard/');
-            default:
-                return class_exists('Elev8_OS_Mobile_Home_Module') ? Elev8_OS_Mobile_Home_Module::get_url() : home_url('/');
+        // One application dashboard for every operational user. The workspace
+        // definition service decides which role-aware content appears inside it.
+        if (class_exists('Elev8_OS_Unified_Dashboard_Service')) {
+            $role_to_workspace = [
+                'owner' => 'executive',
+                'operations_manager' => 'operations_manager',
+                'it_support' => 'it_support',
+                'glass_manager' => 'studio',
+                'shop_manager' => 'shop_manager',
+                'shipping' => 'shipping',
+                'customer_service' => 'customer_service',
+                'retail' => 'retail',
+                'artist' => 'artist',
+                'teacher' => 'artist',
+                'event_host' => 'event',
+                'volunteer' => 'event',
+                'glassblower' => 'studio',
+            ];
+            $role = self::role_key($user);
+            return Elev8_OS_Unified_Dashboard_Service::url($role_to_workspace[$role] ?? 'business');
         }
+        return class_exists('Elev8_OS_Workspace_Runtime_Module')
+            ? Elev8_OS_Workspace_Runtime_Module::url()
+            : home_url('/');
     }
 
     private static function has_operational_role(WP_User $user): bool {

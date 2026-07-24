@@ -181,15 +181,31 @@ final class Elev8_OS_Workspace_Definition_Service {
             ],
             'priority' => 26,
         ]);
+        self::register('shop_manager', [
+            'label' => __('Shop Manager Workspace', 'elev8-os'),
+            'description' => __('Lead the store, follow up on daily operations, support employees, and keep customer issues moving.', 'elev8-os'),
+            'shell' => 'retail',
+            'capability' => 'view_manager_dashboard',
+            'roles' => ['elev8_shop_manager','shop_manager'],
+            'widgets' => ['workspace_welcome','quick_actions'],
+            'actions' => [
+                ['label' => __('Open Manager Dashboard Tools', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-manager-dashboard')],
+                ['label' => __('Manager Operations Log', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-daily-operations')],
+                ['label' => __('Conversations', 'elev8-os'), 'url' => home_url('/elev8-conversations/')],
+            ],
+            'priority' => 28,
+        ]);
+
         self::register('retail', [
             'label' => __('Retail Workspace', 'elev8-os'),
             'description' => __('A phone-first workspace for customer service, store operations, and daily execution.', 'elev8-os'),
             'shell' => 'retail',
             'capability' => 'manage_retail_operations',
             'roles' => ['shop_manager','shop_employee','retail_employee','author','contributor'],
-            'widgets' => ['workspace_welcome','quick_actions'],
+            'widgets' => ['workspace_welcome','retail_shift','quick_actions'],
             'actions' => [
-                ['label' => __('Open My Dashboard', 'elev8-os'), 'url' => $dashboard],
+                ['label' => __('Start Retail Log', 'elev8-os'), 'url' => admin_url('admin.php?page=elev8-daily-operations')],
+                ['label' => __('Conversations', 'elev8-os'), 'url' => home_url('/elev8-conversations/')],
             ],
             'priority' => 30,
         ]);

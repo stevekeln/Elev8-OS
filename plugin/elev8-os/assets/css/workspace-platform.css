@@ -50,3 +50,24 @@ body.elev8-workspace-active .entry-title{display:none!important}
 .elev8-operations-overview__card span{font-size:.9rem;line-height:1.35}
 .elev8-operations-overview__note{margin:14px 0 0;color:#475569}
 @media(max-width:782px){.elev8-workspace-switcher{align-items:flex-start;flex-direction:column}.elev8-workspace-switcher>div{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.elev8-workspace-switcher a{white-space:nowrap}.elev8-operations-overview__grid{grid-template-columns:1fr}}
+
+/* 21.5.0 Unified Dashboard Foundation */
+.elev8-workspace-more-tools {
+    width: 100%;
+    margin-top: 10px;
+    border-top: 1px solid var(--elev8-border, #d9dde5);
+    padding-top: 10px;
+}
+.elev8-workspace-more-tools > summary {
+    cursor: pointer;
+    font-weight: 700;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+.elev8-workspace-actions--more { margin-top: 10px; }
+@media (max-width: 720px) {
+    .elev8-workspace-runtime__header,
+    .elev8-workspace-grid { width: 100%; max-width: none; }
+    .elev8-workspace-actions .elev8-ui-button { width: 100%; justify-content: center; }
+}
