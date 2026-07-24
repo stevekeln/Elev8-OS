@@ -269,6 +269,17 @@ try {
             Stop-Build 'Static contract validation failed. No release ZIP was created.'
         }
         Write-Host 'Static class contracts verified.' -ForegroundColor Green
+
+        Write-Step 'Validating Elev8 OS route registry'
+        $routeValidator = Join-Path $projectRoot 'tools\validate-routes.php'
+        if (-not (Test-Path -LiteralPath $routeValidator -PathType Leaf)) {
+            Stop-Build "Route validator was not found: $routeValidator"
+        }
+        & $phpExecutable $routeValidator $pluginSourceRoot
+        if ($LASTEXITCODE -ne 0) {
+            Stop-Build 'Route registry validation failed. No release ZIP was created.'
+        }
+        Write-Host 'Route registry verified.' -ForegroundColor Green
         foreach ($file in $phpFiles) {
             $validationOutput = & $phpExecutable -l $file.FullName 2>&1
             if ($LASTEXITCODE -ne 0) {

@@ -55,3 +55,16 @@ The real business is the laboratory. Deploy small, safely, reversibly, and to co
 Architecture → Real Feature → Architecture Improvement → Real Feature.
 
 Every development session reads the Constitution and Business Blueprint, classifies the capability, inspects current ownership, implements against the uploaded source of truth, validates the release, updates architectural memory, and returns exact changed files.
+
+## Operational Reality and Defect Learning
+Elev8 OS evolves through real business use. Operational experience is a primary source of architectural truth, not an inconvenience to be hidden. Every defect must improve the platform's ability to prevent, detect, explain, isolate, or recover from similar defects in the future. A one-line repair is incomplete when the same class of failure remains possible elsewhere.
+
+## One Application, Contextual Experience
+Elev8 OS is one application with one governed shell and one canonical dashboard route. Roles describe work, titles describe people, permissions authorize actions, and workspaces organize context. Engines and services own capability; workspaces, widgets, and actions present it. New standalone operational dashboards, headers, menus, and navigation systems are prohibited.
+
+## Registered Navigation and Safe Legacy Retirement
+All application navigation must resolve through registered routes or governed workspace actions. Shell navigation may not point to unknown, optional, or unvalidated module methods. Legacy pages are inventoried and redirected only after their business capability and data ownership are preserved. No user-visible menu item may be allowed to produce a fatal error merely because the path is rarely used.
+
+## Architecture and Business Progress
+Development maintains a deliberate rhythm: strong architecture enables small practical wins, and real use of those wins exposes the next architectural improvement. Releases should remain focused when combining architecture and feature work would increase risk.
+

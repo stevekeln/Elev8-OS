@@ -13,6 +13,7 @@ final class Elev8_OS_Unified_Dashboard_Service {
 
     public static function init(): void {
         add_action('admin_menu', [__CLASS__, 'register_admin_page'], 96);
+        add_action('template_redirect', [__CLASS__, 'redirect_legacy_artist_routes'], 1);
         add_action('template_redirect', [__CLASS__, 'redirect_legacy_dashboard_homes'], 2);
     }
 
@@ -23,6 +24,29 @@ final class Elev8_OS_Unified_Dashboard_Service {
         return $workspace !== '' ? add_query_arg('workspace', sanitize_key($workspace), $url) : $url;
     }
 
+
+    /**
+     * Retire unsafe legacy artist entry routes without deleting artist data.
+     * Logged-in users are returned to the unified application. Artists land in
+     * their Artist Workspace; other operational users return to their own home.
+     */
+    public static function redirect_legacy_artist_routes(): void {
+        if (is_admin() || wp_doing_ajax() || !is_user_logged_in()) { return; }
+        $path = trim((string) wp_parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+        $legacy = ['artist-portal', 'artist-login', 'artist-dashboard'];
+        if (!in_array($path, $legacy, true)) { return; }
+
+        $user = class_exists('Elev8_OS_Preview_Service') ? Elev8_OS_Preview_Service::effective_user() : wp_get_current_user();
+        $target = self::url();
+        if ($user instanceof WP_User && class_exists('Elev8_OS_Workspace_Definition_Service')) {
+            $artist = Elev8_OS_Workspace_Definition_Service::get('artist');
+            if ($artist && Elev8_OS_Workspace_Definition_Service::can_view($artist, $user)) {
+                $target = self::url('artist');
+            }
+        }
+        wp_safe_redirect(add_query_arg('elev8_notice', 'legacy_artist_route_redirected', $target));
+        exit;
+    }
 
     /**
      * Move only legacy dashboard home screens into the canonical dashboard.

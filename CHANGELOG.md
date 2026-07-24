@@ -1,3 +1,10 @@
+## 21.7.0 - Platform Architecture and Safe Navigation
+- Updated the Constitution with operational-reality, defect-learning, one-application, registered-navigation, and focused-release principles.
+- Added a canonical Route Registry so workspaces no longer need to invent URLs or call optional module URL helpers directly.
+- Redirected legacy Artist Login, Artist Portal, and Artist Dashboard entry paths into the unified application without deleting artist data.
+- Updated the Artist Workspace action to remain inside the unified dashboard.
+- Added build-time route validation for duplicate route IDs and references to unregistered routes.
+
 ## 21.6.0 — Studio Home Migration
 
 - Migrated the Glass Manager landing experience into the single unified dashboard instead of the oversized legacy suite menu.

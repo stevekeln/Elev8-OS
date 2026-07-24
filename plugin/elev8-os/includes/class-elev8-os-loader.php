@@ -30,6 +30,7 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-ui-framework-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-widget-registry-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-order-capture-service.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-route-registry-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-workspace-definition-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-responsive-grid-service.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-experience-service.php';
@@ -201,6 +202,7 @@ final class Elev8_OS_Loader {
         Elev8_OS::init();
         Elev8_OS_Access_Service::init();
         Elev8_OS_Workspace_Resolver_Service::init();
+        Elev8_OS_Route_Registry_Service::init();
         Elev8_OS_UI_Framework_Service::init();
         Elev8_OS_Widget_Registry_Service::init();
         Elev8_OS_Workspace_Definition_Service::init();

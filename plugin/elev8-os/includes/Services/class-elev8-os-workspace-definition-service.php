@@ -223,7 +223,7 @@ final class Elev8_OS_Workspace_Definition_Service {
             'shell' => 'artist',
             'roles' => ['artist','elev8_artist','teacher'],
             'widgets' => ['workspace_welcome','quick_actions'],
-            'actions' => [['label' => __('Open Artist Portal', 'elev8-os'), 'url' => home_url('/artist-portal/')]],
+            'actions' => [['label' => __('Open Artist Workspace', 'elev8-os'), 'url' => class_exists('Elev8_OS_Route_Registry_Service') ? Elev8_OS_Route_Registry_Service::url('artist-workspace') : add_query_arg('workspace', 'artist', home_url('/elev8-workspace/'))]],
             'priority' => 40,
         ]);
         self::register('event', [
