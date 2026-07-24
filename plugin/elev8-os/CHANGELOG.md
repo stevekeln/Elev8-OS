@@ -1,3 +1,11 @@
+## 21.8.0 - Platform Kernel Foundation
+
+- Added the governed Elev8 OS Platform Kernel as the canonical bootstrap and extension boundary for foundational platform services.
+- Migrated Access, Workspace Resolution, Route Registry, UI Framework, Widget Registry, and Workspace Registry bootstrapping into the kernel without changing business data.
+- Added a read-only Platform Kernel status screen for administrators.
+- Added build-time kernel validation so a release cannot package without all required foundational registrations.
+- Established the permanent rule that the kernel coordinates capability registration while engines and services continue to own business logic.
+
 ## 21.7.0 - Platform Architecture and Safe Navigation
 - Updated the Constitution with operational-reality, defect-learning, one-application, registered-navigation, and focused-release principles.
 - Added a canonical Route Registry so workspaces no longer need to invent URLs or call optional module URL helpers directly.

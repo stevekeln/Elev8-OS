@@ -68,3 +68,9 @@ All application navigation must resolve through registered routes or governed wo
 ## Architecture and Business Progress
 Development maintains a deliberate rhythm: strong architecture enables small practical wins, and real use of those wins exposes the next architectural improvement. Releases should remain focused when combining architecture and feature work would increase risk.
 
+
+## Platform Kernel Principle
+
+Elev8 OS shall have one governed platform bootstrap and extension boundary. The Platform Kernel coordinates registration and boot order for shared platform capabilities, but it never owns business logic or business data. Engines and services remain independently testable and reusable. New platform services must register through the kernel rather than creating disconnected boot paths.
+
+The kernel must evolve through focused migrations. Existing capability is moved into it only when the migration is independently testable, rollback-ready, and protected by build-time validation.

@@ -7,6 +7,7 @@ final class Elev8_OS_Loader {
 
     public static function boot(): void {
         require_once ELEV8_OS_DIR . 'includes/Support/class-elev8-os-logger.php';
+        require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-platform-kernel.php';
         require_once ELEV8_OS_DIR . 'includes/Integrations/class-elev8-os-amelia.php';
         require_once ELEV8_OS_DIR . 'includes/Integrations/class-elev8-os-woocommerce.php';
         require_once ELEV8_OS_DIR . 'includes/Services/class-elev8-os-asset-sale-notification-service.php';
@@ -197,15 +198,18 @@ final class Elev8_OS_Loader {
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-production-workspace-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-operational-readiness-module.php';
         require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-ceo-dashboard-module.php';
+        require_once ELEV8_OS_DIR . 'includes/Modules/class-elev8-os-platform-kernel-module.php';
         require_once ELEV8_OS_DIR . 'includes/class-elev8-os.php';
 
-        Elev8_OS::init();
-        Elev8_OS_Access_Service::init();
-        Elev8_OS_Workspace_Resolver_Service::init();
-        Elev8_OS_Route_Registry_Service::init();
-        Elev8_OS_UI_Framework_Service::init();
-        Elev8_OS_Widget_Registry_Service::init();
-        Elev8_OS_Workspace_Definition_Service::init();
+        Elev8_OS_Platform_Kernel::init();
+        Elev8_OS_Platform_Kernel::register('core', 'Elev8_OS', 'init', ['type' => 'kernel', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::register('access', 'Elev8_OS_Access_Service', 'init', ['type' => 'platform-service', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::register('workspace-resolver', 'Elev8_OS_Workspace_Resolver_Service', 'init', ['type' => 'platform-service', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::register('route-registry', 'Elev8_OS_Route_Registry_Service', 'init', ['type' => 'registry', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::register('ui-framework', 'Elev8_OS_UI_Framework_Service', 'init', ['type' => 'platform-service', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::register('widget-registry', 'Elev8_OS_Widget_Registry_Service', 'init', ['type' => 'registry', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::register('workspace-registry', 'Elev8_OS_Workspace_Definition_Service', 'init', ['type' => 'registry', 'critical' => true]);
+        Elev8_OS_Platform_Kernel::boot_many(['core', 'access', 'workspace-resolver', 'route-registry', 'ui-framework', 'widget-registry', 'workspace-registry']);
         Elev8_OS_Order_Capture_Module::init();
         Elev8_OS_Experience_Service::init();
         Elev8_OS_Preview_Service::init();
@@ -335,5 +339,6 @@ final class Elev8_OS_Loader {
         Elev8_OS_Public_Profiles_Module::init();
         Elev8_OS_Class_Approval_Service::init();
         Elev8_OS_Class_Approval_Module::init();
+        Elev8_OS_Platform_Kernel_Module::init();
     }
 }

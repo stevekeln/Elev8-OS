@@ -280,6 +280,17 @@ try {
             Stop-Build 'Route registry validation failed. No release ZIP was created.'
         }
         Write-Host 'Route registry verified.' -ForegroundColor Green
+
+        Write-Step 'Validating Elev8 OS Platform Kernel'
+        $kernelValidator = Join-Path $projectRoot 'tools\validate-kernel.php'
+        if (-not (Test-Path -LiteralPath $kernelValidator -PathType Leaf)) {
+            Stop-Build "Platform Kernel validator was not found: $kernelValidator"
+        }
+        & $phpExecutable $kernelValidator $pluginSourceRoot
+        if ($LASTEXITCODE -ne 0) {
+            Stop-Build 'Platform Kernel validation failed. No release ZIP was created.'
+        }
+        Write-Host 'Platform Kernel verified.' -ForegroundColor Green
         foreach ($file in $phpFiles) {
             $validationOutput = & $phpExecutable -l $file.FullName 2>&1
             if ($LASTEXITCODE -ne 0) {
